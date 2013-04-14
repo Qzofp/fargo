@@ -1,0 +1,225 @@
+@CHARSET "UTF-8";
+/*
+ * Title:   Fargo
+ * Author:  Qzofp Productions
+ * Version: 0.1
+ *
+ * File:    confluence.css
+ *
+ * Created on Mar 30, 2013
+ * Updated on Apr 13, 2013
+ *
+ * Description: The confluence css page. This css is based on the XMBC Confluence theme.
+ *
+ * Credits: XBMC team.
+ *
+ */
+
+/*
+ *   Common CSS
+ */
+
+/* Tip 1: top, right, bottom, left */
+/* Tip 2: 0.8em = 8px, 1em = 10px, 1.2em = 12px
+
+/* Custom Font Types */
+@font-face{
+Font-family:Bebas;
+src:url('Bebas.ttf');
+}
+
+@font-face{
+Font-family:Economica;
+src:url('Economica.ttf');
+}
+
+/* Body and main parts of the page. */
+html, body{
+height:100%;
+margin:0;
+}
+
+body{
+font-family:Arial, Helvetica, Sans-Serif;
+font-size:62.5%; /* =10px */
+background:url(confluence.jpg);
+}
+
+#main{
+width:100%;
+height:100%;
+}
+
+#header{
+width:100%;
+min-height:5%;
+}
+
+#header_txt{
+margin:0 5px 0 0;
+font-size:1.1em;
+text-align:right;
+color:#FFF;
+}
+
+#display_left{
+float:left;
+display:table;
+width:120px;
+height:70%;
+/*min-height:70%;*/
+/*background-color: #ECECEC;*/
+}
+
+#sort{
+visibility:hidden;
+position:absolute;
+display:table-cell;
+top:20px;
+left:100px;
+height:70px;
+width:70px;   
+border:1px solid grey;
+border-radius:5px;
+text-align:center;
+line-height:1.45em;
+font-family:Arial, sans-serif;
+font-size:5em;
+color:dodgerblue;
+background-color:rgba(0,0,0,0.5);
+}
+
+#prev{
+visibility:hidden;
+display:table-cell; 
+padding:0 10px 0 0;
+vertical-align:middle;
+text-align:right;
+font-family:Economica, sans-serif;
+font-size:6em;
+color:gray;
+}
+
+#prev:hover{
+background-color:rgba(0,0,0,0.2);
+cursor:pointer;
+color:dodgerblue;
+}
+
+#display_right{
+float:right;
+display:table;
+width:120px;
+height:70%;
+/*background-color:#ECECEC;*/
+}
+
+#next{
+visibility:hidden;
+display:table-cell; 
+padding:0 0 0 10px;
+vertical-align:middle;
+font-family:Economica, sans-serif;
+font-size:6em;
+color:gray;
+}
+
+#next:hover{
+background-color:rgba(0,0,0,0.2);
+cursor:pointer;
+color:dodgerblue;
+}
+
+#display_content{
+margin:0 120px 0 120px;
+min-height:70%;
+/*background-color:#999;*/
+}
+
+#display_content table{
+margin-left:auto; 
+margin-right:auto;   
+border-spacing:15px;
+font-weight:bold;
+font-size:1.2em;
+text-shadow: 2px 2px 2px #000;
+text-align:center;
+color:#FFF;
+}
+
+#display_content td{
+width:150px;
+height:170px;
+border:1px solid grey;
+border-radius:5px;
+background-color:rgba(0,0,0,0.5);
+}
+
+#display_content img{
+border:1px solid grey;
+border-radius:5px;
+}
+
+#control{
+position:absolute;
+bottom:0;
+width:100%;
+height:25%;
+/*background:#666;*/
+}
+
+#control_bar{
+height:68px;
+padding-top:2px;
+border-style:solid;
+border-color:grey;
+border-left-style:none;
+border-right-style:none;
+text-align:center;
+background-color:rgba(0,0,0,0.8);
+}
+
+#control_bar ul{ 
+display:inline;
+margin:0;
+padding:0;
+list-style-type:none;
+font-family:Bebas, sans-serif;
+font-size:4.5em;
+color:grey;
+}
+
+#control_bar li{
+display:inline;
+padding-right:30px;
+cursor:pointer;
+}
+
+#control_bar .on{
+color:dodgerblue;
+}
+
+#footer{
+position:absolute;
+bottom:0;
+width:100%;
+min-height:15px;
+/*background:#000;*/
+}
+
+#footer a,
+#footer a:active{
+color:#FFF;
+text-decoration:none;
+}
+
+#footer a:hover{
+text-decoration:underline;
+}
+
+#footer_txt{
+font-size:1.1em;
+text-align:center;
+color:#FFF;
+}
+

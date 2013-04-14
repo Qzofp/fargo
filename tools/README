@@ -1,0 +1,9 @@
+Toolbox 1.0 (tbx)
+----------------
+The toolbox includes common PHP functions for such as:
+
+- GUI
+- DATABASES
+- HTML 
+
+These functions are independent and can be used for multiple PHP projects.
