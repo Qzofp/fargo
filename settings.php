@@ -21,6 +21,7 @@ define("cPASS",  "Mime1276");
 
 // XBMC connection setting.
 define("cXBMC", "xbmc:xbmc@localhost:8080");
+define("cURL", "http://localhost:8080/jsonrpc");
 
 // Path settings.
 define("cMOVIESTHUMBS", "images/movies/thumbs");

@@ -7,7 +7,7 @@
  * File:    toolbox.php
  *
  * Created on Mar 02, 2013
- * Updated on Mar 05, 2013
+ * Updated on Apr 14, 2013
  *
  * Description: The main toolbox page.
  *
@@ -17,6 +17,7 @@ require_once 'html.php';
 //require_once 'gui.php';
 require_once 'databases.php';
 require_once 'files.php';
+require_once 'json.php';
 
 // Index html.php
 // ------------------------------------------------------------------
