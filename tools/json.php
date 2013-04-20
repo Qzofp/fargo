@@ -7,7 +7,7 @@
  * File:    json.php
  *
  * Created on Apr 14, 2013
- * Updated on Apr 14, 2013
+ * Updated on Apr 17, 2013
  *
  * Description: JSON toolbox functions.
  *
@@ -40,5 +40,35 @@ function GetHttpRequest($url, $request)
     $json = json_decode($result, true);
         
     return $json;
+}
+
+
+/*
+ * Function:	OnlineCheckXBMC
+ *
+ * Created on Mar 11, 2013
+ * Updated on Apr 15, 2013
+ *
+ * Description: Check with JSON if XBMC is online.
+ *
+ * In:  -
+ * Out:	$online (true|false)
+ *
+ * Note: XBMC Connection is defined in constant cXBMC.
+ * 
+ */
+function OnlineCheckXBMC()
+{
+    $online = true;
+    
+    // Check if JSON response.
+    // JSON: {"jsonrpc": "2.0", "method": "JSONRPC.Ping", "id": 1}
+    $request = '{"jsonrpc": "2.0", "method": "JSONRPC.Ping", "id": 1}';
+    $aJson = GetHttpRequest(cURL, $request);    
+    
+    if ($aJson["result"] != "pong") {
+        $online = false;
+    }
+    return $online;
 }
 ?>

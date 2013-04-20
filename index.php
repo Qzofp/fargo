@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Apr 13, 2013
+ * Updated on Apr 15, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -17,7 +17,6 @@
 
 require_once 'settings.php';
 require_once 'tools/toolbox.php';
-require_once 'rpc/HTTPClient.php';
 require_once 'include/common.php';
 
 PageHeader("Fargo: A Media Catalog For XBMC","css/confluence.css");

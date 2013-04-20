@@ -15,7 +15,6 @@
 
 require_once 'settings.php';
 require_once 'tools/toolbox.php';
-require_once 'rpc/HTTPClient.php';
 require_once 'include/common.php';
 
 //Empty table and reset counter for test purposes.

@@ -7,7 +7,7 @@
  * File:    files.php
  *
  * Created on Mar 04, 2013
- * Updated on Mar 27, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Files and I/O toolbox functions.
  *

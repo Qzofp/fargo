@@ -7,7 +7,7 @@
  * File:    xbmc.php
  *
  * Created on Mar 22, 2013
- * Updated on Apr 14, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: The main XBMC functions page. 
  * 
@@ -31,17 +31,20 @@ switch ($action)
     case "init"    : $media = GetPageValue('media');
                      $aJson = GetXbmcValues($media);
                      break;
+                 
+    case "counter" : $media = GetPageValue('media');
+                     $aJson = GetMediaCounter($media);
+                     break;             
     
     case "online"  : $aJson['online'] = OnlineCheckXBMC();
                      break;
                 
-    case "import"  : ImportMovies();
-                     break;
-                
-    case "tvshows" : $aJson = GetTotalNumberOfTVShowsFromXBMC();
+    case "import"  : $media = GetPageValue('media');
+                     $aJson = ImportMedia($media);
                      break;
     
-    case "status"  : $aJson = ImportMoviesStatus();
+    case "status"  : $media = GetPageValue('media');
+                     $aJson = GetMediaStatus($media);
                      break;
     
     case "test"    : $url = "http://localhost:8080/jsonrpc";
@@ -53,7 +56,7 @@ switch ($action)
 
 // Return JSON code which is used as input for the JQuery functions.
 if (!empty($aJson)) {
-    echo json_encode($aJson);
+    echo json_encode($aJson, JSON_UNESCAPED_SLASHES);
 }
 else {
 //    echo -1; // Cannot connect!

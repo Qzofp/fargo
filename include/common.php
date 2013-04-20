@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Apr 14, 2013
+ * Updated on Apr 19, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -43,6 +43,35 @@ function InsertMovie($aMovie)
     ExecuteQuery($sql);
 
 }
+
+
+/*
+ * Function:	InsertTVShow
+ *
+ * Created on Apr 19, 2013
+ * Updated on Apr 19, 2013
+ *
+ * Description: Insert TV Show in the database.
+ *
+ * In:  $aTVShow
+ * Out:	TV Show in database table "tvshows".
+ *
+ */
+function InsertTVShows($aTVShow)
+{
+    $xbmcid = $aTVShow["xbmcid"];
+    $title  = $aTVShow["title"];
+    $imdbnr = $aTVShow["imdbnr"];
+    $fanart = $aTVShow["fanart"];
+    $poster = $aTVShow["poster"];
+    $thumb  = $aTVShow["thumb"];     
+    
+    $sql = "INSERT INTO tvshows(xbmcid, title, imdbnr, fanart, poster, thumb) ".
+           "VALUES ($xbmcid, '$title', '$imdbnr', '$fanart', '$poster', '$thumb')";
+      
+    ExecuteQuery($sql);
+}
+
 
 /*
  * Function:	GetSetting
