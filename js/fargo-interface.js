@@ -6,7 +6,7 @@
  * File:    fargo-interface.js
  *
  * Created on Apr 05, 2013
- * Updated on Apr 14, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface.
  *
@@ -39,7 +39,7 @@ function LoadFargoMedia()
 {      
     var media = ChangeMedia(global_media);
     
-    GetFargoValues(global_sort);    
+    GetFargoValues(global_media, global_sort);
     ShowMediaTable(media, global_page, global_column, global_sort);
 
     // The media click events.
@@ -64,15 +64,15 @@ function LoadFargoMedia()
  *
  * Description: Get the  initial values from Fargo.
  *
- * In:	-
+ * In:	media, sort
  * Out:	Media
  *
  */
-function GetFargoValues(sort)
+function GetFargoValues(media, sort)
 {    
     $.ajax
     ({
-        url: 'jsonfargo.php?action=init&sort=' + sort,
+        url: 'jsonfargo.php?action=init&media=' + media + '&sort=' + sort,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -100,7 +100,7 @@ function GetFargoValues(sort)
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on Apr 13, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -115,7 +115,9 @@ function SetMediaHandler(event)
    global_page = 1;
    global_sort = "";
    
-   global_media = ChangeMedia(media);   
+   global_media = ChangeMedia(media);
+   
+   GetFargoValues(global_media, global_sort);
    ShowMediaTable(global_media, global_page, global_column, global_sort);
 }
 
@@ -300,11 +302,11 @@ function ShowMediaTable(media, page, column, sort)
         {  
             var i = 0, j = 0, html = [];
             
-            if (json[0].id > 0)
+            if (json.media[0].id > 0)
             {
                 html[i++] = '<table>';
      
-                $.each(json, function(key, value)
+                $.each(json.media, function(key, value)
                 {                
                     if (j == 0) {
                         html[i++] = '<tr>';
@@ -314,7 +316,7 @@ function ShowMediaTable(media, page, column, sort)
                         j = 0;
                     }
                 
-                    html[i++] = '<td><img src=\"images/movies/thumbs/' + value.xbmcid + '.jpg\"/></br>' + value.title + '</td>';
+                    html[i++] = '<td><img src=\"' + json.params.thumbs + '/' + value.xbmcid + '.jpg\"/></br>' + value.title + '</td>';
                     j++;
                 });
 

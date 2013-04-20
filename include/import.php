@@ -49,7 +49,7 @@ function ImportMovies()
  * Function:	ImportTVShows
  *
  * Created on Apr 19, 2013
- * Updated on Apr 19, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Import the tv shows. 
  *
@@ -60,7 +60,7 @@ function ImportMovies()
 function ImportTVShows()
 {
     $counter = (int)GetSetting("TVShowsCounter");
-    $offset  = 1;
+    $offset  = 5;
     
     $aTVShows = GetTVShowsFromXBMC($counter, $offset);
     

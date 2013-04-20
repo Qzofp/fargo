@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Apr 13, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -26,22 +26,29 @@ $action = GetPageValue('action');
 
 switch ($action) 
 {
-    case "init"   : $sort = GetPageValue('sort');
-                    $aJson = GetFargoValues($sort);
-                    break;
+    case "init"   :  $media = GetPageValue('media');
+                     $sort  = GetPageValue('sort');
+                     $aJson = GetFargoValues($media, $sort);
+                     break;
         
-    case "movies" : $page = GetPageValue('page');
-                    $sort = GetPageValue('sort');
-                    $sql  = CreateQuery($page, $sort);
-                    $aJson = GetMovies($sql);
-                    break;
+    case "movies" :  $page  = GetPageValue('page');
+                     $sort  = GetPageValue('sort');
+                     $sql   = CreateQuery($action, $page, $sort);
+                     $aJson = GetMedia($action, $sql);
+                     break;
+                
+    case "tvshows" : $page  = GetPageValue('page');
+                     $sort  = GetPageValue('sort');
+                     $sql   = CreateQuery($action, $page, $sort);
+                     $aJson = GetMedia($action, $sql);
+                     break;                
     
     case "test"   : break;                   
 }
 
 // Return JSON code which is used as input for the JQuery functions.
 if (!empty($aJson)) {
-    echo json_encode($aJson);
+    echo json_encode($aJson, JSON_UNESCAPED_SLASHES);
 }
 
 
@@ -51,21 +58,21 @@ if (!empty($aJson)) {
  * Function:	GetFargoValues
  *
  * Created on Apr 06, 2013
- * Updated on Apr 13, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Get a the initialize values from Fargo and return it as Json data. 
  *
- * In:  sort
+ * In:  $media, $sort
  * Out: $aJson
  *
  */
-function GetFargoValues($sort)
+function GetFargoValues($media, $sort)
 {
     $aJson['row']    = cMediaRow;
     $aJson['column'] = cMediaColumn;
     
     $sql = "SELECT id, xbmcid, title ".
-           "FROM movies ";
+           "FROM $media ";
     
     if ($sort) {
         $sql .= "WHERE title LIKE '$sort%'";
@@ -84,18 +91,18 @@ function GetFargoValues($sort)
  * Function:	CreateQuery
  *
  * Created on Apr 08, 2013
- * Updated on Apr 08, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Create the sql query for the media table. 
  *
- * In:  $page, $sort
+ * In:  $media, $page, $sort
  * Out: $sql
  *
  */
-function CreateQuery($page, $sort)
+function CreateQuery($media, $page, $sort)
 {
      $sql = "SELECT id, xbmcid, title ".
-            "FROM movies ";
+            "FROM $media ";
     
     // Number of movies for 1 page
     $total = cMediaRow * cMediaColumn;
@@ -110,33 +117,46 @@ function CreateQuery($page, $sort)
     }
     
     $sql .= "LIMIT $offset , $total";
-    
-    
+     
     return $sql;
 }
 
 
 /*
- * Function:	GetMovies
+ * Function:	GetMedia
  *
  * Created on Apr 03, 2013
- * Updated on Apr 10, 2013
+ * Updated on Apr 20, 2013
  *
- * Description: Get a page of movies from Fargo and return it as Json data. 
+ * Description: Get a page of media from Fargo and return it as Json data. 
  *
- * In:  $sql
+ * In:  $media, $sql
  * Out: $aJson
  *
  */
-function GetMovies($sql)
+function GetMedia($media, $sql)
 {
-    $aJson = null;
+    $aJson   = null;
+    $aParams = null;
+    $aMedia  = null;
+    
+    switch($media)
+    {
+        case "movies"   : $aParams['thumbs'] = cMOVIESTHUMBS;
+                          break;
+                      
+        case "tvshows"  : $aParams['thumbs'] = cTVSHOWSTHUMBS;
+                          break; 
+                      
+        case "music"    :
+                          break;
+    }
     
     $db = OpenDatabase();
 
-    $id     = 0;
-    $xbmcid = 0;
-    $title  = null;
+    //$id     = 0;
+    //$xbmcid = 0;
+    //$title  = null;
 
     $stmt = $db->prepare($sql);
     if($stmt)
@@ -155,18 +175,18 @@ function GetMovies($sql)
                 while($stmt->fetch())
                 {                
                     
-                    $aJson[$i]['id']     = $id;
-                    $aJson[$i]['xbmcid'] = $xbmcid;  
-                    $aJson[$i]['title']  = ShortenString($title, 22);
+                    $aMedia[$i]['id']     = $id;
+                    $aMedia[$i]['xbmcid'] = $xbmcid;  
+                    $aMedia[$i]['title']  = ShortenString($title, 22);
                     
                     $i++;
                 }                  
             }
             else
             {
-                    $aJson[0]['id']     = 0;
-                    $aJson[0]['xbmcid'] = 0;  
-                    $aJson[0]['title']  = 'empty';
+                    $aMedia[0]['id']     = 0;
+                    $aMedia[0]['xbmcid'] = 0;  
+                    $aMedia[0]['title']  = 'empty';
             }
         }
         else
@@ -181,6 +201,9 @@ function GetMovies($sql)
     } 
 
     CloseDatabase($db);  
+    
+    $aJson['params'] = $aParams;
+    $aJson['media']  = $aMedia;
     
     return $aJson;
 }

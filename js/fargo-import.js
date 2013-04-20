@@ -6,7 +6,7 @@
  * File:    fargo-import.js
  *
  * Created on Apr 14, 2013
- * Updated on Apr 19, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -19,7 +19,7 @@
  * Function:	ImportTVShows
  *
  * Created on Apr 14, 2013
- * Updated on Apr 14, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Import the TV Shows from XBMC.
  *
@@ -33,7 +33,6 @@ function ImportTVShows()
     var media = "tvshows";
 
     ShowStatus(counter, media);
-
 }
 
 
@@ -129,49 +128,4 @@ function StartImport(media)
         } // End Success.
         
     }); // End Ajax;
-}
-
-
-/*
- * Function:	OnlineCheck
- *
- * Created on Apr 17, 2013
- * Updated on Apr 17, 2013
- *
- * Description: XBMC online check.
- *
- * In:	dummy
- * Out:	-
- *
- */   
-function OnlineCheck(dummy)
-{
-    $.ajax({
-        url: 'jsonxbmc.php?action=online',
-        async: false,
-        dataType: 'json',
-        success: function(json) 
-        {                      
-            if(json.online)
-            {
-                global_online = true;
-                $("#online").html('XBMC is Online!');
-                 
-                //alert('D1: ' + global_online);
-                //
-                // Start import
-                // StartImport();
-                // return;
-            }
-            else 
-            {
-                global_online = false; 
-                $("#online").html('XBMC is Offline!');
-                     
-              //  setTimeout(function() { 
-              //      OnlineCheck(); 
-              //  },1000);
-             }
-        } // End Success.
-    }); // End Ajax.
 }
