@@ -242,7 +242,7 @@ function SetKeyHandler(event)
         $("#sort").css("visibility", "hidden");
     }
     
-    GetFargoValues(global_sort);
+    GetFargoValues(global_media, global_sort);
     ShowMediaTable(global_media, global_page, global_column, global_sort);
 }
 

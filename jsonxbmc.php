@@ -47,9 +47,7 @@ switch ($action)
                      $aJson = GetMediaStatus($media);
                      break;
     
-    case "test"    : $url = "http://localhost:8080/jsonrpc";
-                     $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies","params": { "limits": { "start" : 0, "end": 1 }}, "id": "libMovies"}';
-                     $aJson = GetHttpRequest($url, $request);
+    case "test"    : $aJson = GetAlbumsFromXBMC(11, 12);
                      break;
                    
 }

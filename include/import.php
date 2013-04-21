@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 21, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -60,7 +60,7 @@ function ImportMovies()
 function ImportTVShows()
 {
     $counter = (int)GetSetting("TVShowsCounter");
-    $offset  = 5;
+    $offset  = 3;
     
     $aTVShows = GetTVShowsFromXBMC($counter, $offset);
     
@@ -75,18 +75,359 @@ function ImportTVShows()
 
 
 /*
- * Function:	GetImportStatus
+ * Function:	ImportAlbums
  *
- * Created on Mar 22, 2013
+ * Created on Apr 20, 2013
  * Updated on Apr 20, 2013
  *
- * Description: Reports the status of the import TV Shows process. 
+ * Description: Import the music albums. 
  *
- * In:  $counter, $media
+ * In:  -
  * Out: $aJson
  *
  */
-function GetImportStatus($counter, $media)
+function ImportAlbums()
+{
+    $counter = (int)GetSetting("AlbumsCounter");
+    $offset  = 3;
+    
+    $aAlbums = GetAlbumsFromXBMC($counter, $offset);
+    
+    if (!empty($aAlbums)) {
+        ProcessAlbums($aAlbums, $counter);
+    }
+    
+    $aJson['counter'] = (int)GetSetting("AlbumsCounter");
+    
+    return $aJson;
+}
+
+
+/*
+ * Function:	GetMediaCounter
+ *
+ * Created on Apr 17, 2013
+ * Updated on Apr 17, 2013
+ *
+ * Description: Get the media counter.
+ *
+ * In:  $media
+ * Out:	$aJson
+ * 
+ */
+function GetMediaCounter($media)
+{
+    $aJson = null;
+    
+    switch ($media)    
+    {   
+        case "movies"   : $aJson['counter'] = (int)GetSetting("MoviesCounter");
+                          break;
+        
+        case "music"    : $aJson['counter'] = (int)GetSetting("AlbumsCounter");
+                          break;
+    
+        case "tvshows"  : $aJson['counter'] = (int)GetSetting("TVShowsCounter");
+                          break;
+    }
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetMediaStatus
+ *
+ * Created on Mar 22, 2013
+ * Updated on Apr 21, 2013
+ *
+ * Description: Reports the status of the import media process. 
+ *
+ * In:  -
+ * Out: $aJson
+ *
+ */
+function GetMediaStatus($media)
+{
+    $aJson = null;
+    
+    switch ($media)    
+    {   
+        case "movies"   : 
+                          break;
+        
+        case "music"    : $counter = (int)GetSetting("AlbumsCounter");
+                          $total   = (int)GetTotalNumberOfAlbumsFromXBMC();
+                          $aJson = GetImportStatus("albums", $counter, $total, cALBUMSCOVERS);
+                          break;
+    
+        case "tvshows"  : $counter = (int)GetSetting("TVShowsCounter");
+                          $total   = (int)GetTotalNumberOfTVShowsFromXBMC();
+                          $aJson = GetImportStatus($media, $counter, $total, cTVSHOWSPOSTERS);
+                          break;
+    }
+    
+    return $aJson;
+}
+
+
+/*
+ * Function:	ImportMedia
+ *
+ * Created on Apr 19, 2013
+ * Updated on Apr 19, 2013
+ *
+ * Description: Reports the status of the import media process. 
+ *
+ * In:  $media
+ * Out: $aJson
+ *
+ */
+function ImportMedia($media)
+{
+    $aJson = null;
+    
+    switch ($media)    
+    {   
+        case "movies"   : 
+                          break;
+        
+        case "music"    : $aJson = ImportAlbums();
+                          break;
+    
+        case "tvshows"  : //echo $media;
+                          $aJson = ImportTVShows();
+                          break;
+    }
+    
+    return $aJson;
+}
+
+
+/////////////////////////////////////////    JSON Functions    ////////////////////////////////////////////
+
+/*
+ * Function:	GetTotalNumberOfMoviesFromXBMC
+ *
+ * Created on Mar 18, 2013
+ * Updated on Apr 20, 2013
+ *
+ * Description: Connect to XBMC and get the total number of movies.
+ *
+ * In:  -
+ * Out:	$total
+ * 
+ * Note: XBMC Connection is defined in constant cXBMC.
+ *
+ */
+function GetTotalNumberOfMoviesFromXBMC()
+{ 
+    $total = 0;  
+
+    // Get total number of movies through JSON.
+    // JSON: {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", 
+    //        "params": { "limits": { "start" : 0, "end": 1 }}, "id": "libMovies"} 
+    $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies",'.
+               '"params": { "limits": { "start" : 0, "end": 1 }}, "id": "libMovies"}';
+    
+    $aJson = GetHttpRequest(cURL, $request); 
+    
+    if (!empty($aJson)) {
+        $total = $aJson["result"]["limits"]["total"];
+    }
+    
+    return $total;
+}    
+
+/*
+ * Function:	GetTotalNumberOfTVShowsFromXBMC
+ *
+ * Created on Apr 14, 2013
+ * Updated on Apr 17, 2013
+ *
+ * Description: Connect to XBMC and get the total number of TV Shows.
+ *
+ * In:  -
+ * Out:	$total
+ * 
+ * Note: XBMC Connection is defined in constant cXBMC.
+ *
+ */
+function GetTotalNumberOfTVShowsFromXBMC()
+{ 
+    $total = 0;    
+
+    $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows",'.
+               '"params": { "limits": { "start" : 0, "end": 1 }}, "id": "libTvShows"}';
+    
+    $aJson = GetHttpRequest(cURL, $request);
+    
+    if (!empty($aJson)) {
+        $total = $aJson["result"]["limits"]["total"];
+    }
+    
+    return $total;
+} 
+
+
+/*
+ * Function:	GetTotalNumberOfAlbumsFromXBMC
+ *
+ * Created on Apr 20, 2013
+ * Updated on Apr 20, 2013
+ *
+ * Description: Connect to XBMC and get the total number of Albums.
+ *
+ * In:  -
+ * Out:	$total
+ * 
+ * Note: XBMC Connection is defined in constant cXBMC.
+ *
+ */
+function GetTotalNumberOfAlbumsFromXBMC()
+{ 
+    $total = 0;
+    
+    $request = '{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums",'.
+               '"params": { "limits": { "start" : 0, "end": 1 }}, "id": "libAlbums"}';
+    
+    $aJson = GetHttpRequest(cURL, $request);
+    
+    if (!empty($aJson)) {
+        $total = $aJson["result"]["limits"]["total"];
+    }
+    
+    return $total;
+} 
+
+
+/*
+ * Function:	GetMoviesFromXBMC
+ *
+ * Created on Mar 03, 2013
+ * Updated on Apr 20, 2013
+ *
+ * Description: Connect to XBMC and get the Movies information.
+ *
+ * In:  $counter, $offset (max. number of movies received from XBMC)
+ * Out:	$aLimits, $aMovies
+ * 
+ * Note: XBMC Connection is defined in constant cXBMC.
+ *
+ */
+function GetMoviesFromXBMC($counter, $offset)
+{    
+    $aMovies = null;
+    
+    // Get movies through JSON.
+    // JSON: {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", 
+    //        "params": { "limits": { "start": 0, "end": 75 }, 
+    //                     "properties" : ["imdbnumber", "art", "thumbnail"] }, "id": "libMovies"}   
+    $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies",'.
+               '"params": {"limits": {"start": '.$counter.', "end": '.($counter+$offset).'},'.
+               '"properties": ["imdbnumber", "art", "thumbnail"] }, "id": "libMovies"}';
+    
+    $aJson = GetHttpRequest(cURL, $request);
+    
+    $aLimits = $aJson["result"]["limits"];
+    
+    //debug
+    //echo "<pre>";
+    //print_r($aLimits);
+    //echo "</pre></br>";    
+    
+    if (!empty($aJson["result"]["movies"])) {
+        $aMovies = $aJson["result"]["movies"];        
+    }
+    
+    return array($aLimits, $aMovies);
+}
+
+
+/*
+ * Function:	GetTVShowsFromXBMC
+ *
+ * Created on Apr 19, 2013
+ * Updated on Apr 19, 2013
+ *
+ * Description: Connect to XBMC and get the TV Shows information.
+ *
+ * In:  $counter, $offset (max. number of TV Shows received from XBMC)
+ * Out:	$aTVShows
+ *
+ */
+function GetTVShowsFromXBMC($counter, $offset)
+{    
+    $aTVShows = null;
+    
+    $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows",'.
+               '"params": {"limits": {"start": '.$counter.', "end": '.($counter+$offset).'},'.
+               '"properties": ["imdbnumber", "art", "thumbnail"] }, "id": "libTvShows"}';
+    
+    $aJson = GetHttpRequest(cURL, $request);
+    
+    //debug
+    //echo "<pre>";
+    //print_r($aJson);
+    //echo "</pre></br>";    
+    
+    if (!empty($aJson["result"]["tvshows"])) {
+        $aTVShows = $aJson["result"]["tvshows"];        
+    }
+    
+    return $aTVShows;
+}
+
+
+/*
+ * Function:	GetAlbumsFromXBMC
+ *
+ * Created on Apr 20, 2013
+ * Updated on Apr 20, 2013
+ *
+ * Description: Connect to XBMC and get the Albums information.
+ *
+ * In:  $counter, $offset (max. number of Albums received from XBMC)
+ * Out:	$aAlbums
+ *
+ */
+function GetAlbumsFromXBMC($counter, $offset)
+{    
+    $aAlbums = null;
+
+    $request = '{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums",'.
+               '"params": {"limits": {"start": '.$counter.', "end": '.($counter+$offset).'},'.
+               '"properties": ["artist", "thumbnail"] }, "id": "libAlbums"}';
+    
+    $aJson = GetHttpRequest(cURL, $request);
+    
+    //debug
+    //echo "<pre>";
+    //print_r($aJson);
+    //echo "</pre></br>";    
+    
+    if (!empty($aJson["result"]["albums"])) {
+        $aAlbums = $aJson["result"]["albums"];        
+    }
+    
+    return $aAlbums;
+}
+
+
+////////////////////////////////////////    Database Functions    /////////////////////////////////////////
+
+/*
+ * Function:	GetImportStatus
+ *
+ * Created on Mar 22, 2013
+ * Updated on Apr 21, 2013
+ *
+ * Description: Reports the status of the import TV Shows process. 
+ *
+ * In:  $media, $counter, $total, $thumbs
+ * Out: $aJson
+ *
+ */
+function GetImportStatus($media, $counter, $total, $thumbs)
 {
     $aJson['id']     = 0;
     $aJson['xbmcid'] = 0; 
@@ -95,7 +436,7 @@ function GetImportStatus($counter, $media)
     if (OnlineCheckXBMC())
     {
         $aJson['online'] = true; 
-        $aJson['total']  = (int)GetTotalNumberOfTVShowsFromXBMC();
+        $aJson['total']  = $total;
     }
     else {
         $aJson['online'] = false; 
@@ -103,7 +444,7 @@ function GetImportStatus($counter, $media)
     }
     
     $aJson['delta'] = $aJson['total'] - $counter;
-    $aJson['thumbs'] = cTVSHOWSTHUMBS;
+    $aJson['thumbs'] = $thumbs;
     
     if ($counter > 0)
     {   
@@ -155,267 +496,13 @@ function GetImportStatus($counter, $media)
 }
 
 
-/////////////////////////////////////////    JSON Functions    ////////////////////////////////////////////
-
-/*
- * Function:	GetMediaCounter
- *
- * Created on Apr 17, 2013
- * Updated on Apr 17, 2013
- *
- * Description: Get the media counter.
- *
- * In:  $media
- * Out:	$aJson
- * 
- */
-function GetMediaCounter($media)
-{
-    $aJson = null;
-    
-    switch ($media)    
-    {   
-        case "movies"   : $aJson['counter'] = (int)GetSetting("MoviesCounter");
-                          break;
-        
-        case "music"    : $aJson['counter'] = (int)GetSetting("MusicCounter");
-                          break;
-    
-        case "tvshows"  : $aJson['counter'] = (int)GetSetting("TVShowsCounter");
-                          break;
-    }
-    
-    return $aJson;
-}
-
-/*
- * Function:	GetMediaStatus
- *
- * Created on Mar 22, 2013
- * Updated on Apr 20, 2013
- *
- * Description: Reports the status of the import media process. 
- *
- * In:  -
- * Out: $aJson
- *
- */
-function GetMediaStatus($media)
-{
-    $aJson = null;
-    
-    switch ($media)    
-    {   
-        case "movies"   : 
-                          break;
-        
-        case "music"    : 
-                          break;
-    
-        case "tvshows"  : $counter = (int)GetSetting("TVShowsCounter");
-                          $aJson = GetImportStatus($counter, $media);
-                          break;
-    }
-    
-    return $aJson;
-}
-
-
-/*
- * Function:	ImportMedia
- *
- * Created on Apr 19, 2013
- * Updated on Apr 19, 2013
- *
- * Description: Reports the status of the import media process. 
- *
- * In:  $media
- * Out: $aJson
- *
- */
-function ImportMedia($media)
-{
-    $aJson = null;
-    
-    switch ($media)    
-    {   
-        case "movies"   : 
-                          break;
-        
-        case "music"    : 
-                          break;
-    
-        case "tvshows"  : //echo $media;
-                          $aJson = ImportTVShows();
-                          break;
-    }
-    
-    return $aJson;
-}
-
-
-/*
- * Function:	GetTotalNumberOfMoviesFromXBMC
- *
- * Created on Mar 18, 2013
- * Updated on Apr 15, 2013
- *
- * Description: Connect to XBMC and get the total number of movies.
- *
- * In:  -
- * Out:	$total
- * 
- * Note: XBMC Connection is defined in constant cXBMC.
- *
- */
-function GetTotalNumberOfMoviesFromXBMC()
-{ 
-    $total = 0;  
-
-    // Get total number of movies through JSON.
-    // JSON: {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", 
-    //        "params": { "limits": { "start" : 0, "end": 1 }}, "id": "libMovies"} 
-    $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies","params": { "limits": { "start" : 0, "end": 1 }}, "id": "libMovies"}';
-    $aJson = GetHttpRequest(cURL, $request);
-  
-    //debug
-    //echo "<pre>";
-    //print_r($aJson);
-    //echo "</pre></br>";   
-    
-    if (!empty($aJson)) {
-        $total = $aJson["result"]["limits"]["total"];
-    }
-    
-    return $total;
-}    
-
-/*
- * Function:	GetTotalNumberOfTVShowsFromXBMC
- *
- * Created on Apr 14, 2013
- * Updated on Apr 17, 2013
- *
- * Description: Connect to XBMC and get the total number of TV Shows.
- *
- * In:  -
- * Out:	$total
- * 
- * Note: XBMC Connection is defined in constant cXBMC.
- *
- */
-function GetTotalNumberOfTVShowsFromXBMC()
-{ 
-    $total = 0;    
-
-    // Get total number of TV Shows through JSON.
-    // JSON: {"jsonrpc": "2.0", "method":"VideoLibrary.GetTVShows",
-    //        "params": { "limits": { "start" : 0, "end": 1 }}, "id": "libTvShows"}
-    $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows",'.
-               '"params": { "limits": { "start" : 0, "end": 1 }}, "id": "libTvShows"}';
-    
-    $aJson = GetHttpRequest(cURL, $request);
-    
-    if (!empty($aJson)) {
-        $total = $aJson["result"]["limits"]["total"];
-    }
-    
-    return $total;
-} 
-
-/*
- * Function:	GetMoviesFromXBMC
- *
- * Created on Mar 03, 2013
- * Updated on Apr 14, 2013
- *
- * Description: Connect to XBMC and get the Movies information.
- *
- * In:  $counter, $offset (max. number of movies received from XBMC)
- * Out:	$aLimits, $aMovies
- * 
- * Note: XBMC Connection is defined in constant cXBMC.
- *
- */
-function GetMoviesFromXBMC($counter, $offset)
-{    
-    $aMovies = null;
-    
-    // Get movies through JSON.
-    // JSON: {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", 
-    //        "params": { "limits": { "start": 0, "end": 75 }, 
-    //                     "properties" : ["imdbnumber", "art", "thumbnail"] }, "id": "libMovies"}   
-    //$counter = 114;
-    $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies","params": {"limits": {"start": '.$counter.', "end": '.($counter+$offset).'}, "properties" : ["imdbnumber", "art", "thumbnail"] }, "id": "libMovies"}';
-    
-    $aJson = GetHttpRequest(cURL, $request);
-    
-    $aLimits = $aJson["result"]["limits"];
-    
-    //debug
-    //echo "<pre>";
-    //print_r($aLimits);
-    //echo "</pre></br>";    
-    
-    if (!empty($aJson["result"]["movies"])) {
-        $aMovies = $aJson["result"]["movies"];        
-    }
-    
-    return array($aLimits, $aMovies);
-}
-
-
-/*
- * Function:	GetTVShowsFromXBMC
- *
- * Created on Apr 19, 2013
- * Updated on Apr 19, 2013
- *
- * Description: Connect to XBMC and get the TV Shows information.
- *
- * In:  $counter, $offset (max. number of TV Shows received from XBMC)
- * Out:	$aLimits, $aMovies
- * 
- * Note: XBMC Connection is defined in constant cXBMC.
- *
- */
-function GetTVShowsFromXBMC($counter, $offset)
-{    
-    $aTVShows = null;
-    
-    // Get movies through JSON.
-    // JSON: {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", 
-    //        "params": { "limits": { "start": 0, "end": 75 }, 
-    //                     "properties" : ["imdbnumber", "art", "thumbnail"] }, "id": "libMovies"}   
-    //$counter = 114;
-    $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows",'.
-               '"params": {"limits": {"start": '.$counter.', "end": '.($counter+$offset).'},'.
-               '"properties" : ["imdbnumber", "art", "thumbnail"] }, "id": "libTvShows"}';
-    
-    $aJson = GetHttpRequest(cURL, $request);
-    
-    //$aLimits = $aJson["result"]["limits"];
-    
-    //debug
-    //echo "<pre>";
-    //print_r($aJson);
-    //echo "</pre></br>";    
-    
-    if (!empty($aJson["result"]["tvshows"])) {
-        $aTVShows = $aJson["result"]["tvshows"];        
-    }
-    
-    return $aTVShows;
-}
-
-
 /////////////////////////////////////////    Misc Functions    ////////////////////////////////////////////
 
 /*
  * Function:	ProcessMovies
  *
  * Created on Mar 11, 2013
- * Updated on Apr 05, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Process the movies. 
  *
@@ -430,7 +517,7 @@ function ProcessMovies($aMovies, $counter)
         $aMovie = ConvertMovie($aMovie);
         
         // Import movie and create thumbnail locally. This cost some time.
-        ResizeJpegImage($aMovie["thumb"], 100, 140, cMOVIESTHUMBS."/".$aMovie["xbmcid"].".jpg");
+        ResizeJpegImage($aMovie["thumb"], 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
         
         InsertMovie($aMovie);
         
@@ -461,12 +548,41 @@ function ProcessTVShows($aTVShows, $counter)
         $aTVShow = ConvertTVShow($aTVShow);
         
         // Import movie and create thumbnail locally. This cost some time.
-        ResizeJpegImage($aTVShow["poster"], 100, 140, cTVSHOWSTHUMBS."/".$aTVShow["xbmcid"].".jpg");
+        ResizeJpegImage($aTVShow["poster"], 100, 140, cTVSHOWSPOSTERS."/".$aTVShow["xbmcid"].".jpg");
         
-        InsertTVShows($aTVShow);
+        InsertTVShow($aTVShow);
         
         $counter++;
         UpdateSetting("TVShowsCounter", $counter);
+    }
+}
+
+
+/*
+ * Function:	ProcessAlbums
+ *
+ * Created on Apr 19, 2013
+ * Updated on Apr 20, 2013
+ *
+ * Description: Process the music albums. 
+ *
+ * In:  $aAlbums, $counter
+ * Out: -
+ *
+ */
+function ProcessAlbums($aAlbums, $counter)
+{  
+    foreach ($aAlbums as $aAlbum)
+    {            
+        $aAlbum = ConvertAlbum($aAlbum);
+        
+        // Import movie and create thumbnail locally. This cost some time.
+        //ResizeJpegImage($aAlbum["cover"], 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
+        
+        InsertAlbum($aAlbum);
+        
+        $counter++;
+        UpdateSetting("AlbumsCounter", $counter);
     }
 }
 
@@ -544,22 +660,43 @@ function ConvertTVShow($aXbmc)
 
 
 /*
- * Function:    CleanImageLink
+ * Function:	ConvertAlbum
  *
- * Created on Mar 03, 2013
- * Updated on Apr 19, 2013
+ * Created on Apr 20, 2013
+ * Updated on Apr 21, 2013
  *
- * Description: Cleans the image link from XBMC.
+ * Description: Convert XBMC album items. For instance to readably URL's.
  *
- * In:  $dirty (link)
- * Out:	$clean (link)
+ * In:  $aXbmc
+ * Out: $aAlbum
  *
  */
-function CleanImageLink($dirty)
+function ConvertAlbum($aXbmc)
 {
-    $dummy = str_replace("image://http%3a", "http:", $dirty);
-    $clean = rtrim(str_replace("%2f", "/", $dummy), "/");
+    $no_cover = "images/no_cover.jpg";
+    $aAlbum["xbmcid"] = $aXbmc["albumid"];
+    $aAlbum["title"]  = addcslashes($aXbmc["label"], "'");
+    $aAlbum["artist"] = addcslashes($aXbmc["artist"][0], "'");
     
-    return $clean;
+    if (!empty($aXbmc["thumbnail"])) 
+    {
+        $cover = CleanImageLink($aXbmc["thumbnail"]);  
+        $http = parse_url($cover, PHP_URL_SCHEME);
+        if ($http != 'http') 
+        {
+            $cover = $no_cover;
+        }   
+    }
+    else 
+    {
+        $cover = $no_cover;
+    }    
+    
+    $aAlbum["cover"] = $cover;
+    
+    // Import album and create thumbnail locally. This cost some time.
+    ResizeJpegImage($aAlbum['cover'], 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
+    
+    return $aAlbum;
 }
 ?>

@@ -18,19 +18,19 @@ require_once 'tools/toolbox.php';
 require_once 'include/common.php';
 
 //Empty table and reset counter for test purposes.
-EmptyTable("tvshows");
-UpdateSetting("TVshowsCounter", 0);
-DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
+EmptyTable("albums");
+UpdateSetting("AlbumsCounter", 0);
+DeleteFile(cALBUMSCOVERS."/*.jpg");
 
 //UpdateSetting("MovieDelta", 1);
 
 PageHeader("Another XBMC Media Catalog","css/frodo.css");
 
 echo "   <H1>Another XBMC Media Catalog</H1>\n";
-echo "   <H2>Progress Bar Test TV Shows</H2>\n";
+echo "   <H2>Progress Bar Test Albums</H2>\n";
 
-echo "   <form name=\"progress\" action=\"progresstest2.php\" method=\"post\"></br>\n";
-echo "    <input type=\"submit\" value=\"Import Movies\">";
+echo "   <form name=\"progress\" action=\"progresstest3.php\" method=\"post\"></br>\n";
+echo "    <input type=\"submit\" value=\"Import Albums\">";
 echo "   </form></br>\n";
 
 PageFooter("", "", false);

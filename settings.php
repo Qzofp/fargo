@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Apr 14, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Fargo's settings page.
  *
@@ -24,8 +24,9 @@ define("cXBMC", "xbmc:xbmc@localhost:8080");
 define("cURL", "http://localhost:8080/jsonrpc");
 
 // Path settings.
-define("cMOVIESTHUMBS", "images/movies/thumbs");
-define("cTVSHOWSTHUMBS", "images/tvshows/thumbs");
+define("cMOVIESPOSTERS", "images/movies/posters");
+define("cTVSHOWSPOSTERS", "images/tvshows/posters");
+define("cALBUMSCOVERS", "images/music/covers");
 
 // Misc settings.
 define("cMediaRow", "3");

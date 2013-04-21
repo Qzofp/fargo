@@ -142,10 +142,10 @@ function GetMedia($media, $sql)
     
     switch($media)
     {
-        case "movies"   : $aParams['thumbs'] = cMOVIESTHUMBS;
+        case "movies"   : $aParams['thumbs'] = cMOVIESPOSTERS;
                           break;
                       
-        case "tvshows"  : $aParams['thumbs'] = cTVSHOWSTHUMBS;
+        case "tvshows"  : $aParams['thumbs'] = cTVSHOWSPOSTERS;
                           break; 
                       
         case "music"    :

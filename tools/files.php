@@ -18,7 +18,7 @@
  * Function:	ResizeJpegImage
  *
  * Created on Mar 04, 2013
- * Updated on Mar 04, 2013
+ * Updated on Apr 21, 2013
  *
  * Description: Resize an Image and save it to a file.
  *
@@ -34,8 +34,32 @@
 function ResizeJpegImage($image, $new_w, $new_h, $destination)
 {
     list($old_w, $old_h) = getimagesize($image);
-    $img = imagecreatefromjpeg($image);
     
+    // Check extension.
+    $ext = strtolower(pathinfo($image, PATHINFO_EXTENSION));
+    if ($ext == 'jpg')
+    {
+        $img = @imagecreatefromjpeg($image);
+    }
+    else // if png.
+    {
+        $img = @imagecreatefrompng($image);
+    }
+ 
+    // Check if the creation of the image failed!
+    if (!$img) 
+    {
+        /* Create a blank image */
+        $img  = imagecreatetruecolor($new_w, $new_h);
+        $bgc = imagecolorallocate($img, 255, 255, 255);
+        $tc  = imagecolorallocate($img, 0, 0, 0);
+
+        imagefilledrectangle($img, 0, 0, $new_w, $new_h, $bgc);
+
+        /* Output an error message */
+        imagestring($img, 1, 5, 5, 'Error loading ' . $image, $tc);    
+    }
+
     // Create a new temporary image.
     $tmp_img = imagecreatetruecolor($new_w, $new_h);
     

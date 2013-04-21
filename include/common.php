@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Apr 19, 2013
+ * Updated on Apr 21, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -49,7 +49,7 @@ function InsertMovie($aMovie)
  * Function:	InsertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Apr 19, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Insert TV Show in the database.
  *
@@ -57,7 +57,7 @@ function InsertMovie($aMovie)
  * Out:	TV Show in database table "tvshows".
  *
  */
-function InsertTVShows($aTVShow)
+function InsertTVShow($aTVShow)
 {
     $xbmcid = $aTVShow["xbmcid"];
     $title  = $aTVShow["title"];
@@ -68,6 +68,32 @@ function InsertTVShows($aTVShow)
     
     $sql = "INSERT INTO tvshows(xbmcid, title, imdbnr, fanart, poster, thumb) ".
            "VALUES ($xbmcid, '$title', '$imdbnr', '$fanart', '$poster', '$thumb')";
+      
+    ExecuteQuery($sql);
+}
+
+
+/*
+ * Function:	InsertAlbum
+ *
+ * Created on Apr 20, 2013
+ * Updated on Apr 21, 2013
+ *
+ * Description: Insert music album in the database.
+ *
+ * In:  $aAlbum
+ * Out:	Music album in database table "albums".
+ *
+ */
+function InsertAlbum($aAlbum)
+{
+    $xbmcid = $aAlbum["xbmcid"];
+    $title  = $aAlbum["title"];
+    $artist = $aAlbum["artist"];
+    $cover  = $aAlbum["cover"];
+    
+    $sql = "INSERT INTO albums(xbmcid, title, artist, cover) ".
+           "VALUES ($xbmcid, '$title', '$artist', '$cover')";
       
     ExecuteQuery($sql);
 }
@@ -115,5 +141,31 @@ function UpdateSetting($name, $value)
            "WHERE name = '$name'";
     
     ExecuteQuery($sql);
+}
+
+
+//////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
+
+/*
+ * Function:    CleanImageLink
+ *
+ * Created on Mar 03, 2013
+ * Updated on Apr 21, 2013
+ *
+ * Description: Cleans the image link from XBMC.
+ *
+ * In:  $dirty (link)
+ * Out:	$clean (link)
+ *
+ */
+function CleanImageLink($dirty)
+{
+    $dummy = str_replace("image://http%3a", "http:", $dirty);
+    $dummy = rtrim(str_replace("%2f", "/", $dummy), "/");
+    
+    $dummy = str_replace("%3f", "?", $dummy);
+    $clean = explode("?", $dummy);
+     
+    return $clean[0];
 }
 ?>

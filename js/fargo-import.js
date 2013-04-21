@@ -6,7 +6,7 @@
  * File:    fargo-import.js
  *
  * Created on Apr 14, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 21, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -21,17 +21,16 @@
  * Created on Apr 14, 2013
  * Updated on Apr 20, 2013
  *
- * Description: Import the TV Shows from XBMC.
+ * Description: Import the media from XBMC.
  *
- * In:	-
- * Out:	Imported TV Shows
+ * In:	media
+ * Out:	Imported media
  *
  */
-function ImportTVShows()
+function ImportMedia(media)
 {
     var counter = 0;
-    var media = "tvshows";
-
+    
     ShowStatus(counter, media);
 }
 
