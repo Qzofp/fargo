@@ -517,16 +517,10 @@ function ProcessMovies($aMovies, $counter)
     {            
         $aMovie = ConvertMovie($aMovie);
         
-        // Import movie and create thumbnail locally. This cost some time.
-        ResizeJpegImage($aMovie["poster"], 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
-        
         InsertMovie($aMovie);
         
         $counter++;
         UpdateSetting("MoviesCounter", $counter);
-        
-        // Debug
-        //sleep(1);
     }
 }
 
@@ -547,9 +541,6 @@ function ProcessTVShows($aTVShows, $counter)
     foreach ($aTVShows as $aTVShow)
     {            
         $aTVShow = ConvertTVShow($aTVShow);
-        
-        // Import movie and create thumbnail locally. This cost some time.
-        ResizeJpegImage($aTVShow["poster"], 100, 140, cTVSHOWSPOSTERS."/".$aTVShow["xbmcid"].".jpg");
         
         InsertTVShow($aTVShow);
         
@@ -577,9 +568,6 @@ function ProcessAlbums($aAlbums, $counter)
     {            
         $aAlbum = ConvertAlbum($aAlbum);
         
-        // Import movie and create thumbnail locally. This cost some time.
-        //ResizeJpegImage($aAlbum["cover"], 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
-        
         InsertAlbum($aAlbum);
         
         $counter++;
@@ -592,7 +580,7 @@ function ProcessAlbums($aAlbums, $counter)
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Mar 22, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -602,6 +590,8 @@ function ProcessAlbums($aAlbums, $counter)
  */
 function ConvertMovie($aXbmc)
 {
+    $poster = "images/no_poster.jpg";
+    
     $aMovie["xbmcid"]  = $aXbmc["movieid"];
     $aMovie["title"]   = $aXbmc["label"];
     $aMovie["imdbnr" ] = $aXbmc["imdbnumber"];
@@ -613,11 +603,16 @@ function ConvertMovie($aXbmc)
         $fanart = null;  
     }
     
-    if (!empty($aXbmc["art"]["poster"])) {
+    if (!empty($aXbmc["art"]["poster"])) 
+    {
         $poster = CleanImageLink($aXbmc["art"]["poster"]);
+        
+        // Download the poster to a temporary folder.
+        DownloadFile($poster, cTEMPPOSTERS."/".$aMovie["xbmcid"].".jpg");
+        $tmp = cTEMPPOSTERS."/".$aMovie["xbmcid"].".jpg";
     }
-    else {
-        $poster = "images/no_poster.jpg";
+    else { 
+        $tmp = $poster;
     }
     
     if (!empty($aXbmc["thumbnail"])) {
@@ -631,6 +626,12 @@ function ConvertMovie($aXbmc)
     $aMovie["poster"]  = $poster;
     $aMovie["thumb"]   = $thumb;        
     
+    // Create thumbnail locally.
+    ResizeJpegImage($tmp, 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
+    
+    // Delete the temporary poster.
+    DeleteFile(cTEMPPOSTERS."/*");
+    
     return $aMovie;
 }
 
@@ -639,7 +640,7 @@ function ConvertMovie($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -649,6 +650,8 @@ function ConvertMovie($aXbmc)
  */
 function ConvertTVShow($aXbmc)
 {
+    $poster = "images/no_poster.jpg";
+            
     $aTVShow["xbmcid"]  = $aXbmc["tvshowid"];
     $aTVShow["title"]   = $aXbmc["label"];
     $aTVShow["imdbnr" ] = $aXbmc["imdbnumber"];
@@ -660,11 +663,16 @@ function ConvertTVShow($aXbmc)
         $fanart = null;  
     }
     
-    if (!empty($aXbmc["art"]["poster"])) {
+    if (!empty($aXbmc["art"]["poster"])) 
+    {
         $poster = CleanImageLink($aXbmc["art"]["poster"]);
+        
+        // Download the poster to a temporary folder.
+        DownloadFile($poster, cTEMPPOSTERS."/".$aTVShow["xbmcid"].".jpg");
+        $tmp = cTEMPPOSTERS."/".$aTVShow["xbmcid"].".jpg";
     }
     else {
-        $poster = "images/no_poster.jpg";
+        $tmp = $poster;
     }
     
     if (!empty($aXbmc["thumbnail"])) {
@@ -678,6 +686,12 @@ function ConvertTVShow($aXbmc)
     $aTVShow["poster"]  = $poster;
     $aTVShow["thumb"]   = $thumb;       
     
+    // Create thumbnail locally.
+    ResizeJpegImage($tmp, 100, 140, cTVSHOWSPOSTERS."/".$aTVShow["xbmcid"].".jpg");
+    
+    // Delete the temporary poster.
+    DeleteFile(cTEMPPOSTERS."/*");    
+    
     return $aTVShow;
 }
 
@@ -686,7 +700,7 @@ function ConvertTVShow($aXbmc)
  * Function:	ConvertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Apr 21, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Convert XBMC album items. For instance to readably URL's.
  *
@@ -705,20 +719,31 @@ function ConvertAlbum($aXbmc)
     {
         $cover = CleanImageLink($aXbmc["thumbnail"]);  
         $http = parse_url($cover, PHP_URL_SCHEME);
-        if ($http != 'http') 
+        if ($http == 'http') 
         {
-            $cover = $no_cover;
-        }   
+            $ext = strtolower(pathinfo($cover, PATHINFO_EXTENSION));
+            
+            // Download the poster to a temporary folder.
+            DownloadFile($cover, cTEMPPOSTERS."/".$aAlbum["xbmcid"].".".$ext);
+            $tmp = cTEMPPOSTERS."/".$aAlbum["xbmcid"].".".$ext;     
+        }
+        else {
+            $tmp = $no_cover;
+        }
     }
     else 
     {
         $cover = $no_cover;
+        $tmp = $no_cover;
     }    
     
     $aAlbum["cover"] = $cover;
     
-    // Import album and create thumbnail locally. This cost some time.
-    ResizeJpegImage($aAlbum['cover'], 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
+    // Create thumbnail locally. This cost some time.
+    ResizeJpegImage($tmp, 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
+    
+    // Delete the temporary poster.
+    DeleteFile(cTEMPPOSTERS."/*");   
     
     return $aAlbum;
 }
