@@ -6,7 +6,7 @@
  * File:    fargo-interface.js
  *
  * Created on Apr 05, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface.
  *

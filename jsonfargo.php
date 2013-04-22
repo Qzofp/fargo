@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -41,7 +41,13 @@ switch ($action)
                      $sort  = GetPageValue('sort');
                      $sql   = CreateQuery($action, $page, $sort);
                      $aJson = GetMedia($action, $sql);
-                     break;                
+                     break;    
+                 
+    case "music"  : $page  = GetPageValue('page');
+                    $sort  = GetPageValue('sort');
+                    $sql   = CreateQuery($action, $page, $sort);
+                    $aJson = GetMedia($action, $sql);
+                    break;                  
     
     case "test"   : break;                   
 }
@@ -126,7 +132,7 @@ function CreateQuery($media, $page, $sort)
  * Function:	GetMedia
  *
  * Created on Apr 03, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -148,16 +154,11 @@ function GetMedia($media, $sql)
         case "tvshows"  : $aParams['thumbs'] = cTVSHOWSPOSTERS;
                           break; 
                       
-        case "music"    :
+        case "music"    : $aParams['thumbs'] = cALBUMSCOVERS;
                           break;
     }
     
     $db = OpenDatabase();
-
-    //$id     = 0;
-    //$xbmcid = 0;
-    //$title  = null;
-
     $stmt = $db->prepare($sql);
     if($stmt)
     {

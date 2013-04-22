@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Apr 15, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -60,7 +60,6 @@ $(document).ready(function() {
     LoadFargoMedia();
 });
 </script>
-
 
 <?php
 PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo");
