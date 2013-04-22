@@ -57,7 +57,7 @@ function ResizeJpegImage($image, $new_w, $new_h, $destination)
         imagefilledrectangle($img, 0, 0, $new_w, $new_h, $bgc);
 
         /* Output an error message */
-        imagestring($img, 1, 5, 5, 'Error loading ' . $image, $tc);    
+        imagestring($img, 1, 5, 5, 'Error loading ' . $image, $tc);
     }
 
     // Create a new temporary image.

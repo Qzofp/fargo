@@ -92,6 +92,32 @@ function GetPageValue($name)
     return $value;
 }
 
+
+/*
+ * Function:	GetButtonValue
+ *
+ * Created on Jun 17, 2011
+ * Updated on Jun 18, 2011
+ *
+ * Description: Get input value from a button.
+ *
+ * In:	$name
+ * Out:	$value
+ *
+ */
+function GetButtonValue($name)
+{
+    $value = null;
+    
+    if (isset($_POST[$name]) && !empty($_POST[$name]))
+    {
+        $value = $_POST[$name];
+    }  
+    
+    return $value;
+}
+
+
 /*
  * Function:	ShortenString
  *

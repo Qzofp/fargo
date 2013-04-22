@@ -17,7 +17,7 @@
  * Function:	GetHttpRequest
  *
  * Created on Apr 14, 2013
- * Updated on Apr 14, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: 
  *
@@ -34,8 +34,9 @@ function GetHttpRequest($url, $request)
     
     curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json", "Content-length: ".strlen($request)));
-    
+     
     $result = curl_exec($ch);
+    curl_close($ch);
     
     $json = json_decode($result, true);
         

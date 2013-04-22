@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Apr 21, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -77,7 +77,7 @@ function InsertTVShow($aTVShow)
  * Function:	InsertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Apr 21, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Insert music album in the database.
  *
@@ -92,7 +92,7 @@ function InsertAlbum($aAlbum)
     $artist = $aAlbum["artist"];
     $cover  = $aAlbum["cover"];
     
-    $sql = "INSERT INTO albums(xbmcid, title, artist, cover) ".
+    $sql = "INSERT INTO music(xbmcid, title, artist, cover) ".
            "VALUES ($xbmcid, '$title', '$artist', '$cover')";
       
     ExecuteQuery($sql);

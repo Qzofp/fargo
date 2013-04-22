@@ -7,7 +7,7 @@
  * File:    xbmc.php
  *
  * Created on Mar 22, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: The main XBMC functions page. 
  * 
@@ -27,14 +27,10 @@ $aJson = null;
 $action = GetPageValue('action');
 
 switch ($action) 
-{    
-    case "init"    : $media = GetPageValue('media');
-                     $aJson = GetXbmcValues($media);
-                     break;
-                 
+{                     
     case "counter" : $media = GetPageValue('media');
                      $aJson = GetMediaCounter($media);
-                     break;             
+                     break;
     
     case "online"  : $aJson['online'] = OnlineCheckXBMC();
                      break;
@@ -57,6 +53,6 @@ if (!empty($aJson)) {
     echo json_encode($aJson, JSON_UNESCAPED_SLASHES);
 }
 else {
-//    echo -1; // Cannot connect!
+    echo -1; // Cannot connect!
 }
 ?>

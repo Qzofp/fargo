@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on Apr 21, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -20,7 +20,7 @@
  * Function:	ImportMovies
  *
  * Created on Mar 11, 2013
- * Updated on Apr 15, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Import the movies. 
  *
@@ -31,9 +31,9 @@
 function ImportMovies()
 {
     $counter = (int)GetSetting("MoviesCounter");
-    $offset  = 5;
+    $offset  = 3;
 
-    list($aLimits, $aMovies) = GetMoviesFromXBMC($counter, $offset);
+    $aMovies = GetMoviesFromXBMC($counter, $offset);
     
     if (!empty($aMovies)) {
         ProcessMovies($aMovies, $counter);
@@ -138,7 +138,7 @@ function GetMediaCounter($media)
  * Function:	GetMediaStatus
  *
  * Created on Mar 22, 2013
- * Updated on Apr 21, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -152,17 +152,19 @@ function GetMediaStatus($media)
     
     switch ($media)    
     {   
-        case "movies"   : 
+        case "movies"   : $counter = (int)GetSetting("MoviesCounter");
+                          $total   = (int)GetTotalNumberOfMoviesFromXBMC();
+                          $aJson   = GetImportStatus($media, $counter, $total, cMOVIESPOSTERS);
                           break;
         
         case "music"    : $counter = (int)GetSetting("AlbumsCounter");
                           $total   = (int)GetTotalNumberOfAlbumsFromXBMC();
-                          $aJson = GetImportStatus("albums", $counter, $total, cALBUMSCOVERS);
+                          $aJson   = GetImportStatus($media, $counter, $total, cALBUMSCOVERS);
                           break;
     
         case "tvshows"  : $counter = (int)GetSetting("TVShowsCounter");
                           $total   = (int)GetTotalNumberOfTVShowsFromXBMC();
-                          $aJson = GetImportStatus($media, $counter, $total, cTVSHOWSPOSTERS);
+                          $aJson   = GetImportStatus($media, $counter, $total, cTVSHOWSPOSTERS);
                           break;
     }
     
@@ -174,7 +176,7 @@ function GetMediaStatus($media)
  * Function:	ImportMedia
  *
  * Created on Apr 19, 2013
- * Updated on Apr 19, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -188,14 +190,13 @@ function ImportMedia($media)
     
     switch ($media)    
     {   
-        case "movies"   : 
+        case "movies"   : $aJson = ImportMovies();
                           break;
         
         case "music"    : $aJson = ImportAlbums();
                           break;
     
-        case "tvshows"  : //echo $media;
-                          $aJson = ImportTVShows();
+        case "tvshows"  : $aJson = ImportTVShows();
                           break;
     }
     
@@ -304,12 +305,12 @@ function GetTotalNumberOfAlbumsFromXBMC()
  * Function:	GetMoviesFromXBMC
  *
  * Created on Mar 03, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Connect to XBMC and get the Movies information.
  *
  * In:  $counter, $offset (max. number of movies received from XBMC)
- * Out:	$aLimits, $aMovies
+ * Out:	$aMovies
  * 
  * Note: XBMC Connection is defined in constant cXBMC.
  *
@@ -328,7 +329,7 @@ function GetMoviesFromXBMC($counter, $offset)
     
     $aJson = GetHttpRequest(cURL, $request);
     
-    $aLimits = $aJson["result"]["limits"];
+    //$aLimits = $aJson["result"]["limits"];
     
     //debug
     //echo "<pre>";
@@ -339,7 +340,7 @@ function GetMoviesFromXBMC($counter, $offset)
         $aMovies = $aJson["result"]["movies"];        
     }
     
-    return array($aLimits, $aMovies);
+    return $aMovies;
 }
 
 
@@ -502,7 +503,7 @@ function GetImportStatus($media, $counter, $total, $thumbs)
  * Function:	ProcessMovies
  *
  * Created on Mar 11, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Process the movies. 
  *
@@ -517,7 +518,7 @@ function ProcessMovies($aMovies, $counter)
         $aMovie = ConvertMovie($aMovie);
         
         // Import movie and create thumbnail locally. This cost some time.
-        ResizeJpegImage($aMovie["thumb"], 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
+        ResizeJpegImage($aMovie["poster"], 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
         
         InsertMovie($aMovie);
         
@@ -591,22 +592,44 @@ function ProcessAlbums($aAlbums, $counter)
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Mar 11, 2013
+ * Updated on Mar 22, 2013
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
- * In:  $aXbmc_movie
+ * In:  $aXbmc
  * Out: $aMovie
  *
  */
-function ConvertMovie($aXbmc_movie)
+function ConvertMovie($aXbmc)
 {
-    $aMovie["xbmcid"]  = $aXbmc_movie["movieid"];
-    $aMovie["title"]   = $aXbmc_movie["label"];
-    $aMovie["imdbnr" ] = $aXbmc_movie["imdbnumber"];
-    $aMovie["fanart"]  = CleanImageLink($aXbmc_movie["art"]["fanart"]);
-    $aMovie["poster"]  = CleanImageLink($aXbmc_movie["art"]["poster"]);
-    $aMovie["thumb"]   = CleanImageLink($aXbmc_movie["thumbnail"]);        
+    $aMovie["xbmcid"]  = $aXbmc["movieid"];
+    $aMovie["title"]   = $aXbmc["label"];
+    $aMovie["imdbnr" ] = $aXbmc["imdbnumber"];
+    
+    if (!empty($aXbmc["art"]["fanart"])) {
+        $fanart = CleanImageLink($aXbmc["art"]["fanart"]);
+    }
+    else {
+        $fanart = null;  
+    }
+    
+    if (!empty($aXbmc["art"]["poster"])) {
+        $poster = CleanImageLink($aXbmc["art"]["poster"]);
+    }
+    else {
+        $poster = "images/no_poster.jpg";
+    }
+    
+    if (!empty($aXbmc["thumbnail"])) {
+        $thumb = CleanImageLink($aXbmc["thumbnail"]);
+    }
+    else {
+        $thumb = null;  
+    }     
+    
+    $aMovie["fanart"]  = $fanart;
+    $aMovie["poster"]  = $poster;
+    $aMovie["thumb"]   = $thumb;        
     
     return $aMovie;
 }

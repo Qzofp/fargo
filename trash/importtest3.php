@@ -7,7 +7,7 @@
  * File:    importtest2.php
  *
  * Created on Apr 14, 2013
- * Updated on Apr 17, 2013
+ * Updated on Apr 22, 2013
  *
  * Description: Fargo's import test page.
  *
@@ -18,11 +18,9 @@ require_once 'tools/toolbox.php';
 require_once 'include/common.php';
 
 //Empty table and reset counter for test purposes.
-EmptyTable("albums");
+EmptyTable("music");
 UpdateSetting("AlbumsCounter", 0);
 DeleteFile(cALBUMSCOVERS."/*.jpg");
-
-//UpdateSetting("MovieDelta", 1);
 
 PageHeader("Another XBMC Media Catalog","css/frodo.css");
 
