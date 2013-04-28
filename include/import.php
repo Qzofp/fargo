@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on Apr 22, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -580,7 +580,7 @@ function ProcessAlbums($aAlbums, $counter)
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Apr 22, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -630,7 +630,8 @@ function ConvertMovie($aXbmc)
     ResizeJpegImage($tmp, 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
     
     // Delete the temporary poster.
-    DeleteFile(cTEMPPOSTERS."/*");
+    DeleteFile(cTEMPPOSTERS."/*.j*");
+    DeleteFile(cTEMPPOSTERS."/*.p*"); 
     
     return $aMovie;
 }
@@ -640,7 +641,7 @@ function ConvertMovie($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Apr 22, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -690,7 +691,8 @@ function ConvertTVShow($aXbmc)
     ResizeJpegImage($tmp, 100, 140, cTVSHOWSPOSTERS."/".$aTVShow["xbmcid"].".jpg");
     
     // Delete the temporary poster.
-    DeleteFile(cTEMPPOSTERS."/*");    
+    DeleteFile(cTEMPPOSTERS."/*.j*");
+    DeleteFile(cTEMPPOSTERS."/*.p*");    
     
     return $aTVShow;
 }
@@ -700,7 +702,7 @@ function ConvertTVShow($aXbmc)
  * Function:	ConvertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Apr 22, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: Convert XBMC album items. For instance to readably URL's.
  *
@@ -743,7 +745,8 @@ function ConvertAlbum($aXbmc)
     ResizeJpegImage($tmp, 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
     
     // Delete the temporary poster.
-    DeleteFile(cTEMPPOSTERS."/*");   
+    DeleteFile(cTEMPPOSTERS."/*.j*");
+    DeleteFile(cTEMPPOSTERS."/*.p*");  
     
     return $aAlbum;
 }

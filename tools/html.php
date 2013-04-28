@@ -7,7 +7,7 @@
  * File:    html.php
  *
  * Created on Mar 02, 2013
- * Updated on Apr 05, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: HTML toolbox functions.
  *
@@ -17,15 +17,15 @@
  * Function:	PageHeader
  *
  * Created on Mar 02, 2013
- * Updated on Mar 02, 2013
+ * Updated on Mar 27, 2013
  *
  * Description: Returns a HTML5 page header.
  *
- * In:	$title, $css
+ * In:	$title, $css, $aJscript
  * Out:	header
  *
  */
-function PageHeader($title, $css)
+function PageHeader($title, $css, $aJscript)
 {
     echo "<!DOCTYPE html>\n";
     echo "<html lang=\"en\">\n";
@@ -33,6 +33,15 @@ function PageHeader($title, $css)
     echo "  <meta charset=\"utf-8\">\n";
     echo "  <title>$title</title>\n";
     echo "  <link rel=\"stylesheet\" href=\"$css\">\n";
+    
+    if ($aJscript) 
+    {    
+        foreach ($aJscript as $js)
+        {
+            echo "  <script type=\"text/javascript\" src=\"$js\"></script>\n";
+        }    
+    }
+    
     echo " </head>\n";
    
     echo " <body>\n";
@@ -45,15 +54,15 @@ function PageHeader($title, $css)
  * Function:	PageFooter
  *
  * Created on Aug 12, 2013
- * Updated on Mar 31, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: Returns a page footer.
  *
- * In:	$url, $title, $footer
+ * In:	$url, $title, $footer, $js
  * Out:	footer
  *
  */
-function PageFooter($url, $title, $footer=true)
+function PageFooter($url, $title, $footer, $js)
 {
     echo "  </div>\n";
     // End Main.
@@ -62,6 +71,15 @@ function PageFooter($url, $title, $footer=true)
         echo "  <div id=\"footer\">\n";
         echo "   <div id=\"footer_txt\"><a href =\"$url\">$title</a></div>\n";
         echo "  </div>\n";
+    }
+    
+    if ($js)
+    {
+        echo "  <script type=\"text/javascript\">\n";
+        echo "  $(document).ready(function() {\n";   
+        echo "      $js;\n";
+        echo "  });\n";
+        echo "  </script>\n";        
     }
     
     echo " </body>\n";

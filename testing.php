@@ -7,7 +7,7 @@
  * File:    test.php
  *
  * Created on Apr 22, 2013
- * Updated on Apr 22, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: Fargo's testing page.
  *
@@ -21,7 +21,12 @@ require_once 'include/common.php';
 
 define("cTESTXBMCURL", "http://localhost/fargo/jsonxbmc.php");
 
-PageHeader("Testing Page", "");
+$title = "Fargo: A Media Catalog For XBMC";
+$css   = "";
+$aJavascript = null;
+
+PageHeader($title, $css, $aJavascript);
+
 echo "   <H1>Fargo Tests</H1>\n";
 
 $button = GetButtonValue("btnTest");
@@ -124,7 +129,7 @@ echo "   <form name=\"testing\" action=\"test.php\" method=\"post\"></br>\n";
 echo "    <input type=\"submit\" value=\"Cancel\">\n";
 echo "   </form></br>\n";
 
-PageFooter("", "", false);
+PageFooter("", "", false, false);
 
 
 //////////////////////////////////////////    Test Functions    ///////////////////////////////////////////

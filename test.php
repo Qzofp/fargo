@@ -7,7 +7,7 @@
  * File:    test.php
  *
  * Created on Apr 22, 2013
- * Updated on Apr 22, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: Fargo's test page.
  *
@@ -19,7 +19,11 @@
 require_once 'tools/toolbox.php';
 //require_once 'include/common.php';
 
-PageHeader("Fargo: A Media Catalog For XBMC", "");
+$title = "Fargo: A Media Catalog For XBMC";
+$css   = "";
+$aJavascript = null;
+
+PageHeader($title, $css, $aJavascript);
 
 echo "   <H1>Fargo Tests</H1>\n";
 
@@ -46,5 +50,5 @@ echo "    <input type=\"submit\" name=\"btnTest\" value=\"Status Music Test\"></
 echo "   </form></br>\n";
 
 
-PageFooter("", "", false);
+PageFooter("", "", false, false);
 ?>

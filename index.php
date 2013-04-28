@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Apr 22, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -19,11 +19,19 @@ require_once 'settings.php';
 require_once 'tools/toolbox.php';
 require_once 'include/common.php';
 
-PageHeader("Fargo: A Media Catalog For XBMC","css/confluence.css");
+$title = "Fargo: A Media Catalog For XBMC";
+$css   = "css/confluence.css";
+$aJavascript = array("js/jquery-1.9.1.min.js", "js/fargo-interface.js");
+
+PageHeader($title, $css, $aJavascript);
 
 // Header section. 
 echo "   <div id=\"header\">\n";
 echo "    <div id=\"header_txt\">XBMC Connected</div>\n";
+echo "   </div>\n";
+
+// Popup section (hidden).
+echo "   <div id=\"popup\">\n";
 echo "   </div>\n";
 
 // Display section.
@@ -51,16 +59,6 @@ echo "      <li id=\"system\">SYSTEM</li>\n";
 echo "     </ul>\n";
 echo "    </div>\n";
 echo "   </div>\n";
-?>
 
-<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-<script type="text/javascript" src="js/fargo-interface.js"></script>
-<script type="text/javascript">
-$(document).ready(function() {   
-    LoadFargoMedia();
-});
-</script>
-
-<?php
-PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo");
+PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true, "LoadFargoMedia()");
 ?>
