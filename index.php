@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Apr 27, 2013
+ * Updated on Apr 29, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -31,7 +31,26 @@ echo "    <div id=\"header_txt\">XBMC Connected</div>\n";
 echo "   </div>\n";
 
 // Popup section (hidden).
+echo "   <div id=\"mask\"></div>\n";
+
+// Popup login section (hidden).
 echo "   <div id=\"popup\">\n";
+echo "    <form method=\"post\" class=\"login\" action=\"#\">\n";
+echo "     <fieldset class=\"textbox\">\n";
+echo "      <p>Login Box</p>\n";
+echo "      <button class=\"close\" type=\"button\">x</button>\n";
+echo "      <label class=\"username\">\n";
+echo "       <span>Username</span>\n";
+echo "       <input id=\"username\" name=\"username\" value=\"\" type=\"text\" autocomplete=\"on\" placeholder=\"Username\">\n";
+echo "      </label>\n";
+echo "      <label class=\"password\">\n";
+echo "       <span>Password</span>\n";
+echo "       <input id=\"password\" name=\"password\" value=\"\" type=\"password\" placeholder=\"Password\">\n";
+echo "      </label>\n";
+echo "      <button class=\"button\" type=\"submit\">Login</button>\n";
+echo "      </br>\n";
+echo "     </fieldset>\n";
+echo "    </form>\n";
 echo "   </div>\n";
 
 // Display section.

@@ -6,7 +6,7 @@
  * File:    fargo-interface.js
  *
  * Created on Apr 05, 2013
- * Updated on Apr 22, 2013
+ * Updated on Apr 27, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface.
  *
@@ -22,12 +22,13 @@ var global_sort  = "";
 
 var global_lastpage = 1; //last page
 var global_column   = 0;
+var global_popup    = false;
 
 /*
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Apr 13, 2013
+ * Updated on Apr 29, 2013
  *
  * Description: Load the media from Fargo.
  *
@@ -46,7 +47,10 @@ function LoadFargoMedia()
     $("#movies").on("click", {media:"movies"}, SetMediaHandler);
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
-    $("#system").on("click", {media:"system"}, SetMediaHandler);
+    
+    // System click event with login check
+    $("#system").on("click", SetSystemHandler);
+    $("#mask, .close").on("click", SetMaskHandler);
  
     // The next/prev page click events.
     $("#next").on("click", {action:"n"}, SetPageHandler);
@@ -55,6 +59,7 @@ function LoadFargoMedia()
     // Keyboard events.
     $(document).on("keydown", SetKeyHandler);
 }
+
 
 /*
  * Function:	GetFargoValues
@@ -100,7 +105,7 @@ function GetFargoValues(media, sort)
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on Apr 20, 2013
+ * Updated on Apr 28, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -117,8 +122,69 @@ function SetMediaHandler(event)
    
    global_media = ChangeMedia(media);
    
+   $("#display_left").show();
+   $("#display_right").show();
+      
    GetFargoValues(global_media, global_sort);
    ShowMediaTable(global_media, global_page, global_column, global_sort);
+}
+
+
+/*
+ * Function:	SetSystemHandler
+ *
+ * Created on Apr 28, 2013
+ * Updated on Apr 28, 2013
+ *
+ * Description: Set system, check login and show system settings.
+ * 
+ * In:	-
+ * Out:	Login Box or System Settings
+ *
+ */
+function SetSystemHandler()
+{ 
+    // Check login
+    if (true)
+    {    
+        ShowLoginBox();
+    }
+    else
+    {
+        global_media = ChangeMedia('system');
+        
+        $("#display_left").hide();
+        $("#display_right").hide();
+        $('#display_content')[0].innerHTML = "";
+    }
+    
+    //return false;
+}
+
+
+/*
+ * Function:	ShowloginBox
+ *
+ * Created on Apr 28, 2013
+ * Updated on Apr 28, 2013
+ *
+ * Description: Show login box.
+ * 
+ * In:	-
+ * Out:	Login Box
+ *
+ */
+function ShowLoginBox()
+{
+    var popup = $("#popup");
+    var mask = $("#mask");
+    
+    popup.fadeIn("300");
+  
+    //mask.show();
+    mask.fadeIn("300");   
+    
+    global_popup = true;
 }
 
 
@@ -158,7 +224,7 @@ function SetPageHandler(event)
 
 
 /*
- * Function:	SetPageHandler2
+ * Function:	SetArrowHandler
  *
  * Created on Apr 13, 2013
  * Updated on Apr 13, 2013
@@ -198,7 +264,7 @@ function SetArrowHandler(action)
  * Created on Apr 13, 2013
  * Updated on Apr 13, 2013
  *
- * Description: Set the key from the keyboard and show the media table.
+ * Description: Set the key from the keyboard handler
  * 
  * In:	event
  * Out:	Media
@@ -208,6 +274,31 @@ function SetKeyHandler(event)
 {
     var key = event.charCode || event.keyCode || 0;
        
+    if (!global_popup)   
+    {
+        SetMainKeyHandler(key, event);
+    }
+    else 
+    {
+        SetPopupKeyHandler(key);
+    }    
+}
+
+
+/*
+ * Function:	SetMainKeyHandler
+ *
+ * Created on Apr 28, 2013
+ * Updated on Apr 28, 2013
+ *
+ * Description: Set the key from the keyboard and show the media table.
+ * 
+ * In:	key, event
+ * Out:	Media
+ *
+ */
+function SetMainKeyHandler(key, event)
+{  
     $("#sort").css("visibility", "visible");
     
     // key between aA and zZ.
@@ -243,7 +334,49 @@ function SetKeyHandler(event)
     }
     
     GetFargoValues(global_media, global_sort);
-    ShowMediaTable(global_media, global_page, global_column, global_sort);
+    ShowMediaTable(global_media, global_page, global_column, global_sort);    
+}
+
+/*
+ * Function:	SetPopupKeyHandler
+ *
+ * Created on Apr 28, 2013
+ * Updated on Apr 28, 2013
+ *
+ * Description: Disable popup window.
+ * 
+ * In:	key
+ * Out:	disable popup
+ *
+ */
+function SetPopupKeyHandler(key)
+{ 
+    if (key == 27) {   // ESC key
+        SetMaskHandler();
+    }    
+}
+
+
+/*
+ * Function:	SetMaskHandler
+ *
+ * Created on Apr 28, 2013
+ * Updated on Apr 28, 2013
+ *
+ * Description: Remove mask en popup.
+ * 
+ * In:	-
+ * Out:	disable mask and popup
+ *
+ */
+function SetMaskHandler()
+{ 
+    $("#popup").fadeOut("300");
+    
+    $("#mask").fadeOut("300");
+    //$("#mask").hide();
+    
+    global_popup = false;   
 }
 
 /*
