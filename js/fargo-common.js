@@ -3,69 +3,22 @@
  * Author:  Qzofp Productions
  * Version: 0.1
  *
- * File:    fargo-interface.js
+ * File:    fargo-common.js
  *
- * Created on Apr 05, 2013
- * Updated on Apr 27, 2013
+ * Created on May 04, 2013
+ * Updated on May 04, 2013
  *
- * Description: Fargo's jQuery and Javascript functions page for the user interface.
+ * Description: Fargo's jQuery and Javascript common functions page.
  *
  */
-
 
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
-
-// Global variables?!? jQuery sucks or I don't get it!!!
-var global_media = "movies";
-var global_page  = 1;
-var global_sort  = "";
-
-var global_lastpage = 1; //last page
-var global_column   = 0;
-var global_popup    = false;
-
-/*
- * Function:	LoadFargoMedia
- *
- * Created on Apr 06, 2013
- * Updated on Apr 29, 2013
- *
- * Description: Load the media from Fargo.
- *
- * In:	-
- * Out:	Media
- *
- */
-function LoadFargoMedia()
-{      
-    var media = ChangeMedia(global_media);
-    
-    GetFargoValues(global_media, global_sort);
-    ShowMediaTable(media, global_page, global_column, global_sort);
-
-    // The media click events.
-    $("#movies").on("click", {media:"movies"}, SetMediaHandler);
-    $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
-    $("#music").on("click", {media:"music"}, SetMediaHandler);
-    
-    // System click event with login check
-    $("#system").on("click", SetSystemHandler);
-    $("#mask, .close").on("click", SetMaskHandler);
- 
-    // The next/prev page click events.
-    $("#next").on("click", {action:"n"}, SetPageHandler);
-    $("#prev").on("click", {action:"p"}, SetPageHandler);
-            
-    // Keyboard events.
-    $(document).on("keydown", SetKeyHandler);
-}
-
 
 /*
  * Function:	GetFargoValues
  *
  * Created on Apr 13, 2013
- * Updated on Apr 13, 2013
+ * Updated on May 04, 2013
  *
  * Description: Get the  initial values from Fargo.
  *
@@ -127,64 +80,6 @@ function SetMediaHandler(event)
       
    GetFargoValues(global_media, global_sort);
    ShowMediaTable(global_media, global_page, global_column, global_sort);
-}
-
-
-/*
- * Function:	SetSystemHandler
- *
- * Created on Apr 28, 2013
- * Updated on Apr 28, 2013
- *
- * Description: Set system, check login and show system settings.
- * 
- * In:	-
- * Out:	Login Box or System Settings
- *
- */
-function SetSystemHandler()
-{ 
-    // Check login
-    if (true)
-    {    
-        ShowLoginBox();
-    }
-    else
-    {
-        global_media = ChangeMedia('system');
-        
-        $("#display_left").hide();
-        $("#display_right").hide();
-        $('#display_content')[0].innerHTML = "";
-    }
-    
-    //return false;
-}
-
-
-/*
- * Function:	ShowloginBox
- *
- * Created on Apr 28, 2013
- * Updated on Apr 28, 2013
- *
- * Description: Show login box.
- * 
- * In:	-
- * Out:	Login Box
- *
- */
-function ShowLoginBox()
-{
-    var popup = $("#popup");
-    var mask = $("#mask");
-    
-    popup.fadeIn("300");
-  
-    //mask.show();
-    mask.fadeIn("300");   
-    
-    global_popup = true;
 }
 
 

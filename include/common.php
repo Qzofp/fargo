@@ -7,11 +7,47 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Apr 22, 2013
+ * Updated on May 04, 2013
  *
  * Description: The main Fargo functions page.
  *
  */
+
+////////////////////////////////////////    Interface Functions    ////////////////////////////////////////
+
+/*
+ * Function:	ShowHiddenLoginBox
+ *
+ * Created on May 04, 2013
+ * Updated on May 04, 2013
+ *
+ * Description: Show hidden login box.
+ *
+ * In:  -
+ * Out:	Hidden login box.
+ *
+ */
+function ShowHiddenLoginBox()
+{
+    echo "   <div id=\"popup\">\n";
+    echo "    <form method=\"post\" class=\"login\" action=\"#\">\n";
+    echo "     <fieldset class=\"textbox\">\n";
+    echo "      <p>Login Box</p>\n";
+    echo "      <button class=\"close\" type=\"button\">x</button>\n";
+    echo "      <label class=\"username\">\n";
+    echo "       <span>Username</span>\n";
+    echo "       <input id=\"username\" name=\"username\" value=\"\" type=\"text\" autocomplete=\"on\" placeholder=\"Username\">\n";
+    echo "      </label>\n";
+    echo "      <label class=\"password\">\n";
+    echo "       <span>Password</span>\n";
+    echo "       <input id=\"password\" name=\"password\" value=\"\" type=\"password\" placeholder=\"Password\">\n";
+    echo "      </label>\n";
+    echo "      <button class=\"button\" type=\"button\">Login</button>\n";
+    echo "      </br>\n";
+    echo "     </fieldset>\n";
+    echo "    </form>\n";
+    echo "   </div>\n";
+}
 
 
 ////////////////////////////////////////    Database Functions    /////////////////////////////////////////
