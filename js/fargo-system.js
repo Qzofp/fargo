@@ -6,7 +6,7 @@
  * File:    fargo-system.js
  *
  * Created on May 04, 2013
- * Updated on May 04, 2013
+ * Updated on May 05, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -26,8 +26,8 @@ var global_popup    = false;
 /*
  * Function:	LoadFargoMedia
  *
- * Created on May 05, 2013
- * Updated on May 04, 2013
+ * Created on May 04, 2013
+ * Updated on May 05, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -46,7 +46,7 @@ function LoadFargoMedia()
     $("#movies").on("click", {media:"movies"}, SetMediaHandler);
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
-    $("#system").on("click", {media:"system"}, SetSystemHandler);
+    $("#system").on("click", {media:"system"}, SetFullSystemHandler);
     
     // Logout event.
     $("#logout").on("click", SetLogoutHandler);
@@ -61,18 +61,18 @@ function LoadFargoMedia()
 
 
 /*
- * Function:	SetSystemHandler
+ * Function:	SetFullSystemHandler
  *
  * Created on May 04, 2013
- * Updated on May 04, 2013
+ * Updated on May 05, 2013
  *
- * Description: Show the system page.
+ * Description: Show the full system page with all the options.
  * 
  * In:	event
  * Out:	Media
  *
  */
-function SetSystemHandler(event)
+function SetFullSystemHandler(event)
 {            
    var media  = event.data.media;  
 
@@ -83,6 +83,7 @@ function SetSystemHandler(event)
    
    $("#display_left").hide();
    $("#display_right").hide();
+   $("#control_sub").slideDown("slow");
    
    $('#display_content')[0].innerHTML = "";
       

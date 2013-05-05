@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on May 04, 2013
+ * Updated on May 05, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -43,6 +43,7 @@ body{
 font-family:Arial, Helvetica, Sans-Serif;
 font-size:62.5%; /* =10px */
 background:url(confluence.jpg);
+/*background-position:center center;*/
 }
 
 #main{
@@ -61,15 +62,6 @@ font-size:1.1em;
 text-shadow:2px 2px 2px #000;
 text-align:right;
 color:#FFF;
-}
-
-#header_txt #logout{
-display:inline;
-}
-
-#header_txt #logout:hover{
-cursor:pointer;
-color:dodgerblue;
 }
 
 /* Begin Popup part*/
@@ -306,32 +298,66 @@ height:25%;
 #control_bar{
 height:68px;
 padding-top:2px;
-border-style:solid;
-border-color:grey;
+border:solid grey;
 border-left-style:none;
 border-right-style:none;
 text-align:center;
 background-color:rgba(0,0,0,0.8);
 }
 
-#control_bar ul{ 
+#control_bar ul, #control_sub ul{ 
 display:inline;
+list-style-type:none;
 margin:0;
 padding:0;
-list-style-type:none;
-font-family:Bebas, sans-serif;
-font-size:4.5em;
-color:grey;
+
 }
 
 #control_bar li{
 display:inline;
 padding-right:30px;
+font-family:Bebas, sans-serif;
+font-size:4.5em;
+color:grey;
 cursor:pointer;
 }
 
 #control_bar .on{
 color:dodgerblue;
+}
+
+#control_sub{
+display:none;
+width:500px;
+height:30px;
+left:50%;
+margin-left:-250px;
+position:fixed;
+padding-top:5px;
+border:1px solid #454647;
+border-top-style:none;
+border-bottom-left-radius:70px;
+border-bottom-right-radius:70px;
+text-align:center;
+background-color:rgba(0,0,0,0.8);
+-webkit-backface-visibility:hidden; /* Fix slideup artifacs in Chrome*/
+}
+
+#control_sub li{
+display:inline;
+padding: 5px 15px 5px 15px;
+/*font-family:Bebas, sans-serif;*/
+font-size:1.8em;
+color:lightgray;
+cursor:pointer;
+}
+
+#control_sub li:hover{
+color:dodgerblue;
+}
+
+#control_sub #import, #control_sub #genres{
+display:none;
 }
 /* End Control Bar part */
 

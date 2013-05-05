@@ -46,6 +46,7 @@ function LoadFargoMedia()
     $("#movies").on("click", {media:"movies"}, SetMediaHandler);
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
+    $("#system").on("click", {media:"system"}, SetSystemHandler);
     
     // Login click event.
     $("#loginbox").on("click", SetLoginBoxHandler);
@@ -60,6 +61,38 @@ function LoadFargoMedia()
             
     // Keyboard events.
     $(document).on("keydown", SetKeyHandler);
+}
+
+
+/*
+ * Function:	SetSystemHandler
+ *
+ * Created on May 04, 2013
+ * Updated on May 05, 2013
+ *
+ * Description: Show the system page with minimum options.
+ * 
+ * In:	event
+ * Out:	Media
+ *
+ */
+function SetSystemHandler(event)
+{            
+   var media  = event.data.media;  
+
+   global_page = 1;
+   global_sort = "";
+   
+   global_media = ChangeMedia(media);
+   
+   $("#display_left").hide();
+   $("#display_right").hide();  
+   $("#control_sub").slideDown("slow");
+   
+   $('#display_content')[0].innerHTML = "";
+      
+   //GetFargoValues(global_media, global_sort)
+   //ShowMediaTable(global_media, global_page, global_column, global_sort);
 }
 
 

@@ -6,7 +6,7 @@
  * File:    fargo-common.js
  *
  * Created on May 04, 2013
- * Updated on May 04, 2013
+ * Updated on May 05, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -278,7 +278,7 @@ function SetMaskHandler()
  * Function:	ChangeMedia
  *
  * Created on Apr 08, 2013
- * Updated on Apr 08, 2013
+ * Updated on May 05, 2013
  *
  * Description: .
  *
@@ -291,6 +291,7 @@ function ChangeMedia(media)
     var aMedia = ['movies','tvshows','music','system'];
     
     $("#sort").css("visibility", "hidden");
+    $("#control_sub").slideUp("slow");
     
     id = '#' + media;    
     $(id).addClass("on");   

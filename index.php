@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on May 04, 2013
+ * Updated on May 05, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -22,14 +22,14 @@ if(!isset($_SESSION['LOGIN']))
     $login = false;
     $user = "";
     $aJavascript = array("js/jquery-1.9.1.min.js", "js/fargo-common.js", "js/fargo-login.js");
-    $system = '<li id="loginbox">LOGIN</li>';
+    $li_login = "<li id=\"loginbox\">Login</li>";
 }
 else
 {
     $login = true;
-    $user = '<div id="logout">Logout: '.$_SESSION['USER'].'</div>';
+    $user = "Welcome: ".$_SESSION['USER'];
     $aJavascript = array("js/jquery-1.9.1.min.js", "js/fargo-common.js", "js/fargo-system.js", "js/fargo-import.js");
-    $system = '<li id="system">SYSTEM</li>';
+    $li_login = "<li id=\"logout\">Logout</li>";
 }
  
 require_once 'settings.php';
@@ -72,14 +72,26 @@ echo "   </div>\n";
 
 // Control section.
 echo "   <div id=\"control\">\n";
+
+// Main control bar
 echo "    <div id=\"control_bar\">\n";
 echo "     <ul>\n";
 echo "      <li id=\"movies\">MOVIES</li>\n";
 echo "      <li id=\"tvshows\">TV SHOWS</li>\n";
 echo "      <li id=\"music\">MUSIC</li>\n";
-echo "      $system\n";
+echo "      <li id=\"system\">SYSTEM</li>\n";
 echo "     </ul>\n";
 echo "    </div>\n";
+
+// Sub control bar
+echo "    <div id=\"control_sub\">\n";
+echo "     <ul>\n";
+echo "      <li id=\"import\">Import</li>\n";
+echo "      <li id=\"genres\">Genres</li>\n";
+echo "      $li_login\n";
+echo "     </ul>\n";
+echo "    </div>\n";
+
 echo "   </div>\n";
 
 PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true, "LoadFargoMedia()");
