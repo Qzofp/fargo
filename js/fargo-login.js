@@ -6,7 +6,7 @@
  * File:    fargo-login.js
  *
  * Created on Apr 05, 2013
- * Updated on May 04, 2013
+ * Updated on May 08, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the login option.
  *
@@ -27,7 +27,7 @@ var global_popup    = false;
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on May 04, 2013
+ * Updated on May 06, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -38,6 +38,7 @@ var global_popup    = false;
 function LoadFargoMedia()
 {      
     var media = ChangeMedia(global_media);
+    var title = "";
     
     GetFargoValues(global_media, global_sort);
     ShowMediaTable(media, global_page, global_column, global_sort);
@@ -47,10 +48,10 @@ function LoadFargoMedia()
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
     $("#system").on("click", {media:"system"}, SetSystemHandler);
-    
+      
     // Login click event.
-    $("#loginbox").on("click", SetLoginBoxHandler);
-    $("#mask, .close").on("click", SetMaskHandler);
+    $("#login").on("click", {title:title}, SetPopupHandler);
+    $("#mask, .close_right").on("click", SetMaskHandler);
     
     // Login validation event.
     $(".button").on("click", SetLoginValidateHandler);
@@ -61,6 +62,38 @@ function LoadFargoMedia()
             
     // Keyboard events.
     $(document).on("keydown", SetKeyHandler);
+}
+
+
+/*
+ * Function:	SetMediaHandler
+ *
+ * Created on Apr 13, 2013
+ * Updated on May 07, 2013
+ *
+ * Description: Set the media and show the media table.
+ * 
+ * In:	event
+ * Out:	Media
+ *
+ */
+function SetMediaHandler(event)
+{            
+   var media  = event.data.media;  
+
+   global_page = 1;
+   global_sort = "";
+   
+   global_media = ChangeMedia(media);
+   
+   $("#display_left").show();
+   $("#display_right").show();
+   
+   // Set state media;
+   $("#state_media").text(media);
+   
+   GetFargoValues(global_media, global_sort);
+   ShowMediaTable(global_media, global_page, global_column, global_sort);
 }
 
 
@@ -97,28 +130,37 @@ function SetSystemHandler(event)
 
 
 /*
- * Function:	SetLoginBoxHandler
+ * Function:	ChangeMedia
  *
- * Created on Apr 28, 2013
- * Updated on May 04, 2013
+ * Created on Apr 08, 2013
+ * Updated on May 05, 2013
  *
- * Description: Set login and show login box.
- * 
- * In:	-
- * Out:	Login Box or System Settings
+ * Description: .
+ *
+ * In:	media
+ * Out:	media
  *
  */
-function SetLoginBoxHandler()
-{ 
-    var popup = $("#popup");
-    var mask = $("#mask");
+function ChangeMedia(media)
+{   
+    var aMedia = ['movies','tvshows','music','system'];
     
-    popup.fadeIn("300");
-  
-    //mask.show();
-    mask.fadeIn("300");   
+    $("#sort").css("visibility", "hidden");
+    $("#control_sub").slideUp("slow");
     
-    global_popup = true;
+    id = '#' + media;    
+    $(id).addClass("on");   
+    
+    $.each(aMedia, function(key, value) 
+    {
+        if (value != media) 
+        {
+            id = '#' + value;
+            $(id).removeClass("on");
+        }
+    });
+   
+    return media;
 }
 
 

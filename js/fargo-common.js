@@ -6,7 +6,7 @@
  * File:    fargo-common.js
  *
  * Created on May 04, 2013
- * Updated on May 05, 2013
+ * Updated on May 08, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -52,34 +52,6 @@ function GetFargoValues(media, sort)
             
         }  // End Succes.
     }); // End Ajax.       
-}
-
-/*
- * Function:	SetMediaHandler
- *
- * Created on Apr 13, 2013
- * Updated on Apr 28, 2013
- *
- * Description: Set the media and show the media table.
- * 
- * In:	event
- * Out:	Media
- *
- */
-function SetMediaHandler(event)
-{            
-   var media  = event.data.media;  
-
-   global_page = 1;
-   global_sort = "";
-   
-   global_media = ChangeMedia(media);
-   
-   $("#display_left").show();
-   $("#display_right").show();
-      
-   GetFargoValues(global_media, global_sort);
-   ShowMediaTable(global_media, global_page, global_column, global_sort);
 }
 
 
@@ -253,6 +225,54 @@ function SetPopupKeyHandler(key)
 
 
 /*
+ * Function:	SetPopupHandler
+ *
+ * Created on Apr 28, 2013
+ * Updated on May 08, 2013
+ *
+ * Description: Set popup handler and show popup box.
+ * 
+ * In:	event
+ * Out:	Popup box.
+ *
+ */
+function SetPopupHandler(event)
+{ 
+    ShowPopupBox(event.data.title);
+    
+    global_popup = true;
+}
+
+
+/*
+ * Function:	ShowPopupBox
+ *
+ * Created on May 08, 2013
+ * Updated on May 08, 2013
+ *
+ * Description: Show popup box.
+ * 
+ * In:	event
+ * Out:	Popup box.
+ *
+ */
+function ShowPopupBox(title)
+{
+    var popup = $("#popup");
+    var mask = $("#mask");
+    
+    if (title) {
+        $(".title").text(title);
+    }
+    
+    popup.fadeIn("300");
+  
+    //mask.show();
+    mask.fadeIn("300");      
+}
+
+
+/*
  * Function:	SetMaskHandler
  *
  * Created on Apr 28, 2013
@@ -272,40 +292,6 @@ function SetMaskHandler()
     //$("#mask").hide();
     
     global_popup = false;   
-}
-
-/*
- * Function:	ChangeMedia
- *
- * Created on Apr 08, 2013
- * Updated on May 05, 2013
- *
- * Description: .
- *
- * In:	media
- * Out:	media
- *
- */
-function ChangeMedia(media)
-{   
-    var aMedia = ['movies','tvshows','music','system'];
-    
-    $("#sort").css("visibility", "hidden");
-    $("#control_sub").slideUp("slow");
-    
-    id = '#' + media;    
-    $(id).addClass("on");   
-    
-    $.each(aMedia, function(key, value) 
-    {
-        if (value != media) 
-        {
-            id = '#' + value;
-            $(id).removeClass("on");
-        }
-    });
-   
-    return media;
 }
 
 

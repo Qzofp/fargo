@@ -4,3 +4,4 @@ Fargo v0.1 TODO List
 040513 - [NEW] Encrypt password with salt (use it in JS and PHP).
 040513 - [NEW] Fix media table output. Align table to the right.
 040513 - [NEW] Fix Sort "0" bug.
+060513 - [NEW] Make loader animation for wait events (Loader XBMC like). 

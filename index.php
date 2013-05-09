@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on May 05, 2013
+ * Updated on May 07, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -22,14 +22,16 @@ if(!isset($_SESSION['LOGIN']))
     $login = false;
     $user = "";
     $aJavascript = array("js/jquery-1.9.1.min.js", "js/fargo-common.js", "js/fargo-login.js");
-    $li_login = "<li id=\"loginbox\">Login</li>";
+    $li_import = "";
+    $li_login  = "<li id=\"login\">Login</li>\n";
 }
 else
 {
     $login = true;
     $user = "Welcome: ".$_SESSION['USER'];
     $aJavascript = array("js/jquery-1.9.1.min.js", "js/fargo-common.js", "js/fargo-system.js", "js/fargo-import.js");
-    $li_login = "<li id=\"logout\">Logout</li>";
+    $li_import = "<li id=\"import\">Import</li>\n";
+    $li_login  = "<li id=\"logout\">Logout</li>\n";
 }
  
 require_once 'settings.php';
@@ -38,7 +40,6 @@ require_once 'include/common.php';
 
 $title = "Fargo: A Media Catalog For XBMC";
 $css   = "css/confluence.css";
-//$aJavascript = array("js/jquery-1.9.1.min.js", "js/fargo-interface.js");
 
 PageHeader($title, $css, $aJavascript);
 
@@ -54,6 +55,10 @@ echo "   <div id=\"mask\"></div>\n";
 if (!$login)
 {
     ShowHiddenLoginBox();
+}
+else 
+{
+    ShowHiddenImportBox();   
 }
 
 // Display section.
@@ -86,13 +91,16 @@ echo "    </div>\n";
 // Sub control bar
 echo "    <div id=\"control_sub\">\n";
 echo "     <ul>\n";
-echo "      <li id=\"import\">Import</li>\n";
+echo "      $li_import";
 echo "      <li id=\"genres\">Genres</li>\n";
-echo "      $li_login\n";
+echo "      $li_login";
 echo "     </ul>\n";
 echo "    </div>\n";
 
 echo "   </div>\n";
+
+// Page States
+echo "   <div id=\"state_media\">movies</div>\n";
 
 PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true, "LoadFargoMedia()");
 ?>

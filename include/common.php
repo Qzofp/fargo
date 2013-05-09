@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on May 04, 2013
+ * Updated on May 06, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -19,7 +19,7 @@
  * Function:	ShowHiddenLoginBox
  *
  * Created on May 04, 2013
- * Updated on May 04, 2013
+ * Updated on May 06, 2013
  *
  * Description: Show hidden login box.
  *
@@ -29,11 +29,16 @@
  */
 function ShowHiddenLoginBox()
 {
-    echo "   <div id=\"popup\">\n";
-    echo "    <form method=\"post\" class=\"login\" action=\"#\">\n";
+    echo "   <div id=\"popup\" class=\"login_size\">\n";
+   // echo "    <form method=\"post\" class=\"login\" action=\"#\">\n";
+    
+    echo "    <form method=\"post\" action=\"#\">\n";
+    echo "     <div class=\"close_left\">&nbsp;</div>\n";       
+    echo "     <div class=\"close_right\">x</div>\n";    
+    echo "     <div class=\"title\">Login</div>\n";
+
+//    echo "     <div class=\"message\">Warning!!!</div>\n";
     echo "     <fieldset class=\"textbox\">\n";
-    echo "      <p>Login Box</p>\n";
-    echo "      <button class=\"close\" type=\"button\">x</button>\n";
     echo "      <label class=\"username\">\n";
     echo "       <span>Username</span>\n";
     echo "       <input id=\"username\" name=\"username\" value=\"\" type=\"text\" autocomplete=\"on\" placeholder=\"Username\">\n";
@@ -42,13 +47,47 @@ function ShowHiddenLoginBox()
     echo "       <span>Password</span>\n";
     echo "       <input id=\"password\" name=\"password\" value=\"\" type=\"password\" placeholder=\"Password\">\n";
     echo "      </label>\n";
-    echo "      <button class=\"button\" type=\"button\">Login</button>\n";
-    echo "      </br>\n";
     echo "     </fieldset>\n";
+    
+    echo "     <div class=\"button\">\n";
+    echo "      <button type=\"button\">Login</button>\n";
+    echo "     </div>\n";    
     echo "    </form>\n";
     echo "   </div>\n";
 }
 
+
+/*
+ * Function:	ShowHiddenImportBox
+ *
+ * Created on May 06, 2013
+ * Updated on May 06, 2013
+ *
+ * Description: Show hidden import box.
+ *
+ * In:  -
+ * Out:	Hidden import box.
+ *
+ */
+function ShowHiddenImportBox()
+{
+    echo "   <div id=\"popup\" class=\"import_size\">\n";
+    echo "    <form method=\"post\" action=\"#\">\n";
+    echo "     <div class=\"close_left\">&nbsp;</div>\n";       
+    echo "     <div class=\"close_right\">x</div>\n";    
+    echo "     <div class=\"title\">Import Box</div>\n";
+    echo "     <div class=\"message\">Warning!!!</div>\n";
+    
+    
+    echo "      Testing\n";   
+    echo "      <p>Test</p>\n";  
+    
+    echo "     <div class=\"button\">\n";
+    echo "      <button type=\"button\">Cancel</button>\n";
+    echo "     </div>\n";
+    echo "    </form>\n";    
+    echo "   </div>\n";    
+}
 
 ////////////////////////////////////////    Database Functions    /////////////////////////////////////////
 

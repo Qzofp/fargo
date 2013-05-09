@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on May 05, 2013
+ * Updated on May 07, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -80,76 +80,42 @@ z-index:1;
 #popup{
 border:2px solid grey;
 border-radius:5px;
-color:#fff;
 display:none;
-font-size:14px;
+font-size:1.4em;
 left:50%;
-margin-left:-202px;
 padding:12px;
 position:fixed;
 top:15%;
-width:400px;
 background-color:rgba(0,0,0,0.7);
 z-index:2;
 }
 
-form.login{
+#popup.login_size{
+width:400px;
+margin-left:-202px;
 text-align:center;
 }
 
-fieldset{
+#popup fieldset{
 border:none;
-border-radius:3px;
-margin:0 auto;
-background-color:#1E1D1D;
 }
 
-form.login .textbox p{
-display:inline;
-position:relative;
-top:-17px;
-left:26px;
-font-size:1.5em;
-font-weight:bold;
-text-shadow:2px 2px 2px #000;
-color:orange;
-}
-
-form.login .close{
-position:relative;
-top:-11px; /*-17px*/
-left:115px; /*122px;*/
-background-color:#111111;
-border:none; /*1px solid #454647;*/
-border-radius:0px 0px 4px 4px;
-color:#FFF;
-cursor:pointer;
-display:inline-block;
-padding:0px 2px 1px;
-font-size:1em;
-width:48px;
-background: -moz-linear-gradient(center top, #C1BDBD, #494949);
-background: -webkit-gradient(linear, left top, left bottom, from(#C1BDBD), to(#494949));
-background: -o-linear-gradient(top, #C1BDBD, #494949);
-background: -ms-linear-gradient(top, #C1BDBD 0%, #494949 100%);
-}
-
-form.login .textbox label{
+#popup .textbox label{
 display:block;
 padding-bottom:7px;
 }
 
-form.login .textbox span{
+#popup .textbox span{
 display:block;
 }
 
-form.login span{
+#popup span{
 color:#999;
 font-size:0.8em;
 line-height:18px;
 }
 
-form.login .textbox input{
+#popup .textbox input{
 text-align:center;
 background:#454647;
 border-bottom:1px solid #333;
@@ -163,7 +129,69 @@ padding:6px 6px 4px;
 width:200px;
 }
 
-form.login .button{
+#popup.import_size{
+width:500px;
+margin-left:-252px;
+}
+
+#popup form{
+border:none;
+border-radius:4px;
+margin:0 auto;
+background-color:#1E1D1D;
+}
+
+#popup .title{
+position:relative;
+top:-12px;
+margin:0px 48px 0px 48px;
+font-size:1.5em;
+font-weight:bold;
+text-shadow:2px 2px 2px #000;
+text-align:center;
+color:orange;    
+}
+
+#popup .close_left{
+float:left;
+width:48px;
+}
+
+#popup .close_right{
+float:right;
+width:48px;
+height:22px;
+border-radius:4px;
+color:#FFF;
+font-size:1em;
+text-align:center;
+padding-top:2px;
+cursor:pointer;
+background: -moz-linear-gradient(center top, #C1BDBD, #494949);
+background: -webkit-gradient(linear, left top, left bottom, from(#C1BDBD), to(#494949));
+background: -o-linear-gradient(top, #C1BDBD, #494949);
+background: -ms-linear-gradient(top, #C1BDBD 0%, #494949 100%);
+}
+
+#popup .close_right:hover,
+#popup button:hover{
+background: -moz-linear-gradient(center top, #289EC9, #076182);
+background: -webkit-gradient(linear, left top, left bottom, from(#289EC9), to(#076182));
+background: -o-linear-gradient(top, #289EC9, #076182);
+background: -ms-linear-gradient(top, #289EC9 0%, #076182 100%);
+}
+
+#popup .message{
+
+color:#999;
+text-align:center; /* Test */
+}
+
+#popup .button{
+text-align:center;
+}
+
+#popup button{
 background-color:#1E1D1D;
 border:1px solid #454647;
 border-radius:4px;
@@ -171,18 +199,10 @@ color:#FFF;
 cursor:pointer;
 display:inline-block;
 padding:6px 6px 4px;
-margin-top:15px;
+margin:10px 0px 10px 0px;
 font-size:1.2em;
-width:214px;
+width:214px;    
 }
-
-form.login .button:hover, form.login .close:hover{
-background: -moz-linear-gradient(center top, #289EC9, #076182);
-background: -webkit-gradient(linear, left top, left bottom, from(#289EC9), to(#076182));
-background: -o-linear-gradient(top, #289EC9, #076182);
-background: -ms-linear-gradient(top, #289EC9 0%, #076182 100%);
-}
-
 /* End Popup part */
 
 /* Begin Display part */
@@ -356,10 +376,18 @@ cursor:pointer;
 color:dodgerblue;
 }
 
-#control_sub #import, #control_sub #genres{
+#control_sub #import,
+#control_sub #genres{
 display:none;
 }
 /* End Control Bar part */
+
+/* Page states */
+#state_media{
+display:none;
+/*font-size:2em;
+color:#fff;*/
+}
 
 #footer{
 position:absolute;
