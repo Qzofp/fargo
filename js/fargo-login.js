@@ -6,7 +6,7 @@
  * File:    fargo-login.js
  *
  * Created on Apr 05, 2013
- * Updated on May 08, 2013
+ * Updated on May 09, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the login option.
  *
@@ -27,7 +27,7 @@ var global_popup    = false;
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on May 06, 2013
+ * Updated on May 09, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -37,7 +37,7 @@ var global_popup    = false;
  */
 function LoadFargoMedia()
 {      
-    var media = ChangeMedia(global_media);
+    var media = ChangeControlBar(global_media);
     var title = "";
     
     GetFargoValues(global_media, global_sort);
@@ -69,7 +69,7 @@ function LoadFargoMedia()
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on May 07, 2013
+ * Updated on May 09, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -84,13 +84,11 @@ function SetMediaHandler(event)
    global_page = 1;
    global_sort = "";
    
-   global_media = ChangeMedia(media);
+   global_media = ChangeControlBar(media);
+   $("#control_sub").stop().slideUp("slow");
    
    $("#display_left").show();
    $("#display_right").show();
-   
-   // Set state media;
-   $("#state_media").text(media);
    
    GetFargoValues(global_media, global_sort);
    ShowMediaTable(global_media, global_page, global_column, global_sort);
@@ -101,7 +99,7 @@ function SetMediaHandler(event)
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on May 05, 2013
+ * Updated on May 09, 2013
  *
  * Description: Show the system page with minimum options.
  * 
@@ -116,51 +114,14 @@ function SetSystemHandler(event)
    global_page = 1;
    global_sort = "";
    
-   global_media = ChangeMedia(media);
+   global_media = ChangeControlBar(media);
    
    $("#display_left").hide();
    $("#display_right").hide();  
+   $("#control_sub").stop().slideUp("slow");
    $("#control_sub").slideDown("slow");
    
    $('#display_content')[0].innerHTML = "";
-      
-   //GetFargoValues(global_media, global_sort)
-   //ShowMediaTable(global_media, global_page, global_column, global_sort);
-}
-
-
-/*
- * Function:	ChangeMedia
- *
- * Created on Apr 08, 2013
- * Updated on May 05, 2013
- *
- * Description: .
- *
- * In:	media
- * Out:	media
- *
- */
-function ChangeMedia(media)
-{   
-    var aMedia = ['movies','tvshows','music','system'];
-    
-    $("#sort").css("visibility", "hidden");
-    $("#control_sub").slideUp("slow");
-    
-    id = '#' + media;    
-    $(id).addClass("on");   
-    
-    $.each(aMedia, function(key, value) 
-    {
-        if (value != media) 
-        {
-            id = '#' + value;
-            $(id).removeClass("on");
-        }
-    });
-   
-    return media;
 }
 
 

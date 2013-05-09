@@ -6,7 +6,7 @@
  * File:    fargo-common.js
  *
  * Created on May 04, 2013
- * Updated on May 08, 2013
+ * Updated on May 09, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -52,6 +52,85 @@ function GetFargoValues(media, sort)
             
         }  // End Succes.
     }); // End Ajax.       
+}
+
+
+/*
+ * Function:	ChangeControlBar
+ *
+ * Created on Apr 08, 2013
+ * Updated on May 09, 2013
+ *
+ * Description: Change the media on the control bar from Movies, TV Shows, Music or to System.
+ *
+ * In:	media
+ * Out:	media
+ *
+ */
+function ChangeControlBar(media)
+{   
+    var aMedia = ['movies','tvshows','music','system'];
+ 
+    $("#sort").css("visibility", "hidden");
+    
+    // Set state media;
+    SetState("media", media);
+    
+    id = '#' + media;    
+    $(id).addClass("on");   
+    
+    $.each(aMedia, function(key, value) 
+    {
+        if (value != media) 
+        {
+            id = '#' + value;
+            $(id).removeClass("on");
+        }
+    });
+   
+    return media;
+}
+
+
+/*
+ * Function:	SetState
+ *
+ * Created on May 09, 2013
+ * Updated on May 09, 2013
+ *
+ * Description: Set the state of a page selector.
+ * 
+ * In:	name, value 
+ * Out:	-
+ *
+ * Note: The state is set on the page in a hidden state selector which always start with the id "#state_".
+ *
+ */
+function SetState(name, value)
+{
+    var state = "#state_" + name;
+    $(state).text(value);
+}
+
+
+/*
+ * Function:	GetState
+ *
+ * Created on May 09, 2013
+ * Updated on May 09, 2013
+ *
+ * Description: Get the state of a page selector.
+ * 
+ * In:	name
+ * Out:	state
+ *
+ * Note: The state is set on the page in a hidden state selector which always start with the id "#state_".
+ *
+ */
+function GetState(name)
+{
+    var state = "#state_" + name;
+    return $(state).text();
 }
 
 

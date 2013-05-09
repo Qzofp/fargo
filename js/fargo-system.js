@@ -6,7 +6,7 @@
  * File:    fargo-system.js
  *
  * Created on May 04, 2013
- * Updated on May 08, 2013
+ * Updated on May 09, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -27,7 +27,7 @@ var global_popup    = false;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on May 08, 2013
+ * Updated on May 09, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -37,7 +37,8 @@ var global_popup    = false;
  */
 function LoadFargoMedia()
 {      
-    var media = ChangeMedia(global_media);
+    var media = ChangeControlBar(global_media);
+    ChangeSubControlBar(media)
     
     GetFargoValues(global_media, global_sort);
     ShowMediaTable(media, global_page, global_column, global_sort);
@@ -71,7 +72,7 @@ function LoadFargoMedia()
  * Function:	SetImportHandler
  *
  * Created on May 08, 2013
- * Updated on May 08, 2013
+ * Updated on May 09, 2013
  *
  * Description: Set the import handler and show the import popup box.
  * 
@@ -82,7 +83,7 @@ function LoadFargoMedia()
 function SetImportHandler()
 {
     var title = "";
-    var media = $("#state_media").text(); // Get state media. 
+    var media = GetState("media"); // Get state media. 
     switch (media)
     {
         case 'movies' : title = "Import Movies";
@@ -104,7 +105,7 @@ function SetImportHandler()
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on May 07, 2013
+ * Updated on May 09, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -119,13 +120,11 @@ function SetMediaHandler(event)
    global_page = 1;
    global_sort = "";
    
-   global_media = ChangeMedia(media);
+   global_media = ChangeControlBar(media);
+   ChangeSubControlBar(media);
    
    $("#display_left").show();
    $("#display_right").show();
-   
-   // Set state media;
-   $("#state_media").text(media);
    
    $("#control_sub").slideDown("slow");
    
@@ -138,7 +137,7 @@ function SetMediaHandler(event)
  * Function:	SetFullSystemHandler
  *
  * Created on May 04, 2013
- * Updated on May 05, 2013
+ * Updated on May 09, 2013
  *
  * Description: Show the full system page with all the options.
  * 
@@ -153,50 +152,31 @@ function SetFullSystemHandler(event)
    global_page = 1;
    global_sort = "";
    
-   global_media = ChangeMedia(media);
+   global_media = ChangeControlBar(media);
+   ChangeSubControlBar(media)
    
    $("#display_left").hide();
    $("#display_right").hide();
    $("#control_sub").slideDown("slow");
    
    $('#display_content')[0].innerHTML = "";
-      
-   //GetFargoValues(global_media, global_sort)
-   //ShowMediaTable(global_media, global_page, global_column, global_sort);
 }
 
 
 /*
- * Function:	ChangeMedia
+ * Function:	ChangeSubControlBar
  *
- * Created on Apr 08, 2013
- * Updated on May 05, 2013
+ * Created on May 09, 2013
+ * Updated on May 09, 2013
  *
- * Description: .
+ * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
  * In:	media
- * Out:	media
+ * Out:	-
  *
  */
-function ChangeMedia(media)
-{   
-    var aMedia = ['movies','tvshows','music','system'];
-    var txt_media = "";
-    
-    $("#sort").css("visibility", "hidden");
-    
-    id = '#' + media;    
-    $(id).addClass("on");   
-    
-    $.each(aMedia, function(key, value) 
-    {
-        if (value != media) 
-        {
-            id = '#' + value;
-            $(id).removeClass("on");
-        }
-    });
-    
+function ChangeSubControlBar(media)
+{
     switch (media)
     {
         case 'movies' : txt_media = "Movies";
@@ -222,9 +202,7 @@ function ChangeMedia(media)
             $("#import").hide();
             $("#logout").show();        
         }
-    });
-    
-    return media;
+    });    
 }
 
 

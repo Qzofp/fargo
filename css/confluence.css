@@ -384,9 +384,10 @@ display:none;
 
 /* Page states */
 #state_media{
-display:none;
-/*font-size:2em;
-color:#fff;*/
+/*display:none;*/
+
+font-size:2em;
+color:#fff;
 }
 
 #footer{
