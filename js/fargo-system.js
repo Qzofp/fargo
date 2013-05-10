@@ -15,13 +15,15 @@
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
 
 // Global variables?!? jQuery sucks or I don't get it!!!
-var global_media = "movies";
+var global_media = "";
 var global_page  = 1;
 var global_sort  = "";
 
 var global_lastpage = 1; //last page
 var global_column   = 0;
 var global_popup    = false;
+
+var global_cancel = false;
 
 /*
  * Function:	LoadFargoMedia
@@ -31,20 +33,20 @@ var global_popup    = false;
  *
  * Description: Load the media from Fargo with system.
  *
- * In:	-
- * Out:	Media
+ * In:	media
+ * Out:	Fargo's interactie main page.
  *
  */
-function LoadFargoMedia()
+function LoadFargoMedia(media)
 {      
-    var media = ChangeControlBar(global_media);
-    ChangeSubControlBar(media)
+    global_media = media;
     
-    GetFargoValues(global_media, global_sort);
-    ShowMediaTable(media, global_page, global_column, global_sort);
-
+    ChangeControlBar(global_media);
+    ChangeSubControlBar(global_media);
     $("#control_sub").show();
-    $("#import").css( "display", "inline").text("Import Movies");
+        
+    GetFargoValues(media, global_sort);
+    ShowMediaTable(media, global_page, global_column, global_sort);
 
     // The media click events.
     $("#movies").on("click", {media:"movies"}, SetMediaHandler);
@@ -54,7 +56,10 @@ function LoadFargoMedia()
     
     // Import click event.
     $("#import").on("click", SetImportHandler);
-    $("#mask, .close_right").on("click", SetMaskHandler);
+    
+    // Cancel or finish import.
+    $(".cancel").on("click", SetImportCancelHandler);
+    $("#mask, .close_right").on("click", SetImportCancelHandler);
     
     // Logout event.
     $("#logout").on("click", SetLogoutHandler);
@@ -72,9 +77,9 @@ function LoadFargoMedia()
  * Function:	SetImportHandler
  *
  * Created on May 08, 2013
- * Updated on May 09, 2013
+ * Updated on May 10, 2013
  *
- * Description: Set the import handler and show the import popup box.
+ * Description: Set the import handler, show the import popup box and start import.
  * 
  * In:	media
  * Out:	title
@@ -84,22 +89,44 @@ function SetImportHandler()
 {
     var title = "";
     var media = GetState("media"); // Get state media. 
-    switch (media)
-    {
-        case 'movies' : title = "Import Movies";
-                        break;
-                        
-        case 'tvshows': title = "Import TV Shows";
-                        break;
-                        
-        case 'music'  : title = "Import Music";
-                        break;
-        
-        default       : break;
-    }
-    
-     ShowPopupBox(title)
+  
+    title = "Import " + ConvertMedia(media);    
+    ShowPopupBox(title);
+    global_popup = true;
+     
+    $(".cancel").html("Cancel");
+     
+    // Start Import
+    global_cancel = false;
+    ImportMedia(media);
 }
+
+
+/*
+ * Function:	SetImportCancelHandler
+ *
+ * Created on May 09, 2013
+ * Updated on May 09, 2013
+ *
+ * Description: Set the import handler, Cancel or finish the import.
+ * 
+ * In:	media
+ * Out:	title
+ *
+ */
+function SetImportCancelHandler()
+{
+    var button = $(".cancel").text();
+    var media = GetState("media");
+    
+    global_cancel = true;
+    SetMaskHandler();
+    
+    if (button == "Finished") {
+        window.location='index.php?media=' + media;
+    }
+}
+
 
 /*
  * Function:	SetMediaHandler
@@ -167,7 +194,7 @@ function SetFullSystemHandler(event)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on May 09, 2013
+ * Updated on May 10, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -177,19 +204,7 @@ function SetFullSystemHandler(event)
  */
 function ChangeSubControlBar(media)
 {
-    switch (media)
-    {
-        case 'movies' : txt_media = "Movies";
-                        break;
-                        
-        case 'tvshows': txt_media = "TV Shows";
-                        break;
-                        
-        case 'music'  : txt_media = "Music";
-                        break;
-        
-        default       : break;
-    }
+    var txt_media = ConvertMedia(media);
     
     $("#control_sub").stop().slideUp("slow", function(){
         if (media != 'system') 

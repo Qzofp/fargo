@@ -4,4 +4,9 @@ Fargo v0.1 TODO List
 040513 - [NEW] Encrypt password with salt (use it in JS and PHP).
 040513 - [NEW] Fix media table output. Align table to the right.
 040513 - [NEW] Fix Sort "0" bug.
-060513 - [NEW] Make loader animation for wait events (Loader XBMC like). 
+060513 - [NEW] Make loader animation for wait events (Loader XBMC like).
+090513 - [NEW] During import the ESC button doesn't stop the import.
+090513 - [NEW] After the import the url shows the last imported media.
+100513 - [BUG] Import doesn't work properly in IE10 (with F12 and Cache -> Always refresh from server).
+100513 - [BUG] Import sometimes hangs when XBMC is just started.
+ 

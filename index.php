@@ -16,7 +16,6 @@
 /////////////////////////////////////////////    Main Code    /////////////////////////////////////////////
 session_start();
 
-
 if(!isset($_SESSION['LOGIN']))
 {
     $login = false;
@@ -40,6 +39,11 @@ require_once 'include/common.php';
 
 $title = "Fargo: A Media Catalog For XBMC";
 $css   = "css/confluence.css";
+
+$media = GetPageValue('media');
+if (!isset($media)) {
+    $media = "movies";
+}
 
 PageHeader($title, $css, $aJavascript);
 
@@ -102,5 +106,5 @@ echo "   </div>\n";
 // Page States
 echo "   <div id=\"state_media\">movies</div>\n";
 
-PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true, "LoadFargoMedia()");
+PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true, "LoadFargoMedia('$media')");
 ?>

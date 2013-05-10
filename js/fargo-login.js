@@ -15,7 +15,7 @@
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
 
 // Global variables?!? jQuery sucks or I don't get it!!!
-var global_media = "movies";
+var global_media = "";
 var global_page  = 1;
 var global_sort  = "";
 
@@ -31,16 +31,18 @@ var global_popup    = false;
  *
  * Description: Load the media from Fargo with login.
  *
- * In:	-
- * Out:	Media
+ * In:	media
+ * Out:	Fargo's interactie main page.
  *
  */
-function LoadFargoMedia()
+function LoadFargoMedia(media)
 {      
-    var media = ChangeControlBar(global_media);
+    global_media = media;
+    
+    ChangeControlBar(global_media);
     var title = "";
     
-    GetFargoValues(global_media, global_sort);
+    GetFargoValues(media, global_sort);
     ShowMediaTable(media, global_page, global_column, global_sort);
 
     // The media click events.
@@ -54,7 +56,7 @@ function LoadFargoMedia()
     $("#mask, .close_right").on("click", SetMaskHandler);
     
     // Login validation event.
-    $(".button").on("click", SetLoginValidateHandler);
+    $(".login").on("click", SetLoginValidateHandler);
  
     // The next/prev page click events.
     $("#next").on("click", {action:"n"}, SetPageHandler);

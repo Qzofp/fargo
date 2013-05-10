@@ -7,7 +7,7 @@
  * File:    test.php
  *
  * Created on Apr 22, 2013
- * Updated on Apr 27, 2013
+ * Updated on May 09, 2013
  *
  * Description: Fargo's testing page.
  *
@@ -173,7 +173,7 @@ function ShowImportFields($header)
 function StartImport($media)
 {
     echo "   <script type=\"text/javascript\" src=\"js/jquery-1.9.1.min.js\"></script>\n";
-    echo "   <script type=\"text/javascript\" src=\"js/fargo-import.js\"></script>\n";
+    echo "   <script type=\"text/javascript\" src=\"js/fargo-import-test.js\"></script>\n";
     echo "   <script type=\"text/javascript\">\n";
     
     echo "   $(document).ready(function()\n"; 

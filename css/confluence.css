@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on May 07, 2013
+ * Updated on May 09, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -129,11 +129,6 @@ padding:6px 6px 4px;
 width:200px;
 }
 
-#popup.import_size{
-width:500px;
-margin-left:-252px;
-}
-
 #popup form{
 border:none;
 border-radius:4px;
@@ -182,7 +177,6 @@ background: -ms-linear-gradient(top, #289EC9 0%, #076182 100%);
 }
 
 #popup .message{
-
 color:#999;
 text-align:center; /* Test */
 }
@@ -204,6 +198,41 @@ font-size:1.2em;
 width:214px;    
 }
 /* End Popup part */
+
+/* Begin Import Popup part */
+#popup.import{
+width:500px;
+margin-left:-252px;
+color:#FFF;
+}
+
+#import_wrapper{
+height:154px;
+}
+
+#thumb{
+width:102px;
+height:142px;
+left:50%;
+margin:10px 0 0 -40px;
+position:fixed;
+border-radius:5px;
+background:#454647;   
+}
+
+#thumb img{
+border:1px solid grey;
+border-radius:5px;
+/*margin-top:10px;*/
+}
+
+#title{
+font-weight:bold;
+font-size:0.9em;
+text-shadow:2px 2px 2px #000;
+text-align:center;
+}
+/* End Import Popup part */
 
 /* Begin Display part */
 #display_left{
@@ -384,10 +413,9 @@ display:none;
 
 /* Page states */
 #state_media{
-/*display:none;*/
-
-font-size:2em;
-color:#fff;
+display:none;
+/*font-size:2em;
+color:#fff;*/
 }
 
 #footer{

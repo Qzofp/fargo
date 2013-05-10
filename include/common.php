@@ -30,7 +30,6 @@
 function ShowHiddenLoginBox()
 {
     echo "   <div id=\"popup\" class=\"login_size\">\n";
-   // echo "    <form method=\"post\" class=\"login\" action=\"#\">\n";
     
     echo "    <form method=\"post\" action=\"#\">\n";
     echo "     <div class=\"close_left\">&nbsp;</div>\n";       
@@ -50,7 +49,7 @@ function ShowHiddenLoginBox()
     echo "     </fieldset>\n";
     
     echo "     <div class=\"button\">\n";
-    echo "      <button type=\"button\">Login</button>\n";
+    echo "      <button type=\"button\" class=\"login\">Login</button>\n";
     echo "     </div>\n";    
     echo "    </form>\n";
     echo "   </div>\n";
@@ -61,7 +60,7 @@ function ShowHiddenLoginBox()
  * Function:	ShowHiddenImportBox
  *
  * Created on May 06, 2013
- * Updated on May 06, 2013
+ * Updated on May 10, 2013
  *
  * Description: Show hidden import box.
  *
@@ -71,19 +70,24 @@ function ShowHiddenLoginBox()
  */
 function ShowHiddenImportBox()
 {
-    echo "   <div id=\"popup\" class=\"import_size\">\n";
+    echo "   <div id=\"popup\" class=\"import\">\n";
     echo "    <form method=\"post\" action=\"#\">\n";
     echo "     <div class=\"close_left\">&nbsp;</div>\n";       
     echo "     <div class=\"close_right\">x</div>\n";    
     echo "     <div class=\"title\">Import Box</div>\n";
-    echo "     <div class=\"message\">Warning!!!</div>\n";
+    echo "     <div class=\"message\"><br/></div>\n";
     
+    // debug.
+    //echo "     <div id=\"counter\"></br></div>\n";
+    //echo "     <div id=\"delta\"></br></div>\n";
     
-    echo "      Testing\n";   
-    echo "      <p>Test</p>\n";  
-    
+    echo "     <div id=\"import_wrapper\">\n";
+    echo "      <div id=\"thumb\"></div>\n";
+    echo "     </div>\n";
+    echo "     <div id=\"title\">&nbsp;</div>\n";
+    //echo "     <div id=\"progress\"></div>\n";       
     echo "     <div class=\"button\">\n";
-    echo "      <button type=\"button\">Cancel</button>\n";
+    echo "      <button type=\"button\" class=\"cancel\">Cancel</button>\n";
     echo "     </div>\n";
     echo "    </form>\n";    
     echo "   </div>\n";    

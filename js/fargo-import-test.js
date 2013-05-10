@@ -6,7 +6,7 @@
  * File:    fargo-import.js
  *
  * Created on Apr 14, 2013
- * Updated on May 10, 2013
+ * Updated on Apr 21, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -16,10 +16,10 @@
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
 
 /*
- * Function:	ImportMedia
+ * Function:	ImportTVShows
  *
  * Created on Apr 14, 2013
- * Updated on May 10, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Import the media from XBMC.
  *
@@ -31,15 +31,6 @@ function ImportMedia(media)
 {
     var counter = 0;
     
-    if (media == "music") {
-        $("#import_wrapper").height(114);
-        $("#thumb").height(102);
-    }
-    else {
-        $("#import_wrapper").height(154);
-        $("#thumb").height(142);
-    }
-    
     ShowStatus(counter, media);
 }
 
@@ -48,7 +39,7 @@ function ImportMedia(media)
  * Function:	ShowStatus
  *
  * Created on Apr 17, 2013
- * Updated on May 10, 2013
+ * Updated on Apr 20, 2013
  *
  * Description: Show the import status.
  *
@@ -60,37 +51,15 @@ function ShowStatus(counter, media)
 {
     $.ajax({
         url: 'jsonxbmc.php?action=status&media=' + media,
-        async: false,
         dataType: 'json',
         success: function(json) 
         {
             var ready = false;
             var online = '';
         
-            // Check if cancel button is pressed.
-            if (global_cancel) {
-                return;
-            }
-        
             if (json.online) 
             {
-               online = 'online.';
-               
-               if (json.delta == 0 && counter == 0) 
-               {
-                   $(".message").html('XBMC is ' + online);
-                   setTimeout(function() {
-                       $(".message").html('Searching...');                       
-                   }, 1000);
-                   
-                   setTimeout(function() {
-                       $(".message").html('No new ' + ConvertMedia(media) + ' found.');                       
-                   }, 2500);                   
-                   
-                   $(".cancel").html("Ok");
-                   return;
-               }
-               
+               online = 'Online!';                        
                if (json.delta > 0)
                {
                    StartImport(media);
@@ -98,17 +67,16 @@ function ShowStatus(counter, media)
                }   
                else 
                {
-                   $("#progress").html('Finished');
-                   $(".cancel").html("Finished");  
-                   ready = true;
-               }  
+                   $("#progress").html('Gereed!');
+                    ready = true;
+               }    
             }
             else 
             {
-               online = 'offline!';
+               online = 'Offline!';
             }
 
-            $(".message").html('XBMC is ' + online);
+            $("#online").html('XBMC is ' + online);
             $("#counter").html(counter);
             $("#delta").html('Delta: ' + json.delta);
                     
@@ -126,7 +94,7 @@ function ShowStatus(counter, media)
             else 
             {
                 setTimeout(function() {
-                    ShowStatus(counter, media);
+                    ShowStatus(counter, media); 
                 },1000);
             }
             
@@ -153,7 +121,6 @@ function StartImport(media)
 {
     $.ajax({
         url: 'jsonxbmc.php?action=import&media=' + media,
-        //async: false,
         dataType: 'json',
         success: function(json) {
             //alert(json.counter);

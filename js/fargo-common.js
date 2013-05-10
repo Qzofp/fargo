@@ -6,7 +6,7 @@
  * File:    fargo-common.js
  *
  * Created on May 04, 2013
- * Updated on May 09, 2013
+ * Updated on May 10, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -131,6 +131,41 @@ function GetState(name)
 {
     var state = "#state_" + name;
     return $(state).text();
+}
+
+
+/*
+ * Function:	ConvertMedia
+ *
+ * Created on May 10, 2013
+ * Updated on May 10, 2013
+ *
+ * Description: Convert the media string to a more readable string.
+ * 
+ * In:	media
+ * Out:	media
+
+ *
+ */
+function ConvertMedia(media)
+{
+    switch (media)
+    {
+        case 'movies' : media = "Movies";
+                        break;
+                        
+        case 'tvshows': media = "TV Shows";
+                        break;
+                        
+        case 'music'  : media = "Music";
+                        break;
+                        
+        case 'system' : media = "System";
+        
+        default       : break;
+    }
+    
+    return media;
 }
 
 
@@ -317,8 +352,7 @@ function SetPopupKeyHandler(key)
  */
 function SetPopupHandler(event)
 { 
-    ShowPopupBox(event.data.title);
-    
+    ShowPopupBox(event.data.title);    
     global_popup = true;
 }
 
