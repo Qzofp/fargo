@@ -6,7 +6,7 @@
  * File:    fargo-system.js
  *
  * Created on May 04, 2013
- * Updated on May 09, 2013
+ * Updated on May 11, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -23,7 +23,12 @@ var global_lastpage = 1; //last page
 var global_column   = 0;
 var global_popup    = false;
 
+// Media total and delta numbers.
+//var global_total = 0;
+//var global_delta = 0;
+
 var global_cancel = false;
+var global_ajax_request;
 
 /*
  * Function:	LoadFargoMedia
@@ -106,7 +111,7 @@ function SetImportHandler()
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on May 09, 2013
+ * Updated on May 11, 2013
  *
  * Description: Set the import handler, Cancel or finish the import.
  * 
@@ -119,10 +124,15 @@ function SetImportCancelHandler()
     var button = $(".cancel").text();
     var media = GetState("media");
     
+    // Abort pending ajax request.
+    if(typeof global_ajax_request !== 'undefined') {
+        global_ajax_request.abort();
+    }
+    
     global_cancel = true;
     SetMaskHandler();
     
-    if (button == "Finished") {
+    if (button == "Finish") {
         window.location='index.php?media=' + media;
     }
 }
@@ -225,7 +235,7 @@ function ChangeSubControlBar(media)
  * Function:	SetLogoutHandler
  *
  * Created on May 04, 2013
- * Updated on May 04, 2013
+ * Updated on May 11, 2013
  *
  * Description: Log the user out.
  * 
@@ -235,5 +245,9 @@ function ChangeSubControlBar(media)
  */
 function SetLogoutHandler()
 {    
+    // get username.
+    var user = $("#header_txt span").text();
+    
+    LogEvent("Information", "User " + user + " has succesfully logged out.");   
     window.location='logout.php';
 }

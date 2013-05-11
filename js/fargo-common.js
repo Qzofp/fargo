@@ -456,3 +456,30 @@ function ShowMediaTable(media, page, column, sort)
         } // End success.
     }); // End Ajax. 
 }
+
+
+/*
+ * Function:	LogEvent
+ *
+ * Created on May 10, 2013
+ * Updated on May 10, 2013
+ *
+ * Description: Log event to the database log table.
+ * 
+ * In:	type, event
+ * Out:	-
+ *
+ */
+function LogEvent(type, event)
+{
+    $.ajax
+    ({
+        url: 'jsonfargo.php?action=log&type=' + type + '&event=' + event,
+        async: false,
+        dataType: 'json',
+        success: function(json) 
+        {
+            
+        } // End succes.
+  }); // End Ajax.
+}

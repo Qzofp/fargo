@@ -420,7 +420,7 @@ function GetAlbumsFromXBMC($counter, $offset)
  * Function:	GetImportStatus
  *
  * Created on Mar 22, 2013
- * Updated on Apr 21, 2013
+ * Updated on May 10, 2013
  *
  * Description: Reports the status of the import TV Shows process. 
  *
@@ -475,7 +475,7 @@ function GetImportStatus($media, $counter, $total, $thumbs)
                     {                
                         $aJson['id']     = $id;
                         $aJson['xbmcid'] = $xbmcid;  
-                        $aJson['title']  = $title;
+                        $aJson['title']  = ShortenString($title, 22);
                     }                  
                 }
             }

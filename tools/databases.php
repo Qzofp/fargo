@@ -7,7 +7,7 @@
  * File:    databases.php
  *
  * Created on Mar 09, 2013
- * Updated on Apr 10, 2013
+ * Updated on May 10, 2013
  *
  * Description: Database toolbox functions.
  *
@@ -109,6 +109,50 @@ function ExecuteQuery($sql)
 {
     $db = OpenDatabase();
 
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if(!$stmt->execute())
+    	{
+            die("Ececution of query \"$sql\" failed: </br><b>".mysqli_error($db)."</b>");
+   	    // Foutpagina maken, doorgeven fout met session variabele.
+    	}
+    	$stmt->close();
+    }
+    else
+    {
+        die("Invalid query: $sql</br><b>".mysqli_error($db)."</b>");
+   	// Foutpagina maken, doorgeven fout met session variabele.
+    }
+
+    CloseDatabase($db);
+}
+
+
+/*
+ * Function:	ExecuteQueryWithEscapeStrings
+ *
+ * Created on May 10, 2013
+ * Updated on May 10, 2013
+ *
+ * Description:  Execute a sql query with real escape strings.
+ *
+ * In:	$sql
+ * Out:	-
+ *
+ * Note: All the items in the query must be defined as $aItems[0], $aItems[1], etc.
+ *       For instance: $sql = INSERT INTO table(a, b) VALUES ($aItems[0], $aItems[1])
+ * 
+ */
+function ExecuteQueryWithEscapeStrings($aItems, $sql)
+{
+    $db = OpenDatabase();
+
+    for($i = 0; $i < count($aItems); $i++) 
+    {
+        $aItems[$i] = mysqli_real_escape_string($db, $aItems[$i]);
+    }
+        
     $stmt = $db->prepare($sql);
     if($stmt)
     {

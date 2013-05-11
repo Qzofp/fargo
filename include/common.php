@@ -78,8 +78,8 @@ function ShowHiddenImportBox()
     echo "     <div class=\"message\"><br/></div>\n";
     
     // debug.
-    //echo "     <div id=\"counter\"></br></div>\n";
-    //echo "     <div id=\"delta\"></br></div>\n";
+    echo "     <div id=\"counter\"><br/></div>\n";
+    echo "     <div id=\"delta\"><br/></div>\n";
     
     echo "     <div id=\"import_wrapper\">\n";
     echo "      <div id=\"thumb\"></div>\n";

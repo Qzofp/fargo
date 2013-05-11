@@ -14,12 +14,12 @@
 
 
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
-
+ 
 /*
  * Function:	ImportMedia
  *
  * Created on Apr 14, 2013
- * Updated on May 10, 2013
+ * Updated on May 11, 2013
  *
  * Description: Import the media from XBMC.
  *
@@ -30,6 +30,7 @@
 function ImportMedia(media)
 {
     var counter = 0;
+    var retry = 0;
     
     if (media == "music") {
         $("#import_wrapper").height(114);
@@ -40,23 +41,28 @@ function ImportMedia(media)
         $("#thumb").height(142);
     }
     
-    ShowStatus(counter, media);
+    // Returns global_total and global_delta
+    //GetImportValues(media);
+    //alert(global_delta);
+
+    ShowStatus(counter, retry, media);
+   
 }
 
 
 /*
- * Function:	ShowStatus
+ * Function:	StartImport
  *
- * Created on Apr 17, 2013
- * Updated on May 10, 2013
+ * Created on May 11, 2013
+ * Updated on May 11, 2013
  *
- * Description: Show the import status.
+ * Description: Start the import of the media.
  *
- * In:	counter, media
- * Out:	Status
+ * In:	media
+ * Out:	Imported media
  *
  */
-function ShowStatus(counter, media)
+function GetImportValues(media)
 {
     $.ajax({
         url: 'jsonxbmc.php?action=status&media=' + media,
@@ -64,53 +70,100 @@ function ShowStatus(counter, media)
         dataType: 'json',
         success: function(json) 
         {
+            global_total = json.total;
+            global_delta = json.delta;            
+        } // End Success. 
+    }); // End Ajax;      
+}
+
+
+/*
+ * Function:	ShowStatus
+ *
+ * Created on Apr 17, 2013
+ * Updated on May 11, 2013
+ *
+ * Description: Show the import status.
+ *
+ * In:	counter, retry, media
+ * Out:	Status
+ *
+ */
+function ShowStatus(counter, retry, media)
+{
+    if(typeof global_ajax_request !== 'undefined') {
+        global_ajax_request.abort();
+    }
+    global_ajax_request = $.ajax(
+    {
+        url: 'jsonxbmc.php?action=status&media=' + media,
+        //async: false,
+        dataType: 'json',
+        timeout:5000,
+        success: function(json) 
+        {
             var ready = false;
-            var online = '';
         
             // Check if cancel button is pressed.
-            if (global_cancel) {
+            if (global_cancel) 
+            {        
+                LogEvent("Warning", "Import " + ConvertMedia(media) + " canceled!");
                 return;
             }
         
             if (json.online) 
-            {
-               online = 'online.';
+            {               
+               if (counter == 0) 
+               {
+                   LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
+                   $(".message").html('XBMC is online.');
+               }
                
                if (json.delta == 0 && counter == 0) 
-               {
-                   $(".message").html('XBMC is ' + online);
+               {  
                    setTimeout(function() {
                        $(".message").html('Searching...');                       
                    }, 1000);
                    
                    setTimeout(function() {
-                       $(".message").html('No new ' + ConvertMedia(media) + ' found.');                       
+                       $(".message").html('No new ' + ConvertMedia(media) + ' found.');
+                       LogEvent("Information", "No new " + ConvertMedia(media) + " found.");
+                       $(".cancel").html("Ok");
                    }, 2500);                   
                    
-                   $(".cancel").html("Ok");
                    return;
                }
-               
+              
                if (json.delta > 0)
                {
-                   StartImport(media);
+                   setTimeout(function() {         
+                       $(".message").html('Importing...');                       
+                   }, 1500);
+           
+                   StartImport(media);                   
                    $("#progress").html('Movie ID: ' + json.xbmcid);
                }   
                else 
                {
-                   $("#progress").html('Finished');
-                   $(".cancel").html("Finished");  
+                   setTimeout(function() {
+                       $(".message").html('Import is ready.');
+                       $(".cancel").html("Finish");
+                   }, 1000);
+                   
+                   $("#progress").html('Finished');                   
+                     
                    ready = true;
                }  
             }
             else 
             {
-               online = 'offline!';
+               counter = -1;
+               retry++;
+               $(".message").html('XBMC is offline!');
             }
-
-            $(".message").html('XBMC is ' + online);
-            $("#counter").html(counter);
-            $("#delta").html('Delta: ' + json.delta);
+            
+            $("#counter").html('Counter: ' + counter + ' Retry: ' + retry);
+            $("#delta").html('Delta: ' + json.delta + ' Total: ' + json.total);
                     
             if (json.id > 0 && json.online)
             {
@@ -121,18 +174,30 @@ function ShowStatus(counter, media)
             // If ready exit progress, else retry.
             if (ready) 
             {
+                if (json.total > 0) {
+                    LogEvent("Information", "Import of " + json.total + " " + ConvertMedia(media) + " finished.");
+                }    
                 return;
             }
             else 
             {
                 setTimeout(function() {
-                    ShowStatus(counter, media);
+                    ShowStatus(counter, retry, media);
                 },1000);
             }
             
             counter++;
             
-        } // End Success.
+        }, // End Success.
+        error: function() // Begin Error.
+        { 
+            // Log time and counter in text file.
+            LogEvent("Warning", "Retry import of " + media + " at counter " + counter + ".");
+
+            // Retry...
+            retry++;
+            ShowStatus(counter, retry, media);
+        } // End Error.
     }); // End Ajax.
  }
 

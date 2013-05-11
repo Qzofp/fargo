@@ -6,7 +6,7 @@
  * File:    fargo-login.js
  *
  * Created on Apr 05, 2013
- * Updated on May 09, 2013
+ * Updated on May 10, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the login option.
  *
@@ -131,7 +131,7 @@ function SetSystemHandler(event)
  * Function:	SetLoginValidateHandler
  *
  * Created on May 04, 2013
- * Updated on May 04, 2013
+ * Updated on May 10, 2013
  *
  * Description: Validate login user and password.
  * 
@@ -153,13 +153,14 @@ function SetLoginValidateHandler()
         cache: false,
         success: function(result)
         {
-            
-            //alert(result);
-            
-            if(result){
+            if(result)
+            {
+                LogEvent("Information", "User " + username + " succesfully logged in.");                
                 window.location='index.php';
             }
-            else {
+            else 
+            {
+                LogEvent("Warning", "User " + username + " failed to logged in!");
                 $("#password").val("");
             }
         } // End succes.

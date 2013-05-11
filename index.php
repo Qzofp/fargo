@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on May 07, 2013
+ * Updated on May 11, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -27,7 +27,7 @@ if(!isset($_SESSION['LOGIN']))
 else
 {
     $login = true;
-    $user = "Welcome: ".$_SESSION['USER'];
+    $user = "Welcome: <span>".$_SESSION['USER']."</span>";
     $aJavascript = array("js/jquery-1.9.1.min.js", "js/fargo-common.js", "js/fargo-system.js", "js/fargo-import.js");
     $li_import = "<li id=\"import\">Import</li>\n";
     $li_login  = "<li id=\"logout\">Logout</li>\n";

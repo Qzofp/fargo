@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Apr 22, 2013
+ * Updated on May 10, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -47,7 +47,12 @@ switch ($action)
                     $sort  = GetPageValue('sort');
                     $sql   = CreateQuery($action, $page, $sort);
                     $aJson = GetMedia($action, $sql);
-                    break;                  
+                    break;   
+                
+    case "log"    : $type  = GetPageValue('type');
+                    $event = GetPageValue('event');
+                    $aJson = LogEvent($type, $event);
+                    break;
     
     case "test"   : break;                   
 }
@@ -59,6 +64,39 @@ if (!empty($aJson)) {
 
 
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
+
+/*
+ * Function:	LogEvent
+ *
+ * Created on May 10, 2013
+ * Updated on Apr 10, 2013
+ *
+ * Description: Log event in the database log table. 
+ *
+ * In:  $type, $event
+ * Out: $aItems
+ *
+ */
+function LogEvent($type, $event)
+{
+    $aItems = null;
+    
+    if ($type != 'Error' && $type != 'Warning' && $type != 'Information') {
+        $type = 'Unknown';
+    }
+    
+    $aItems[0] = date("Y-m-d H:i:s");
+    $aItems[1] = $type; 
+    $aItems[2] = $event;
+    
+    $sql = "INSERT INTO log (date, type, event) ".
+           "VALUES ('$aItems[0]', '$aItems[1]', '$aItems[2]')";
+    
+    ExecuteQueryWithEscapeStrings($aItems, $sql);
+    
+    return $aItems;
+}
+
 
 /*
  * Function:	GetFargoValues
