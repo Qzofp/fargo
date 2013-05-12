@@ -6,7 +6,7 @@
  * File:    fargo-login.js
  *
  * Created on Apr 05, 2013
- * Updated on May 10, 2013
+ * Updated on May 12, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the login option.
  *
@@ -27,7 +27,7 @@ var global_popup    = false;
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on May 09, 2013
+ * Updated on May 12, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -50,6 +50,9 @@ function LoadFargoMedia(media)
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
     $("#system").on("click", {media:"system"}, SetSystemHandler);
+    
+    // Option event.
+    $("#display_system_left").on("click", ".option", SetOptionHandler);
       
     // Login click event.
     $("#login").on("click", {title:title}, SetPopupHandler);
@@ -71,7 +74,7 @@ function LoadFargoMedia(media)
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on May 09, 2013
+ * Updated on May 11, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -86,9 +89,12 @@ function SetMediaHandler(event)
    global_page = 1;
    global_sort = "";
    
+   $('#display_system').hide();
+   $('#display_content').show();
+   
    global_media = ChangeControlBar(media);
    $("#control_sub").stop().slideUp("slow");
-   
+    
    $("#display_left").show();
    $("#display_right").show();
    
@@ -101,7 +107,7 @@ function SetMediaHandler(event)
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on May 09, 2013
+ * Updated on May 12, 2013
  *
  * Description: Show the system page with minimum options.
  * 
@@ -111,8 +117,10 @@ function SetMediaHandler(event)
  */
 function SetSystemHandler(event)
 {            
-   var media  = event.data.media;  
-
+   var media  = event.data.media;
+   var aOptions = ['Statistics', 'Credits', 'About'];
+   var last = $('#display_system_left .option').last().text();
+   
    global_page = 1;
    global_sort = "";
    
@@ -120,10 +128,22 @@ function SetSystemHandler(event)
    
    $("#display_left").hide();
    $("#display_right").hide();  
+   
+   $('#display_content').hide();
+   $('#display_system').show();
+   
+   if(last != aOptions[aOptions.length-1])
+   {
+        $.each(aOptions, function(key, option) 
+        {
+            $('#display_system_left').append('<div class="option">' + option + '</div>');
+        });  
+   }
+   $('#display_system_left .option').removeClass('on');
+   $('#display_system_left .option').first().addClass('on');   
+   
    $("#control_sub").stop().slideUp("slow");
    $("#control_sub").slideDown("slow");
-   
-   $('#display_content')[0].innerHTML = "";
 }
 
 

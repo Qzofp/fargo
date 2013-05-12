@@ -310,6 +310,7 @@ min-height:70%;
 /*background-color:#999;*/
 }
 
+/* Display Media pages */
 #display_content table{
 margin-left:auto; 
 margin-right:auto;   
@@ -323,7 +324,7 @@ color:#FFF;
 
 #display_content td{
 width:150px;
-height:170px;
+height:175px;
 border:1px solid grey;
 border-radius:5px;
 background-color:rgba(0,0,0,0.5);
@@ -333,6 +334,78 @@ background-color:rgba(0,0,0,0.5);
 border:1px solid grey;
 border-radius:5px;
 }
+
+/* Display System page */
+#display_system{
+display:none;
+margin-left:-30%;
+left:50%;
+position:fixed;
+width:60%;
+height:100%;
+}
+
+#display_system_left,
+#display_system_right{ 
+float:left;
+display:table;
+height:65%;
+}
+
+#display_system_left{
+width:34%;
+border-top:1px solid grey;
+border-left:1px solid grey;
+border-bottom:1px solid grey;
+border-radius:10px 0 0 10px;
+background-color:rgba(0,0,0,0.8);
+/*background-color:lightblue;*/
+}
+
+#fargo {
+margin:15px 0 15px 0;
+font-family: 'Dancing Script', cursive;
+font-size:38px;
+color:#999;
+text-align:center;
+text-shadow:4px 4px 4px #aaa;
+}
+
+#display_system_left .option{
+height:50px;
+padding-right:15px;
+font-size:1.8em;
+line-height:2.7em;
+text-align:right;
+color:#999;
+cursor:pointer;
+/*background:lightcyan;*/
+}
+
+#display_system_left .on{
+color:#FFF;
+background: -moz-linear-gradient(center top, #289EC9, #076182);
+background: -webkit-gradient(linear, left top, left bottom, from(#289EC9), to(#076182));
+background: -o-linear-gradient(top, #289EC9, #076182);
+background: -ms-linear-gradient(top, #289EC9 0%, #076182 100%);
+
+/*
+background-image: -moz-radial-gradient(center, ellipse farthest-side, rgba(0,0,0,0.8) 0%, rgba(41,54,242,0.8) 280%);
+background-image: -webkit-radial-gradient(center, ellipse farthest-side, rgba(0,0,0,0.8) 0%, rgba(41,54,242,0.8) 280%);
+background-image: -ms-radial-gradient(center, ellipse farthest-side, rgba(0,0,0,0.8) 0%, rgba(41,54,242,0.8) 280%);
+*/
+}
+
+#display_system_right{
+width:65%;
+border-top:1px solid grey;
+border-right:1px solid grey;
+border-bottom:1px solid grey;
+border-radius:0 10px 10px 0;
+background-color:rgba(0,0,0,0.5);
+/*background-color:#ECECEC;  */
+}
+
 /* End Display part */
 
 /* Begin Control Bar part */

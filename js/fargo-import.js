@@ -40,40 +40,8 @@ function ImportMedia(media)
         $("#import_wrapper").height(154);
         $("#thumb").height(142);
     }
-    
-    // Returns global_total and global_delta
-    //GetImportValues(media);
-    //alert(global_delta);
 
-    ShowStatus(counter, retry, media);
-   
-}
-
-
-/*
- * Function:	StartImport
- *
- * Created on May 11, 2013
- * Updated on May 11, 2013
- *
- * Description: Start the import of the media.
- *
- * In:	media
- * Out:	Imported media
- *
- */
-function GetImportValues(media)
-{
-    $.ajax({
-        url: 'jsonxbmc.php?action=status&media=' + media,
-        async: false,
-        dataType: 'json',
-        success: function(json) 
-        {
-            global_total = json.total;
-            global_delta = json.delta;            
-        } // End Success. 
-    }); // End Ajax;      
+    ShowStatus(counter, retry, media); 
 }
 
 

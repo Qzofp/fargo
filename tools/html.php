@@ -17,22 +17,29 @@
  * Function:	PageHeader
  *
  * Created on Mar 02, 2013
- * Updated on Mar 27, 2013
+ * Updated on May 11, 2013
  *
  * Description: Returns a HTML5 page header.
  *
- * In:	$title, $css, $aJscript
+ * In:	$title, $aCss, $aJscript
  * Out:	header
  *
  */
-function PageHeader($title, $css, $aJscript)
+function PageHeader($title, $aCss, $aJscript)
 {
     echo "<!DOCTYPE html>\n";
     echo "<html lang=\"en\">\n";
     echo " <head>\n";
     echo "  <meta charset=\"utf-8\">\n";
     echo "  <title>$title</title>\n";
-    echo "  <link rel=\"stylesheet\" href=\"$css\">\n";
+
+    if ($aCss) 
+    {    
+        foreach ($aCss as $css)
+        {
+            echo "  $css\n";
+        }    
+    }
     
     if ($aJscript) 
     {    

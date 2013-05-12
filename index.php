@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on May 11, 2013
+ * Updated on May 12, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -38,14 +38,15 @@ require_once 'tools/toolbox.php';
 require_once 'include/common.php';
 
 $title = "Fargo: A Media Catalog For XBMC";
-$css   = "css/confluence.css";
+$aCss   = array("<link href='http://fonts.googleapis.com/css?family=Dancing+Script:700' rel='stylesheet' type='text/css'>",
+                "<link rel=\"stylesheet\" href=\"css/confluence.css\">");
 
 $media = GetPageValue('media');
 if (!isset($media)) {
     $media = "movies";
 }
 
-PageHeader($title, $css, $aJavascript);
+PageHeader($title, $aCss, $aJavascript);
 
 // Header section. 
 echo "   <div id=\"header\">\n";
@@ -77,6 +78,16 @@ echo "   </div>\n";
 
 // Display movie table. This is done by the jQuery functions createMovieTable().
 echo "   <div id=\"display_content\">\n";
+echo "   </div>\n";
+
+// Display system page.
+echo "   <div id=\"display_system\">\n";
+echo "    <div id=\"display_system_left\">\n";
+echo "     <div id=\"fargo\">Qzofp's Fargo</div>\n";
+echo "    </div>\n";
+
+echo "    <div id=\"display_system_right\">\n";
+echo "    </div>\n";
 echo "   </div>\n";
 
 // Control section.

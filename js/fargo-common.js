@@ -6,7 +6,7 @@
  * File:    fargo-common.js
  *
  * Created on May 04, 2013
- * Updated on May 10, 2013
+ * Updated on May 12, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -168,6 +168,24 @@ function ConvertMedia(media)
     return media;
 }
 
+
+/*
+ * Function:	SetOptionHandler
+ *
+ * Created on May 12, 2013
+ * Updated on May 12, 2013
+ *
+ * Description: Set the option and show the properties.
+ * 
+ * In:	-
+ * Out:	Option
+ *
+ */
+function SetOptionHandler()
+{
+    $('#display_system_left .option').removeClass('on');    
+    $(this).addClass('on');
+}
 
 /*
  * Function:	SetPageHandler

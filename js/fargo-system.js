@@ -6,7 +6,7 @@
  * File:    fargo-system.js
  *
  * Created on May 04, 2013
- * Updated on May 11, 2013
+ * Updated on May 12, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -34,7 +34,7 @@ var global_ajax_request;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on May 09, 2013
+ * Updated on May 12, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -58,6 +58,9 @@ function LoadFargoMedia(media)
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
     $("#system").on("click", {media:"system"}, SetFullSystemHandler);
+    
+    // Options event.
+    $("#display_system_left").on("click", ".option", SetOptionHandler);
     
     // Import click event.
     $("#import").on("click", SetImportHandler);
@@ -142,7 +145,7 @@ function SetImportCancelHandler()
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on May 09, 2013
+ * Updated on May 11, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -156,6 +159,9 @@ function SetMediaHandler(event)
 
    global_page = 1;
    global_sort = "";
+   
+   $('#display_system').hide();
+   $('#display_content').show();
    
    global_media = ChangeControlBar(media);
    ChangeSubControlBar(media);
@@ -174,7 +180,7 @@ function SetMediaHandler(event)
  * Function:	SetFullSystemHandler
  *
  * Created on May 04, 2013
- * Updated on May 09, 2013
+ * Updated on May 11, 2013
  *
  * Description: Show the full system page with all the options.
  * 
@@ -185,6 +191,8 @@ function SetMediaHandler(event)
 function SetFullSystemHandler(event)
 {            
    var media  = event.data.media;  
+   var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Run Tests', 'Credits', 'About'];
+   var last = $('#display_system_left .option').last().text();
 
    global_page = 1;
    global_sort = "";
@@ -194,9 +202,21 @@ function SetFullSystemHandler(event)
    
    $("#display_left").hide();
    $("#display_right").hide();
-   $("#control_sub").slideDown("slow");
    
-   $('#display_content')[0].innerHTML = "";
+   $('#display_content').hide();
+   $('#display_system').show();
+   
+   if(last != aOptions[aOptions.length-1])
+   {
+        $.each(aOptions, function(key, option) 
+        {
+            $('#display_system_left').append('<div class="option">' + option + '</div>');
+        });  
+   }
+   $('#display_system_left .option').removeClass('on');
+   $('#display_system_left .option').first().addClass('on'); 
+   
+   $("#control_sub").slideDown("slow");
 }
 
 
