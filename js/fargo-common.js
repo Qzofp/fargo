@@ -501,3 +501,30 @@ function LogEvent(type, event)
         } // End succes.
   }); // End Ajax.
 }
+
+
+/*
+ * Function:	GetLastCounter
+ *
+ * Created on May 12, 2013
+ * Updated on May 12, 2013
+ *
+ * Description: Get the media coiunter from Fargo.
+ *
+ * In:	media
+ * Out:	counter
+ *
+ */
+function GetFargoCounter(media) 
+{
+    $.ajax({
+        url: 'jsonfargo.php?action=counter&media=' + media,
+        async: false,
+        dataType: 'json',
+        success: function(json) 
+        {    
+            global_total = json.counter;
+        } // End Success.
+        
+    }); // End Ajax;
+}

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on May 10, 2013
+ * Updated on May 13, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -30,6 +30,10 @@ switch ($action)
                      $sort  = GetPageValue('sort');
                      $aJson = GetFargoValues($media, $sort);
                      break;
+                 
+    case "counter" : $media = GetPageValue('media');
+                     $aJson['counter'] = CountRows($media);
+                     break;             
         
     case "movies" :  $page  = GetPageValue('page');
                      $sort  = GetPageValue('sort');
@@ -102,7 +106,7 @@ function LogEvent($type, $event)
  * Function:	GetFargoValues
  *
  * Created on Apr 06, 2013
- * Updated on Apr 20, 2013
+ * Updated on May 13, 2013
  *
  * Description: Get a the initialize values from Fargo and return it as Json data. 
  *
@@ -122,7 +126,7 @@ function GetFargoValues($media, $sort)
         $sql .= "WHERE title LIKE '$sort%'";
     }    
     
-    $total = CountRows($sql);
+    $total = CountRows($media);
     
     $aJson['lastpage'] = ceil($total / (cMediaRow * cMediaColumn));
     
@@ -164,7 +168,6 @@ function CreateQuery($media, $page, $sort)
      
     return $sql;
 }
-
 
 /*
  * Function:	GetMedia
@@ -246,5 +249,4 @@ function GetMedia($media, $sql)
     
     return $aJson;
 }
-
 ?>

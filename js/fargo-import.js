@@ -6,7 +6,7 @@
  * File:    fargo-import.js
  *
  * Created on Apr 14, 2013
- * Updated on May 10, 2013
+ * Updated on May 13, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -19,7 +19,7 @@
  * Function:	ImportMedia
  *
  * Created on Apr 14, 2013
- * Updated on May 11, 2013
+ * Updated on May 13, 2013
  *
  * Description: Import the media from XBMC.
  *
@@ -30,7 +30,12 @@
 function ImportMedia(media)
 {
     var counter = 0;
-    var retry = 0;
+    var retry   = 0;
+    var start   = 0;
+  
+    // Get global_total
+    GetFargoCounter(media);
+    start = global_total;
     
     if (media == "music") {
         $("#import_wrapper").height(114);
@@ -41,7 +46,7 @@ function ImportMedia(media)
         $("#thumb").height(142);
     }
 
-    ShowStatus(counter, retry, media); 
+    ShowStatus(counter, retry, start, media); 
 }
 
 
@@ -49,15 +54,15 @@ function ImportMedia(media)
  * Function:	ShowStatus
  *
  * Created on Apr 17, 2013
- * Updated on May 11, 2013
+ * Updated on May 13, 2013
  *
  * Description: Show the import status.
  *
- * In:	counter, retry, media
+ * In:	counter, retry, start, media
  * Out:	Status
  *
  */
-function ShowStatus(counter, retry, media)
+function ShowStatus(counter, retry, start, media)
 {
     if(typeof global_ajax_request !== 'undefined') {
         global_ajax_request.abort();
@@ -102,14 +107,15 @@ function ShowStatus(counter, retry, media)
                    return;
                }
               
-               if (json.delta > 0)
+               if (json.delta > 0 && start < json.total)
                {
                    setTimeout(function() {         
                        $(".message").html('Importing...');                       
                    }, 1500);
            
-                   StartImport(media);                   
+                   StartImport(start, media);                   
                    $("#progress").html('Movie ID: ' + json.xbmcid);
+                   start += 3;
                }   
                else 
                {
@@ -130,7 +136,7 @@ function ShowStatus(counter, retry, media)
                $(".message").html('XBMC is offline!');
             }
             
-            $("#counter").html('Counter: ' + counter + ' Retry: ' + retry);
+            $("#counter").html('Counter: ' + counter + ' Retry: ' + retry + ' Start ' + start);
             $("#delta").html('Delta: ' + json.delta + ' Total: ' + json.total);
                     
             if (json.id > 0 && json.online)
@@ -150,7 +156,7 @@ function ShowStatus(counter, retry, media)
             else 
             {
                 setTimeout(function() {
-                    ShowStatus(counter, retry, media);
+                    ShowStatus(counter, retry, start, media);
                 },1000);
             }
             
@@ -164,7 +170,7 @@ function ShowStatus(counter, retry, media)
 
             // Retry...
             retry++;
-            ShowStatus(counter, retry, media);
+            ShowStatus(counter, retry, start, media);
         } // End Error.
     }); // End Ajax.
  }
@@ -174,22 +180,22 @@ function ShowStatus(counter, retry, media)
  * Function:	StartImport
  *
  * Created on Apr 17, 2013
- * Updated on Apr 20, 2013
+ * Updated on Mat 12, 2013
  *
  * Description: Start the import process.
  *
- * In:	media
+ * In:	start, media
  * Out:	processed media.
  *
  */
-function StartImport(media) 
+function StartImport(start, media) 
 {
     $.ajax({
-        url: 'jsonxbmc.php?action=import&media=' + media,
+        url: 'jsonxbmc.php?action=import&media=' + media + '&start=' + start,
         //async: false,
         dataType: 'json',
         success: function(json) {
-            //alert(json.counter);
+
         } // End Success.
         
     }); // End Ajax;

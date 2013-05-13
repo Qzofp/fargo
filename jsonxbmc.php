@@ -7,7 +7,7 @@
  * File:    xbmc.php
  *
  * Created on Mar 22, 2013
- * Updated on Apr 22, 2013
+ * Updated on May 13, 2013
  *
  * Description: The main XBMC functions page. 
  * 
@@ -27,16 +27,17 @@ $aJson = null;
 $action = GetPageValue('action');
 
 switch ($action) 
-{                     
-    case "counter" : $media = GetPageValue('media');
-                     $aJson = GetMediaCounter($media);
-                     break;
-    
+{                        
     case "online"  : $aJson['online'] = OnlineCheckXBMC();
                      break;
                 
-    case "import"  : $media = GetPageValue('media');
-                     $aJson = ImportMedia($media);
+    case "counter" : $media = GetPageValue('media');
+                     $aJson = GetMediaCounterFromXBMC($media);
+                     break;                    
+                 
+    case "import"  : $media  = GetPageValue('media');
+                     $start = GetPageValue('start');
+                     ImportMedia($start, $media);
                      break;
     
     case "status"  : $media = GetPageValue('media');

@@ -227,30 +227,39 @@ function GetItemsFromDatabase($sql)
  * Function:	CountRows
  *
  * Created on Dec 20, 2009
- * Updated on Jun 22, 2011
+ * Updated on May 13, 2013
  *
  * Description: Count the number of rows from a sql query.
  *
- * In:	$sql
+ * In:	$table
  * Out:	$rows
  *
  */
-function CountRows($sql)
+function CountRows($table)
 {
     $db = OpenDatabase();
+    $rows = 0;
 
-    $result = $db->query($sql);
-    if ($result)
+    $sql = "SELECT count(*) FROM $table"; 
+    
+    $stmt = $db->prepare($sql);
+    if($stmt)
     {
-        // Determine number of rows result set.
-    	$rows = $result->num_rows;
-
-    	// Close result set.
-    	$result->close();
+        if($stmt->execute())
+        {
+            $stmt->bind_result($rows);
+            $stmt->fetch();
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
     }
-    else {
-        die('Ececution query failed: '.$db->error);
-    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
     
     CloseDatabase($db);
     

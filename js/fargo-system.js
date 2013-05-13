@@ -23,9 +23,8 @@ var global_lastpage = 1; //last page
 var global_column   = 0;
 var global_popup    = false;
 
-// Media total and delta numbers.
-//var global_total = 0;
-//var global_delta = 0;
+// Media total.
+var global_total = 0;
 
 var global_cancel = false;
 var global_ajax_request;

@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on Apr 27, 2013
+ * Updated on May 13, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -17,31 +17,59 @@
 /////////////////////////////////////////    Import Functions    //////////////////////////////////////////
 
 /*
+ * Function:	ImportMedia
+ *
+ * Created on Apr 19, 2013
+ * Updated on May 13, 2013
+ *
+ * Description: Reports the status of the import media process. 
+ *
+ * In:  $start, $media
+ * Out: -
+ *
+ */
+function ImportMedia($start, $media)
+{
+    switch ($media)    
+    {   
+        case "movies"   : ImportMovies($start);
+                          break;
+    
+        case "tvshows"  : ImportTVShows($start);
+                          break;
+                      
+        case "music"    : ImportAlbums($start);
+                          break;                      
+    }
+}
+
+
+/*
  * Function:	ImportMovies
  *
  * Created on Mar 11, 2013
- * Updated on Apr 22, 2013
+ * Updated on May 13, 2013
  *
  * Description: Import the movies. 
  *
- * In:  -
- * Out: $aJson
+ * In:  $start
+ * Out: -
  *
  */
-function ImportMovies()
+function ImportMovies($start)
 {
-    $counter = (int)GetSetting("MoviesCounter");
+    //$counter = (int)GetSetting("MoviesCounter");
     $offset  = 3;
 
-    $aMovies = GetMoviesFromXBMC($counter, $offset);
+    $aMovies = GetMoviesFromXBMC($start, $offset);
     
     if (!empty($aMovies)) {
-        ProcessMovies($aMovies, $counter);
+        ProcessMovies($aMovies);
     }
     
-    $aJson['counter'] = (int)GetSetting("MoviesCounter");
+    //$aJson['counter'] = (int)GetSetting("MoviesCounter");
     
-    return $aJson;
+    //return $aJson;
 }
 
 
@@ -49,28 +77,28 @@ function ImportMovies()
  * Function:	ImportTVShows
  *
  * Created on Apr 19, 2013
- * Updated on Apr 20, 2013
+ * Updated on May 13, 2013
  *
  * Description: Import the tv shows. 
  *
- * In:  -
- * Out: $aJson
+ * In:  $start
+ * Out: -
  *
  */
-function ImportTVShows()
+function ImportTVShows($start)
 {
-    $counter = (int)GetSetting("TVShowsCounter");
+    //$counter = (int)GetSetting("TVShowsCounter");
     $offset  = 3;
     
-    $aTVShows = GetTVShowsFromXBMC($counter, $offset);
+    $aTVShows = GetTVShowsFromXBMC($start, $offset);
     
     if (!empty($aTVShows)) {
-        ProcessTVShows($aTVShows, $counter);
+        ProcessTVShows($aTVShows, $start);
     }
     
-    $aJson['counter'] = (int)GetSetting("TVShowsCounter");
+    //$aJson['counter'] = (int)GetSetting("TVShowsCounter");
     
-    return $aJson;
+    //return $aJson;
 }
 
 
@@ -78,67 +106,36 @@ function ImportTVShows()
  * Function:	ImportAlbums
  *
  * Created on Apr 20, 2013
- * Updated on Apr 20, 2013
+ * Updated on May 13, 2013
  *
  * Description: Import the music albums. 
  *
- * In:  -
- * Out: $aJson
+ * In:  $start
+ * Out: -
  *
  */
-function ImportAlbums()
+function ImportAlbums($start)
 {
-    $counter = (int)GetSetting("AlbumsCounter");
+    //$counter = (int)GetSetting("AlbumsCounter");
     $offset  = 3;
     
-    $aAlbums = GetAlbumsFromXBMC($counter, $offset);
+    $aAlbums = GetAlbumsFromXBMC($start, $offset);
     
     if (!empty($aAlbums)) {
-        ProcessAlbums($aAlbums, $counter);
+        ProcessAlbums($aAlbums, $start);
     }
     
-    $aJson['counter'] = (int)GetSetting("AlbumsCounter");
+    //$aJson['counter'] = (int)GetSetting("AlbumsCounter");
     
-    return $aJson;
+    //return $aJson;
 }
 
-
-/*
- * Function:	GetMediaCounter
- *
- * Created on Apr 17, 2013
- * Updated on Apr 17, 2013
- *
- * Description: Get the media counter.
- *
- * In:  $media
- * Out:	$aJson
- * 
- */
-function GetMediaCounter($media)
-{
-    $aJson = null;
-    
-    switch ($media)    
-    {   
-        case "movies"   : $aJson['counter'] = (int)GetSetting("MoviesCounter");
-                          break;
-        
-        case "music"    : $aJson['counter'] = (int)GetSetting("AlbumsCounter");
-                          break;
-    
-        case "tvshows"  : $aJson['counter'] = (int)GetSetting("TVShowsCounter");
-                          break;
-    }
-    
-    return $aJson;
-}
 
 /*
  * Function:	GetMediaStatus
  *
  * Created on Mar 22, 2013
- * Updated on Apr 22, 2013
+ * Updated on May 13, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -149,20 +146,21 @@ function GetMediaCounter($media)
 function GetMediaStatus($media)
 {
     $aJson = null;
-    
+    $counter = CountRows($media);
+   
     switch ($media)    
     {   
-        case "movies"   : $counter = (int)GetSetting("MoviesCounter");
+        case "movies"   :  //(int)GetSetting("MoviesCounter");
                           $total   = (int)GetTotalNumberOfMoviesFromXBMC();
                           $aJson   = GetImportStatus($media, $counter, $total, cMOVIESPOSTERS);
                           break;
         
-        case "music"    : $counter = (int)GetSetting("AlbumsCounter");
+        case "music"    : //(int)GetSetting("AlbumsCounter");
                           $total   = (int)GetTotalNumberOfAlbumsFromXBMC();
                           $aJson   = GetImportStatus($media, $counter, $total, cALBUMSCOVERS);
                           break;
     
-        case "tvshows"  : $counter = (int)GetSetting("TVShowsCounter");
+        case "tvshows"  : //(int)GetSetting("TVShowsCounter");
                           $total   = (int)GetTotalNumberOfTVShowsFromXBMC();
                           $aJson   = GetImportStatus($media, $counter, $total, cTVSHOWSPOSTERS);
                           break;
@@ -172,39 +170,40 @@ function GetMediaStatus($media)
 }
 
 
+/////////////////////////////////////////    JSON Functions    ////////////////////////////////////////////
+
 /*
- * Function:	ImportMedia
+ * Function:	GetMediaCounterFromXBMC
  *
- * Created on Apr 19, 2013
- * Updated on Apr 22, 2013
+ * Created on Mar 18, 2013
+ * Updated on Apr 20, 2013
  *
- * Description: Reports the status of the import media process. 
+ * Description: Connect to XBMC and get the media counter.
  *
  * In:  $media
- * Out: $aJson
+ * Out:	$aJson
+ * 
+ * Note: XBMC Connection is defined in constant cXBMC.
  *
  */
-function ImportMedia($media)
+function GetMediaCounterFromXBMC($media)
 {
     $aJson = null;
     
     switch ($media)    
     {   
-        case "movies"   : $aJson = ImportMovies();
-                          break;
-        
-        case "music"    : $aJson = ImportAlbums();
+        case "movies"   : $aJson['counter'] = GetTotalNumberOfMoviesFromXBMC();
                           break;
     
-        case "tvshows"  : $aJson = ImportTVShows();
+        case "tvshows"  : $aJson['counter'] = GetTotalNumberOfTVShowsFromXBMC();
                           break;
+                      
+        case "music"    : $aJson['counter'] = GetTotalNumberOfAlbumsFromXBMC();
+                          break;                      
     }
     
     return $aJson;
 }
-
-
-/////////////////////////////////////////    JSON Functions    ////////////////////////////////////////////
 
 /*
  * Function:	GetTotalNumberOfMoviesFromXBMC
@@ -299,7 +298,6 @@ function GetTotalNumberOfAlbumsFromXBMC()
     
     return $total;
 } 
-
 
 /*
  * Function:	GetMoviesFromXBMC
@@ -503,24 +501,23 @@ function GetImportStatus($media, $counter, $total, $thumbs)
  * Function:	ProcessMovies
  *
  * Created on Mar 11, 2013
- * Updated on Apr 22, 2013
+ * Updated on May 13, 2013
  *
  * Description: Process the movies. 
  *
- * In:  $aMovies, $counter
+ * In:  $aMovies
  * Out: -
  *
  */
-function ProcessMovies($aMovies, $counter)
+function ProcessMovies($aMovies)
 {  
     foreach ($aMovies as $aMovie)
     {            
-        $aMovie = ConvertMovie($aMovie);
-        
+        $aMovie = ConvertMovie($aMovie);        
         InsertMovie($aMovie);
         
-        $counter++;
-        UpdateSetting("MoviesCounter", $counter);
+        //$counter++;
+        //UpdateSetting("MoviesCounter", $counter);
     }
 }
 
@@ -528,7 +525,7 @@ function ProcessMovies($aMovies, $counter)
  * Function:	ProcessTVShows
  *
  * Created on Apr 19, 2013
- * Updated on Apr 20, 2013
+ * Updated on May 13, 2013
  *
  * Description: Process the TV Shows. 
  *
@@ -544,8 +541,8 @@ function ProcessTVShows($aTVShows, $counter)
         
         InsertTVShow($aTVShow);
         
-        $counter++;
-        UpdateSetting("TVShowsCounter", $counter);
+        //$counter++;
+        //UpdateSetting("TVShowsCounter", $counter);
     }
 }
 
@@ -554,7 +551,7 @@ function ProcessTVShows($aTVShows, $counter)
  * Function:	ProcessAlbums
  *
  * Created on Apr 19, 2013
- * Updated on Apr 20, 2013
+ * Updated on May 13, 2013
  *
  * Description: Process the music albums. 
  *
@@ -570,8 +567,8 @@ function ProcessAlbums($aAlbums, $counter)
         
         InsertAlbum($aAlbum);
         
-        $counter++;
-        UpdateSetting("AlbumsCounter", $counter);
+        //$counter++;
+        //UpdateSetting("AlbumsCounter", $counter);
     }
 }
 
