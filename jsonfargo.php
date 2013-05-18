@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on May 13, 2013
+ * Updated on May 18, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -33,7 +33,12 @@ switch ($action)
                  
     case "counter" : $media = GetPageValue('media');
                      $aJson['counter'] = CountRows($media);
-                     break;             
+                     break;
+                 
+    case "status"  : $media = GetPageValue('media');
+                     $id    = GetPageValue('id');
+                     $aJson = GetStatus($media, $id);
+                     break;                 
         
     case "movies" :  $page  = GetPageValue('page');
                      $sort  = GetPageValue('sort');
@@ -68,6 +73,35 @@ if (!empty($aJson)) {
 
 
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
+
+/*
+ * Function:	GetMediaStatus
+ *
+ * Created on May 18, 2013
+ * Updated on May 18, 2013
+ *
+ * Description: Reports the status of the import media process. 
+ *
+ * In:  $media, $id
+ * Out: $aJson
+ *
+ */
+function GetStatus($media, $id)
+{
+    $aJson = null;   
+    switch ($media)    
+    {   
+        case "movies"   : $aJson = GetImportStatus($media, $id, cMOVIESPOSTERS);
+                          break;
+        
+        case "music"    : $aJson = GetImportStatus($media, $id, cALBUMSCOVERS);
+                          break;
+    
+        case "tvshows"  : $aJson = GetImportStatus($media, $id, cTVSHOWSPOSTERS);
+                          break;
+    }    
+    return $aJson;
+}
 
 /*
  * Function:	LogEvent
@@ -106,7 +140,7 @@ function LogEvent($type, $event)
  * Function:	GetFargoValues
  *
  * Created on Apr 06, 2013
- * Updated on May 13, 2013
+ * Updated on May 18, 2013
  *
  * Description: Get a the initialize values from Fargo and return it as Json data. 
  *
@@ -126,7 +160,7 @@ function GetFargoValues($media, $sort)
         $sql .= "WHERE title LIKE '$sort%'";
     }    
     
-    $total = CountRows($media);
+    $total = CountRowsWithQuery($sql);
     
     $aJson['lastpage'] = ceil($total / (cMediaRow * cMediaColumn));
     
@@ -134,6 +168,65 @@ function GetFargoValues($media, $sort)
 }
 
 ////////////////////////////////////////    Database Functions    /////////////////////////////////////////
+
+/*
+ * Function:	GetImportStatus
+ *
+ * Created on May 18, 2013
+ * Updated on May 18, 2013
+ *
+ * Description: Reports the status of the import process.
+ *
+ * In:  $media, $thumbs
+ * Out: $aJson
+ *
+ */
+function GetImportStatus($media, $id, $thumbs)
+{
+    $aJson['xbmcid'] = 0; 
+    $aJson['title']  = "empty";
+    $aJson['thumbs'] = $thumbs;
+  
+    $db = OpenDatabase();
+
+    $sql = "SELECT xbmcid, title ".
+           "FROM $media ".
+           "WHERE id = $id";
+        
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            // Get number of rows.
+            $stmt->store_result();
+            $rows = $stmt->num_rows;
+
+            if ($rows != 0)
+            {              
+                $stmt->bind_result($xbmcid, $title);
+                while($stmt->fetch())
+                {                
+                    $aJson['xbmcid'] = $xbmcid;  
+                    $aJson['title']  = ShortenString($title, 22);
+                }                  
+            }
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
+
+    CloseDatabase($db);
+
+    return $aJson;
+}
 
 /*
  * Function:	CreateQuery
@@ -173,11 +266,11 @@ function CreateQuery($media, $page, $sort)
  * Function:	GetMedia
  *
  * Created on Apr 03, 2013
- * Updated on Apr 22, 2013
+ * Updated on May 18, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
- * In:  $media, $sql
+ * In:  $media, $sql, 
  * Out: $aJson
  *
  */

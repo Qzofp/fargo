@@ -6,7 +6,7 @@
  * File:    fargo-system.js
  *
  * Created on May 04, 2013
- * Updated on May 12, 2013
+ * Updated on May 18, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -24,16 +24,20 @@ var global_column   = 0;
 var global_popup    = false;
 
 // Media total.
-var global_total = 0;
+var global_total_fargo = 0;
+var global_total_xbmc  = 0;
 
 var global_cancel = false;
-var global_ajax_request;
+
+// Ajax requests.
+var global_status_request;
+var global_import_request;
 
 /*
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on May 12, 2013
+ * Updated on May 18, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -63,9 +67,10 @@ function LoadFargoMedia(media)
     
     // Import click event.
     $("#import").on("click", SetImportHandler);
+    $(".button").on("click", ".retry", SetImportHandler);
     
     // Cancel or finish import.
-    $(".cancel").on("click", SetImportCancelHandler);
+    $(".button").on("click", ".cancel", SetImportCancelHandler);
     $("#mask, .close_right").on("click", SetImportCancelHandler);
     
     // Logout event.
@@ -84,7 +89,7 @@ function LoadFargoMedia(media)
  * Function:	SetImportHandler
  *
  * Created on May 08, 2013
- * Updated on May 10, 2013
+ * Updated on May 18, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -98,14 +103,24 @@ function SetImportHandler()
     var media = GetState("media"); // Get state media. 
   
     title = "Import " + ConvertMedia(media);    
+    
+    //alert($(this).html());
     ShowPopupBox(title);
     global_popup = true;
      
+    $(".retry").toggleClass("retry cancel");
+    
+    // Initialize status popup box.
+    $(".message").html("Connecting...");
+    AdjustImageSize(media);
     $(".cancel").html("Cancel");
      
     // Start Import
-    global_cancel = false;
-    ImportMedia(media);
+    global_cancel = false;  
+    setTimeout(function(){
+        ImportMedia(media);
+    }, 1000);
+
 }
 
 
@@ -113,7 +128,7 @@ function SetImportHandler()
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on May 11, 2013
+ * Updated on May 18, 2013
  *
  * Description: Set the import handler, Cancel or finish the import.
  * 
@@ -127,8 +142,8 @@ function SetImportCancelHandler()
     var media = GetState("media");
     
     // Abort pending ajax request.
-    if(typeof global_ajax_request !== 'undefined') {
-        global_ajax_request.abort();
+    if(typeof global_status_request !== 'undefined') {
+        global_status_request.abort();
     }
     
     global_cancel = true;

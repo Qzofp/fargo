@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on May 13, 2013
+ * Updated on May 15, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -43,12 +43,11 @@ function ImportMedia($start, $media)
     }
 }
 
-
 /*
  * Function:	ImportMovies
  *
  * Created on Mar 11, 2013
- * Updated on May 13, 2013
+ * Updated on May 15, 2013
  *
  * Description: Import the movies. 
  *
@@ -58,26 +57,19 @@ function ImportMedia($start, $media)
  */
 function ImportMovies($start)
 {
-    //$counter = (int)GetSetting("MoviesCounter");
     $offset  = 3;
-
     $aMovies = GetMoviesFromXBMC($start, $offset);
     
     if (!empty($aMovies)) {
         ProcessMovies($aMovies);
     }
-    
-    //$aJson['counter'] = (int)GetSetting("MoviesCounter");
-    
-    //return $aJson;
 }
-
 
 /*
  * Function:	ImportTVShows
  *
  * Created on Apr 19, 2013
- * Updated on May 13, 2013
+ * Updated on May 15, 2013
  *
  * Description: Import the tv shows. 
  *
@@ -87,26 +79,19 @@ function ImportMovies($start)
  */
 function ImportTVShows($start)
 {
-    //$counter = (int)GetSetting("TVShowsCounter");
-    $offset  = 3;
-    
+    $offset  = 3;  
     $aTVShows = GetTVShowsFromXBMC($start, $offset);
     
     if (!empty($aTVShows)) {
         ProcessTVShows($aTVShows, $start);
     }
-    
-    //$aJson['counter'] = (int)GetSetting("TVShowsCounter");
-    
-    //return $aJson;
 }
-
 
 /*
  * Function:	ImportAlbums
  *
  * Created on Apr 20, 2013
- * Updated on May 13, 2013
+ * Updated on May 15, 2013
  *
  * Description: Import the music albums. 
  *
@@ -116,20 +101,13 @@ function ImportTVShows($start)
  */
 function ImportAlbums($start)
 {
-    //$counter = (int)GetSetting("AlbumsCounter");
-    $offset  = 3;
-    
+    $offset  = 3;   
     $aAlbums = GetAlbumsFromXBMC($start, $offset);
     
     if (!empty($aAlbums)) {
         ProcessAlbums($aAlbums, $start);
     }
-    
-    //$aJson['counter'] = (int)GetSetting("AlbumsCounter");
-    
-    //return $aJson;
 }
-
 
 /*
  * Function:	GetMediaStatus
@@ -143,32 +121,25 @@ function ImportAlbums($start)
  * Out: $aJson
  *
  */
-function GetMediaStatus($media)
+/*function GetMediaStatus($media)
 {
-    $aJson = null;
-    $counter = CountRows($media);
-   
+    $aJson = null;   
     switch ($media)    
     {   
-        case "movies"   :  //(int)GetSetting("MoviesCounter");
-                          $total   = (int)GetTotalNumberOfMoviesFromXBMC();
-                          $aJson   = GetImportStatus($media, $counter, $total, cMOVIESPOSTERS);
+        case "movies"   : $total = (int)GetTotalNumberOfMoviesFromXBMC();
+                          $aJson = GetImportStatus($media, $total, cMOVIESPOSTERS);
                           break;
         
-        case "music"    : //(int)GetSetting("AlbumsCounter");
-                          $total   = (int)GetTotalNumberOfAlbumsFromXBMC();
-                          $aJson   = GetImportStatus($media, $counter, $total, cALBUMSCOVERS);
+        case "music"    : $total = (int)GetTotalNumberOfAlbumsFromXBMC();
+                          $aJson = GetImportStatus($media, $total, cALBUMSCOVERS);
                           break;
     
-        case "tvshows"  : //(int)GetSetting("TVShowsCounter");
-                          $total   = (int)GetTotalNumberOfTVShowsFromXBMC();
-                          $aJson   = GetImportStatus($media, $counter, $total, cTVSHOWSPOSTERS);
+        case "tvshows"  : $total = (int)GetTotalNumberOfTVShowsFromXBMC();
+                          $aJson = GetImportStatus($media, $total, cTVSHOWSPOSTERS);
                           break;
-    }
-    
+    }    
     return $aJson;
-}
-
+}*/
 
 /////////////////////////////////////////    JSON Functions    ////////////////////////////////////////////
 
@@ -209,7 +180,7 @@ function GetMediaCounterFromXBMC($media)
  * Function:	GetTotalNumberOfMoviesFromXBMC
  *
  * Created on Mar 18, 2013
- * Updated on Apr 20, 2013
+ * Updated on May 15, 2013
  *
  * Description: Connect to XBMC and get the total number of movies.
  *
@@ -221,7 +192,7 @@ function GetMediaCounterFromXBMC($media)
  */
 function GetTotalNumberOfMoviesFromXBMC()
 { 
-    $total = 0;  
+    $total = -1;  
 
     // Get total number of movies through JSON.
     // JSON: {"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", 
@@ -242,7 +213,7 @@ function GetTotalNumberOfMoviesFromXBMC()
  * Function:	GetTotalNumberOfTVShowsFromXBMC
  *
  * Created on Apr 14, 2013
- * Updated on Apr 17, 2013
+ * Updated on May 15, 2013
  *
  * Description: Connect to XBMC and get the total number of TV Shows.
  *
@@ -254,7 +225,7 @@ function GetTotalNumberOfMoviesFromXBMC()
  */
 function GetTotalNumberOfTVShowsFromXBMC()
 { 
-    $total = 0;    
+    $total = -1;    
 
     $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows",'.
                '"params": { "limits": { "start" : 0, "end": 1 }}, "id": "libTvShows"}';
@@ -273,7 +244,7 @@ function GetTotalNumberOfTVShowsFromXBMC()
  * Function:	GetTotalNumberOfAlbumsFromXBMC
  *
  * Created on Apr 20, 2013
- * Updated on Apr 20, 2013
+ * Updated on May 15, 2013
  *
  * Description: Connect to XBMC and get the total number of Albums.
  *
@@ -285,7 +256,7 @@ function GetTotalNumberOfTVShowsFromXBMC()
  */
 function GetTotalNumberOfAlbumsFromXBMC()
 { 
-    $total = 0;
+    $total = -1;
     
     $request = '{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums",'.
                '"params": { "limits": { "start" : 0, "end": 1 }}, "id": "libAlbums"}';
@@ -411,90 +382,6 @@ function GetAlbumsFromXBMC($counter, $offset)
     return $aAlbums;
 }
 
-
-////////////////////////////////////////    Database Functions    /////////////////////////////////////////
-
-/*
- * Function:	GetImportStatus
- *
- * Created on Mar 22, 2013
- * Updated on May 10, 2013
- *
- * Description: Reports the status of the import TV Shows process. 
- *
- * In:  $media, $counter, $total, $thumbs
- * Out: $aJson
- *
- */
-function GetImportStatus($media, $counter, $total, $thumbs)
-{
-    $aJson['id']     = 0;
-    $aJson['xbmcid'] = 0; 
-    $aJson['title']  = "empty";
-
-    if (OnlineCheckXBMC())
-    {
-        $aJson['online'] = true; 
-        $aJson['total']  = $total;
-    }
-    else {
-        $aJson['online'] = false; 
-        $aJson['total']  = -1;        
-    }
-    
-    $aJson['delta'] = $aJson['total'] - $counter;
-    $aJson['thumbs'] = $thumbs;
-    
-    if ($counter > 0)
-    {   
-        $db = OpenDatabase();
-
-        $id     = 0;
-        $xbmcid = 0;
-        $title  = null;
-
-        $sql = "SELECT id, xbmcid, title ".
-               "FROM $media ".
-               "WHERE id = $counter";
-        
-        $stmt = $db->prepare($sql);
-        if($stmt)
-        {
-            if($stmt->execute())
-            {
-                // Get number of rows.
-                $stmt->store_result();
-                $rows = $stmt->num_rows;
-
-                if ($rows != 0)
-                {              
-                    $stmt->bind_result($id, $xbmcid, $title);
-                    while($stmt->fetch())
-                    {                
-                        $aJson['id']     = $id;
-                        $aJson['xbmcid'] = $xbmcid;  
-                        $aJson['title']  = ShortenString($title, 22);
-                    }                  
-                }
-            }
-            else
-            {
-                die('Ececution query failed: '.mysqli_error($db));
-            }
-            $stmt->close();
-        }
-        else
-        {
-            die('Invalid query: '.mysqli_error($db));
-        } 
-
-        CloseDatabase($db);
-    }
-    
-    return $aJson;
-}
-
-
 /////////////////////////////////////////    Misc Functions    ////////////////////////////////////////////
 
 /*
@@ -515,9 +402,6 @@ function ProcessMovies($aMovies)
     {            
         $aMovie = ConvertMovie($aMovie);        
         InsertMovie($aMovie);
-        
-        //$counter++;
-        //UpdateSetting("MoviesCounter", $counter);
     }
 }
 
@@ -540,9 +424,6 @@ function ProcessTVShows($aTVShows, $counter)
         $aTVShow = ConvertTVShow($aTVShow);
         
         InsertTVShow($aTVShow);
-        
-        //$counter++;
-        //UpdateSetting("TVShowsCounter", $counter);
     }
 }
 
@@ -566,9 +447,6 @@ function ProcessAlbums($aAlbums, $counter)
         $aAlbum = ConvertAlbum($aAlbum);
         
         InsertAlbum($aAlbum);
-        
-        //$counter++;
-        //UpdateSetting("AlbumsCounter", $counter);
     }
 }
 

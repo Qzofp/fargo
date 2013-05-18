@@ -35,15 +35,11 @@ switch ($action)
                      $aJson = GetMediaCounterFromXBMC($media);
                      break;                    
                  
-    case "import"  : $media  = GetPageValue('media');
+    case "import"  : $media = GetPageValue('media');
                      $start = GetPageValue('start');
                      ImportMedia($start, $media);
                      break;
-    
-    case "status"  : $media = GetPageValue('media');
-                     $aJson = GetMediaStatus($media);
-                     break;
-    
+   
     case "test"    : $aJson = GetAlbumsFromXBMC(11, 12);
                      break;
                    

@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on May 06, 2013
+ * Updated on May 15, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -60,7 +60,7 @@ function ShowHiddenLoginBox()
  * Function:	ShowHiddenImportBox
  *
  * Created on May 06, 2013
- * Updated on May 10, 2013
+ * Updated on May 15, 2013
  *
  * Description: Show hidden import box.
  *
@@ -78,8 +78,8 @@ function ShowHiddenImportBox()
     echo "     <div class=\"message\"><br/></div>\n";
     
     // debug.
-    echo "     <div id=\"counter\"><br/></div>\n";
-    echo "     <div id=\"delta\"><br/></div>\n";
+    //echo "     <div id=\"counter\"><br/></div>\n";
+    //echo "     <div id=\"start\"><br/></div>\n";
     
     echo "     <div id=\"import_wrapper\">\n";
     echo "      <div id=\"thumb\"></div>\n";

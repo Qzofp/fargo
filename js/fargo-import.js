@@ -6,7 +6,7 @@
  * File:    fargo-import.js
  *
  * Created on Apr 14, 2013
- * Updated on May 13, 2013
+ * Updated on May 18, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -19,7 +19,7 @@
  * Function:	ImportMedia
  *
  * Created on Apr 14, 2013
- * Updated on May 13, 2013
+ * Updated on May 18, 2013
  *
  * Description: Import the media from XBMC.
  *
@@ -29,14 +29,184 @@
  */
 function ImportMedia(media)
 {
-    var counter = 0;
-    var retry   = 0;
+    var end     = 0;
     var start   = 0;
+    var delta   = 0;
   
-    // Get global_total
+    var msg = ["XBMC is online.", 
+               "XBMC is offline!", 
+               "Searching...", 
+               "Processing...",                
+               "Importing...", 
+               "No new " + ConvertMedia(media) + " found.",
+               "Import is ready."];
+  
+    // Get global_total_fargo
     GetFargoCounter(media);
-    start = global_total;
+    start = global_total_fargo;
     
+    //Get global_total_xbmc
+    GetXbmcCounter(media); 
+    end = global_total_xbmc;
+    
+    if (start >= end) 
+    {
+        if (end == -1) 
+        {
+            $(".message").html(msg[1]);
+            $(".cancel").toggleClass("cancel retry");
+            $(".retry").html("Retry");
+        }
+        else 
+        {
+            finish = 2 + Math.floor(Math.random() * 3);
+            $(".message").html(msg[0]);
+            DisplayStatusMessage(msg[2], msg[5], 3);
+            LogEvent("Information", "No new " + ConvertMedia(media) + " found.");
+        }
+    }
+    else
+    {           
+        $(".message").html(msg[0]);
+        LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
+        
+        // Import status. 
+        delta = end - start;
+        global_total_fargo++;
+        var status = setInterval(function(){
+        
+            // global_total_fargo++
+            ShowStatus(delta, end, status, media, msg);
+        
+            // debug.
+            $("#counter").html('Counter: ' + global_total_fargo);
+        
+        }, 800);
+
+        // Import process.
+        var process = setInterval(function(){
+        
+            StartImport(start, end, process, media);                  
+            start += 3;
+        
+            //debug
+            $("#start").html('Start: ' + start);
+        
+        }, 1800);
+          
+    }
+}
+
+/*
+ * Function:	ShowStatus
+ *
+ * Created on Apr 17, 2013
+ * Updated on May 18, 2013
+ *
+ * Description: Show the import status.
+ *
+ * In:	delta, end, status, media
+ * Out:	Status
+ *
+ */
+function ShowStatus(delta, end, status, media, msg)
+{        
+    if (global_cancel || global_total_fargo > end)
+    {
+        if (global_cancel) {
+            LogEvent("Warning", "Import " + ConvertMedia(media) + " canceled!");
+        }
+        else {
+            $(".message").html(msg[6]);
+            $(".cancel").html("Finish");
+            LogEvent("Information", "Import of " + delta + " " + ConvertMedia(media) + " finished.");
+        }    
+        clearInterval(status);
+    }
+    else
+    {    
+        if(typeof global_status_request !== 'undefined') {
+            global_status_request.abort();
+        }
+        global_status_request = $.ajax(
+        {
+            url: 'jsonfargo.php?action=status&media=' + media + '&id=' + global_total_fargo,
+            dataType: 'json',
+            success: function(json) 
+            {              
+                if (json.xbmcid > 0)
+                {
+                    $(".message").html(msg[4]);
+                    $("#thumb").html('<img src= "' + json.thumbs + '/'+ json.xbmcid +'.jpg" />');
+                    $("#title").html(json.title);  
+                    global_total_fargo++;
+                }  
+                else {
+                    $(".message").html(msg[3]);                    
+                }
+                
+            }, // End succes.
+            error: function() // Begin Error.
+            { 
+                // Log time and counter in text file.
+                LogEvent("Error", "Status check of " + media + " at counter " + global_total_fargo + " failed!");
+            } // End Error.
+        }); // End Ajax.            
+    }
+}
+
+/*
+ * Function:	StartImport
+ *
+ * Created on Apr 17, 2013
+ * Updated on May 18, 2013
+ *
+ * Description: Start the import process.
+ *
+ * In:	start, end, process, media
+ * Out:	processed media.
+ *
+ */
+function StartImport(start, end, process, media) 
+{        
+    if (global_cancel || start >= end)
+    {
+        clearInterval(process);
+    }
+    else
+    {    
+        if(typeof global_import_request !== 'undefined') {
+            global_import_request.abort();
+        }
+        global_import_request = $.ajax({
+            url: 'jsonxbmc.php?action=import&media=' + media + '&start=' + start,
+            dataType: 'json',
+            success: function(json) { 
+                
+            }, // End Success.  
+            error: function() // Begin Error.
+            { 
+                // Log time and counter in text file.
+                //LogEvent("Warning", "Retry import of " + media + " at counter " + global_total_fargo + "!");
+            } // End Error.                        
+        }); // End Ajax;
+    }    
+}
+
+/*
+ * Function:	AdjustImageSize
+ *
+ * Created on May 17, 2013
+ * Updated on May 17, 2013
+ *
+ * Description: Adjust the size of the image.
+ *
+ * In:	media
+ * Out:	Adjusted image size
+ *
+ */
+function AdjustImageSize(media)
+{
     if (media == "music") {
         $("#import_wrapper").height(114);
         $("#thumb").height(102);
@@ -44,159 +214,35 @@ function ImportMedia(media)
     else {
         $("#import_wrapper").height(154);
         $("#thumb").height(142);
-    }
-
-    ShowStatus(counter, retry, start, media); 
+    }    
 }
 
-
 /*
- * Function:	ShowStatus
+ * Function:	DisplayStatusMessage
  *
- * Created on Apr 17, 2013
- * Updated on May 13, 2013
+ * Created on May 17, 2013
+ * Updated on May 17, 2013
  *
- * Description: Show the import status.
+ * Description: Display status message.
  *
- * In:	counter, retry, start, media
+ * In:	str1, str2, end
  * Out:	Status
  *
  */
-function ShowStatus(counter, retry, start, media)
+function DisplayStatusMessage(str1, str2, end)
 {
-    if(typeof global_ajax_request !== 'undefined') {
-        global_ajax_request.abort();
-    }
-    global_ajax_request = $.ajax(
-    {
-        url: 'jsonxbmc.php?action=status&media=' + media,
-        //async: false,
-        dataType: 'json',
-        timeout:5000,
-        success: function(json) 
+    var i = 0; 
+    var timer = setInterval(function(){
+			
+        $(".message").html(str1);
+        i++; 
+	
+        // End interval loop.
+        if (i > end) 
         {
-            var ready = false;
-        
-            // Check if cancel button is pressed.
-            if (global_cancel) 
-            {        
-                LogEvent("Warning", "Import " + ConvertMedia(media) + " canceled!");
-                return;
-            }
-        
-            if (json.online) 
-            {               
-               if (counter == 0) 
-               {
-                   LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
-                   $(".message").html('XBMC is online.');
-               }
-               
-               if (json.delta == 0 && counter == 0) 
-               {  
-                   setTimeout(function() {
-                       $(".message").html('Searching...');                       
-                   }, 1000);
-                   
-                   setTimeout(function() {
-                       $(".message").html('No new ' + ConvertMedia(media) + ' found.');
-                       LogEvent("Information", "No new " + ConvertMedia(media) + " found.");
-                       $(".cancel").html("Ok");
-                   }, 2500);                   
-                   
-                   return;
-               }
-              
-               if (json.delta > 0 && start < json.total)
-               {
-                   setTimeout(function() {         
-                       $(".message").html('Importing...');                       
-                   }, 1500);
-           
-                   StartImport(start, media);                   
-                   $("#progress").html('Movie ID: ' + json.xbmcid);
-                   start += 3;
-               }   
-               else 
-               {
-                   setTimeout(function() {
-                       $(".message").html('Import is ready.');
-                       $(".cancel").html("Finish");
-                   }, 1000);
-                   
-                   $("#progress").html('Finished');                   
-                     
-                   ready = true;
-               }  
-            }
-            else 
-            {
-               counter = -1;
-               retry++;
-               $(".message").html('XBMC is offline!');
-            }
-            
-            $("#counter").html('Counter: ' + counter + ' Retry: ' + retry + ' Start ' + start);
-            $("#delta").html('Delta: ' + json.delta + ' Total: ' + json.total);
-                    
-            if (json.id > 0 && json.online)
-            {
-               $("#thumb").html('<img src= "' + json.thumbs + '/'+ json.xbmcid +'.jpg" />');
-               $("#title").html(json.title);
-            } 
-            
-            // If ready exit progress, else retry.
-            if (ready) 
-            {
-                if (json.total > 0) {
-                    LogEvent("Information", "Import of " + json.total + " " + ConvertMedia(media) + " finished.");
-                }    
-                return;
-            }
-            else 
-            {
-                setTimeout(function() {
-                    ShowStatus(counter, retry, start, media);
-                },1000);
-            }
-            
-            counter++;
-            
-        }, // End Success.
-        error: function() // Begin Error.
-        { 
-            // Log time and counter in text file.
-            LogEvent("Warning", "Retry import of " + media + " at counter " + counter + ".");
-
-            // Retry...
-            retry++;
-            ShowStatus(counter, retry, start, media);
-        } // End Error.
-    }); // End Ajax.
- }
-
-
-/*
- * Function:	StartImport
- *
- * Created on Apr 17, 2013
- * Updated on Mat 12, 2013
- *
- * Description: Start the import process.
- *
- * In:	start, media
- * Out:	processed media.
- *
- */
-function StartImport(start, media) 
-{
-    $.ajax({
-        url: 'jsonxbmc.php?action=import&media=' + media + '&start=' + start,
-        //async: false,
-        dataType: 'json',
-        success: function(json) {
-
-        } // End Success.
-        
-    }); // End Ajax;
+            clearInterval(timer);
+            $(".message").html(str2);
+            $(".cancel").html("Ok");
+        }		
+    }, 1000);	
 }

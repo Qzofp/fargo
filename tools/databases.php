@@ -7,7 +7,7 @@
  * File:    databases.php
  *
  * Created on Mar 09, 2013
- * Updated on May 10, 2013
+ * Updated on May 18, 2013
  *
  * Description: Database toolbox functions.
  *
@@ -222,6 +222,39 @@ function GetItemsFromDatabase($sql)
     return $aItems;
 }
 
+/*
+ * Function:	CountRowsWithQuery
+ *
+ * Created on Dec 20, 2009
+ * Updated on May 18, 2011
+ *
+ * Description: Count the number of rows from a sql query.
+ *
+ * In:	$sql
+ * Out:	$rows
+ *
+ */
+function CountRowsWithQuery($sql)
+{
+    $db = OpenDatabase();
+
+    $result = $db->query($sql);
+    if ($result)
+    {
+        // Determine number of rows result set.
+    	$rows = $result->num_rows;
+
+    	// Close result set.
+    	$result->close();
+    }
+    else {
+        die('Ececution query failed: '.$db->error);
+    }
+    
+    CloseDatabase($db);
+    
+    return $rows;
+}
 
 /*
  * Function:	CountRows

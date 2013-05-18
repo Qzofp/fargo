@@ -7,7 +7,7 @@
  * File:    test.php
  *
  * Created on Apr 22, 2013
- * Updated on May 09, 2013
+ * Updated on May 15, 2013
  *
  * Description: Fargo's testing page.
  *
@@ -37,7 +37,7 @@ switch ($button)
                            break;
     
     case "Delete Movies" : EmptyTable("movies");
-                           UpdateSetting("MoviesCounter", 0);
+                           //UpdateSetting("MoviesCounter", 0);
                            DeleteFile(cMOVIESPOSTERS."/*.jpg");
                            echo "   <H2>Movies Deleted!</H2>\n";
                            break;
@@ -47,7 +47,7 @@ switch ($button)
                              break;
     
     case "Delete TV Shows" : EmptyTable("tvshows");
-                             UpdateSetting("TVShowsCounter", 0);
+                             //UpdateSetting("TVShowsCounter", 0);
                              DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
                              echo "   <H2>TV Shows Deleted!</H2>\n";
                              break;    
@@ -57,7 +57,7 @@ switch ($button)
                           break;
     
     case "Delete Music" : EmptyTable("music");
-                          UpdateSetting("AlbumsCounter", 0);
+                          //UpdateSetting("AlbumsCounter", 0);
                           DeleteFile(cALBUMSCOVERS."/*.jpg");
                           echo "   <H2>Music Deleted!</H2>\n";
                           break;

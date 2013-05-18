@@ -7,7 +7,7 @@
  * File:    json.php
  *
  * Created on Apr 14, 2013
- * Updated on Apr 17, 2013
+ * Updated on Apr 15, 2013
  *
  * Description: JSON toolbox functions.
  *
@@ -43,12 +43,11 @@ function GetHttpRequest($url, $request)
     return $json;
 }
 
-
 /*
  * Function:	OnlineCheckXBMC
  *
  * Created on Mar 11, 2013
- * Updated on Apr 15, 2013
+ * Updated on May 15, 2013
  *
  * Description: Check with JSON if XBMC is online.
  *
@@ -68,7 +67,7 @@ function OnlineCheckXBMC()
     $aJson = GetHttpRequest(cURL, $request);    
     
     if ($aJson["result"] != "pong") {
-        $online = false;
+        $online = -1;
     }
     return $online;
 }

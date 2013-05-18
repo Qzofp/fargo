@@ -6,7 +6,7 @@
  * File:    fargo-common.js
  *
  * Created on May 04, 2013
- * Updated on May 12, 2013
+ * Updated on May 17, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -502,14 +502,13 @@ function LogEvent(type, event)
   }); // End Ajax.
 }
 
-
 /*
- * Function:	GetLastCounter
+ * Function:	GetFargoCounter
  *
  * Created on May 12, 2013
- * Updated on May 12, 2013
+ * Updated on May 15, 2013
  *
- * Description: Get the media coiunter from Fargo.
+ * Description: Get the media counter from Fargo.
  *
  * In:	media
  * Out:	counter
@@ -523,8 +522,32 @@ function GetFargoCounter(media)
         dataType: 'json',
         success: function(json) 
         {    
-            global_total = json.counter;
-        } // End Success.
-        
+            global_total_fargo = json.counter;
+        } // End Success.        
+    }); // End Ajax;
+}
+
+/*
+ * Function:	GetXbmcCounter
+ *
+ * Created on May 15, 2013
+ * Updated on May 15, 2013
+ *
+ * Description: Get the media counter from XBMC.
+ *
+ * In:	media
+ * Out:	counter
+ *
+ */
+function GetXbmcCounter(media) 
+{
+    $.ajax({
+        url: 'jsonxbmc.php?action=counter&media=' + media,
+        async: false,
+        dataType: 'json',
+        success: function(json) 
+        {    
+            global_total_xbmc = json.counter;
+        } // End Success.        
     }); // End Ajax;
 }
