@@ -173,7 +173,7 @@ function GetFargoValues($media, $sort)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on May 18, 2013
+ * Updated on May 19, 2013
  *
  * Description: Reports the status of the import process.
  *
@@ -208,7 +208,7 @@ function GetImportStatus($media, $id, $thumbs)
                 while($stmt->fetch())
                 {                
                     $aJson['xbmcid'] = $xbmcid;  
-                    $aJson['title']  = ShortenString($title, 22);
+                    $aJson['title']  = ShortenString($title, 50);
                 }                  
             }
         }

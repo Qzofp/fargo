@@ -85,7 +85,7 @@ function ShowHiddenImportBox()
     echo "      <div id=\"thumb\"></div>\n";
     echo "     </div>\n";
     echo "     <div id=\"title\">&nbsp;</div>\n";
-    //echo "     <div id=\"progress\"></div>\n";       
+    echo "     <div id=\"progress\"></div>\n";    
     echo "     <div class=\"button\">\n";
     echo "      <button type=\"button\" class=\"cancel\">Cancel</button>\n";
     echo "     </div>\n";

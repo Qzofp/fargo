@@ -128,7 +128,7 @@ function SetImportHandler()
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on May 18, 2013
+ * Updated on May 19, 2013
  *
  * Description: Set the import handler, Cancel or finish the import.
  * 

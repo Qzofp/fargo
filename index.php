@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on May 12, 2013
+ * Updated on May 19, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -20,17 +20,27 @@ if(!isset($_SESSION['LOGIN']))
 {
     $login = false;
     $user = "";
-    $aJavascript = array("js/jquery-1.9.1.min.js", "js/fargo-common.js", "js/fargo-login.js");
+    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js", 
+                         "js/fargo-common.js", 
+                         "js/fargo-login.js");
+    
     $li_import = "";
     $li_login  = "<li id=\"login\">Login</li>\n";
+    $system_states = null;
 }
 else
 {
     $login = true;
     $user = "Welcome: <span>".$_SESSION['USER']."</span>";
-    $aJavascript = array("js/jquery-1.9.1.min.js", "js/fargo-common.js", "js/fargo-system.js", "js/fargo-import.js");
+    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js",
+                         "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
+                         "js/fargo-common.js", 
+                         "js/fargo-system.js", 
+                         "js/fargo-import.js");
+     
     $li_import = "<li id=\"import\">Import</li>\n";
     $li_login  = "<li id=\"logout\">Logout</li>\n";
+    $system_states = "   <div id=\"state_xbmc\">offline</div>\n";
 }
  
 require_once 'settings.php';
@@ -39,6 +49,7 @@ require_once 'include/common.php';
 
 $title = "Fargo: A Media Catalog For XBMC";
 $aCss   = array("<link href='http://fonts.googleapis.com/css?family=Dancing+Script:700' rel='stylesheet' type='text/css'>",
+                "<link href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/start/jquery-ui.css' rel='stylesheet' type='text/css'>",
                 "<link rel=\"stylesheet\" href=\"css/confluence.css\">");
 
 $media = GetPageValue('media');
@@ -116,6 +127,7 @@ echo "   </div>\n";
 
 // Page States
 echo "   <div id=\"state_media\">movies</div>\n";
+echo $system_states;
 
 PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true, "LoadFargoMedia('$media')");
 ?>

@@ -6,7 +6,7 @@
  * File:    fargo-import.js
  *
  * Created on Apr 14, 2013
- * Updated on May 18, 2013
+ * Updated on May 19, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -19,7 +19,7 @@
  * Function:	ImportMedia
  *
  * Created on Apr 14, 2013
- * Updated on May 18, 2013
+ * Updated on May 19, 2013
  *
  * Description: Import the media from XBMC.
  *
@@ -29,9 +29,11 @@
  */
 function ImportMedia(media)
 {
-    var end     = 0;
-    var start   = 0;
-    var delta   = 0;
+    var end   = 0;
+    var start = 0;
+    var delta = 0;
+    
+    var percent = 0;
   
     var msg = ["XBMC is online.", 
                "XBMC is offline!", 
@@ -46,7 +48,7 @@ function ImportMedia(media)
     start = global_total_fargo;
     
     //Get global_total_xbmc
-    GetXbmcCounter(media); 
+    GetXbmcCounter(media);
     end = global_total_xbmc;
     
     if (start >= end) 
@@ -61,6 +63,7 @@ function ImportMedia(media)
         {
             finish = 2 + Math.floor(Math.random() * 3);
             $(".message").html(msg[0]);
+            SetState("xbmc", "online");
             DisplayStatusMessage(msg[2], msg[5], 3);
             LogEvent("Information", "No new " + ConvertMedia(media) + " found.");
         }
@@ -68,29 +71,56 @@ function ImportMedia(media)
     else
     {           
         $(".message").html(msg[0]);
+        SetState("xbmc", "online");
         LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
         
         // Import status. 
         delta = end - start;
-        global_total_fargo++;
+        
+        //global_total_fargo++;
         var status = setInterval(function(){
         
-            // global_total_fargo++
-            ShowStatus(delta, end, status, media, msg);
-        
+            if (GetState("xbmc") == "online")
+            {   
+                // Calculate percentage.
+                percent = global_total_fargo - (end - delta);
+                percent = Math.round(percent/delta * 100);
+                $("#counter").html('Percentage: ' + percent + '%');
+                $("#progress").progressbar({
+                    value : percent       
+                });
+                
+                // global_total_fargo++
+                ShowStatus(delta, end, status, media, msg);
+            }
+            else 
+            {
+                $(".message").html(msg[1]);
+                $(".cancel").toggleClass("cancel retry");
+                $(".retry").html("Retry"); 
+                clearInterval(status);
+            }
+            
             // debug.
-            $("#counter").html('Counter: ' + global_total_fargo);
+            //proc = (100 * global_total_fargo)/delta;
+            //$("#counter").html('Percentage: ' + proc);
         
         }, 800);
 
         // Import process.
         var process = setInterval(function(){
         
-            StartImport(start, end, process, media);                  
-            start += 3;
+            if (GetState("xbmc") == "online")
+            { 
+                StartImport(start, end, process, media);                  
+                start += 3;
+            }
+            else {
+                clearInterval(process);
+            }
         
             //debug
-            $("#start").html('Start: ' + start);
+            //$("#start").html('Start: ' + start);
         
         }, 1800);
           
@@ -111,7 +141,7 @@ function ImportMedia(media)
  */
 function ShowStatus(delta, end, status, media, msg)
 {        
-    if (global_cancel || global_total_fargo > end)
+    if (global_cancel || global_total_fargo >= end)
     {
         if (global_cancel) {
             LogEvent("Warning", "Import " + ConvertMedia(media) + " canceled!");
@@ -130,7 +160,7 @@ function ShowStatus(delta, end, status, media, msg)
         }
         global_status_request = $.ajax(
         {
-            url: 'jsonfargo.php?action=status&media=' + media + '&id=' + global_total_fargo,
+            url: 'jsonfargo.php?action=status&media=' + media + '&id=' + (global_total_fargo + 1),
             dataType: 'json',
             success: function(json) 
             {              
@@ -138,13 +168,12 @@ function ShowStatus(delta, end, status, media, msg)
                 {
                     $(".message").html(msg[4]);
                     $("#thumb").html('<img src= "' + json.thumbs + '/'+ json.xbmcid +'.jpg" />');
-                    $("#title").html(json.title);  
+                    $("#title").html(json.title);
                     global_total_fargo++;
                 }  
                 else {
                     $(".message").html(msg[3]);                    
-                }
-                
+                }              
             }, // End succes.
             error: function() // Begin Error.
             { 
@@ -159,7 +188,7 @@ function ShowStatus(delta, end, status, media, msg)
  * Function:	StartImport
  *
  * Created on Apr 17, 2013
- * Updated on May 18, 2013
+ * Updated on May 19, 2013
  *
  * Description: Start the import process.
  *
@@ -181,8 +210,11 @@ function StartImport(start, end, process, media)
         global_import_request = $.ajax({
             url: 'jsonxbmc.php?action=import&media=' + media + '&start=' + start,
             dataType: 'json',
-            success: function(json) { 
-                
+            success: function(json) 
+            { 
+                if (json.online == -1) {
+                    SetState("xbmc", "offline");
+                }
             }, // End Success.  
             error: function() // Begin Error.
             { 
@@ -209,11 +241,11 @@ function AdjustImageSize(media)
 {
     if (media == "music") {
         $("#import_wrapper").height(114);
-        $("#thumb").height(102);
+        $("#thumb").height(100);
     }
     else {
         $("#import_wrapper").height(154);
-        $("#thumb").height(142);
+        $("#thumb").height(140);
     }    
 }
 

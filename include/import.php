@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on May 15, 2013
+ * Updated on May 19, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -20,71 +20,86 @@
  * Function:	ImportMedia
  *
  * Created on Apr 19, 2013
- * Updated on May 13, 2013
+ * Updated on May 19, 2013
  *
  * Description: Reports the status of the import media process. 
  *
  * In:  $start, $media
- * Out: -
+ * Out: $aJson
  *
  */
 function ImportMedia($start, $media)
-{
+{   
+    $aJson = null;
+    
     switch ($media)    
     {   
-        case "movies"   : ImportMovies($start);
+        case "movies"   : $aJson = ImportMovies($start);
                           break;
     
-        case "tvshows"  : ImportTVShows($start);
+        case "tvshows"  : $aJson = ImportTVShows($start);
                           break;
                       
-        case "music"    : ImportAlbums($start);
+        case "music"    : $aJson = ImportAlbums($start);
                           break;                      
     }
+    return $aJson;
 }
 
 /*
  * Function:	ImportMovies
  *
  * Created on Mar 11, 2013
- * Updated on May 15, 2013
+ * Updated on May 19, 2013
  *
  * Description: Import the movies. 
  *
  * In:  $start
- * Out: -
+ * Out: $aJson
  *
  */
 function ImportMovies($start)
 {
     $offset  = 3;
+    $aJson['online'] = true;
     $aMovies = GetMoviesFromXBMC($start, $offset);
     
     if (!empty($aMovies)) {
         ProcessMovies($aMovies);
     }
+    else {
+        $aJson['online'] = -1;
+    }
+    
+    return $aJson;
 }
 
 /*
  * Function:	ImportTVShows
  *
  * Created on Apr 19, 2013
- * Updated on May 15, 2013
+ * Updated on May 19, 2013
  *
  * Description: Import the tv shows. 
  *
  * In:  $start
- * Out: -
+ * Out: $aJson
  *
  */
 function ImportTVShows($start)
 {
     $offset  = 3;  
+    $aJson['online'] = true;
     $aTVShows = GetTVShowsFromXBMC($start, $offset);
     
     if (!empty($aTVShows)) {
         ProcessTVShows($aTVShows, $start);
     }
+    else {
+        $aJson['online'] = -1;
+    }
+    
+    return $aJson;    
 }
 
 /*
@@ -96,50 +111,24 @@ function ImportTVShows($start)
  * Description: Import the music albums. 
  *
  * In:  $start
- * Out: -
+ * Out: $aJson
  *
  */
 function ImportAlbums($start)
 {
     $offset  = 3;   
+    $aJson['online'] = true;
     $aAlbums = GetAlbumsFromXBMC($start, $offset);
     
     if (!empty($aAlbums)) {
         ProcessAlbums($aAlbums, $start);
     }
-}
-
-/*
- * Function:	GetMediaStatus
- *
- * Created on Mar 22, 2013
- * Updated on May 13, 2013
- *
- * Description: Reports the status of the import media process. 
- *
- * In:  -
- * Out: $aJson
- *
- */
-/*function GetMediaStatus($media)
-{
-    $aJson = null;   
-    switch ($media)    
-    {   
-        case "movies"   : $total = (int)GetTotalNumberOfMoviesFromXBMC();
-                          $aJson = GetImportStatus($media, $total, cMOVIESPOSTERS);
-                          break;
-        
-        case "music"    : $total = (int)GetTotalNumberOfAlbumsFromXBMC();
-                          $aJson = GetImportStatus($media, $total, cALBUMSCOVERS);
-                          break;
+    else {
+        $aJson['online'] = -1;
+    }
     
-        case "tvshows"  : $total = (int)GetTotalNumberOfTVShowsFromXBMC();
-                          $aJson = GetImportStatus($media, $total, cTVSHOWSPOSTERS);
-                          break;
-    }    
-    return $aJson;
-}*/
+    return $aJson;  
+}
 
 /////////////////////////////////////////    JSON Functions    ////////////////////////////////////////////
 
@@ -147,7 +136,7 @@ function ImportAlbums($start)
  * Function:	GetMediaCounterFromXBMC
  *
  * Created on Mar 18, 2013
- * Updated on Apr 20, 2013
+ * Updated on May 19, 2013
  *
  * Description: Connect to XBMC and get the media counter.
  *
@@ -171,6 +160,11 @@ function GetMediaCounterFromXBMC($media)
                       
         case "music"    : $aJson['counter'] = GetTotalNumberOfAlbumsFromXBMC();
                           break;                      
+    }
+    
+    $aJson['online'] = true;
+    if ($aJson['counter'] == -1) {
+        $aJson['online'] = -1;
     }
     
     return $aJson;
