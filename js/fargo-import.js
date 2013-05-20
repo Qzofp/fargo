@@ -6,7 +6,7 @@
  * File:    fargo-import.js
  *
  * Created on Apr 14, 2013
- * Updated on May 19, 2013
+ * Updated on May 20, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -19,7 +19,7 @@
  * Function:	ImportMedia
  *
  * Created on Apr 14, 2013
- * Updated on May 19, 2013
+ * Updated on May 20, 2013
  *
  * Description: Import the media from XBMC.
  *
@@ -122,7 +122,7 @@ function ImportMedia(media)
             //debug
             //$("#start").html('Start: ' + start);
         
-        }, 1800);
+        }, 3000);
           
     }
 }
@@ -188,7 +188,7 @@ function ShowStatus(delta, end, status, media, msg)
  * Function:	StartImport
  *
  * Created on Apr 17, 2013
- * Updated on May 19, 2013
+ * Updated on May 20, 2013
  *
  * Description: Start the import process.
  *
@@ -219,7 +219,7 @@ function StartImport(start, end, process, media)
             error: function() // Begin Error.
             { 
                 // Log time and counter in text file.
-                //LogEvent("Warning", "Retry import of " + media + " at counter " + global_total_fargo + "!");
+                LogEvent("Warning", "Server is to busy with import of " + media + "!");
             } // End Error.                        
         }); // End Ajax;
     }    

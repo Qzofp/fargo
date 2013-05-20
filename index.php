@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on May 19, 2013
+ * Updated on May 20, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -93,11 +93,12 @@ echo "   </div>\n";
 
 // Display system page.
 echo "   <div id=\"display_system\">\n";
-echo "    <div id=\"display_system_left\">\n";
-echo "     <div id=\"fargo\">Qzofp's Fargo</div>\n";
-echo "    </div>\n";
-
-echo "    <div id=\"display_system_right\">\n";
+echo "    <div id=\"display_system_main\">\n";
+echo "     <div id=\"display_system_left\">\n";
+echo "      <div id=\"fargo\">Qzofp's Fargo</div>\n";
+echo "     </div>\n";
+echo "     <div id=\"display_system_right\">\n";
+echo "     </div>\n";
 echo "    </div>\n";
 echo "   </div>\n";
 
