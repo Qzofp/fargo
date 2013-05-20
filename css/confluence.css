@@ -372,11 +372,11 @@ background-color:rgba(0,0,0,0.5);
 #display_system_right{
 float:left;
 display:table;
-height:100%;
 }
 
 #display_system_left{
 width:35%;
+height:100%;
 border-radius:10px 0 0 10px;
 background-color:rgba(0,0,0,0.3);
 /*background-color:lightblue;*/
@@ -419,6 +419,10 @@ background-image: -ms-radial-gradient(center, ellipse farthest-side, rgba(0,0,0,
 #display_system_right{
 width:65%;
 border-radius:0 10px 10px 0;
+padding-top:30px;
+font-size:1.8em;
+color:#999;
+
 /*background-color:rgba(0,0,0,0.5);*/
 /*background-color:#ECECEC;  */
 }
@@ -502,10 +506,11 @@ display:none;
 
 /* Page states */
 #state_media,
+#state_page,
 #state_xbmc{
-display:none;
-/*font-size:2em;
-color:#fff;*/
+/*display:none;*/
+font-size:2em;
+color:#fff;
 }
 
 #footer{

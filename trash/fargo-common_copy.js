@@ -54,6 +54,7 @@ function GetFargoValues(media, sort)
     }); // End Ajax.       
 }
 
+
 /*
  * Function:	ChangeControlBar
  *
@@ -90,6 +91,7 @@ function ChangeControlBar(media)
     return media;
 }
 
+
 /*
  * Function:	SetState
  *
@@ -109,6 +111,7 @@ function SetState(name, value)
     var state = "#state_" + name;
     $(state).text(value);
 }
+
 
 /*
  * Function:	GetState
@@ -130,11 +133,12 @@ function GetState(name)
     return $(state).text();
 }
 
+
 /*
  * Function:	ConvertMedia
  *
  * Created on May 10, 2013
- * Updated on May 20, 2013
+ * Updated on May 10, 2013
  *
  * Description: Convert the media string to a more readable string.
  * 
@@ -157,13 +161,13 @@ function ConvertMedia(media)
                         break;
                         
         case 'system' : media = "System";
-                        break;
         
         default       : break;
     }
     
     return media;
 }
+
 
 /*
  * Function:	SetOptionHandler
@@ -181,37 +185,6 @@ function SetOptionHandler()
 {
     $('#display_system_left .option').removeClass('on');    
     $(this).addClass('on');
-    
-    //alert($(this).text());
-    
-    ShowProperty($(this).text());
-}
-
-/*
- * Function:	ShowProperty
- *
- * Created on May 20, 2013
- * Updated on May 20, 2013
- *
- * Description: Set the option and show the properties.
- * 
- * In:	property
- * Out:	Property page
- *
- */
-function ShowProperty(name)
-{
-    $('#display_system_right').text("");
-    
-    $.ajax({
-        url: 'jsonfargo.php?action=option&name=' + name,
-        async: false,
-        dataType: 'json',
-        success: function(json) 
-        {    
-            $('#display_system_right').append(json.html);
-        } // End Success.        
-    }); // End Ajax;    
 }
 
 /*
@@ -248,6 +221,7 @@ function SetPageHandler(event)
     ShowMediaTable(global_media, global_page, global_column, global_sort);
 } 
 
+
 /*
  * Function:	SetArrowHandler
  *
@@ -282,13 +256,14 @@ function SetArrowHandler(action)
     //ShowMediaTable(global_media, global_page, global_column, global_sort);
 } 
 
+
 /*
  * Function:	SetKeyHandler
  *
  * Created on Apr 13, 2013
- * Updated on May 20, 2013
+ * Updated on Apr 13, 2013
  *
- * Description: Determine on which page the key is pressed and then continue.
+ * Description: Set the key from the keyboard handler
  * 
  * In:	event
  * Out:	Media
@@ -297,26 +272,17 @@ function SetArrowHandler(action)
 function SetKeyHandler(event)
 {
     var key = event.charCode || event.keyCode || 0;
-    var page = GetState("page");
-    
-    switch(page)
+       
+    if (!global_popup)   
     {
-        case "movies" : SetMainKeyHandler(key, event);
-                        break;
-                        
-        case "tvshows": SetMainKeyHandler(key, event);
-                        break;
-                        
-        case "music"  : SetMainKeyHandler(key, event);
-                        break;                        
-        
-        case "system" : SetSystemKeyHandler(key);
-                        break;  
-        
-        case "popup"  : SetPopupKeyHandler(key);
-                        break;
+        SetMainKeyHandler(key, event);
     }
+    else 
+    {
+        SetPopupKeyHandler(key);
+    }    
 }
+
 
 /*
  * Function:	SetMainKeyHandler
@@ -371,80 +337,6 @@ function SetMainKeyHandler(key, event)
 }
 
 /*
- * Function:	SetSystemKeyHandler
- *
- * Created on May 20, 2013
- * Updated on May 20, 2013
- *
- * Description: Set the key from the keyboard. Perform action on the system page.
- * 
- * In:	key
- * Out:	System option/property
- *
- */
-function SetSystemKeyHandler(key)
-{    
-    switch(key)
-    {
-        case 37 : // Left arrow.
-                  break;
-        
-        case 38 : // Up arrow.
-                  SelectOption("up");
-                  break;
-        
-        case 39 : // right arrow.
-                  break;
-        
-        case 40 : // Down arrow.
-                  SelectOption("down");
-                  break;
-    }
-}
-
-/*
- * Function:	SelectOption
- *
- * Created on May 20, 2013
- * Updated on May 20, 2013
- *
- * Description: Select a system option by moving up or down the options list.
- * 
- * In:	action
- * Out:	-
- *
- */
-function SelectOption(action)
-{
-    var active, target; 
-    active = $('.option.on');
-    
-    if (action == "up")
-    {
-        if (active.prev('.option').length) {
-            target = active.prev('.option'); 
-        }
-        else {
-            target = $('.option:last');
-        }        
-    }
-    else 
-    {    
-        if (active.next('.option').length) {
-            target = active.next('.option'); 
-        }
-        else {
-            target = $('.option:first');
-        }
-    }
-                 
-    active.removeClass('on');
-    target.addClass('on');
-    
-    ShowProperty(target.text());
-}
-
-/*
  * Function:	SetPopupKeyHandler
  *
  * Created on Apr 28, 2013
@@ -463,11 +355,12 @@ function SetPopupKeyHandler(key)
     }    
 }
 
+
 /*
  * Function:	SetPopupHandler
  *
  * Created on Apr 28, 2013
- * Updated on May 20, 2013
+ * Updated on May 08, 2013
  *
  * Description: Set popup handler and show popup box.
  * 
@@ -477,10 +370,10 @@ function SetPopupKeyHandler(key)
  */
 function SetPopupHandler(event)
 { 
-    ShowPopupBox(event.data.title);
-    SetState("page", "popup");
-    //global_popup = true;
+    ShowPopupBox(event.data.title);    
+    global_popup = true;
 }
+
 
 /*
  * Function:	ShowPopupBox
@@ -509,6 +402,7 @@ function ShowPopupBox(title)
     mask.fadeIn("300");      
 }
 
+
 /*
  * Function:	SetMaskHandler
  *
@@ -523,15 +417,14 @@ function ShowPopupBox(title)
  */
 function SetMaskHandler()
 { 
-    var media = GetState("media");
-    SetState("page", media);
+    $("#popup").fadeOut("300");
     
-    $("#popup").fadeOut("300");    
     $("#mask").fadeOut("300");
     //$("#mask").hide();
     
-    //global_popup = false;   
+    global_popup = false;   
 }
+
 
 /*
  * Function:	ShowMediaTable
@@ -581,6 +474,7 @@ function ShowMediaTable(media, page, column, sort)
         } // End success.
     }); // End Ajax. 
 }
+
 
 /*
  * Function:	LogEvent

@@ -219,7 +219,7 @@ function StartImport(start, end, process, media)
             error: function() // Begin Error.
             { 
                 // Log time and counter in text file.
-                LogEvent("Warning", "Server is to busy with import of " + media + "!");
+                LogEvent("Warning", "Fargo is to busy with processing " + media + "!");
             } // End Error.                        
         }); // End Ajax;
     }    

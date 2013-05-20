@@ -6,7 +6,7 @@
  * File:    fargo-system.js
  *
  * Created on May 04, 2013
- * Updated on May 20, 2013
+ * Updated on May 18, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -21,7 +21,7 @@ var global_sort  = "";
 
 var global_lastpage = 1; //last page
 var global_column   = 0;
-//var global_popup    = false;
+var global_popup    = false;
 
 // Media total.
 var global_total_fargo = 0;
@@ -89,7 +89,7 @@ function LoadFargoMedia(media)
  * Function:	SetImportHandler
  *
  * Created on May 08, 2013
- * Updated on May 20, 2013
+ * Updated on May 18, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -106,8 +106,7 @@ function SetImportHandler()
     
     //alert($(this).html());
     ShowPopupBox(title);
-    SetState("page", "popup");
-    //global_popup = true;
+    global_popup = true;
      
     $(".retry").toggleClass("retry cancel");
     
@@ -160,7 +159,7 @@ function SetImportCancelHandler()
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on May 20, 2013
+ * Updated on May 11, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -171,7 +170,6 @@ function SetImportCancelHandler()
 function SetMediaHandler(event)
 {            
    var media  = event.data.media;  
-   SetState("page", media);
 
    global_page = 1;
    global_sort = "";
@@ -196,7 +194,7 @@ function SetMediaHandler(event)
  * Function:	SetFullSystemHandler
  *
  * Created on May 04, 2013
- * Updated on May 20, 2013
+ * Updated on May 11, 2013
  *
  * Description: Show the full system page with all the options.
  * 
@@ -209,7 +207,6 @@ function SetFullSystemHandler(event)
    var media  = event.data.media;  
    var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Run Tests', 'Credits', 'About'];
    var last = $('#display_system_left .option').last().text();
-   SetState("page", media);
 
    global_page = 1;
    global_sort = "";
@@ -232,8 +229,6 @@ function SetFullSystemHandler(event)
    }
    $('#display_system_left .option').removeClass('on');
    $('#display_system_left .option').first().addClass('on'); 
-   
-   ShowProperty("Statistics");
    
    $("#control_sub").slideDown("slow");
 }

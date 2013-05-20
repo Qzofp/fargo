@@ -115,7 +115,7 @@ echo "      <li id=\"system\">SYSTEM</li>\n";
 echo "     </ul>\n";
 echo "    </div>\n";
 
-// Sub control bar
+// Sub control bar.
 echo "    <div id=\"control_sub\">\n";
 echo "     <ul>\n";
 echo "      $li_import";
@@ -126,8 +126,9 @@ echo "    </div>\n";
 
 echo "   </div>\n";
 
-// Page States
+// Page States.
 echo "   <div id=\"state_media\">movies</div>\n";
+echo "   <div id=\"state_page\">movies</div>\n"; // movies, tvshows, music, system or popup.
 echo $system_states;
 
 PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true, "LoadFargoMedia('$media')");

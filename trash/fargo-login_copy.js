@@ -6,7 +6,7 @@
  * File:    fargo-login.js
  *
  * Created on Apr 05, 2013
- * Updated on May 20, 2013
+ * Updated on May 12, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the login option.
  *
@@ -21,7 +21,7 @@ var global_sort  = "";
 
 var global_lastpage = 1; //last page
 var global_column   = 0;
-//var global_popup    = false;
+var global_popup    = false;
 
 /*
  * Function:	LoadFargoMedia
@@ -74,7 +74,7 @@ function LoadFargoMedia(media)
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on May 20, 2013
+ * Updated on May 11, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -84,8 +84,7 @@ function LoadFargoMedia(media)
  */
 function SetMediaHandler(event)
 {            
-   var media  = event.data.media;
-   SetState("page", media);
+   var media  = event.data.media;  
 
    global_page = 1;
    global_sort = "";
@@ -108,7 +107,7 @@ function SetMediaHandler(event)
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on May 20, 2013
+ * Updated on May 12, 2013
  *
  * Description: Show the system page with minimum options.
  * 
@@ -121,7 +120,6 @@ function SetSystemHandler(event)
    var media  = event.data.media;
    var aOptions = ['Statistics', 'Credits', 'About'];
    var last = $('#display_system_left .option').last().text();
-   SetState("page", media);
    
    global_page = 1;
    global_sort = "";
@@ -143,8 +141,6 @@ function SetSystemHandler(event)
    }
    $('#display_system_left .option').removeClass('on');
    $('#display_system_left .option').first().addClass('on');   
-   
-   ShowProperty("Statistics");
    
    $("#control_sub").stop().slideUp("slow");
    $("#control_sub").slideDown("slow");
