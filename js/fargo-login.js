@@ -6,7 +6,7 @@
  * File:    fargo-login.js
  *
  * Created on Apr 05, 2013
- * Updated on May 20, 2013
+ * Updated on May 24, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the login option.
  *

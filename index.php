@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on May 20, 2013
+ * Updated on May 25, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -21,6 +21,8 @@ if(!isset($_SESSION['LOGIN']))
     $login = false;
     $user = "";
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js", 
+                         "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
+                         "js/jquery.slimscroll.min.js",        
                          "js/fargo-common.js", 
                          "js/fargo-login.js");
     
@@ -34,6 +36,7 @@ else
     $user = "Welcome: <span>".$_SESSION['USER']."</span>";
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js",
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
+                         "js/jquery.slimscroll.min.js",
                          "js/fargo-common.js", 
                          "js/fargo-system.js", 
                          "js/fargo-import.js");

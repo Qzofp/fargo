@@ -60,7 +60,7 @@ function ShowHiddenLoginBox()
  * Function:	ShowHiddenImportBox
  *
  * Created on May 06, 2013
- * Updated on May 15, 2013
+ * Updated on May 25, 2013
  *
  * Description: Show hidden import box.
  *
@@ -82,7 +82,7 @@ function ShowHiddenImportBox()
     //echo "     <div id=\"start\"><br/></div>\n";
     
     echo "     <div id=\"import_wrapper\">\n";
-    echo "      <div id=\"thumb\"></div>\n";
+    echo "      <div id=\"thumb\"><img src=\"\"/></div>\n";
     echo "     </div>\n";
     echo "     <div id=\"title\">&nbsp;</div>\n";
     echo "     <div id=\"progress\"></div>\n";    

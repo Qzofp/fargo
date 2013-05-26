@@ -6,7 +6,7 @@
  * File:    fargo-import.js
  *
  * Created on Apr 14, 2013
- * Updated on May 20, 2013
+ * Updated on May 25, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -122,7 +122,7 @@ function ImportMedia(media)
             //debug
             //$("#start").html('Start: ' + start);
         
-        }, 3000);
+        }, 2500);
           
     }
 }
@@ -131,7 +131,7 @@ function ImportMedia(media)
  * Function:	ShowStatus
  *
  * Created on Apr 17, 2013
- * Updated on May 18, 2013
+ * Updated on May 25, 2013
  *
  * Description: Show the import status.
  *
@@ -163,11 +163,16 @@ function ShowStatus(delta, end, status, media, msg)
             url: 'jsonfargo.php?action=status&media=' + media + '&id=' + (global_total_fargo + 1),
             dataType: 'json',
             success: function(json) 
-            {              
+            {      
                 if (json.xbmcid > 0)
                 {
                     $(".message").html(msg[4]);
-                    $("#thumb").html('<img src= "' + json.thumbs + '/'+ json.xbmcid +'.jpg" />');
+                       
+                    // Preload image.
+                    var img = new Image();
+                    img.src = json.thumbs + '/'+ json.xbmcid +'.jpg';
+                    $("#thumb img").attr('src', img.src);
+                    
                     $("#title").html(json.title);
                     global_total_fargo++;
                 }  
@@ -229,7 +234,7 @@ function StartImport(start, end, process, media)
  * Function:	AdjustImageSize
  *
  * Created on May 17, 2013
- * Updated on May 17, 2013
+ * Updated on May 25, 2013
  *
  * Description: Adjust the size of the image.
  *
@@ -239,13 +244,20 @@ function StartImport(start, end, process, media)
  */
 function AdjustImageSize(media)
 {
-    if (media == "music") {
+    var img = new Image();
+    if (media == "music") 
+    {   
         $("#import_wrapper").height(114);
         $("#thumb").height(100);
+        img.src = 'images/no_cover.jpg';
+        $("#thumb img").attr('src', img.src).height(100).width(100);
     }
-    else {
+    else 
+    {
         $("#import_wrapper").height(154);
-        $("#thumb").height(140);
+        $("#thumb").height(140);  
+        img.src = 'images/no_poster.jpg';
+        $("#thumb img").attr('src', img.src).height(140).width(100);
     }    
 }
 

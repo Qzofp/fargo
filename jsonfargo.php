@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on May 20, 2013
+ * Updated on May 26, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -59,7 +59,7 @@ switch ($action)
                     break;   
     
     case "option" : $name  = GetPageValue('name');
-                    $aJson = GetSystemOptionProperties($name);
+                    $aJson = GetSystemOptionProperties($name); 
                     break;
                 
     case "log"    : $type  = GetPageValue('type');
@@ -351,7 +351,7 @@ function GetMedia($media, $sql)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on May 20, 2013
+ * Updated on May 26, 2013
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -369,7 +369,13 @@ function GetSystemOptionProperties($name)
                             $html = str_replace("[tvshows]", CountRows("tvshows"), $html);
                             $html = str_replace("[music]", CountRows("music"), $html);
                             break;
-            
+                        
+        case "about"      : $html = GetSetting($name);
+                            $html = str_replace("[version]", GetSetting("Version"), $html);
+                            break;
+                        
+        case "credits"    : $html = GetSetting($name);
+                            break;
     }
     
     $aJson['html'] = $html;

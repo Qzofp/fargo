@@ -6,7 +6,7 @@
  * File:    fargo-common.js
  *
  * Created on May 04, 2013
- * Updated on May 20, 2013
+ * Updated on May 25, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -169,7 +169,7 @@ function ConvertMedia(media)
  * Function:	SetOptionHandler
  *
  * Created on May 12, 2013
- * Updated on May 12, 2013
+ * Updated on May 25, 2013
  *
  * Description: Set the option and show the properties.
  * 
@@ -182,8 +182,6 @@ function SetOptionHandler()
     $('#display_system_left .option').removeClass('on');    
     $(this).addClass('on');
     
-    //alert($(this).text());
-    
     ShowProperty($(this).text());
 }
 
@@ -191,7 +189,7 @@ function SetOptionHandler()
  * Function:	ShowProperty
  *
  * Created on May 20, 2013
- * Updated on May 20, 2013
+ * Updated on May 25, 2013
  *
  * Description: Set the option and show the properties.
  * 
@@ -210,6 +208,12 @@ function ShowProperty(name)
         success: function(json) 
         {    
             $('#display_system_right').append(json.html);
+            
+            $("#display_system_right .system_scroll").slimScroll({
+                    height:'auto',
+                    alwaysVisible:'true',
+                    color:'dodgerblue'
+            });
         } // End Success.        
     }); // End Ajax;    
 }
@@ -486,7 +490,7 @@ function SetPopupHandler(event)
  * Function:	ShowPopupBox
  *
  * Created on May 08, 2013
- * Updated on May 08, 2013
+ * Updated on May 24, 2013
  *
  * Description: Show popup box.
  * 
@@ -504,9 +508,9 @@ function ShowPopupBox(title)
     }
     
     popup.fadeIn("300");
-  
+ 
     //mask.show();
-    mask.fadeIn("300");      
+    mask.fadeIn("300");
 }
 
 /*
@@ -537,7 +541,7 @@ function SetMaskHandler()
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Apr 13, 2013
+ * Updated on May 25, 2013
  *
  * Description: Shows the media table.
  *
@@ -553,7 +557,8 @@ function ShowMediaTable(media, page, column, sort)
         dataType: 'json',
         success: function(json)
         {  
-            var i = 0, j = 0, html = [];
+            var i = 0, j = 0;
+            var img, html = [];
             
             if (json.media[0].id > 0)
             {
@@ -568,8 +573,9 @@ function ShowMediaTable(media, page, column, sort)
                         html[i++] = '</tr>';
                         j = 0;
                     }
-                
-                    html[i++] = '<td><img src=\"' + json.params.thumbs + '/' + value.xbmcid + '.jpg\"/></br>' + value.title + '</td>';
+                    
+                    img = json.params.thumbs + '/' + value.xbmcid + '.jpg';    
+                    html[i++] = '<td><img src="' + img + '"/></br>' + value.title + '</td>';
                     j++;
                 });
 
@@ -577,6 +583,8 @@ function ShowMediaTable(media, page, column, sort)
             }
             
             $('#display_content')[0].innerHTML = html.join('');
+            
+            // Show sort character.
             $('#sort').html(sort);            
         } // End success.
     }); // End Ajax. 
