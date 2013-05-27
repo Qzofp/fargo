@@ -6,7 +6,7 @@
  * File:    fargo-system.js
  *
  * Created on May 04, 2013
- * Updated on May 20, 2013
+ * Updated on May 27, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -37,7 +37,7 @@ var global_import_request;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on May 18, 2013
+ * Updated on May 26, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -65,6 +65,10 @@ function LoadFargoMedia(media)
     // Options event.
     $("#display_system_left").on("click", ".option", SetOptionHandler);
     
+    //Properties events.
+    $("#display_system_right").on("mouseenter mouseleave", ".set", SetPropertyHoverHandler);
+    $("#display_system_right").on("click", "input", SetPropertyHandler);
+    
     // Import click event.
     $("#import").on("click", SetImportHandler);
     $(".button").on("click", ".retry", SetImportHandler);
@@ -83,7 +87,6 @@ function LoadFargoMedia(media)
     // Keyboard events.
     $(document).on("keydown", SetKeyHandler);
 }
-
 
 /*
  * Function:	SetImportHandler
@@ -124,7 +127,6 @@ function SetImportHandler()
 
 }
 
-
 /*
  * Function:	SetImportCancelHandler
  *
@@ -154,7 +156,6 @@ function SetImportCancelHandler()
         window.location='index.php?media=' + media;
     }
 }
-
 
 /*
  * Function:	SetMediaHandler
@@ -191,12 +192,11 @@ function SetMediaHandler(event)
    ShowMediaTable(global_media, global_page, global_column, global_sort);
 }
 
-
 /*
  * Function:	SetFullSystemHandler
  *
  * Created on May 04, 2013
- * Updated on May 20, 2013
+ * Updated on May 26, 2013
  *
  * Description: Show the full system page with all the options.
  * 
@@ -221,6 +221,7 @@ function SetFullSystemHandler(event)
    $("#display_right").hide();
    
    $('#display_content').hide();
+   $('#display_content').html("");
    $('#display_system').show();
    
    if(last != aOptions[aOptions.length-1])
@@ -238,6 +239,97 @@ function SetFullSystemHandler(event)
    $("#control_sub").slideDown("slow");
 }
 
+/*
+ * Function:	SetPropertyHandler
+ *
+ * Created on May 27, 2013
+ * Updated on May 27, 2013
+ *
+ * Description: Set property.
+ *
+ * In:	-
+ * Out:	-
+ *
+ */
+function SetPropertyHandler()
+{
+    var value = $("input").val();
+    SetState("property", value);
+}
+
+/*
+ * Function:	SetPropertyHoverHandler
+ *
+ * Created on May 26, 2013
+ * Updated on May 27, 2013
+ *
+ * Description: Show property on hover and update value when changed.
+ *
+ * In:	event
+ * Out:	-
+ *
+ */
+function SetPropertyHoverHandler(event)
+{
+    var row = $(this);
+    var current = GetState("property");
+    var number, value;
+    
+    row.toggleClass("on");
+    row.prev().children().toggleClass("on");
+    row.children().toggleClass("on");
+    
+    // Show input text field.
+    if (event.type == "mouseenter") 
+    {
+        value = row.children().last().text();
+        row.children().last().html('<input type="text" value="' + value +'">');
+    }
+    else 
+    {
+        value = $("input").val();
+        row.children().last().html(value);
+        
+        // Property has change, update value.
+        if (current != value && current != "") 
+        {
+           number = row.closest("tr").index();
+           ChangeProperty(number, value);
+        }
+    }  
+    
+    // Reset state.
+    SetState("property", "");
+}
+
+/*
+ * Function:	ChangeProperty
+ *
+ * Created on May 27, 2013
+ * Updated on May 27, 2013
+ *
+ * Description: Get option and update property value.
+ *
+ * In:	number, value
+ * Out:	Updated property value
+ *
+ */
+function ChangeProperty(number, value)
+{
+    var option = $('#display_system_left .on').text();
+    
+    //alert(option + " " + number + " " + value);
+    
+    $.ajax({
+        url: 'jsonfargo.php?action=property&option=' + option + '&number=' + number + '&value=' + value,
+        //async: false,
+        dataType: 'json',
+        success: function(json) 
+        {    
+            // Updated value.
+        } // End Success.        
+    }); // End Ajax;   
+}
 
 /*
  * Function:	ChangeSubControlBar
@@ -268,7 +360,6 @@ function ChangeSubControlBar(media)
         }
     });    
 }
-
 
 /*
  * Function:	SetLogoutHandler

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on May 26, 2013
+ * Updated on May 27, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -26,7 +26,7 @@ $action = GetPageValue('action');
 
 switch ($action) 
 {
-    case "init"   :  $media = GetPageValue('media');
+    case "init"    : $media = GetPageValue('media');
                      $sort  = GetPageValue('sort');
                      $aJson = GetFargoValues($media, $sort);
                      break;
@@ -40,7 +40,7 @@ switch ($action)
                      $aJson = GetStatus($media, $id);
                      break;                 
         
-    case "movies" :  $page  = GetPageValue('page');
+    case "movies"  : $page  = GetPageValue('page');
                      $sort  = GetPageValue('sort');
                      $sql   = CreateQuery($action, $page, $sort);
                      $aJson = GetMedia($action, $sql);
@@ -62,6 +62,12 @@ switch ($action)
                     $aJson = GetSystemOptionProperties($name); 
                     break;
                 
+    case "property":$option = GetPageValue('option');
+                    $number  = GetPageValue('number');
+                    $value  = GetPageValue('value');
+                    $aJson  = SetSystemProperty($option, $number, $value); 
+                    break;                
+                
     case "log"    : $type  = GetPageValue('type');
                     $event = GetPageValue('event');
                     $aJson = LogEvent($type, $event);
@@ -74,7 +80,6 @@ switch ($action)
 if (!empty($aJson)) {
     echo json_encode($aJson, JSON_UNESCAPED_SLASHES);
 }
-
 
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
 
@@ -351,7 +356,7 @@ function GetMedia($media, $sql)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on May 26, 2013
+ * Updated on May 27, 2013
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -376,9 +381,86 @@ function GetSystemOptionProperties($name)
                         
         case "credits"    : $html = GetSetting($name);
                             break;
+                        
+        case "settings"   : $html = GetSetting($name);
+                            $html = str_replace("[connection]", GetSetting("XBMCconnection"), $html);
+                            $html = str_replace("[port]", GetSetting("XBMCport"), $html);
+                            $html = str_replace("[xbmcuser]", GetUser(2), $html);
+                            $html = str_replace("[fargouser]", GetUser(1), $html);
+                            $html = str_replace("[password]", "******", $html);
+                            break;
     }
     
     $aJson['html'] = $html;
     return $aJson;
+}
+
+/*
+ * Function:	SetSystemProperty
+ *
+ * Created on May 27, 2013
+ * Updated on May 27, 2013
+ *
+ * Description: Set the system property. 
+ *
+ * In:  $option, $number, $value
+ * Out: $aJson
+ *
+ */
+function SetSystemProperty($option, $number, $value)
+{
+    $aJson = null;
+    
+    switch(strtolower($option))
+    {
+        case "settings" : SetSettingProperty($number, $value);            
+                          break;
+        
+        default : break;
+    }
+    
+    return $aJson;
+}
+
+/*
+ * Function:	SetSettingProperty
+ *
+ * Created on May 27, 2013
+ * Updated on May 27, 2013
+ *
+ * Description: Set the setting property. 
+ *
+ * In:  $number, $value
+ * Out: -
+ *
+ */
+function SetSettingProperty($number, $value)
+{
+    switch($number)
+    {
+        case 1 : // Set XBMC Connection
+                 UpdateSetting("XBMCconnection", $value);
+                 break;
+             
+        case 2 : // Set XBMC Port
+                 UpdateSetting("XBMCport", $value);
+                 break;
+             
+        case 3 : // Set XBMC Username
+                 UpdateUser(2, $value);
+                 break;
+             
+        case 4 : // Set XBMC Password
+                 UpdatePassword(2, $value);
+                 break; 
+             
+        case 6 : // Set Fargo Username
+                 UpdateUser(1, $value);
+                 break;
+             
+        case 7 : // Set Fargo Password
+                 UpdatePassword(1, $value);
+                 break;               
+    }
 }
 ?>

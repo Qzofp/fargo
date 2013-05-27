@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on May 26, 2013
+ * Updated on May 27, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -424,6 +424,10 @@ color:#999;
 /*background-color:#ECECEC;  */
 }
 
+#display_system_right .right{
+text-align:right;
+}
+
 #display_system_right .system_text{
 position:absolute;
 height:60%;
@@ -452,6 +456,41 @@ padding: 0 15px 0 0;
 font-weight:normal;
 color:#C0C0C0;
 }    
+
+#display_system_right table{
+width:100%;
+border-spacing:0;
+padding:15px 15px 0 15px;
+}
+
+#display_system_right th{
+height:37px;
+text-align:left;
+text-shadow:2px 2px 2px #000;
+color:dodgerblue;
+border-bottom:1px solid rgba(153,153,153,0.2);
+}
+
+#display_system_right td{
+height:32px;
+padding-left:10px;
+border-bottom:1px solid rgba(153,153,153,0.2);
+cursor:pointer;
+}
+
+#display_system_right tr.on{
+color:#fff;
+background-color:rgba(0,0,0,0.2);
+}
+
+#display_system_right td.on, 
+#display_system_right th.on{
+border-bottom-color:rgba(30,144,255,0.5);
+}
+
+#display_system_right td.change{
+color:blue;
+} 
 
 /* End Display part */
 
@@ -534,10 +573,11 @@ display:none;
 /* Page states */
 #state_media,
 #state_page,
-#state_xbmc{
-display:none;
-/*font-size:2em;
-color:#fff;*/
+#state_xbmc,
+#state_property{
+/*display:none;*/
+font-size:2em;
+color:#fff;
 }
 
 #footer{

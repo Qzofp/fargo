@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on May 15, 2013
+ * Updated on May 27, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -54,7 +54,6 @@ function ShowHiddenLoginBox()
     echo "    </form>\n";
     echo "   </div>\n";
 }
-
 
 /*
  * Function:	ShowHiddenImportBox
@@ -123,7 +122,6 @@ function InsertMovie($aMovie)
 
 }
 
-
 /*
  * Function:	InsertTVShow
  *
@@ -151,7 +149,6 @@ function InsertTVShow($aTVShow)
     ExecuteQuery($sql);
 }
 
-
 /*
  * Function:	InsertAlbum
  *
@@ -177,7 +174,6 @@ function InsertAlbum($aAlbum)
     ExecuteQuery($sql);
 }
 
-
 /*
  * Function:	GetSetting
  *
@@ -202,7 +198,7 @@ function GetSetting($name)
 }
 
 /*
- * Function:	UpdateMovieCounter
+ * Function:	UpdateSetting
  *
  * Created on Mar 18, 2013
  * Updated on Mar 18, 2013
@@ -222,6 +218,82 @@ function UpdateSetting($name, $value)
     ExecuteQuery($sql);
 }
 
+/*
+ * Function:	GetUser
+ *
+ * Created on Mar 27, 2013
+ * Updated on Mar 27, 2013
+ *
+ * Description: Get a user from the user table.
+ *
+ * In:  $id
+ * Out:	$value
+ * 
+ * Note: Id 1 = Fargo User and Id 2 = XBMC user.
+ * 
+ */
+function GetUser($id)
+{
+    $sql = "SELECT user ".
+           "FROM users ".
+           "WHERE id = $id";
+    
+    list($value) = GetItemsFromDatabase($sql);
+    
+    return $value;
+}
+
+/*
+ * Function:	UpdateUser
+ *
+ * Created on Mar 27, 2013
+ * Updated on Mar 27, 2013
+ *
+ * Description: Update user in the user table.
+ *
+ * In:  $id, $user
+ * Out:	-
+ * 
+ * Note: Id 1 = Fargo User and Id 2 = XBMC user.
+ * 
+ */
+function UpdateUser($id, $user)
+{    
+    $aItems = null;
+    $aItems[0] = $user;
+    
+    $sql = "UPDATE users ".
+           "SET user='$aItems[0]' ".
+           "WHERE id = $id";
+    
+    ExecuteQueryWithEscapeStrings($aItems, $sql);
+}
+
+/*
+ * Function:	UpdatePassword
+ *
+ * Created on Mar 27, 2013
+ * Updated on Mar 27, 2013
+ *
+ * Description: Update password in the user table.
+ *
+ * In:  $id, $user
+ * Out:	-
+ * 
+ * Note: Id 1 = Fargo User and Id 2 = XBMC user.
+ * 
+ */
+function UpdatePassword($id, $pass)
+{    
+    $aItems = null;
+    $aItems[0] = $pass;
+    
+    $sql = "UPDATE users ".
+           "SET password='$aItems[0]' ".
+           "WHERE id = $id";
+    
+    ExecuteQueryWithEscapeStrings($aItems, $sql);
+}
 
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
 

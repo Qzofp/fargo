@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Apr 22, 2013
+ * Updated on May 26, 2013
  *
  * Description: Fargo's settings page.
  *
@@ -20,7 +20,7 @@ define("cUSER",  "fargo_dbo");
 define("cPASS",  "Mime1276"); 
 
 // XBMC connection setting.
-define("cXBMC", "xbmc:xbmc@localhost:8080");
+//define("cXBMC", "xbmc:xbmc@localhost:8080");
 define("cURL", "http://localhost:8080/jsonrpc");
 
 // Path settings.

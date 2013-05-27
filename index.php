@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on May 25, 2013
+ * Updated on May 27, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -43,7 +43,8 @@ else
      
     $li_import = "<li id=\"import\">Import</li>\n";
     $li_login  = "<li id=\"logout\">Logout</li>\n";
-    $system_states = "   <div id=\"state_xbmc\">offline</div>\n";
+    $system_states = "   <div id=\"state_xbmc\">offline</div>\n".
+                     "   <div id=\"state_property\"></div>\n";
 }
  
 require_once 'settings.php';
