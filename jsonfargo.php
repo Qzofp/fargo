@@ -385,7 +385,7 @@ function GetSystemOptionProperties($name)
         case "settings"   : $html = GetSetting($name);
                             $html = str_replace("[connection]", GetSetting("XBMCconnection"), $html);
                             $html = str_replace("[port]", GetSetting("XBMCport"), $html);
-                            $html = str_replace("[xbmcuser]", GetUser(2), $html);
+                            $html = str_replace("[xbmcuser]", GetSetting("XBMCusername"), $html);
                             $html = str_replace("[fargouser]", GetUser(1), $html);
                             $html = str_replace("[password]", "******", $html);
                             break;
@@ -447,11 +447,11 @@ function SetSettingProperty($number, $value)
                  break;
              
         case 3 : // Set XBMC Username
-                 UpdateUser(2, $value);
+                 UpdateSetting("XBMCusername", $value);
                  break;
              
         case 4 : // Set XBMC Password
-                 UpdatePassword(2, $value);
+                 UpdateSetting("XBMCpassword", $value);
                  break; 
              
         case 6 : // Set Fargo Username

@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 01, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -44,6 +44,15 @@ font-family:Arial, Helvetica, Sans-Serif;
 font-size:62.5%; /* =10px */
 background:url(confluence.jpg);
 /*background-position:center center;*/
+}
+
+input{
+font-family:Arial, Helvetica, Sans-Serif;
+}
+
+/* Remove input and select borders Chrome */
+*:focus {
+    outline: 0;
 }
 
 #main{
@@ -405,12 +414,22 @@ background: -moz-linear-gradient(center top, #289EC9, #076182);
 background: -webkit-gradient(linear, left top, left bottom, from(#289EC9), to(#076182));
 background: -o-linear-gradient(top, #289EC9, #076182);
 background: -ms-linear-gradient(top, #289EC9 0%, #076182 100%);
+}
+
+#display_system_left .dim{
+color:#C0C0C0;
+background: -moz-linear-gradient(center top, #207899, #0B4F68);
+background: -webkit-gradient(linear, left top, left bottom, from(#207899), to(#0B4F68));
+background: -o-linear-gradient(top, #207899, #0B4F68);
+background: -ms-linear-gradient(top, #207899 0%, #0B4F68 100%);
+
 
 /*
-background-image: -moz-radial-gradient(center, ellipse farthest-side, rgba(0,0,0,0.8) 0%, rgba(41,54,242,0.8) 280%);
-background-image: -webkit-radial-gradient(center, ellipse farthest-side, rgba(0,0,0,0.8) 0%, rgba(41,54,242,0.8) 280%);
-background-image: -ms-radial-gradient(center, ellipse farthest-side, rgba(0,0,0,0.8) 0%, rgba(41,54,242,0.8) 280%);
+#0B4F68
+#166C8C
+#207899
 */
+
 }
 
 #display_system_right{
@@ -488,9 +507,14 @@ background-color:rgba(0,0,0,0.2);
 border-bottom-color:rgba(30,144,255,0.5);
 }
 
-#display_system_right td.change{
-color:blue;
-} 
+#display_system_right input{
+padding-right:5px;
+text-align:right;
+border:none;
+background:none;
+font-size:1.0em;
+color:#FFF;
+}
 
 /* End Display part */
 
@@ -575,7 +599,8 @@ display:none;
 #state_page,
 #state_xbmc,
 #state_property{
-/*display:none;*/
+/*display:none; */
+
 font-size:2em;
 color:#fff;
 }

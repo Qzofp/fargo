@@ -6,7 +6,7 @@
  * File:    fargo-system.js
  *
  * Created on May 04, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 01, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -65,9 +65,8 @@ function LoadFargoMedia(media)
     // Options event.
     $("#display_system_left").on("click", ".option", SetOptionHandler);
     
-    //Properties events.
-    $("#display_system_right").on("mouseenter mouseleave", ".set", SetPropertyHoverHandler);
-    $("#display_system_right").on("click", "input", SetPropertyHandler);
+    // Properties event.
+    $("#display_system_right").on("mouseenter mouseleave", ".set", SetPropertyMouseHandler);
     
     // Import click event.
     $("#import").on("click", SetImportHandler);
@@ -239,29 +238,12 @@ function SetFullSystemHandler(event)
    $("#control_sub").slideDown("slow");
 }
 
-/*
- * Function:	SetPropertyHandler
- *
- * Created on May 27, 2013
- * Updated on May 27, 2013
- *
- * Description: Set property.
- *
- * In:	-
- * Out:	-
- *
- */
-function SetPropertyHandler()
-{
-    var value = $("input").val();
-    SetState("property", value);
-}
 
 /*
- * Function:	SetPropertyHoverHandler
+ * Function:	SetPropertyMouseHandler
  *
  * Created on May 26, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 01, 2013
  *
  * Description: Show property on hover and update value when changed.
  *
@@ -269,26 +251,52 @@ function SetPropertyHandler()
  * Out:	-
  *
  */
-function SetPropertyHoverHandler(event)
+function SetPropertyMouseHandler(event)
 {
     var row = $(this);
+    var rows = $("#display_system_right .set");
     var current = GetState("property");
     var number, value;
     
-    row.toggleClass("on");
-    row.prev().children().toggleClass("on");
-    row.children().toggleClass("on");
+    // Dim option.
+    $(".option.on").toggleClass("on dim");
+    
+    // Remove "on" from all rows.
+    rows.removeClass("on");
+    rows.prev().children().removeClass("on");
+    rows.children().removeClass("on");
     
     // Show input text field.
     if (event.type == "mouseenter") 
     {
+        // Turn active row "on".
+        row.addClass("on");
+        row.prev().children().addClass("on");
+        row.children().addClass("on");
+        
         value = row.children().last().text();
-        row.children().last().html('<input type="text" value="' + value +'">');
+        
+        if (row.children().first().text() == "Password") {
+            row.children().last().html('<input type="password" value="' + value +'">');
+            $("input").focus().setCursorPosition(value.length);
+        }
+        else {
+            row.children().last().html('<input type="text" value="' + value +'">');
+            $("input").focus().setCursorPosition(value.length);
+        }
+        
+        // Set state.
+        SetState("property", value);
     }
     else 
     {
         value = $("input").val();
-        row.children().last().html(value);
+        if (row.children().first().text() == "Password") {
+            row.children().last().html("******");
+        }
+        else {
+            row.children().last().html(value);
+        }
         
         // Property has change, update value.
         if (current != value && current != "") 
@@ -296,17 +304,17 @@ function SetPropertyHoverHandler(event)
            number = row.closest("tr").index();
            ChangeProperty(number, value);
         }
+        
+        // Reset state.
+        SetState("property", "");
     }  
-    
-    // Reset state.
-    SetState("property", "");
 }
 
 /*
  * Function:	ChangeProperty
  *
  * Created on May 27, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 01, 2013
  *
  * Description: Get option and update property value.
  *
@@ -316,7 +324,7 @@ function SetPropertyHoverHandler(event)
  */
 function ChangeProperty(number, value)
 {
-    var option = $('#display_system_left .on').text();
+    var option = $('#display_system_left .dim').text();
     
     //alert(option + " " + number + " " + value);
     

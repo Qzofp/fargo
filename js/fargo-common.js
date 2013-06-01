@@ -6,7 +6,7 @@
  * File:    fargo-common.js
  *
  * Created on May 04, 2013
- * Updated on May 25, 2013
+ * Updated on Jun 01, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -169,7 +169,7 @@ function ConvertMedia(media)
  * Function:	SetOptionHandler
  *
  * Created on May 12, 2013
- * Updated on May 25, 2013
+ * Updated on Jun 01, 2013
  *
  * Description: Set the option and show the properties.
  * 
@@ -179,7 +179,7 @@ function ConvertMedia(media)
  */
 function SetOptionHandler()
 {
-    $('#display_system_left .option').removeClass('on');    
+    $('#display_system_left .option').removeClass('on dim');  
     $(this).addClass('on');
     
     ShowProperty($(this).text());
@@ -378,7 +378,7 @@ function SetMainKeyHandler(key, event)
  * Function:	SetSystemKeyHandler
  *
  * Created on May 20, 2013
- * Updated on May 20, 2013
+ * Updated on Jun 01, 2013
  *
  * Description: Set the key from the keyboard. Perform action on the system page.
  * 
@@ -387,22 +387,52 @@ function SetMainKeyHandler(key, event)
  *
  */
 function SetSystemKeyHandler(key)
-{    
+{      
     switch(key)
     {
         case 37 : // Left arrow.
+                  ToggleProperty();
                   break;
         
         case 38 : // Up arrow.
-                  SelectOption("up");
+                  SelectOptionProperty("up");
                   break;
         
         case 39 : // right arrow.
+                  ToggleProperty();
+                  //SelectProperty("right");
                   break;
         
         case 40 : // Down arrow.
-                  SelectOption("down");
+                  SelectOptionProperty("down");
                   break;
+    }
+}
+
+/*
+ * Function:	SelectOptionProperty
+ *
+ * Created on Jun 01, 2013
+ * Updated on Jun 01, 2013
+ *
+ * Description: Select a system option or property with the arrow keys.
+ * 
+ * In:	arrow
+ * Out:	-
+ *
+ */
+function SelectOptionProperty(arrow)
+{
+    var property = $("#display_system_right .on");
+    
+    // Check if options (left) or properties (right) is selected.
+    if (property.length)
+    {    
+        SelectProperty(arrow); 
+    }
+    else 
+    {
+        SelectOption(arrow);
     }
 }
 
@@ -446,6 +476,91 @@ function SelectOption(action)
     target.addClass('on');
     
     ShowProperty(target.text());
+}
+
+/*
+ * Function:	ToggleProperty
+ *
+ * Created on Jun 01, 2013
+ * Updated on Jun 01, 2013
+ *
+ * Description: Toggle property on or off.
+ *
+ * In:	-
+ * Out:	-
+ *
+ */
+function ToggleProperty()
+{
+    var row = $( ".set");
+    var property = $("#display_system_right .on");
+    
+    if (!property.length)
+    {
+        row.first().toggleClass("on");
+        row.first().prev().children().toggleClass("on");
+        row.first().children().toggleClass("on");
+        $(".option.on").toggleClass("on dim");
+    }
+    else
+    {
+        row.removeClass('on');
+        row.prev().children().removeClass("on");
+        row.children().removeClass("on");
+        $(".option.dim").toggleClass("on dim");
+    }    
+}
+
+
+/*
+ * Function:	SelectProperty
+ *
+ * Created on May 29, 2013
+ * Updated on Jun 01, 2013
+ *
+ * Description: Select system property.
+ *
+ * In:	arrow
+ * Out:	-
+ *
+ */
+function SelectProperty(arrow)
+{
+    var active, target; 
+    active = $('.set.on');
+    
+    if (arrow == "up")
+    {
+        if (active.prev('.set').length) {
+            target = active.prev('.set'); 
+        }
+        else if (active.prev('tr').children().is('th') && active.prev('tr').index() > 0) {           
+            target = active.prev().prev('.set'); 
+        }
+        else {
+            target = $('.set:last');
+        }
+    }
+    else 
+    {    
+        if (active.next('.set').length) {
+            target = active.next('.set');
+        }
+        else if (active.next('tr').children().is('th')) {
+            target = active.next().next('.set'); 
+        }
+        else {
+            target = $('.set:first');
+        }        
+    }
+                 
+    active.removeClass('on');
+    active.prev().children().removeClass("on");
+    active.children().removeClass("on");   
+    
+    target.addClass('on'); 
+    target.prev().children().addClass("on");
+    target.children().addClass("on");       
 }
 
 /*
@@ -645,7 +760,7 @@ function GetFargoCounter(media)
  * Function:	GetXbmcCounter
  *
  * Created on May 15, 2013
- * Updated on May 1, 2013
+ * Updated on May 18, 2013
  *
  * Description: Get the media counter from XBMC.
  *
@@ -670,3 +785,32 @@ function GetXbmcCounter(media)
         } // End Success.        
     }); // End Ajax;
 }
+
+/*
+ * Function:	setCursorPosition
+ *
+ * Created on May 27, 2013
+ * Updated on May 27, 2013
+ *
+ * Description: Set the cursor position.
+ *
+ * In:	pos
+ * Out:	-
+ *
+ * Note: Code from: http://www.jquery4u.com/tutorials/jqueryhtml5-input-focus-cursor-positions/
+ *
+ */
+$.fn.setCursorPosition = function(pos) {
+  this.each(function(index, elem) {
+    if (elem.setSelectionRange) {
+      elem.setSelectionRange(pos, pos);
+    } else if (elem.createTextRange) {
+      var range = elem.createTextRange();
+      range.collapse(true);
+      range.moveEnd('character', pos);
+      range.moveStart('character', pos);
+      range.select();
+    }
+  });
+  return this;
+};

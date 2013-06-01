@@ -1,0 +1,10 @@
+<table>
+<tr><th colspan="2">XBMC Settings</th></tr>
+<tr class="set"><td>Connection</td><td class="right">[connection]</td></tr>
+<tr class="set"><td>Port</td><td class="right">[port]</td></tr>
+<tr class="set"><td>Username</td><td class="right">[xbmcuser]</td></tr>
+<tr class="set"><td>Password</td><td class="right">[password]</td></tr>
+<tr><th colspan="2">Fargo Settings</th></tr>
+<tr class="set"><td>Username</td><td class="right">[fargouser]</td></tr>
+<tr class="set"><td>Password</td><td class="right">[password]</td></tr>
+</table>

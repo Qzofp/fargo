@@ -1,0 +1,2 @@
+<table><tr><th colspan="2">Movies</th></tr><tr class="set"><td>Total</td><td class="right">[movies]</td></tr><tr><th colspan="2">TV Shows</th></tr><tr class="set"><td>Total</td><td class="right">[tvshows]</td></tr><tr><th colspan="2">Music Albums</th></tr><tr class="set"><td>Total</td><td class="right">[music]</td></tr>
+</table>

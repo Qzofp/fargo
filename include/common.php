@@ -254,7 +254,7 @@ function GetUser($id)
  * In:  $id, $user
  * Out:	-
  * 
- * Note: Id 1 = Fargo User and Id 2 = XBMC user.
+ * Note: Id 1 = Fargo User.
  * 
  */
 function UpdateUser($id, $user)
@@ -280,7 +280,7 @@ function UpdateUser($id, $user)
  * In:  $id, $user
  * Out:	-
  * 
- * Note: Id 1 = Fargo User and Id 2 = XBMC user.
+ * Note: Id 1 = Fargo User.
  * 
  */
 function UpdatePassword($id, $pass)
