@@ -169,7 +169,7 @@ function ConvertMedia(media)
  * Function:	SetOptionHandler
  *
  * Created on May 12, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Set the option and show the properties.
  * 
@@ -189,7 +189,7 @@ function SetOptionHandler()
  * Function:	ShowProperty
  *
  * Created on May 20, 2013
- * Updated on May 25, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Set the option and show the properties.
  * 
@@ -199,7 +199,11 @@ function SetOptionHandler()
  */
 function ShowProperty(name)
 {
-    $('#display_system_right').text("");
+    $('#display_system_right').text(""); 
+    $(".option.dim").removeClass("dim");
+     
+    // Reset state.
+    SetState("property", "");
     
     $.ajax({
         url: 'jsonfargo.php?action=option&name=' + name,
@@ -486,7 +490,7 @@ function SelectOption(action)
  * Function:	ToggleProperty
  *
  * Created on Jun 01, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Toggle property on or off.
  *
@@ -498,7 +502,8 @@ function ToggleProperty(arrow)
 {
     var row;
     var property = $("#display_system_right .on");
-    var input, value, cursor;    
+    var current = GetState("property");
+    var input, value, cursor, number;    
     
     if (!property.length) // Turn property on, enter properties.
     {
@@ -507,25 +512,28 @@ function ToggleProperty(arrow)
         row.first().prev().children().toggleClass("on");
         row.first().children().toggleClass("on");
         
+        // Get value if there is an input field.   
         input = row.first().find('input'); 
-        // Get value if there is an input field.
-        value = input.val();        
-        if (value)
-        {
+        if(input.length)
+        {    
+            value = input.val();
             input.focus().setCursorPosition(value.length);
             SetState("property", value);
-        }        
+        }      
         
         $(".option.on").toggleClass("on dim");
     }
     else // Turn property off, leave properies and return to options.
     {     
         row = $( ".property.on");
-        input = row.find('input'); 
+        value = current;
+        
         // Get value if there is an input field.
-        value = input.val();        
-        if (value)
-        {
+        input = row.find('input'); 
+        if (input.length)
+        {    
+            value = input.val();        
+
             // Check position cursor in text field
             cursor = input.getCursorPosition();
             if (arrow == "left" && cursor > 0) {
@@ -535,8 +543,14 @@ function ToggleProperty(arrow)
                 return;
             }
               
+            // Property has change, update value.
+            if (current != value) 
+            {
+                number = row.closest("tr").index();
+                ChangeProperty(number, value);
+            }              
+              
             input.blur();
-            //SetState("property", value);
         }
 
         row.removeClass('on');
@@ -550,7 +564,7 @@ function ToggleProperty(arrow)
  * Function:	SelectProperty
  *
  * Created on May 29, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Select system property.
  *
@@ -563,7 +577,8 @@ function SelectProperty(arrow)
     var active, target; 
     var current = GetState("property");
     var input, value, number;
-     
+    
+    value = current;
     active = $('.property.on');
     
     if (arrow == "up")
@@ -595,11 +610,13 @@ function SelectProperty(arrow)
     active.prev().children().removeClass("on");
     active.children().removeClass("on");   
     
-    input = active.find('input');     
     // Get value if there is an input field.
-    value = input.val();    
+    input = active.find('input');
+    if(input.length){
+        value = input.val(); 
+    }
     // Property has change, update value.
-    if (current != value && current != "" && value) 
+    if (current != value) 
     {
         number = active.closest("tr").index();
         ChangeProperty(number, value);
@@ -607,13 +624,13 @@ function SelectProperty(arrow)
     
     target.addClass('on'); 
     target.prev().children().addClass("on");
-    target.children().addClass("on");      
+    target.children().addClass("on");  
     
-    input = target.find('input');     
     // Get value if there is an input field.
-    value = input.val();        
-    if (value)
+    input = target.find('input');     
+    if (input.length) 
     {
+        value = input.val();
         input.focus().setCursorPosition(value.length);
         SetState("property", value);
     }     
@@ -640,15 +657,13 @@ function SetPropertyMouseHandler(event)
     var number, value;
     
     // Get value if there is an input field.
-    value = input.val();
+    value = current;
+    if (input.length) { 
+        value = input.val();
+    }
     
     // Dim option.
     $(".option.on").toggleClass("on dim");
-    
-    // Remove "on" from all rows.
-    //rows.removeClass("on");
-    //rows.prev().children().removeClass("on");
-    //rows.children().removeClass("on");
     
     // Show input text field.
     if (event.type == "mouseenter") 
@@ -663,7 +678,7 @@ function SetPropertyMouseHandler(event)
         row.prev().children().addClass("on");
         row.children().addClass("on");
         
-        if (value)
+        if (input.length)
         {
             input.focus().setCursorPosition(value.length);
             SetState("property", value);
@@ -672,15 +687,11 @@ function SetPropertyMouseHandler(event)
     else 
     {        
         // Property has change, update value.
-        if (current != value && current != "") 
+        if (current != value) 
         {
            number = row.closest("tr").index();
            ChangeProperty(number, value);
         }
-        
-        // Reset state.
-        //SetState("property", "");
-        //input.blur();
     }  
 }
 

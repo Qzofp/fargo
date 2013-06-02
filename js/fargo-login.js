@@ -77,7 +77,7 @@ function LoadFargoMedia(media)
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on May 20, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -94,6 +94,8 @@ function SetMediaHandler(event)
    global_sort = "";
    
    $('#display_system').hide();
+   $('#display_system_left').html(""); 
+   $('#display_system_right').html("");   
    $('#display_content').show();
    
    global_media = ChangeControlBar(media);
@@ -111,7 +113,7 @@ function SetMediaHandler(event)
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on May 26, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Show the system page with minimum options.
  * 
@@ -138,6 +140,7 @@ function SetSystemHandler(event)
    $('#display_content').html("");
    $('#display_system').show();
    
+   $('#display_system_left').append('<div id=\"fargo\">Qzofp\'s Fargo</div>');
    if(last != aOptions[aOptions.length-1])
    {
         $.each(aOptions, function(key, option) 
