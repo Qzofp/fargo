@@ -1,10 +1,1 @@
-<table>
-<tr><th colspan="2">XBMC Settings</th></tr>
-<tr class="set"><td>Connection</td><td class="right">[connection]</td></tr>
-<tr class="set"><td>Port</td><td class="right">[port]</td></tr>
-<tr class="set"><td>Username</td><td class="right">[xbmcuser]</td></tr>
-<tr class="set"><td>Password</td><td class="right">[password]</td></tr>
-<tr><th colspan="2">Fargo Settings</th></tr>
-<tr class="set"><td>Username</td><td class="right">[fargouser]</td></tr>
-<tr class="set"><td>Password</td><td class="right">[password]</td></tr>
-</table>
+<table><tr><th colspan="2">XBMC Settings</th></tr><tr class="property"><td>Connection</td><td class="right"><input type="text" value="[connection]"></td></tr><tr class="property"><td>Port</td><td class="right"><input type="text" value="[port]"></td></tr><tr class="property"><td>Username</td><td class="right"><input type="text" value="[xbmcuser]"></td></tr><tr class="property"><td>Password</td><td class="right"><input type="password" value="[password]"></td></tr><tr><th colspan="2">Fargo Settings</th></tr><tr class="property"><td>Username</td><td class="right"><input type="text" value="[fargouser]"></td></tr><tr class="property"><td>Password</td><td class="right"><input type="password" value="[password]"></td></tr></table>

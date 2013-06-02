@@ -6,7 +6,7 @@
  * File:    fargo-common.js
  *
  * Created on May 04, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -314,7 +314,7 @@ function SetKeyHandler(event)
         case "music"  : SetMainKeyHandler(key, event);
                         break;                        
         
-        case "system" : SetSystemKeyHandler(key);
+        case "system" : SetSystemKeyHandler(key, event);
                         break;  
         
         case "popup"  : SetPopupKeyHandler(key);
@@ -378,29 +378,29 @@ function SetMainKeyHandler(key, event)
  * Function:	SetSystemKeyHandler
  *
  * Created on May 20, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Set the key from the keyboard. Perform action on the system page.
  * 
- * In:	key
+ * In:	key, event
  * Out:	System option/property
  *
  */
-function SetSystemKeyHandler(key)
+function SetSystemKeyHandler(key, event)
 {      
     switch(key)
     {
         case 37 : // Left arrow.
-                  ToggleProperty();
+                  ToggleProperty("left");
                   break;
         
         case 38 : // Up arrow.
+                  event.preventDefault();
                   SelectOptionProperty("up");
                   break;
         
         case 39 : // right arrow.
-                  ToggleProperty();
-                  //SelectProperty("right");
+                  ToggleProperty("right");
                   break;
         
         case 40 : // Down arrow.
@@ -424,9 +424,10 @@ function SetSystemKeyHandler(key)
 function SelectOptionProperty(arrow)
 {
     var property = $("#display_system_right .on");
+    var dim      = $(".option.dim");
     
     // Check if options (left) or properties (right) is selected.
-    if (property.length)
+    if (property.length || dim.length)
     {    
         SelectProperty(arrow); 
     }
@@ -440,7 +441,7 @@ function SelectOptionProperty(arrow)
  * Function:	SelectOption
  *
  * Created on May 20, 2013
- * Updated on May 20, 2013
+ * Updated on Jun 01, 2013
  *
  * Description: Select a system option by moving up or down the options list.
  * 
@@ -476,6 +477,9 @@ function SelectOption(action)
     target.addClass('on');
     
     ShowProperty(target.text());
+    
+    // Reset state.
+    SetState("property", "");
 }
 
 /*
@@ -490,27 +494,57 @@ function SelectOption(action)
  * Out:	-
  *
  */
-function ToggleProperty()
+function ToggleProperty(arrow)
 {
-    var row = $( ".set");
+    var row;
     var property = $("#display_system_right .on");
+    var input, value, cursor;    
     
-    if (!property.length)
+    if (!property.length) // Turn property on, enter properties.
     {
+        row = $( ".property");
         row.first().toggleClass("on");
         row.first().prev().children().toggleClass("on");
         row.first().children().toggleClass("on");
+        
+        input = row.first().find('input'); 
+        // Get value if there is an input field.
+        value = input.val();        
+        if (value)
+        {
+            input.focus().setCursorPosition(value.length);
+            SetState("property", value);
+        }        
+        
         $(".option.on").toggleClass("on dim");
     }
-    else
-    {
+    else // Turn property off, leave properies and return to options.
+    {     
+        row = $( ".property.on");
+        input = row.find('input'); 
+        // Get value if there is an input field.
+        value = input.val();        
+        if (value)
+        {
+            // Check position cursor in text field
+            cursor = input.getCursorPosition();
+            if (arrow == "left" && cursor > 0) {
+                return;
+            }
+            if (arrow == "right" && cursor < value.length) {
+                return;
+            }
+              
+            input.blur();
+            //SetState("property", value);
+        }
+
         row.removeClass('on');
         row.prev().children().removeClass("on");
         row.children().removeClass("on");
-        $(".option.dim").toggleClass("on dim");
+        $(".option.dim").toggleClass("on dim");        
     }    
 }
-
 
 /*
  * Function:	SelectProperty
@@ -527,30 +561,33 @@ function ToggleProperty()
 function SelectProperty(arrow)
 {
     var active, target; 
-    active = $('.set.on');
+    var current = GetState("property");
+    var input, value, number;
+     
+    active = $('.property.on');
     
     if (arrow == "up")
     {
-        if (active.prev('.set').length) {
-            target = active.prev('.set'); 
+        if (active.prev('.property').length) {
+            target = active.prev('.property'); 
         }
         else if (active.prev('tr').children().is('th') && active.prev('tr').index() > 0) {           
-            target = active.prev().prev('.set'); 
+            target = active.prev().prev('.property'); 
         }
         else {
-            target = $('.set:last');
+            target = $('.property:last');
         }
     }
     else 
     {    
-        if (active.next('.set').length) {
-            target = active.next('.set');
+        if (active.next('.property').length) {
+            target = active.next('.property');
         }
         else if (active.next('tr').children().is('th')) {
-            target = active.next().next('.set'); 
+            target = active.next().next('.property'); 
         }
         else {
-            target = $('.set:first');
+            target = $('.property:first');
         }        
     }
                  
@@ -558,9 +595,93 @@ function SelectProperty(arrow)
     active.prev().children().removeClass("on");
     active.children().removeClass("on");   
     
+    input = active.find('input');     
+    // Get value if there is an input field.
+    value = input.val();    
+    // Property has change, update value.
+    if (current != value && current != "" && value) 
+    {
+        number = active.closest("tr").index();
+        ChangeProperty(number, value);
+    }
+    
     target.addClass('on'); 
     target.prev().children().addClass("on");
-    target.children().addClass("on");       
+    target.children().addClass("on");      
+    
+    input = target.find('input');     
+    // Get value if there is an input field.
+    value = input.val();        
+    if (value)
+    {
+        input.focus().setCursorPosition(value.length);
+        SetState("property", value);
+    }     
+}
+
+/*
+ * Function:	SetPropertyMouseHandler
+ *
+ * Created on May 26, 2013
+ * Updated on Jun 02, 2013
+ *
+ * Description: Show property on hover and update value when changed.
+ *
+ * In:	event
+ * Out:	-
+ *
+ */
+function SetPropertyMouseHandler(event)
+{
+    var row = $(this);
+    var rows = $("#display_system_right .property");
+    var input = row.find('input');
+    var current = GetState("property");
+    var number, value;
+    
+    // Get value if there is an input field.
+    value = input.val();
+    
+    // Dim option.
+    $(".option.on").toggleClass("on dim");
+    
+    // Remove "on" from all rows.
+    //rows.removeClass("on");
+    //rows.prev().children().removeClass("on");
+    //rows.children().removeClass("on");
+    
+    // Show input text field.
+    if (event.type == "mouseenter") 
+    {
+        // Remove "on" from all rows.
+        rows.removeClass("on");
+        rows.prev().children().removeClass("on");
+        rows.children().removeClass("on");
+        
+        // Turn active row "on".
+        row.addClass("on");
+        row.prev().children().addClass("on");
+        row.children().addClass("on");
+        
+        if (value)
+        {
+            input.focus().setCursorPosition(value.length);
+            SetState("property", value);
+        }
+    }
+    else 
+    {        
+        // Property has change, update value.
+        if (current != value && current != "") 
+        {
+           number = row.closest("tr").index();
+           ChangeProperty(number, value);
+        }
+        
+        // Reset state.
+        //SetState("property", "");
+        //input.blur();
+    }  
 }
 
 /*
@@ -814,3 +935,30 @@ $.fn.setCursorPosition = function(pos) {
   });
   return this;
 };
+
+/*
+ * Function:	getCursorPosition
+ *
+ * Created on May 27, 2013
+ * Updated on May 27, 2013
+ *
+ * Description: get the cursor position.
+ *
+ * In:	-
+ * Out:	-
+ *
+ * Note: Code from: http://stackoverflow.com/questions/2897155/get-cursor-position-within-an-text-input-field
+ *
+ */
+(function($) {
+    $.fn.getCursorPosition = function() {
+        var input = this.get(0);
+        if (!input) return; // No (input) element found
+        if (document.selection) {
+            // IE
+           input.focus();
+        }
+        return 'selectionStart' in input ? input.selectionStart:'' || Math.abs(document.selection.createRange().moveStart('character', -input.value.length));
+     }
+})(jQuery);
+

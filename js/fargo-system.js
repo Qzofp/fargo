@@ -6,7 +6,7 @@
  * File:    fargo-system.js
  *
  * Created on May 04, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -66,7 +66,7 @@ function LoadFargoMedia(media)
     $("#display_system_left").on("click", ".option", SetOptionHandler);
     
     // Properties event.
-    $("#display_system_right").on("mouseenter mouseleave", ".set", SetPropertyMouseHandler);
+    $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);
     
     // Import click event.
     $("#import").on("click", SetImportHandler);
@@ -236,78 +236,6 @@ function SetFullSystemHandler(event)
    ShowProperty("Statistics");
    
    $("#control_sub").slideDown("slow");
-}
-
-
-/*
- * Function:	SetPropertyMouseHandler
- *
- * Created on May 26, 2013
- * Updated on Jun 01, 2013
- *
- * Description: Show property on hover and update value when changed.
- *
- * In:	event
- * Out:	-
- *
- */
-function SetPropertyMouseHandler(event)
-{
-    var row = $(this);
-    var rows = $("#display_system_right .set");
-    var current = GetState("property");
-    var number, value;
-    
-    // Dim option.
-    $(".option.on").toggleClass("on dim");
-    
-    // Remove "on" from all rows.
-    rows.removeClass("on");
-    rows.prev().children().removeClass("on");
-    rows.children().removeClass("on");
-    
-    // Show input text field.
-    if (event.type == "mouseenter") 
-    {
-        // Turn active row "on".
-        row.addClass("on");
-        row.prev().children().addClass("on");
-        row.children().addClass("on");
-        
-        value = row.children().last().text();
-        
-        if (row.children().first().text() == "Password") {
-            row.children().last().html('<input type="password" value="' + value +'">');
-            $("input").focus().setCursorPosition(value.length);
-        }
-        else {
-            row.children().last().html('<input type="text" value="' + value +'">');
-            $("input").focus().setCursorPosition(value.length);
-        }
-        
-        // Set state.
-        SetState("property", value);
-    }
-    else 
-    {
-        value = $("input").val();
-        if (row.children().first().text() == "Password") {
-            row.children().last().html("******");
-        }
-        else {
-            row.children().last().html(value);
-        }
-        
-        // Property has change, update value.
-        if (current != value && current != "") 
-        {
-           number = row.closest("tr").index();
-           ChangeProperty(number, value);
-        }
-        
-        // Reset state.
-        SetState("property", "");
-    }  
 }
 
 /*

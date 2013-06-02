@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -422,14 +422,6 @@ background: -moz-linear-gradient(center top, #207899, #0B4F68);
 background: -webkit-gradient(linear, left top, left bottom, from(#207899), to(#0B4F68));
 background: -o-linear-gradient(top, #207899, #0B4F68);
 background: -ms-linear-gradient(top, #207899 0%, #0B4F68 100%);
-
-
-/*
-#0B4F68
-#166C8C
-#207899
-*/
-
 }
 
 #display_system_right{
@@ -438,9 +430,6 @@ height:100%;
 border-radius:0 10px 10px 0;
 font-size:1.8em;
 color:#999;
-
-/*background-color:rgba(0,0,0,0.5);*/
-/*background-color:#ECECEC;  */
 }
 
 #display_system_right .right{
@@ -486,8 +475,12 @@ padding:15px 15px 0 15px;
 height:37px;
 text-align:left;
 text-shadow:2px 2px 2px #000;
-color:dodgerblue;
+color:lightgray;
 border-bottom:1px solid rgba(153,153,153,0.2);
+}
+
+#display_system_right th.set{
+color:dodgerblue; 
 }
 
 #display_system_right td{
@@ -502,6 +495,10 @@ color:#fff;
 background-color:rgba(0,0,0,0.2);
 }
 
+#display_system_right tr.on input{
+color:#fff;
+}
+
 #display_system_right td.on, 
 #display_system_right th.on{
 border-bottom-color:rgba(30,144,255,0.5);
@@ -513,7 +510,7 @@ text-align:right;
 border:none;
 background:none;
 font-size:1.0em;
-color:#FFF;
+color:#999;
 }
 
 /* End Display part */

@@ -6,7 +6,7 @@
  * File:    fargo-login.js
  *
  * Created on Apr 05, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the login option.
  *
@@ -53,6 +53,9 @@ function LoadFargoMedia(media)
     
     // Option event.
     $("#display_system_left").on("click", ".option", SetOptionHandler);
+    
+    // Properties event.
+    $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);    
       
     // Login click event.
     $("#login").on("click", {title:title}, SetPopupHandler);
