@@ -3,10 +3,10 @@
  * Author:  Qzofp Productions
  * Version: 0.1
  *
- * File:    fargo-login.js
+ * File:    fargo.public.system.js
  *
  * Created on Apr 05, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the login option.
  *
@@ -21,7 +21,9 @@ var global_sort  = "";
 
 var global_lastpage = 1; //last page
 var global_column   = 0;
-//var global_popup    = false;
+
+// Fargo setting 
+var global_setting_fargo;
 
 /*
  * Function:	LoadFargoMedia
@@ -113,7 +115,7 @@ function SetMediaHandler(event)
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Show the system page with minimum options.
  * 
@@ -140,7 +142,9 @@ function SetSystemHandler(event)
    $('#display_content').html("");
    $('#display_system').show();
    
-   $('#display_system_left').append('<div id=\"fargo\">Qzofp\'s Fargo</div>');
+   if ($('#display_system_left #fargo').length == false) {
+       $('#display_system_left').append('<div id=\"fargo\">Qzofp\'s Fargo</div>');
+   }
    if(last != aOptions[aOptions.length-1])
    {
         $.each(aOptions, function(key, option) 
@@ -162,7 +166,7 @@ function SetSystemHandler(event)
  * Function:	SetLoginValidateHandler
  *
  * Created on May 04, 2013
- * Updated on May 10, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Validate login user and password.
  * 
@@ -174,6 +178,11 @@ function SetLoginValidateHandler()
 {
     var username=$('#username').val();
     var password=$('#password').val();
+    
+    // Hash password.
+    GetFargoSetting("Hash"); //Returns global_setting_fargo
+    password = CryptoJS.MD5(password + global_setting_fargo);
+    
     var data = 'username='+ username + '&password='+ password;
     
     $.ajax

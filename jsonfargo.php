@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -63,10 +63,14 @@ switch ($action)
                     break;
                 
     case "property":$option = GetPageValue('option');
-                    $number  = GetPageValue('number');
+                    $number = GetPageValue('number');
                     $value  = GetPageValue('value');
-                    $aJson  = SetSystemProperty($option, $number, $value); 
+                    $aJson  = SetSystemProperty($option, $number, $value);
                     break;                
+                
+    case "setting": $name  = GetPageValue('name');
+                    $aJson['value'] = GetSetting($name);
+                    break;
                 
     case "log"    : $type  = GetPageValue('type');
                     $event = GetPageValue('event');

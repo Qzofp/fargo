@@ -3,10 +3,10 @@
  * Author:  Qzofp Productions
  * Version: 0.1
  *
- * File:    fargo-import.js
+ * File:    fargo.private.import.js
  *
  * Created on Apr 14, 2013
- * Updated on May 25, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *

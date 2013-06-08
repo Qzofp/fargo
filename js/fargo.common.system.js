@@ -3,10 +3,10 @@
  * Author:  Qzofp Productions
  * Version: 0.1
  *
- * File:    fargo-common.js
+ * File:    fargo.common.system.js
  *
  * Created on May 04, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -189,7 +189,7 @@ function SetOptionHandler()
  * Function:	ShowProperty
  *
  * Created on May 20, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Set the option and show the properties.
  * 
@@ -286,8 +286,6 @@ function SetArrowHandler(action)
     else if (global_page==offset+1) {
         global_page = 1;
     } 
-        
-    //ShowMediaTable(global_media, global_page, global_column, global_sort);
 } 
 
 /*
@@ -382,7 +380,7 @@ function SetMainKeyHandler(key, event)
  * Function:	SetSystemKeyHandler
  *
  * Created on May 20, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Set the key from the keyboard. Perform action on the system page.
  * 
@@ -409,6 +407,9 @@ function SetSystemKeyHandler(key, event)
         
         case 40 : // Down arrow.
                   SelectOptionProperty("down");
+                  break;
+                  
+        default : // Key pressed.
                   break;
     }
 }
@@ -445,7 +446,7 @@ function SelectOptionProperty(arrow)
  * Function:	SelectOption
  *
  * Created on May 20, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Select a system option by moving up or down the options list.
  * 
@@ -483,14 +484,14 @@ function SelectOption(action)
     ShowProperty(target.text());
     
     // Reset state.
-    SetState("property", "");
+    //SetState("property_key", "");
 }
 
 /*
  * Function:	ToggleProperty
  *
  * Created on Jun 01, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Toggle property on or off.
  *
@@ -519,6 +520,7 @@ function ToggleProperty(arrow)
             value = input.val();
             input.focus().setCursorPosition(value.length);
             SetState("property", value);
+            SetState("row", 1); 
         }      
         
         $(".option.on").toggleClass("on dim");
@@ -532,8 +534,8 @@ function ToggleProperty(arrow)
         input = row.find('input'); 
         if (input.length)
         {    
-            value = input.val();        
-
+            value = input.val();
+        
             // Check position cursor in text field
             cursor = input.getCursorPosition();
             if (arrow == "left" && cursor > 0) {
@@ -544,12 +546,17 @@ function ToggleProperty(arrow)
             }
               
             // Property has change, update value.
-            if (current != value) 
+            if (current != value && value != "") 
             {
+                value = HashPassword(input);
                 number = row.closest("tr").index();
                 ChangeProperty(number, value);
             }              
               
+            if (input.attr("type") == "password") {
+                input.val("******");
+            }            
+            
             input.blur();
         }
 
@@ -564,7 +571,7 @@ function ToggleProperty(arrow)
  * Function:	SelectProperty
  *
  * Created on May 29, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Select system property.
  *
@@ -578,6 +585,9 @@ function SelectProperty(arrow)
     var current = GetState("property");
     var input, value, number;
     
+    // Key pressed (not an arrow key).
+    //key = GetState("key");
+      
     value = current;
     active = $('.property.on');
     
@@ -612,11 +622,12 @@ function SelectProperty(arrow)
     
     // Get value if there is an input field.
     input = active.find('input');
-    if(input.length){
-        value = input.val(); 
+    if(input.length) {
+        value = HashPassword(input);
     }
+    
     // Property has change, update value.
-    if (current != value) 
+    if (current != value && value != "")
     {
         number = active.closest("tr").index();
         ChangeProperty(number, value);
@@ -631,8 +642,15 @@ function SelectProperty(arrow)
     if (input.length) 
     {
         value = input.val();
+        if (input.attr("type") == "password") {
+            input.val("");
+        }
+        
         input.focus().setCursorPosition(value.length);
         SetState("property", value);
+        
+        number = target.closest("tr").index();
+        SetState("row", number);        
     }     
 }
 
@@ -640,7 +658,7 @@ function SelectProperty(arrow)
  * Function:	SetPropertyMouseHandler
  *
  * Created on May 26, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Show property on hover and update value when changed.
  *
@@ -654,7 +672,7 @@ function SetPropertyMouseHandler(event)
     var rows = $("#display_system_right .property");
     var input = row.find('input');
     var current = GetState("property");
-    var number, value;
+    var number, rownr, value;
     
     // Get value if there is an input field.
     value = current;
@@ -667,7 +685,7 @@ function SetPropertyMouseHandler(event)
     
     // Show input text field.
     if (event.type == "mouseenter") 
-    {
+    {   
         // Remove "on" from all rows.
         rows.removeClass("on");
         rows.prev().children().removeClass("on");
@@ -680,19 +698,69 @@ function SetPropertyMouseHandler(event)
         
         if (input.length)
         {
+            if (input.attr("type") == "password") {
+                input.val("");
+            }
+            
             input.focus().setCursorPosition(value.length);
             SetState("property", value);
+            
+            number = row.closest("tr").index();
+            SetState("row", number);
         }
     }
     else 
-    {        
+    {
+        number = row.closest("tr").index();
+        rownr  = GetState("row");
+        
+        if (input.length && number == rownr) { 
+            value = HashPassword(input);
+        }
+        
         // Property has change, update value.
-        if (current != value) 
+        if (current != value && value != "" && number == rownr)
         {
-           number = row.closest("tr").index();
            ChangeProperty(number, value);
         }
     }  
+}
+
+/*
+ * Function:	HashPassword
+ *
+ * Created on Jun 08, 2013
+ * Updated on Jun 08, 2013
+ *
+ * Description: Hash password.
+ * 
+ * In:	input
+ * Out:	value
+ *
+ */
+function HashPassword(input)
+{ 
+    var value = input.val();
+    
+    if (input.attr("type") == "password") 
+    {
+        // [Future option] Password length check.
+        /*if (value.length < 1) {
+            value = "";
+            // Show message.
+        }*/
+
+        // Hash password.
+        if ($.trim(value).length)
+        {    
+            GetFargoSetting("Hash"); //Returns global_setting_fargo
+            value = CryptoJS.MD5(value + global_setting_fargo);
+        }
+            
+        input.val("******");
+    }
+    
+    return value;
 }
 
 /*
@@ -718,7 +786,7 @@ function SetPopupKeyHandler(key)
  * Function:	SetPopupHandler
  *
  * Created on Apr 28, 2013
- * Updated on May 20, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Set popup handler and show popup box.
  * 
@@ -730,14 +798,13 @@ function SetPopupHandler(event)
 { 
     ShowPopupBox(event.data.title);
     SetState("page", "popup");
-    //global_popup = true;
 }
 
 /*
  * Function:	ShowPopupBox
  *
  * Created on May 08, 2013
- * Updated on May 24, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Show popup box.
  * 
@@ -755,8 +822,6 @@ function ShowPopupBox(title)
     }
     
     popup.fadeIn("300");
- 
-    //mask.show();
     mask.fadeIn("300");
 }
 
@@ -764,7 +829,7 @@ function ShowPopupBox(title)
  * Function:	SetMaskHandler
  *
  * Created on Apr 28, 2013
- * Updated on Apr 28, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Remove mask en popup.
  * 
@@ -778,10 +843,7 @@ function SetMaskHandler()
     SetState("page", media);
     
     $("#popup").fadeOut("300");    
-    $("#mask").fadeOut("300");
-    //$("#mask").hide();
-    
-    //global_popup = false;   
+    $("#mask").fadeOut("300"); 
 }
 
 /*
@@ -835,6 +897,32 @@ function ShowMediaTable(media, page, column, sort)
             $('#sort').html(sort);            
         } // End success.
     }); // End Ajax. 
+}
+
+/*
+ * Function:	GetFargoSetting
+ *
+ * Created on Jun 08, 2013
+ * Updated on Jun 08, 2013
+ *
+ * Description: Get value from the Fargo settings database.
+ * 
+ * In:	name
+ * Out:	global_setting_fargo
+ *
+ */
+function GetFargoSetting(name)
+{
+    $.ajax
+    ({
+        url: 'jsonfargo.php?action=setting&name=' + name,
+        async: false,
+        dataType: 'json',
+        success: function(json) 
+        {
+            global_setting_fargo = json.value;
+        } // End succes.
+  }); // End Ajax.
 }
 
 /*

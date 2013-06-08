@@ -3,10 +3,10 @@
  * Author:  Qzofp Productions
  * Version: 0.1
  *
- * File:    fargo-system.js
+ * File:    fargo.private.system.js
  *
  * Created on May 04, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
  *
@@ -21,13 +21,15 @@ var global_sort  = "";
 
 var global_lastpage = 1; //last page
 var global_column   = 0;
-//var global_popup    = false;
+
+var global_cancel = false;
 
 // Media total.
 var global_total_fargo = 0;
 var global_total_xbmc  = 0;
 
-var global_cancel = false;
+// Fargo setting 
+var global_setting_fargo;
 
 // Ajax requests.
 var global_status_request;
@@ -197,7 +199,7 @@ function SetMediaHandler(event)
  * Function:	SetFullSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Show the full system page with all the options.
  * 
@@ -224,8 +226,10 @@ function SetFullSystemHandler(event)
    $('#display_content').hide();
    $('#display_content').html("");
    $('#display_system').show();
-   
-   $('#display_system_left').append('<div id=\"fargo\">Qzofp\'s Fargo</div>');
+
+   if ($('#display_system_left #fargo').length == false) {
+       $('#display_system_left').append('<div id=\"fargo\">Qzofp\'s Fargo</div>');
+   }
    if(last != aOptions[aOptions.length-1])
    {
         $.each(aOptions, function(key, option) 
@@ -245,7 +249,7 @@ function SetFullSystemHandler(event)
  * Function:	ChangeProperty
  *
  * Created on May 27, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Get option and update property value.
  *
@@ -257,17 +261,15 @@ function ChangeProperty(number, value)
 {
     var option = $('#display_system_left .dim').text();
     
-    //alert(option + " " + number + " " + value);
-    
     $.ajax({
         url: 'jsonfargo.php?action=property&option=' + option + '&number=' + number + '&value=' + value,
         //async: false,
         dataType: 'json',
         success: function(json) 
         {    
-            // Updated value.
+            // Updated porperty value.
         } // End Success.        
-    }); // End Ajax;   
+    }); // End Ajax;
 }
 
 /*

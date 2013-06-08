@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 08, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -20,11 +20,12 @@ if(!isset($_SESSION['LOGIN']))
 {
     $login = false;
     $user = "";
-    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js", 
+    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js", 
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
+                         "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js",        
-                         "js/fargo-common.js", 
-                         "js/fargo-login.js");
+                         "js/fargo.common.system.js", 
+                         "js/fargo.public.system.js");
     
     $li_import = "";
     $li_login  = "<li id=\"login\">Login</li>\n";
@@ -34,17 +35,19 @@ else
 {
     $login = true;
     $user = "Welcome: <span>".$_SESSION['USER']."</span>";
-    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js",
+    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js",
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
+                         "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js",
-                         "js/fargo-common.js", 
-                         "js/fargo-system.js", 
-                         "js/fargo-import.js");
+                         "js/fargo.common.system.js", 
+                         "js/fargo.private.system.js", 
+                         "js/fargo.private.import.js");
      
     $li_import = "<li id=\"import\">Import</li>\n";
     $li_login  = "<li id=\"logout\">Logout</li>\n";
     $system_states = "   <div id=\"state_xbmc\">offline</div>\n".
-                     "   <div id=\"state_property\"></div>\n";
+                     "   <div id=\"state_property\"></div>\n".
+                     "   <div id=\"state_row\"></div>\n";
 }
  
 require_once 'settings.php';
