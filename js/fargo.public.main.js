@@ -3,12 +3,12 @@
  * Author:  Qzofp Productions
  * Version: 0.1
  *
- * File:    fargo.public.system.js
+ * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
  * Updated on Jun 08, 2013
  *
- * Description: Fargo's jQuery and Javascript functions page for the user interface with the login option.
+ * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
  */
 

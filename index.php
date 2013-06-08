@@ -23,9 +23,11 @@ if(!isset($_SESSION['LOGIN']))
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js", 
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
-                         "js/jquery.slimscroll.min.js",        
-                         "js/fargo.common.system.js", 
-                         "js/fargo.public.system.js");
+                         "js/jquery.slimscroll.min.js", 
+                         "js/fargo.common.js", 
+                         "js/fargo.media.js",         
+                         "js/fargo.system.js", 
+                         "js/fargo.public.main.js");
     
     $li_import = "";
     $li_login  = "<li id=\"login\">Login</li>\n";
@@ -39,8 +41,10 @@ else
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js",
-                         "js/fargo.common.system.js", 
-                         "js/fargo.private.system.js", 
+                         "js/fargo.common.js",
+                         "js/fargo.media.js",         
+                         "js/fargo.system.js", 
+                         "js/fargo.private.main.js", 
                          "js/fargo.private.import.js");
      
     $li_import = "<li id=\"import\">Import</li>\n";

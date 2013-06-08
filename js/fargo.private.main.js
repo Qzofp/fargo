@@ -3,12 +3,12 @@
  * Author:  Qzofp Productions
  * Version: 0.1
  *
- * File:    fargo.private.system.js
+ * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
  * Updated on Jun 08, 2013
  *
- * Description: Fargo's jQuery and Javascript functions page for the user interface with the system option.
+ * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
  */
 
@@ -87,75 +87,6 @@ function LoadFargoMedia(media)
             
     // Keyboard events.
     $(document).on("keydown", SetKeyHandler);
-}
-
-/*
- * Function:	SetImportHandler
- *
- * Created on May 08, 2013
- * Updated on May 20, 2013
- *
- * Description: Set the import handler, show the import popup box and start import.
- * 
- * In:	media
- * Out:	title
- *
- */
-function SetImportHandler()
-{
-    var title = "";
-    var media = GetState("media"); // Get state media. 
-  
-    title = "Import " + ConvertMedia(media);    
-    
-    //alert($(this).html());
-    ShowPopupBox(title);
-    SetState("page", "popup");
-    //global_popup = true;
-     
-    $(".retry").toggleClass("retry cancel");
-    
-    // Initialize status popup box.
-    $(".message").html("Connecting...");
-    AdjustImageSize(media);
-    $(".cancel").html("Cancel");
-     
-    // Start Import
-    global_cancel = false;  
-    setTimeout(function(){
-        ImportMedia(media);
-    }, 1000);
-
-}
-
-/*
- * Function:	SetImportCancelHandler
- *
- * Created on May 09, 2013
- * Updated on May 19, 2013
- *
- * Description: Set the import handler, Cancel or finish the import.
- * 
- * In:	media
- * Out:	title
- *
- */
-function SetImportCancelHandler()
-{
-    var button = $(".cancel").text();
-    var media = GetState("media");
-    
-    // Abort pending ajax request.
-    if(typeof global_status_request !== 'undefined') {
-        global_status_request.abort();
-    }
-    
-    global_cancel = true;
-    SetMaskHandler();
-    
-    if (button == "Finish") {
-        window.location='index.php?media=' + media;
-    }
 }
 
 /*
