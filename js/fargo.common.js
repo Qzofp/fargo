@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -130,18 +130,18 @@ function ConvertMedia(media)
 }
 
 /*
- * Function:	HashPassword
+ * Function:	CheckForPassword
  *
  * Created on Jun 08, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
- * Description: Hash password.
+ * Description: Check if there is a password and if so then hash password.
  * 
  * In:	input
  * Out:	value
  *
  */
-function HashPassword(input)
+function CheckForPassword(input)
 { 
     var value = input.val();
     
@@ -154,11 +154,7 @@ function HashPassword(input)
         }*/
 
         // Hash password.
-        if ($.trim(value).length)
-        {    
-            GetFargoSetting("Hash"); //Returns global_setting_fargo
-            value = CryptoJS.MD5(value + global_setting_fargo);
-        }
+        value = HashPassword(value);
             
         input.val("******");
     }
@@ -167,29 +163,35 @@ function HashPassword(input)
 }
 
 /*
- * Function:	SetPopupKeyHandler
+ * Function:	HashPassword
  *
- * Created on Apr 28, 2013
- * Updated on Apr 28, 2013
+ * Created on Jun 09, 2013
+ * Updated on Jun 09, 2013
  *
- * Description: Disable popup window.
+ * Description: Hash password.
  * 
- * In:	key
- * Out:	disable popup
+ * In:	string
+ * Out:	password
  *
  */
-function SetPopupKeyHandler(key)
-{ 
-    if (key == 27) {   // ESC key
-        SetMaskHandler();
-    }    
+function HashPassword(string)
+{
+    var password = string;
+    
+    if ($.trim(string).length)
+    {    
+        GetFargoSetting("Hash"); //Returns global_setting_fargo
+        password = CryptoJS.MD5(CryptoJS.MD5(string) + global_setting_fargo);
+    }
+    
+    return password;
 }
 
 /*
  * Function:	SetPopupHandler
  *
  * Created on Apr 28, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Set popup handler and show popup box.
  * 
@@ -199,7 +201,7 @@ function SetPopupKeyHandler(key)
  */
 function SetPopupHandler(event)
 { 
-    ShowPopupBox(event.data.title);
+    ShowPopupBox(".login_size", event.data.title);
     SetState("page", "popup");
 }
 
@@ -207,17 +209,19 @@ function SetPopupHandler(event)
  * Function:	ShowPopupBox
  *
  * Created on May 08, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Show popup box.
  * 
- * In:	event
+ * In:	type, title
  * Out:	Popup box.
+ * 
+ * Note: Type is the popup box class i.e. login_size, import, clean, etc.
  *
  */
-function ShowPopupBox(title)
+function ShowPopupBox(type, title)
 {
-    var popup = $("#popup");
+    var popup = $("#popup" + type);
     var mask = $("#mask");
     
     if (title) {
@@ -232,20 +236,22 @@ function ShowPopupBox(title)
  * Function:	SetMaskHandler
  *
  * Created on Apr 28, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Remove mask en popup.
  * 
- * In:	-
+ * In:	type
  * Out:	disable mask and popup
+ * 
+ * Note: Type is the popup box class i.e. login_size, import, clean, etc.
  *
  */
-function SetMaskHandler()
+function SetMaskHandler(type)
 { 
     var media = GetState("media");
     SetState("page", media);
     
-    $("#popup").fadeOut("300");    
+    $("#popup" + type).fadeOut("300");    
     $("#mask").fadeOut("300"); 
 }
 

@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Apr 14, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -19,7 +19,7 @@
  * Function:	SetImportHandler
  *
  * Created on May 08, 2013
- * Updated on May 20, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -32,12 +32,9 @@ function SetImportHandler()
     var title = "";
     var media = GetState("media"); // Get state media. 
   
-    title = "Import " + ConvertMedia(media);    
-    
-    //alert($(this).html());
-    ShowPopupBox(title);
+    title = "Import " + ConvertMedia(media); 
+    ShowPopupBox(".import", title);
     SetState("page", "popup");
-    //global_popup = true;
      
     $(".retry").toggleClass("retry cancel");
     
@@ -51,14 +48,13 @@ function SetImportHandler()
     setTimeout(function(){
         ImportMedia(media);
     }, 1000);
-
 }
 
 /*
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on May 19, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Set the import handler, Cancel or finish the import.
  * 
@@ -77,7 +73,7 @@ function SetImportCancelHandler()
     }
     
     global_cancel = true;
-    SetMaskHandler();
+    SetMaskHandler(".import");
     
     if (button == "Finish") {
         window.location='index.php?media=' + media;

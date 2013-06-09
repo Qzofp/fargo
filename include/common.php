@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -59,7 +59,7 @@ function ShowHiddenLoginBox()
  * Function:	ShowHiddenImportBox
  *
  * Created on May 06, 2013
- * Updated on May 25, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Show hidden import box.
  *
@@ -87,6 +87,43 @@ function ShowHiddenImportBox()
     echo "     <div id=\"progress\"></div>\n";    
     echo "     <div class=\"button\">\n";
     echo "      <button type=\"button\" class=\"cancel\">Cancel</button>\n";
+    echo "     </div>\n";
+    echo "    </form>\n";    
+    echo "   </div>\n";    
+}
+
+/*
+ * Function:	ShowHiddenCleanLibraryBox
+ *
+ * Created on May 06, 2013
+ * Updated on May 25, 2013
+ *
+ * Description: Show hidden clean library box.
+ *
+ * In:  -
+ * Out:	Hidden clean library box.
+ *
+ */
+function ShowHiddenCleanLibraryBox()
+{
+    echo "   <div id=\"popup\" class=\"clean\">\n";
+    echo "    <form method=\"post\" action=\"#\">\n";
+    echo "     <div class=\"close_left\">&nbsp;</div>\n";       
+    echo "     <div class=\"close_right\">x</div>\n";    
+    echo "     <div class=\"title\">Clean Library Box</div>\n";
+    echo "     <div class=\"message\"><br/></div>\n";
+    
+    
+    //echo "     <div id=\"import_wrapper\">\n";
+    //echo "      <div id=\"thumb\"><img src=\"\"/></div>\n";
+    //echo "     </div>\n";
+    
+    //echo "     <div id=\"title\">&nbsp;</div>\n";
+    //echo "     <div id=\"progress\"></div>\n";    
+    
+    echo "     <div class=\"button\">\n";
+    echo "      <button type=\"button\" class=\"yes\">Yes</button>\n";
+    echo "      <button type=\"button\" class=\"no\">No</button>\n";
     echo "     </div>\n";
     echo "    </form>\n";    
     echo "   </div>\n";    

@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -39,7 +39,7 @@ var global_import_request;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on May 26, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -69,14 +69,17 @@ function LoadFargoMedia(media)
     
     // Properties event.
     $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);
-    
+    $("#display_system_right").on("click", ".property .on", SetPropertyClickHandler);
+        
     // Import click event.
     $("#import").on("click", SetImportHandler);
     $(".button").on("click", ".retry", SetImportHandler);
     
     // Cancel or finish import.
     $(".button").on("click", ".cancel", SetImportCancelHandler);
-    $("#mask, .close_right").on("click", SetImportCancelHandler);
+    
+    // Close popup.
+    $("#mask, .close_right").on("click", SetCloseHandler);
     
     // Logout event.
     $("#logout").on("click", SetLogoutHandler);
@@ -231,6 +234,59 @@ function ChangeSubControlBar(media)
             $("#logout").show();        
         }
     });    
+}
+
+/*
+ * Function:	SetCloseHandler
+ *
+ * Created on Jun 09, 2013
+ * Updated on Jun 09, 2013
+ *
+ * Description: Close import or other popup window.
+ * 
+ * In:	-
+ * Out:	disable mask and popup
+ *
+ */
+function SetCloseHandler()
+{
+    var popup = $("#popup.import");
+        
+    // Close import popup.
+    if (popup.is(":visible")) {
+        SetImportCancelHandler();
+    }
+    else {
+        SetMaskHandler(".clean");
+    }
+}
+
+/*
+ * Function:	SetPopupKeyHandler
+ *
+ * Created on Apr 28, 2013
+ * Updated on Jun 09, 2013
+ *
+ * Description: Disable popup window.
+ * 
+ * In:	key
+ * Out:	disable popup
+ *
+ */
+function SetPopupKeyHandler(key)
+{ 
+    var popup = $("#popup.import");
+    
+    if (key == 27) // ESC key
+    {   
+        // Close import popup.
+        if (popup.is(":visible")) {
+            SetImportCancelHandler();
+        }
+        else {
+            SetMaskHandler(".clean");
+        }
+    }  
 }
 
 /*

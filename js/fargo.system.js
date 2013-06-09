@@ -6,7 +6,7 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -316,7 +316,7 @@ function SelectProperty(arrow)
     // Get value if there is an input field.
     input = active.find('input');
     if(input.length) {
-        value = HashPassword(input);
+        value = CheckForPassword(input);
     }
     
     // Property has change, update value.
@@ -408,7 +408,7 @@ function SetPropertyMouseHandler(event)
         rownr  = GetState("row");
         
         if (input.length && number == rownr) { 
-            value = HashPassword(input);
+            value = CheckForPassword(input);
         }
         
         // Property has change, update value.
@@ -417,6 +417,79 @@ function SetPropertyMouseHandler(event)
            ChangeProperty(number, value);
         }
     }  
+}
+
+/*
+ * Function:	SetPropertyClickHandler
+ *
+ * Created on Jun 09, 2013
+ * Updated on Jun 09, 2013
+ *
+ * Description: Handle clicked property event.
+ *
+ * In:	-
+ * Out:	Action
+ *
+ */
+function SetPropertyClickHandler()
+{
+    var option = $("#display_system_left .dim").text();
+    var number = $(this).closest("tr").index();
+    
+    if (option == "Library") 
+    {
+        switch(number)
+        {
+            case 1: //Clean Movies library...
+                    CleanPopupBox("movies");
+                    break;
+                    
+            case 2: //Import Movies library.
+                    SetState("media", "movies");
+                    SetImportHandler();
+                    //SetState("media", "system");
+                    break;
+                    
+            case 4: //Clean TV Shows library...
+                    CleanPopupBox("tvshows");
+                    break;
+                    
+            case 5: //Import TV Shows library.
+                    SetState("media", "tvshows");
+                    SetImportHandler();
+                    //SetState("media", "system");                
+                    break;
+                    
+            case 7: //Clean Music library...
+                    CleanPopupBox("music");
+                    break;
+                    
+            case 8: //Import Music library.
+                    SetState("media", "music");
+                    SetImportHandler();
+                    //SetState("media", "system");                
+                    break;                
+        }
+    }
+}
+
+/*
+ * Function:	CleanPopupBox
+ *
+ * Created on Jun 09, 2013
+ * Updated on Jun 09, 2013
+ *
+ * Description: Show clean library popup box
+ *
+ * In:	name
+ * Out:	Popup box
+ *
+ */
+function CleanPopupBox(name)
+{
+    $(".message").html("Do you want to clean the " + ConvertMedia(name) + " library?");    
+    ShowPopupBox(".clean", "Cleaning database");
+    SetState("page", "popup");
 }
 
 /*

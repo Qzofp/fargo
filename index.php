@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -85,7 +85,8 @@ if (!$login)
 }
 else 
 {
-    ShowHiddenImportBox();   
+    ShowHiddenImportBox();
+    ShowHiddenCleanLibraryBox();
 }
 
 // Display section.

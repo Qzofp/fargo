@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -29,7 +29,7 @@ var global_setting_fargo;
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on May 12, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -61,7 +61,7 @@ function LoadFargoMedia(media)
       
     // Login click event.
     $("#login").on("click", {title:title}, SetPopupHandler);
-    $("#mask, .close_right").on("click", SetMaskHandler);
+    $("#mask, .close_right").on("click", SetCloseHandler);
     
     // Login validation event.
     $(".login").on("click", SetLoginValidateHandler);
@@ -161,12 +161,64 @@ function SetSystemHandler(event)
    $("#control_sub").slideDown("slow");
 }
 
+/*
+ * Function:	SetCloseHandler
+ *
+ * Created on Jun 09, 2013
+ * Updated on Jun 09, 2013
+ *
+ * Description: Close login or other popup windows.
+ * 
+ * In:	-
+ * Out:	disable mask and popup
+ *
+ */
+function SetCloseHandler()
+{
+    var popup = $("#popup.login_size");
+        
+    // Close login popup.
+    if (popup.is(":visible")) {
+        SetMaskHandler(".login_size");
+    }
+    else {
+        //SetMaskHandler(".info");
+    }
+}
+
+/*
+ * Function:	SetPopupKeyHandler
+ *
+ * Created on Apr 28, 2013
+ * Updated on Jun 09, 2013
+ *
+ * Description: Disable popup window.
+ * 
+ * In:	key
+ * Out:	disable popup
+ *
+ */
+function SetPopupKeyHandler(key)
+{ 
+    var popup = $("#popup.login_size");
+    
+    if (key == 27) // ESC key
+    {   
+        // Close login popup.
+        if (popup.is(":visible")) {
+            SetMaskHandler(".login_size");
+        }
+        else {
+            //SetMaskHandler(".info");
+        }
+    }    
+}
 
 /*
  * Function:	SetLoginValidateHandler
  *
  * Created on May 04, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Validate login user and password.
  * 
@@ -180,8 +232,7 @@ function SetLoginValidateHandler()
     var password=$('#password').val();
     
     // Hash password.
-    GetFargoSetting("Hash"); //Returns global_setting_fargo
-    password = CryptoJS.MD5(password + global_setting_fargo);
+    password = HashPassword(password);
     
     var data = 'username='+ username + '&password='+ password;
     

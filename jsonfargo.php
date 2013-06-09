@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -69,7 +69,7 @@ switch ($action)
                     break;                
                 
     case "setting": $name  = GetPageValue('name');
-                    $aJson['value'] = GetSetting($name);
+                    $aJson = ProcessSetting($name);
                     break;
                 
     case "log"    : $type  = GetPageValue('type');
@@ -357,10 +357,36 @@ function GetMedia($media, $sql)
 }
 
 /*
+ * Function:	ProcessSetting
+ *
+ * Created on Jun 09, 2013
+ * Updated on Jun 09, 2013
+ *
+ * Description: Get value from settings database and process value if necessary. 
+ *
+ * In:  $name 
+ * Out: $aJson
+ *
+ */
+function ProcessSetting($name)
+{
+    $aJson = null;
+    $value = GetSetting($name);
+    
+    if ($value = "Hash") {
+        $value = md5($value);
+    }
+    
+    $aJson["value"] = $value;
+    
+    return $aJson;
+}
+
+/*
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -378,14 +404,7 @@ function GetSystemOptionProperties($name)
                             $html = str_replace("[tvshows]", CountRows("tvshows"), $html);
                             $html = str_replace("[music]", CountRows("music"), $html);
                             break;
-                        
-        case "about"      : $html = GetSetting($name);
-                            $html = str_replace("[version]", GetSetting("Version"), $html);
-                            break;
-                        
-        case "credits"    : $html = GetSetting($name);
-                            break;
-                        
+                                       
         case "settings"   : $html = GetSetting($name);
                             $html = str_replace("[connection]", GetSetting("XBMCconnection"), $html);
                             $html = str_replace("[port]", GetSetting("XBMCport"), $html);
@@ -393,6 +412,16 @@ function GetSystemOptionProperties($name)
                             $html = str_replace("[fargouser]", GetUser(1), $html);
                             $html = str_replace("[password]", "******", $html);
                             break;
+                        
+        case "library"    : $html = GetSetting($name);
+                            break;
+                        
+        case "credits"    : $html = GetSetting($name);
+                            break;                        
+                        
+        case "about"      : $html = GetSetting($name);
+                            $html = str_replace("[version]", GetSetting("Version"), $html);
+                            break;                        
     }
     
     $aJson['html'] = $html;
@@ -403,7 +432,7 @@ function GetSystemOptionProperties($name)
  * Function:	SetSystemProperty
  *
  * Created on May 27, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 09, 2013
  *
  * Description: Set the system property. 
  *
