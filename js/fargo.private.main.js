@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -39,7 +39,7 @@ var global_import_request;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -70,14 +70,20 @@ function LoadFargoMedia(media)
     // Properties event.
     $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);
     $("#display_system_right").on("click", ".property .on", SetPropertyClickHandler);
-        
+    
+    // Clean database (library or event log) event.
+    $(".button").on("click", ".yes", CleanDatabaseHandler);
+    
     // Import click event.
     $("#import").on("click", SetImportHandler);
     $(".button").on("click", ".retry", SetImportHandler);
     
-    // Cancel or finish import.
-    $(".button").on("click", ".cancel", SetImportCancelHandler);
+    // Cancel or finish import. 
+    $(".button").on("click", ".cancel", SetCloseHandler);
     
+    // No button is pressed, close popup.
+    $(".button").on("click", ".no", SetCloseHandler);
+            
     // Close popup.
     $("#mask, .close_right").on("click", SetCloseHandler);
     
@@ -133,7 +139,7 @@ function SetMediaHandler(event)
  * Function:	SetFullSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Show the full system page with all the options.
  * 
@@ -144,7 +150,7 @@ function SetMediaHandler(event)
 function SetFullSystemHandler(event)
 {            
    var media  = event.data.media;  
-   var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Run Tests', 'Credits', 'About'];
+   var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
    var last = $('#display_system_left .option').last().text();
    SetState("page", media);
 
@@ -234,6 +240,27 @@ function ChangeSubControlBar(media)
             $("#logout").show();        
         }
     });    
+}
+
+/*
+ * Function:	CleanDatabaseHandler
+ *
+ * Created on Jun 10, 2013
+ * Updated on Jun 10, 2013
+ *
+ * Description: Clean a database table (Library or Event Log).
+ * 
+ * In:	-
+ * Out:	Table cleaned (truncate)
+ *
+ */
+function CleanDatabaseHandler()
+{
+    // Get active row number.
+    var number = $(".property .on").closest("tr").index();  
+    
+    ChangeProperty(number, "");
+    SetCloseHandler();
 }
 
 /*

@@ -6,7 +6,7 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -76,7 +76,7 @@ function ShowProperty(name)
  * Function:	SetSystemKeyHandler
  *
  * Created on May 20, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Set the key from the keyboard. Perform action on the system page.
  * 
@@ -103,6 +103,11 @@ function SetSystemKeyHandler(key, event)
         
         case 40 : // Down arrow.
                   SelectOptionProperty("down");
+                  break;
+                  
+        case 13 : // Enter key.
+                  event.preventDefault();
+                  ActivateProperty();
                   break;
                   
         default : // Key pressed.
@@ -264,7 +269,7 @@ function ToggleProperty(arrow)
  * Function:	SelectProperty
  *
  * Created on May 29, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Select system property.
  *
@@ -277,9 +282,6 @@ function SelectProperty(arrow)
     var active, target; 
     var current = GetState("property");
     var input, value, number;
-    
-    // Key pressed (not an arrow key).
-    //key = GetState("key");
       
     value = current;
     active = $('.property.on');
@@ -423,7 +425,7 @@ function SetPropertyMouseHandler(event)
  * Function:	SetPropertyClickHandler
  *
  * Created on Jun 09, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Handle clicked property event.
  *
@@ -434,7 +436,7 @@ function SetPropertyMouseHandler(event)
 function SetPropertyClickHandler()
 {
     var option = $("#display_system_left .dim").text();
-    var number = $(this).closest("tr").index();
+    var number = $(".property.on").closest("tr").index();
     
     if (option == "Library") 
     {
@@ -447,7 +449,7 @@ function SetPropertyClickHandler()
             case 2: //Import Movies library.
                     SetState("media", "movies");
                     SetImportHandler();
-                    //SetState("media", "system");
+                    SetState("media", "system");
                     break;
                     
             case 4: //Clean TV Shows library...
@@ -457,7 +459,7 @@ function SetPropertyClickHandler()
             case 5: //Import TV Shows library.
                     SetState("media", "tvshows");
                     SetImportHandler();
-                    //SetState("media", "system");                
+                    SetState("media", "system");                
                     break;
                     
             case 7: //Clean Music library...
@@ -467,10 +469,27 @@ function SetPropertyClickHandler()
             case 8: //Import Music library.
                     SetState("media", "music");
                     SetImportHandler();
-                    //SetState("media", "system");                
+                    SetState("media", "system");                
                     break;                
         }
     }
+}
+
+/*
+ * Function:	ActivateProperty
+ *
+ * Created on Jun 10, 2013
+ * Updated on Jun 10, 2013
+ *
+ * Description: Activate property when the enter key is pressed.
+ *
+ * In:	-
+ * Out:	-
+ *
+ */
+function ActivateProperty()
+{
+    SetPropertyClickHandler();
 }
 
 /*
@@ -487,7 +506,7 @@ function SetPropertyClickHandler()
  */
 function CleanPopupBox(name)
 {
-    $(".message").html("Do you want to clean the " + ConvertMedia(name) + " library?");    
+    $(".message").html("Do you want to clean the " + ConvertMedia(name) + " library?");
     ShowPopupBox(".clean", "Cleaning database");
     SetState("page", "popup");
 }

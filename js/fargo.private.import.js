@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Apr 14, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -54,7 +54,7 @@ function SetImportHandler()
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Set the import handler, Cancel or finish the import.
  * 
@@ -75,7 +75,7 @@ function SetImportCancelHandler()
     global_cancel = true;
     SetMaskHandler(".import");
     
-    if (button == "Finish") {
+    if (button == "Finish" && media != "system") {
         window.location='index.php?media=' + media;
     }
 }
@@ -330,7 +330,7 @@ function AdjustImageSize(media)
  * Function:	DisplayStatusMessage
  *
  * Created on May 17, 2013
- * Updated on May 17, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: Display status message.
  *
@@ -347,7 +347,7 @@ function DisplayStatusMessage(str1, str2, end)
         i++; 
 	
         // End interval loop.
-        if (i > end) 
+        if (global_cancel || i > end) 
         {
             clearInterval(timer);
             $(".message").html(str2);

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 10, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -448,6 +448,9 @@ function SetSystemProperty($option, $number, $value)
     {
         case "settings" : SetSettingProperty($number, $value);            
                           break;
+                    
+        case "library"  : CleanLibrary($number);
+                          break;              
         
         default : break;
     }
@@ -496,4 +499,32 @@ function SetSettingProperty($number, $value)
                  break;               
     }
 }
+
+/*
+ * Function:	CleanLibrary
+ *
+ * Created on Jun 10, 2013
+ * Updated on Jun 10, 2013
+ *
+ * Description: Clean the media library. 
+ *
+ * In:  $number
+ * Out: -
+ *
+ */
+function CleanLibrary($number)
+{
+    switch($number)
+    {
+        case 1 : EmptyTable("movies");
+                 break;
+        
+        case 4 : EmptyTable("tvshows");
+                 break;
+        
+        case 7 : EmptyTable("music");
+                 break;
+    }
+}
+
 ?>
