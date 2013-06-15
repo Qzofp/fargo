@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -85,7 +85,7 @@ background-color:rgba(0,0,0,0.7);
 z-index:1;
 }
 
-#popup{
+.popup{
 border:2px solid grey;
 border-radius:5px;
 display:none;
@@ -98,32 +98,32 @@ background-color:rgba(0,0,0,0.7);
 z-index:2;
 }
 
-#popup.login_size{
+#login_box{
 width:400px;
 margin-left:-202px;
 text-align:center;
 }
 
-#popup fieldset{
+.popup fieldset{
 border:none;
 }
 
-#popup .textbox label{
+.popup .textbox label{
 display:block;
 padding-bottom:7px;
 }
 
-#popup .textbox span{
+.popup .textbox span{
 display:block;
 }
 
-#popup span{
+.popup span{
 color:#999;
 font-size:0.8em;
 line-height:18px;
 }
 
-#popup .textbox input{
+.popup .textbox input{
 text-align:center;
 background:#454647;
 border-bottom:1px solid #333;
@@ -137,14 +137,14 @@ padding:6px 6px 4px;
 width:200px;
 }
 
-#popup form{
+.popup form{
 border:none;
 border-radius:4px;
 margin:0 auto;
 background-color:#1E1D1D;
 }
 
-#popup .title{
+.popup .title{
 position:relative;
 top:-12px;
 margin:0px 48px 0px 48px;
@@ -155,12 +155,12 @@ text-align:center;
 color:orange;    
 }
 
-#popup .close_left{
+.popup .close_left{
 float:left;
 width:48px;
 }
 
-#popup .close_right{
+.popup .close_right{
 float:right;
 width:48px;
 height:22px;
@@ -176,24 +176,24 @@ background: -o-linear-gradient(top, #C1BDBD, #494949);
 background: -ms-linear-gradient(top, #C1BDBD 0%, #494949 100%);
 }
 
-#popup .close_right:hover,
-#popup button:hover{
+.popup .close_right:hover,
+.popup button:hover{
 background: -moz-linear-gradient(center top, #289EC9, #076182);
 background: -webkit-gradient(linear, left top, left bottom, from(#289EC9), to(#076182));
 background: -o-linear-gradient(top, #289EC9, #076182);
 background: -ms-linear-gradient(top, #289EC9 0%, #076182 100%);
 }
 
-#popup .message{
+.popup .message{
 color:#999;
 text-align:center; /* Test */
 }
 
-#popup .button{
+.popup .button{
 text-align:center;
 }
 
-#popup button{
+.popup button{
 background-color:#1E1D1D;
 border:1px solid #454647;
 border-radius:4px;
@@ -208,7 +208,7 @@ width:214px;
 /* End Popup part */
 
 /* Begin Import Popup part */
-#popup.import{
+#import_box{
 width:500px;
 margin-left:-252px;
 color:#FFF;
@@ -250,19 +250,18 @@ background:#454647;
 /* End Import Popup part */
 
 /* Begin Clean Popup part */
-#popup.clean{
+#clean_box{
 width:550px;
 margin-left:-302px;
 margin-top:100px;
 }
 
-#popup.clean .message{
+#clean_box .message{
 margin-bottom:50px;
 font-weight:bold;
 font-size:1.2em;
 color:#FFF;
 }
-
 /* End Clean Popup part */
 
 /* Begin Display part */
@@ -271,8 +270,6 @@ float:left;
 display:table;
 width:120px;
 height:70%;
-/*min-height:70%;*/
-/*background-color: #ECECEC;*/
 }
 
 #sort{
@@ -388,7 +385,7 @@ background-color:rgba(0,0,0,0.5);
 #display_system_left,
 #display_system_right{
 float:left;
-display:table;
+/*display:table;*/
 }
 
 #display_system_left{
@@ -396,7 +393,6 @@ width:35%;
 height:100%;
 border-radius:10px 0 0 10px;
 background-color:rgba(0,0,0,0.3);
-/*background-color:lightblue;*/
 }
 
 #fargo {
@@ -416,7 +412,6 @@ line-height:2.7em;
 text-align:right;
 color:#999;
 cursor:pointer;
-/*background:lightcyan;*/
 }
 
 #display_system_left .on{
@@ -447,28 +442,23 @@ color:#999;
 text-align:right;
 }
 
-#display_system_right .system_text{
-position:absolute;
-height:60%;
-padding:15px 0 0 15px;
-}
-
-#display_system_right .system_text h1{
-margin:0 0 15px 0;
+#display_system_right h1{
+margin:15px 0 15px 0;
 font-size:1.5em;
 color:lightgray;
 }
 
-#display_system_right .system_text i{
+#display_system_right i{
 color:lightgray;
 }
 
-#display_system_right .system_text a{
+#display_system_right a{
 color:lightgray;
 }
 
 #display_system_right .system_scroll{
-padding: 0 15px 0 0;
+position:absolute;
+padding:0 15px 0 0;
 }
 
 #display_system_right .system_scroll b{
@@ -480,6 +470,10 @@ color:#C0C0C0;
 width:100%;
 border-spacing:0;
 padding:15px 15px 0 15px;
+}
+
+#display_system_right .text{
+margin:0 0 0 15px;
 }
 
 #display_system_right th{
@@ -515,6 +509,10 @@ color:#fff;
 border-bottom-color:rgba(30,144,255,0.5);
 }
 
+#display_system_right .log{
+font-size:0.8em;
+}
+
 #display_system_right input{
 padding-right:5px;
 text-align:right;
@@ -523,7 +521,6 @@ background:none;
 font-size:1.0em;
 color:#999;
 }
-
 /* End Display part */
 
 /* Begin Control Bar part */
@@ -608,11 +605,31 @@ display:none;
 #state_xbmc,
 #state_row,
 #state_property{
-/*display:none; */
+/*display:none;*/
 
+/* debug */
+position:absolute;
 font-size:2em;
 color:#fff;
 }
+
+/* begin debug */
+#state_media{
+top:10px;  
+}
+#state_page{
+top:32px;     
+}
+#state_xbmc{
+top:54px;     
+}
+#state_row{
+top:76px;   
+}
+#state_property{
+top:98px;    
+}
+/* end debug */
 
 #footer{
 position:absolute;

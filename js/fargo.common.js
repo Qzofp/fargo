@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -191,7 +191,7 @@ function HashPassword(string)
  * Function:	SetPopupHandler
  *
  * Created on Apr 28, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 12, 2013
  *
  * Description: Set popup handler and show popup box.
  * 
@@ -201,7 +201,7 @@ function HashPassword(string)
  */
 function SetPopupHandler(event)
 { 
-    ShowPopupBox(".login_size", event.data.title);
+    ShowPopupBox("#login_box", event.data.title);
     SetState("page", "popup");
 }
 
@@ -209,7 +209,7 @@ function SetPopupHandler(event)
  * Function:	ShowPopupBox
  *
  * Created on May 08, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 12, 2013
  *
  * Description: Show popup box.
  * 
@@ -221,7 +221,7 @@ function SetPopupHandler(event)
  */
 function ShowPopupBox(type, title)
 {
-    var popup = $("#popup" + type);
+    var popup = $(".popup" + type);
     var mask = $("#mask");
     
     if (title) {
@@ -236,22 +236,20 @@ function ShowPopupBox(type, title)
  * Function:	SetMaskHandler
  *
  * Created on Apr 28, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Remove mask en popup.
  * 
- * In:	type
+ * In:	-
  * Out:	disable mask and popup
- * 
- * Note: Type is the popup box class i.e. login_size, import, clean, etc.
  *
  */
-function SetMaskHandler(type)
+function SetMaskHandler()
 { 
     var media = GetState("media");
     SetState("page", media);
     
-    $("#popup" + type).fadeOut("300");    
+    $(".popup").fadeOut("300");    
     $("#mask").fadeOut("300"); 
 }
 
@@ -360,4 +358,36 @@ function GetXbmcCounter(media)
             }
         } // End Success.        
     }); // End Ajax;
+}
+
+/*
+ * Function:	DisplayMessage
+ *
+ * Created on Jun 15, 2013
+ * Updated on Jun 15, 2013
+ *
+ * Description: Display message.
+ *
+ * In:	str1, str2, btn, end
+ * Out:	message
+ *
+ */
+function DisplayMessage(str1, str2, btn, end)
+{   
+    var i = 0; 
+    
+    $(".message").html(str1);
+    var timer = setInterval(function(){
+    
+        i++; 
+	
+        // End interval loop.
+        if (i > end)
+        {
+            clearInterval(timer);
+            $(".message").html(str2);
+            $(btn).html("Ok");           
+        }  
+        
+    }, 500);	
 }

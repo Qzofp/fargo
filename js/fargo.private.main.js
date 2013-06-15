@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -39,7 +39,7 @@ var global_import_request;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -189,7 +189,7 @@ function SetFullSystemHandler(event)
  * Function:	ChangeProperty
  *
  * Created on May 27, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Get option and update property value.
  *
@@ -208,6 +208,12 @@ function ChangeProperty(number, value)
         success: function(json) 
         {    
             // Updated porperty value.
+            
+            // Log event...
+            if (json.counter > 0) {
+                LogEvent("Information", "Cleaned " + json.counter + " " + ConvertMedia(json.name) + " items.");
+            }
+            
         } // End Success.        
     }); // End Ajax;
 }
@@ -246,7 +252,7 @@ function ChangeSubControlBar(media)
  * Function:	CleanDatabaseHandler
  *
  * Created on Jun 10, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Clean a database table (Library or Event Log).
  * 
@@ -256,18 +262,39 @@ function ChangeSubControlBar(media)
  */
 function CleanDatabaseHandler()
 {
+    // Get option.
+    var option = $('#display_system_left .dim').text();
     // Get active row number.
     var number = $(".property .on").closest("tr").index();  
     
+    // Truncate table
     ChangeProperty(number, "");
-    SetCloseHandler();
+    
+    if (option == "Library") 
+    {
+        DisplayMessage("Cleaning library...", "Library cleaned!", ".no", 1);
+    }
+    else 
+    {
+        DisplayMessage("Cleaning event log...", "Event log cleaned!", ".no", 1);   
+        
+        setTimeout(function(){
+            $(".option.dim").addClass('on');  
+            ShowProperty("Event Log");
+        }, 500);
+        
+    }
+    
+    $(".yes").hide();
+    $(".no").html('Ok');
+
 }
 
 /*
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Close import or other popup window.
  * 
@@ -277,22 +304,22 @@ function CleanDatabaseHandler()
  */
 function SetCloseHandler()
 {
-    var popup = $("#popup.import");
+    var popup = $("#import_box");
         
-    // Close import popup.
+    // Abort import.
     if (popup.is(":visible")) {
         SetImportCancelHandler();
     }
-    else {
-        SetMaskHandler(".clean");
-    }
+    
+    // Close popup.
+    SetMaskHandler();
 }
 
 /*
  * Function:	SetPopupKeyHandler
  *
  * Created on Apr 28, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Disable popup window.
  * 
@@ -302,7 +329,7 @@ function SetCloseHandler()
  */
 function SetPopupKeyHandler(key)
 { 
-    var popup = $("#popup.import");
+    var popup = $("#import_box");
     
     if (key == 27) // ESC key
     {   
@@ -310,9 +337,8 @@ function SetPopupKeyHandler(key)
         if (popup.is(":visible")) {
             SetImportCancelHandler();
         }
-        else {
-            SetMaskHandler(".clean");
-        }
+        
+        SetMaskHandler();
     }  
 }
 

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -386,7 +386,7 @@ function ProcessSetting($name)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -416,10 +416,23 @@ function GetSystemOptionProperties($name)
         case "library"    : $html = GetSetting($name);
                             break;
                         
-        case "credits"    : $html = GetSetting($name);
+        case "event log"  : $html  = "<div class=\"system_scroll\">";
+                            $html .= "<table>";
+                            $html .= GetSetting($name);
+                            $html .= GenerateEventRows();
+                            $html .= "</table>";
+                            $html .= "</div>";    
+                            break;
+                        
+        case "credits"    : $html  = "<div class=\"system_scroll text\">";
+                            $html .= GetSetting($name);
+                            $html .= "</div>";
                             break;                        
                         
-        case "about"      : $html = GetSetting($name);
+        case "about"      : $html  = "<div class=\"system_scroll text\">";
+                            $html .= GetSetting($name);
+                            $html .= "</div>";
+                            
                             $html = str_replace("[version]", GetSetting("Version"), $html);
                             break;                        
     }
@@ -429,10 +442,71 @@ function GetSystemOptionProperties($name)
 }
 
 /*
+ * Function:	GenerateEventRows
+ *
+ * Created on Jun 10, 2013
+ * Updated on Jun 10, 2013
+ *
+ * Description: Generate event log table rows.
+ *
+ * In:  -
+ * Out: $events
+ *
+ */
+function GenerateEventRows()
+{
+    $events = null;
+    
+    $db = OpenDatabase();
+
+    $sql = "SELECT date, type, event ".
+           "FROM log ".
+           "ORDER BY date DESC ".
+           "LIMIT 0, 100";
+        
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            // Get number of rows.
+            $stmt->store_result();
+            $rows = $stmt->num_rows;
+
+            if ($rows != 0)
+            {              
+                $stmt->bind_result($date, $type, $event);
+                while($stmt->fetch())
+                {                
+                    $events .= "<tr class=\"property log\">";
+                    $events .= "<td>$date</td>";
+                    $events .= "<td>$type</td>"; 
+                    $events .= "<td>$event</td>";                  
+                    $events .= "</tr>";
+                }                  
+            }
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
+
+    CloseDatabase($db);  
+    
+    return $events;
+}
+
+/*
  * Function:	SetSystemProperty
  *
  * Created on May 27, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Set the system property. 
  *
@@ -446,11 +520,13 @@ function SetSystemProperty($option, $number, $value)
     
     switch(strtolower($option))
     {
-        case "settings" : SetSettingProperty($number, $value);            
-                          break;
+        case "settings"  : SetSettingProperty($number, $value);            
+                           break;
                     
-        case "library"  : CleanLibrary($number);
-                          break;              
+        case "library"   : $aJson = CleanLibrary($number);
+                           break;
+                      
+        case "event log" : $aJson = CleanEventLog();            
         
         default : break;
     }
@@ -462,16 +538,19 @@ function SetSystemProperty($option, $number, $value)
  * Function:	SetSettingProperty
  *
  * Created on May 27, 2013
- * Updated on May 27, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Set the setting property. 
  *
  * In:  $number, $value
- * Out: -
+ * Out: $aJson
  *
  */
 function SetSettingProperty($number, $value)
 {
+    $aJson = null;
+    $aJson['counter'] = 0;
+    
     switch($number)
     {
         case 1 : // Set XBMC Connection
@@ -498,33 +577,66 @@ function SetSettingProperty($number, $value)
                  UpdatePassword(1, $value);
                  break;               
     }
+    
+    return $aJson;
 }
 
 /*
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Clean the media library. 
  *
  * In:  $number
- * Out: -
+ * Out: $aJson
  *
  */
 function CleanLibrary($number)
 {
+    $aJson = null;
+    
     switch($number)
     {
-        case 1 : EmptyTable("movies");
+        case 1 : $aJson['name']   = "movies";
+                 $aJson['counter'] = CountRows("movies");
+                 EmptyTable("movies");
                  break;
         
-        case 4 : EmptyTable("tvshows");
+        case 4 : $aJson['name']   = "tvshows";
+                 $aJson['counter'] = CountRows("tvshows");
+                 EmptyTable("tvshows");
                  break;
         
-        case 7 : EmptyTable("music");
+        case 7 : $aJson['name']   = "music";
+                 $aJson['counter'] = CountRows("music");
+                 EmptyTable("music");
                  break;
     }
+    
+    return $aJson;
 }
 
+/*
+ * Function:	CleanEventLog
+ *
+ * Created on Jun 15, 2013
+ * Updated on Jun 15, 2013
+ *
+ * Description: Clean the event log. 
+ *
+ * In:  -
+ * Out: $aJson
+ *
+ */
+function CleanEventLog()
+{
+    $aJson = null; 
+    $aJson['name']    = "log";
+    $aJson['counter'] = CountRows("log");
+    EmptyTable("log");
+
+    return $aJson;
+}
 ?>

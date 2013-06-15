@@ -6,7 +6,7 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -38,7 +38,7 @@ function SetOptionHandler()
  * Function:	ShowProperty
  *
  * Created on May 20, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Set the option and show the properties.
  * 
@@ -63,7 +63,13 @@ function ShowProperty(name)
         {    
             $('#display_system_right').append(json.html);
             
+            var width = 'auto';
+            if (name == 'Event Log') {
+                width = '100%';
+            }
+            
             $("#display_system_right .system_scroll").slimScroll({
+                    width:width,
                     height:'auto',
                     alwaysVisible:'true',
                     color:'dodgerblue'
@@ -425,7 +431,7 @@ function SetPropertyMouseHandler(event)
  * Function:	SetPropertyClickHandler
  *
  * Created on Jun 09, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Handle clicked property event.
  *
@@ -443,7 +449,7 @@ function SetPropertyClickHandler()
         switch(number)
         {
             case 1: //Clean Movies library...
-                    CleanPopupBox("movies");
+                    CleanPopupBox(ConvertMedia("movies") + " library");
                     break;
                     
             case 2: //Import Movies library.
@@ -453,7 +459,7 @@ function SetPropertyClickHandler()
                     break;
                     
             case 4: //Clean TV Shows library...
-                    CleanPopupBox("tvshows");
+                    CleanPopupBox(ConvertMedia("tvshows") + " library");
                     break;
                     
             case 5: //Import TV Shows library.
@@ -463,7 +469,7 @@ function SetPropertyClickHandler()
                     break;
                     
             case 7: //Clean Music library...
-                    CleanPopupBox("music");
+                    CleanPopupBox(ConvertMedia("music") + " library");
                     break;
                     
             case 8: //Import Music library.
@@ -472,6 +478,10 @@ function SetPropertyClickHandler()
                     SetState("media", "system");                
                     break;                
         }
+    }
+    
+    if (option == "Event Log" && number == 1) {
+        CleanPopupBox("event log");
     }
 }
 
@@ -496,7 +506,7 @@ function ActivateProperty()
  * Function:	CleanPopupBox
  *
  * Created on Jun 09, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Show clean library popup box
  *
@@ -506,8 +516,11 @@ function ActivateProperty()
  */
 function CleanPopupBox(name)
 {
-    $(".message").html("Do you want to clean the " + ConvertMedia(name) + " library?");
-    ShowPopupBox(".clean", "Cleaning database");
+    $(".message").html("Do you want to clean the " + name + "?");
+    $(".yes").show();
+    $(".no").html('No');
+    
+    ShowPopupBox("#clean_box", "Cleaning database");
     SetState("page", "popup");
 }
 

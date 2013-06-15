@@ -7,7 +7,7 @@
  * File:    html.php
  *
  * Created on Mar 02, 2013
- * Updated on Apr 27, 2013
+ * Updated on Jun 12, 2013
  *
  * Description: HTML toolbox functions.
  *
@@ -61,15 +61,15 @@ function PageHeader($title, $aCss, $aJscript)
  * Function:	PageFooter
  *
  * Created on Aug 12, 2013
- * Updated on Apr 27, 2013
+ * Updated on Jun 12, 2013
  *
  * Description: Returns a page footer.
  *
- * In:	$url, $title, $footer, $js
+ * In:	$url, $title, $footer
  * Out:	footer
  *
  */
-function PageFooter($url, $title, $footer, $js)
+function PageFooter($url, $title, $footer)
 {
     echo "  </div>\n";
     // End Main.
@@ -79,7 +79,22 @@ function PageFooter($url, $title, $footer, $js)
         echo "   <div id=\"footer_txt\"><a href =\"$url\">$title</a></div>\n";
         echo "  </div>\n";
     }
-    
+}
+
+/*
+ * Function:	PageEnd
+ *
+ * Created on Jun 12, 2013
+ * Updated on Jun 12, 2013
+ *
+ * Description: Returns a page end.
+ *
+ * In:	$js
+ * Out:	page end.
+ *
+ */
+function PageEnd($js)
+{
     if ($js)
     {
         echo "  <script type=\"text/javascript\">\n";
@@ -90,7 +105,7 @@ function PageFooter($url, $title, $footer, $js)
     }
     
     echo " </body>\n";
-    echo "</html>";
+    echo "</html>";    
 }
 
 /*

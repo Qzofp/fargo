@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Apr 14, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -19,7 +19,7 @@
  * Function:	SetImportHandler
  *
  * Created on May 08, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -33,7 +33,7 @@ function SetImportHandler()
     var media = GetState("media"); // Get state media. 
   
     title = "Import " + ConvertMedia(media); 
-    ShowPopupBox(".import", title);
+    ShowPopupBox("#import_box", title);
     SetState("page", "popup");
      
     $(".retry").toggleClass("retry cancel");
@@ -54,9 +54,9 @@ function SetImportHandler()
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
- * Description: Set the import handler, Cancel or finish the import.
+ * Description: Set the import handler, cancel or finish the import.
  * 
  * In:	media
  * Out:	title
@@ -73,7 +73,12 @@ function SetImportCancelHandler()
     }
     
     global_cancel = true;
-    SetMaskHandler(".import");
+    
+    // Reset import values.
+    global_total_fargo = 0;
+    global_total_xbmc  = 0;
+    $("#title").html("&nbsp;");
+    $("#thumb img").attr('src', 'images/no_poster.jpg');
     
     if (button == "Finish" && media != "system") {
         window.location='index.php?media=' + media;
@@ -342,16 +347,23 @@ function DisplayStatusMessage(str1, str2, end)
 {
     var i = 0; 
     var timer = setInterval(function(){
-			
-        $(".message").html(str1);
-        i++; 
-	
-        // End interval loop.
-        if (global_cancel || i > end) 
+
+        if (!global_cancel)
         {
+            $(".message").html(str1);
+            i++; 
+	
+            // End interval loop.
+            if (i > end)
+            {
+                clearInterval(timer);
+                $(".message").html(str2);
+                $(".cancel").html("Ok");           
+            }
+        }    
+        else {
             clearInterval(timer);
-            $(".message").html(str2);
-            $(".cancel").html("Ok");
-        }		
+        }    
+        
     }, 1000);	
 }

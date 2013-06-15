@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -19,7 +19,7 @@
  * Function:	ShowHiddenLoginBox
  *
  * Created on May 04, 2013
- * Updated on May 06, 2013
+ * Updated on Jun 12, 2013
  *
  * Description: Show hidden login box.
  *
@@ -29,7 +29,7 @@
  */
 function ShowHiddenLoginBox()
 {
-    echo "   <div id=\"popup\" class=\"login_size\">\n";
+    echo "   <div class=\"popup\" id=\"login_box\">\n";
     
     echo "    <form method=\"post\" action=\"#\">\n";
     echo "     <div class=\"close_left\">&nbsp;</div>\n";       
@@ -59,7 +59,7 @@ function ShowHiddenLoginBox()
  * Function:	ShowHiddenImportBox
  *
  * Created on May 06, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 12, 2013
  *
  * Description: Show hidden import box.
  *
@@ -69,7 +69,7 @@ function ShowHiddenLoginBox()
  */
 function ShowHiddenImportBox()
 {
-    echo "   <div id=\"popup\" class=\"import\">\n";
+    echo "   <div class=\"popup\" id=\"import_box\">\n";
     echo "    <form method=\"post\" action=\"#\">\n";
     echo "     <div class=\"close_left\">&nbsp;</div>\n";       
     echo "     <div class=\"close_right\">x</div>\n";    
@@ -96,7 +96,7 @@ function ShowHiddenImportBox()
  * Function:	ShowHiddenCleanLibraryBox
  *
  * Created on Jun 09, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 12, 2013
  *
  * Description: Show hidden clean library box.
  *
@@ -106,7 +106,7 @@ function ShowHiddenImportBox()
  */
 function ShowHiddenCleanLibraryBox()
 {
-    echo "   <div id=\"popup\" class=\"clean\">\n";
+    echo "   <div class=\"popup\" id=\"clean_box\">\n";
     echo "    <form method=\"post\" action=\"#\">\n";
     echo "     <div class=\"close_left\">&nbsp;</div>\n";       
     echo "     <div class=\"close_right\">x</div>\n";    

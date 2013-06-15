@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -75,20 +75,6 @@ echo "   <div id=\"header\">\n";
 echo "    <div id=\"header_txt\">$user</div>\n";
 echo "   </div>\n";
 
-// Popup section (hidden).
-echo "   <div id=\"mask\"></div>\n";
-
-// Popup section (default hidden).
-if (!$login)
-{
-    ShowHiddenLoginBox();
-}
-else 
-{
-    ShowHiddenImportBox();
-    ShowHiddenCleanLibraryBox();
-}
-
 // Display section.
 echo "   <div id=\"display_left\">\n";
 echo "    <div id=\"sort\"></div>\n";
@@ -107,7 +93,6 @@ echo "   </div>\n";
 echo "   <div id=\"display_system\">\n";
 echo "    <div id=\"display_system_main\">\n";
 echo "     <div id=\"display_system_left\">\n";
-//echo "      <div id=\"fargo\">Qzofp's Fargo</div>\n";
 echo "     </div>\n";
 echo "     <div id=\"display_system_right\">\n";
 echo "     </div>\n";
@@ -138,10 +123,26 @@ echo "    </div>\n";
 
 echo "   </div>\n";
 
+PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true);
+
+// Popup section (hidden).
+echo "   <div id=\"mask\"></div>\n";
+
+// Popup section (default hidden).
+if (!$login)
+{
+    ShowHiddenLoginBox();
+}
+else 
+{
+    ShowHiddenImportBox();
+    ShowHiddenCleanLibraryBox();
+}
+
 // Page States.
 echo "   <div id=\"state_media\">movies</div>\n";
 echo "   <div id=\"state_page\">movies</div>\n"; // movies, tvshows, music, system or popup.
 echo $system_states;
 
-PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true, "LoadFargoMedia('$media')");
+PageEnd("LoadFargoMedia('$media')");
 ?>

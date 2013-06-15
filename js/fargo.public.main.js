@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -165,7 +165,7 @@ function SetSystemHandler(event)
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 15, 2013
  *
  * Description: Close login or other popup windows.
  * 
@@ -175,15 +175,15 @@ function SetSystemHandler(event)
  */
 function SetCloseHandler()
 {
-    var popup = $("#popup.login_size");
+    //var popup = $("#login_box");
         
     // Close login popup.
-    if (popup.is(":visible")) {
-        SetMaskHandler(".login_size");
-    }
-    else {
-        //SetMaskHandler(".info");
-    }
+    //if (popup.is(":visible")) {
+        SetMaskHandler();
+    //}
+    //else {
+        //SetMaskHandler("#info");
+    //}
 }
 
 /*
