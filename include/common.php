@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 17, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -127,7 +127,7 @@ function ShowHiddenCleanLibraryBox()
  * Function:	InsertMovie
  *
  * Created on Mar 09, 2013
- * Updated on Mar 11, 2013
+ * Updated on Jun 17, 2013
  *
  * Description: Insert movie in the database.
  *
@@ -137,18 +137,70 @@ function ShowHiddenCleanLibraryBox()
  */
 function InsertMovie($aMovie)
 {
-    $xbmcid = $aMovie["xbmcid"];
-    $title  = $aMovie["title"];
-    $imdbnr = $aMovie["imdbnr"];
-    $fanart = $aMovie["fanart"];
-    $poster = $aMovie["poster"];
-    $thumb  = $aMovie["thumb"];     
     
-    $sql = "INSERT INTO movies(xbmcid, title, imdbnr, fanart, poster, thumb) ".
-           "VALUES ($xbmcid, '$title', '$imdbnr', '$fanart', '$poster', '$thumb')";
-      
-    ExecuteQuery($sql);
+    //debug
+    //echo "<pre>";
+    //print_r($aMovie);
+    //echo "</pre></br>";
+    
+    $aItems[0] = $aMovie["xbmcid"];
+    $aItems[1] = $aMovie["title"]; 
+    $aItems[2] = null; //$aMovie["genre"];
+    $aItems[3] = $aMovie["year"];
+    
+    $aItems[4] = $aMovie["rating"];
+    $aItems[5] = null; //$aMovie["director"];    
+    $aItems[6] = $aMovie["trailer"];
+    $aItems[7] = $aMovie["tagline"]; 
+    
+    $aItems[8]  = $aMovie["plot"];
+    $aItems[9]  = $aMovie["plotoutline"];    
+    $aItems[10] = $aMovie["originaltitle"];
+    $aItems[11] = $aMovie["lastplayed"];
+    
+    $aItems[12] = $aMovie["playcount"];
+    $aItems[13] = null; //$aMovie["writer"];    
+    $aItems[14] = null; //$aMovie["studio"];
+    $aItems[15] = $aMovie["mpaa"];
+    
+    $aItems[16] = null; //$aMovie["cast"];
+    $aItems[17] = null; //$aMovie["country"];     
+    $aItems[18] = $aMovie["imdbnr"];
+    $aItems[19] = $aMovie["runtime"];
+    
+    $aItems[20] = $aMovie["fanart"];
+    $aItems[21] = $aMovie["poster"];
+    $aItems[22] = $aMovie["thumb"];
+    
+    $aItems[23] = $aMovie["set"];
+    $aItems[24] = null; //$aMovie["showlink"];      
+    $aItems[25] = null; //$aMovie["streamdetails"];
+    $aItems[26] = $aMovie["top250"];
+    
+    $aItems[27] = $aMovie["votes"];
+    $aItems[28] = $aMovie["file"];      
+    $aItems[29] = $aMovie["sorttitle"];
+    $aItems[30] = null; //$aMovie["resume"];   
+    
+    $aItems[31] = $aMovie["setid"];
+    $aItems[32] = $aMovie["dateadded"];      
+    $aItems[33] = null; //$aMovie["tag"];    
+    
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aItems);
+    
+    $sql = "INSERT INTO movies(xbmcid, title, genre, `year`, rating, director, trailer, tagline, plot,".
+           " plotoutline, originaltitle, lastplayed, playcount, writer, studio, mpaa, `cast`, country,".
+           " imdbnr, runtime, fanart, poster, thumb, `set`, showlink, streamdetails, top250, votes,". 
+           " `file`, sorttitle, setid, dateadded, tag) ".
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]', '$aItems[7]',".
+           " '$aItems[8]', '$aItems[9]', '$aItems[10]', '$aItems[11]', $aItems[12], '$aItems[13]', '$aItems[14]', '$aItems[15]',".
+           " '$aItems[16]', '$aItems[17]', '$aItems[18]', $aItems[19], '$aItems[20]', '$aItems[21]', '$aItems[22]', '$aItems[23]',". 
+           " '$aItems[24]', '$aItems[25]', '$aItems[26]', $aItems[27], '$aItems[28]', '$aItems[29]', $aItems[31], '$aItems[32]',".
+           " '$aItems[33]')";
 
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);    
 }
 
 /*
@@ -276,7 +328,7 @@ function GetUser($id)
  * Function:	UpdateUser
  *
  * Created on Mar 27, 2013
- * Updated on Mar 27, 2013
+ * Updated on Jun 17, 2013
  *
  * Description: Update user in the user table.
  *
@@ -287,15 +339,18 @@ function GetUser($id)
  * 
  */
 function UpdateUser($id, $user)
-{    
-    $aItems = null;
+{   
     $aItems[0] = $user;
+    
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aItems);
     
     $sql = "UPDATE users ".
            "SET user='$aItems[0]' ".
            "WHERE id = $id";
     
-    ExecuteQueryWithEscapeStrings($aItems, $sql);
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);
 }
 
 /*
@@ -314,14 +369,17 @@ function UpdateUser($id, $user)
  */
 function UpdatePassword($id, $pass)
 {    
-    $aItems = null;
     $aItems[0] = $pass;
+
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aItems);
     
     $sql = "UPDATE users ".
            "SET password='$aItems[0]' ".
            "WHERE id = $id";
     
-    ExecuteQueryWithEscapeStrings($aItems, $sql);
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);  
 }
 
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////

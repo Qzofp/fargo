@@ -7,18 +7,17 @@
  * File:    files.php
  *
  * Created on Mar 04, 2013
- * Updated on Apr 22, 2013
+ * Updated on Jun 21, 2013
  *
  * Description: Files and I/O toolbox functions.
  *
  */
 
-
 /*
  * Function:	ResizeJpegImage
  *
  * Created on Mar 04, 2013
- * Updated on Apr 21, 2013
+ * Updated on Jun 21, 2013
  *
  * Description: Resize an Image and save it to a file.
  *
@@ -50,7 +49,7 @@ function ResizeJpegImage($image, $new_w, $new_h, $destination)
     if (!$img) 
     {
         /* Create a blank image */
-        $img  = imagecreatetruecolor($new_w, $new_h);
+        $img = imagecreatetruecolor($new_w, $new_h);
         $bgc = imagecolorallocate($img, 255, 255, 255);
         $tc  = imagecolorallocate($img, 0, 0, 0);
 
@@ -64,7 +63,6 @@ function ResizeJpegImage($image, $new_w, $new_h, $destination)
     $tmp_img = imagecreatetruecolor($new_w, $new_h);
     
     // Copy and resize old image into new image.
-    //imagecopyresized($tmp_img, $img, 0, 0, 0, 0, $new_w, $new_h, $old_w, $old_h);
     imagecopyresampled($tmp_img, $img, 0, 0, 0, 0, $new_w, $new_h, $old_w, $old_h); // Better result, quality.
     
     // Use output buffering to capture outputted image stream.
@@ -72,12 +70,14 @@ function ResizeJpegImage($image, $new_w, $new_h, $destination)
     imagejpeg($tmp_img);
     $i = ob_get_clean();
     
+    imagedestroy ($img);
+    imagedestroy ($tmp_img);
+    
     // Save file
     $fp = fopen ($destination, 'w');
     fwrite ($fp, $i);
     fclose ($fp);
 }
-
 
 /*
  * Function:	DownloadFile
@@ -107,12 +107,11 @@ function DownloadFile($url, $save)
     fclose($downloaded_file);
 }
 
-
 /*
  * Function:	DeleteFile
  *
  * Created on Mar 27, 2013
- * Updated on Mar 27, 2013
+ * Updated on Jun 21, 2013
  *
  * Description: Resize an Image and save it to a file.
  *
@@ -128,6 +127,4 @@ function DeleteFile($file)
 {
     array_map( "unlink", glob($file ));
 }
-
-
 ?>

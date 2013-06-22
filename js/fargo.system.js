@@ -252,14 +252,14 @@ function ToggleProperty(arrow)
             // Property has change, update value.
             if (current != value && value != "") 
             {
-                value = HashPassword(input);
+                value  = CheckForPassword(input);
                 number = row.closest("tr").index();
                 ChangeProperty(number, value);
             }              
               
             if (input.attr("type") == "password") {
                 input.val("******");
-            }            
+            }
             
             input.blur();
         }

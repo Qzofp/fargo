@@ -1,2 +1,12 @@
-<table><tr><th colspan="2">Movies</th></tr><tr class="property"><td>Total</td><td class="right">[movies]</td></tr><tr><th colspan="2">TV Shows</th></tr><tr class="property"><td>Total</td><td class="right">[tvshows]</td></tr><tr><th colspan="2">Music Albums</th></tr><tr class="property"><td>Total</td><td class="right">[music]</td></tr>
+<table>
+<tr><th class="set" colspan="2">XBMC Settings</th></tr>
+<tr class="property"><td>Connection</td><td class="right"><input type="text" value="[connection]"></td></tr>
+<tr class="property"><td>Port</td><td class="right"><input type="text" value="[port]"></td></tr>
+<tr class="property"><td>Username</td><td class="right"><input type="text" value="[xbmcuser]"></td></tr>
+<tr class="property"><td>Password</td><td class="right"><input type="password" value="[password]"></td></tr>
+<tr><th class="set" colspan="2">Fargo Settings</th></tr>
+<tr class="property"><td>Username</td><td class="right"><input type="text" value="[fargouser]"></td></tr>
+<tr class="property"><td>Password</td><td class="right"><input type="password" value="[password]"></td></tr>
+<tr><th class="set" colspan="2">Import Setting</th></tr>
+<tr class="property"><td>Timer (1 - 10 Seconds)</td><td class="right"><input type="text" value="[timer]"></td></tr>
 </table>

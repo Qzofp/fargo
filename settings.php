@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on May 26, 2013
+ * Updated on Jun 16, 2013
  *
  * Description: Fargo's settings page.
  *
@@ -25,6 +25,7 @@ define("cURL", "http://localhost:8080/jsonrpc");
 
 // Path settings.
 define("cMOVIESPOSTERS", "images/movies/posters");
+define("cMOVIESFANART", "images/movies/fanart");
 define("cTVSHOWSPOSTERS", "images/tvshows/posters");
 define("cALBUMSCOVERS", "images/music/covers");
 define("cTEMPPOSTERS", "images/temp");

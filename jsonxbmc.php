@@ -7,7 +7,7 @@
  * File:    xbmc.php
  *
  * Created on Mar 22, 2013
- * Updated on May 19, 2013
+ * Updated on Jun 16, 2013
  *
  * Description: The main XBMC functions page. 
  * 
@@ -40,7 +40,8 @@ switch ($action)
                      $aJson = ImportMedia($start, $media);
                      break;
    
-    case "test"    : $aJson = GetAlbumsFromXBMC(11, 12);
+    case "test"    : $aJson = ImportMedia(25, "movies");
+                     //$aJson = GetMoviesFromXBMC(11, 3);
                      break;
                    
 }
@@ -48,6 +49,11 @@ switch ($action)
 if (empty($aJson)) {
     $aJson['online'] = -1;  // XBMC offline or cannot connect.
 }
+
+//debug
+//echo "<pre>";
+//print_r($aJson);
+//echo "</pre></br>"; 
 
 // Return JSON code which is used as input for the JQuery functions.
 echo json_encode($aJson, JSON_UNESCAPED_SLASHES);

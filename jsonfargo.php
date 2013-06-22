@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -140,14 +140,17 @@ function LogEvent($type, $event)
     $aItems[1] = $type; 
     $aItems[2] = $event;
     
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aItems);
+    
     $sql = "INSERT INTO log (date, type, event) ".
            "VALUES ('$aItems[0]', '$aItems[1]', '$aItems[2]')";
     
-    ExecuteQueryWithEscapeStrings($aItems, $sql);
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);
     
     return $aItems;
 }
-
 
 /*
  * Function:	GetFargoValues
@@ -360,7 +363,7 @@ function GetMedia($media, $sql)
  * Function:	ProcessSetting
  *
  * Created on Jun 09, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: Get value from settings database and process value if necessary. 
  *
@@ -373,7 +376,7 @@ function ProcessSetting($name)
     $aJson = null;
     $value = GetSetting($name);
     
-    if ($value = "Hash") {
+    if ($value == "Hash") {
         $value = md5($value);
     }
     
@@ -386,7 +389,7 @@ function ProcessSetting($name)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -411,6 +414,7 @@ function GetSystemOptionProperties($name)
                             $html = str_replace("[xbmcuser]", GetSetting("XBMCusername"), $html);
                             $html = str_replace("[fargouser]", GetUser(1), $html);
                             $html = str_replace("[password]", "******", $html);
+                            $html = str_replace("[timer]", GetSetting("Timer")/1000, $html);
                             break;
                         
         case "library"    : $html = GetSetting($name);
@@ -538,7 +542,7 @@ function SetSystemProperty($option, $number, $value)
  * Function:	SetSettingProperty
  *
  * Created on May 27, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: Set the setting property. 
  *
@@ -575,7 +579,11 @@ function SetSettingProperty($number, $value)
              
         case 7 : // Set Fargo Password
                  UpdatePassword(1, $value);
-                 break;               
+                 break; 
+             
+        case 9 : // Set Timer
+                 UpdateSetting("Timer", $value * 1000);
+                 break;              
     }
     
     return $aJson;
@@ -585,7 +593,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 16, 2013
  *
  * Description: Clean the media library. 
  *
@@ -602,16 +610,20 @@ function CleanLibrary($number)
         case 1 : $aJson['name']   = "movies";
                  $aJson['counter'] = CountRows("movies");
                  EmptyTable("movies");
+                 DeleteFile(cMOVIESPOSTERS."/*.jpg");
+                 DeleteFile(cMOVIESFANART."/*.jpg");
                  break;
         
         case 4 : $aJson['name']   = "tvshows";
                  $aJson['counter'] = CountRows("tvshows");
                  EmptyTable("tvshows");
+                 DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
                  break;
         
         case 7 : $aJson['name']   = "music";
                  $aJson['counter'] = CountRows("music");
                  EmptyTable("music");
+                 DeleteFile(cALBUMSCOVERS."/*.jpg");
                  break;
     }
     

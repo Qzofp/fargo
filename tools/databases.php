@@ -7,7 +7,7 @@
  * File:    databases.php
  *
  * Created on Mar 09, 2013
- * Updated on May 18, 2013
+ * Updated on Jun 17, 2013
  *
  * Description: Database toolbox functions.
  *
@@ -128,31 +128,46 @@ function ExecuteQuery($sql)
     CloseDatabase($db);
 }
 
+/*
+ * Function:	AddEscapeStrings
+ *
+ * Created on Jun 17, 2013
+ * Updated on Jun 17, 2013
+ *
+ * Description:  Add real escape strings to query items.
+ *
+ * In:	$db, $aItems
+ * Out:	$aItems
+ *
+ * Note: This function works together with ExecuteQueryWithEscapeStrings().
+ * 
+ */
+function AddEscapeStrings($db, $aItems)
+{
+    for($i = 0; $i < count($aItems); $i++)
+    {
+        $aItems[$i] = mysqli_real_escape_string($db, $aItems[$i]);
+    }
+    
+    return $aItems;
+}
 
 /*
  * Function:	ExecuteQueryWithEscapeStrings
  *
  * Created on May 10, 2013
- * Updated on May 10, 2013
+ * Updated on Jun 17, 2013
  *
  * Description:  Execute a sql query with real escape strings.
  *
- * In:	$sql
+ * In:	$db, $sql
  * Out:	-
  *
- * Note: All the items in the query must be defined as $aItems[0], $aItems[1], etc.
- *       For instance: $sql = INSERT INTO table(a, b) VALUES ($aItems[0], $aItems[1])
+ * Note:  This function works together with AddEscapeStrings().
  * 
  */
-function ExecuteQueryWithEscapeStrings($aItems, $sql)
-{
-    $db = OpenDatabase();
-
-    for($i = 0; $i < count($aItems); $i++) 
-    {
-        $aItems[$i] = mysqli_real_escape_string($db, $aItems[$i]);
-    }
-        
+function ExecuteQueryWithEscapeStrings($db, $sql)
+{        
     $stmt = $db->prepare($sql);
     if($stmt)
     {
@@ -168,10 +183,7 @@ function ExecuteQueryWithEscapeStrings($aItems, $sql)
         die("Invalid query: $sql</br><b>".mysqli_error($db)."</b>");
    	// Foutpagina maken, doorgeven fout met session variabele.
     }
-
-    CloseDatabase($db);
 }
-
 
 /*
  * Function:	GetItemsFromDatabase

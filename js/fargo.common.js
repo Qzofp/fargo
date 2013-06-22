@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -166,7 +166,7 @@ function CheckForPassword(input)
  * Function:	HashPassword
  *
  * Created on Jun 09, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: Hash password.
  * 
