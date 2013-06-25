@@ -7,7 +7,7 @@
  * File:    files.php
  *
  * Created on Mar 04, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jun 24, 2013
  *
  * Description: Files and I/O toolbox functions.
  *
@@ -83,28 +83,41 @@ function ResizeJpegImage($image, $new_w, $new_h, $destination)
  * Function:	DownloadFile
  *
  * Created on Apr 22, 2013
- * Updated on Apr 22, 2013
+ * Updated on Jun 24, 2013
  *
  * Description: Download a file.
  *
  * In:	$url, $save
- * Out:	Deleted file(s).
+ * Out:	$check (true|false), deleted file(s).
  * 
  * From: http://4rapiddev.com/php/download-image-or-file-from-url/
  * 
  */
 function DownloadFile($url, $save)
 {
+    $check = true;
+    
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_POST, 0); 
-    curl_setopt($ch,CURLOPT_URL,$url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    
     $file_content = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
     curl_close($ch);
- 
-    $downloaded_file = fopen($save, 'w');
-    fwrite($downloaded_file, $file_content);
-    fclose($downloaded_file);
+    
+    if ($httpCode == 200)
+    {
+        $downloaded_file = fopen($save, 'w');
+        fwrite($downloaded_file, $file_content);
+        fclose($downloaded_file);
+    }
+    else {
+        $check = false;
+    }
+    
+    return $check;
 }
 
 /*

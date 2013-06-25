@@ -163,6 +163,112 @@ function CheckForPassword(input)
 }
 
 /*
+ * Function:	CheckInput
+ *
+ * Created on Jun 22, 2013
+ * Updated on Jun 22, 2013
+ *
+ * Description: Check input fields. If value is wrong return current value.
+ * 
+ * In:	number, value
+ * Out:	true|false
+ *
+ */
+function CheckInput(number, value)
+{ 
+    var check = false;
+    var option = $('#display_system_left .dim').text();
+    
+    switch (option)
+    {
+        case "Settings" : check = CheckSettings(number, value);
+                          break;
+        
+        default         : break;
+    }
+    
+    return check;
+}
+
+/*
+ * Function:	CheckSettings
+ *
+ * Created on Jun 22, 2013
+ * Updated on Jun 22, 2013
+ *
+ * Description: Check input fields. If value is wrong return current value.
+ * 
+ * In:	number, value
+ * Out:	true|false
+ *
+ */
+function CheckSettings(number, value)
+{
+    var check = false;
+    
+    switch (number)
+    {
+        case 1 : // Check XBMC Connection
+
+                 break;
+             
+        case 2 : // Check XBMC Port
+                 check = isDecimal(value);
+                 break;
+             
+        case 3 : // Set XBMC Username
+
+                 break;
+             
+        //case 4 : // Check XBMC Password
+        //         break; 
+             
+        case 6 : // Check Fargo Username
+
+                 break;
+             
+        //case 7 : // Check Fargo Password
+        //         break; 
+             
+        case 9 : // Check Timer
+                 if (value > 0 && value <= 10) {
+                     check = true;
+                 }    
+                 break;  
+    }
+    
+    return check;
+}
+
+/*
+ * Function:	isDecimal
+ *
+ * Created on Jun 22, 2013
+ * Updated on Jun 22, 2013
+ *
+ * Description: Check decimal.
+ * 
+ * In:	n
+ * Out:	true|false
+ *
+ * Note: Code from http://stackoverflow.com/questions/2304052/check-if-a-number-has-a-decimal-place-is-a-whole-number
+ *
+ */
+function isDecimal(n){
+    if(n == "")
+        return false;
+
+    var strCheck = "0123456789";
+    var i;
+
+    for(i in n){
+        if(strCheck.indexOf(n[i]) == -1)
+            return false;
+    }
+    return true;
+}
+
+/*
  * Function:	HashPassword
  *
  * Created on Jun 09, 2013

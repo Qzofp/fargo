@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jun 25, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -46,7 +46,7 @@ function ImportMedia($start, $media)
     
     // Delete the temporary poster.
     DeleteFile(cTEMPPOSTERS."/*.j*");
-    DeleteFile(cTEMPPOSTERS."/*.p*");   
+    DeleteFile(cTEMPPOSTERS."/*.p*");
     
     return $aJson;
 }
@@ -83,7 +83,7 @@ function ImportMovies($start)
  * Function:	ImportTVShows
  *
  * Created on Apr 19, 2013
- * Updated on May 19, 2013
+ * Updated on Jun 23, 2013
  *
  * Description: Import the tv shows. 
  *
@@ -98,7 +98,7 @@ function ImportTVShows($start)
     $aTVShows = GetTVShowsFromXBMC($start, $offset);
     
     if (!empty($aTVShows)) {
-        ProcessTVShows($aTVShows, $start);
+        ProcessTVShows($aTVShows);
     }
     else {
         $aJson['online'] = -1;
@@ -111,7 +111,7 @@ function ImportTVShows($start)
  * Function:	ImportAlbums
  *
  * Created on Apr 20, 2013
- * Updated on May 15, 2013
+ * Updated on Jun 23, 2013
  *
  * Description: Import the music albums. 
  *
@@ -126,7 +126,7 @@ function ImportAlbums($start)
     $aAlbums = GetAlbumsFromXBMC($start, $offset);
     
     if (!empty($aAlbums)) {
-        ProcessAlbums($aAlbums, $start);
+        ProcessAlbums($aAlbums);
     }
     else {
         $aJson['online'] = -1;
@@ -320,12 +320,11 @@ function GetMoviesFromXBMC($counter, $offset)
     return $aMovies;
 }
 
-
 /*
  * Function:	GetTVShowsFromXBMC
  *
  * Created on Apr 19, 2013
- * Updated on Apr 19, 2013
+ * Updated on Jun 23, 2013
  *
  * Description: Connect to XBMC and get the TV Shows information.
  *
@@ -336,10 +335,19 @@ function GetMoviesFromXBMC($counter, $offset)
 function GetTVShowsFromXBMC($counter, $offset)
 {    
     $aTVShows = null;
-    
+   
+    $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows",'.
+               '"params": {"limits": {"start": '.$counter.', "end": '.($counter+$offset).'},'.
+               '"properties": ["title", "genre", "year", "rating", "plot", "studio", "mpaa", "cast", "playcount",'. 
+               '"episode", "imdbnumber", "premiered", "votes", "lastplayed", "fanart", "thumbnail",'.
+               '"file", "originaltitle", "sorttitle", "episodeguide", "season", "watchedepisodes",'.
+               '"dateadded", "tag", "art"] }, "id": "libTvShows"}';
+        
+    /*
     $request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows",'.
                '"params": {"limits": {"start": '.$counter.', "end": '.($counter+$offset).'},'.
                '"properties": ["imdbnumber", "art", "thumbnail"] }, "id": "libTvShows"}';
+    */
     
     $aJson = GetHttpRequest(cURL, $request);
     
@@ -354,7 +362,6 @@ function GetTVShowsFromXBMC($counter, $offset)
     
     return $aTVShows;
 }
-
 
 /*
  * Function:	GetAlbumsFromXBMC
@@ -421,20 +428,18 @@ function ProcessMovies($aMovies)
  *
  * Description: Process the TV Shows. 
  *
- * In:  $aTVShows, $counter
+ * In:  $aTVShows
  * Out: -
  *
  */
-function ProcessTVShows($aTVShows, $counter)
+function ProcessTVShows($aTVShows)
 {  
     foreach ($aTVShows as $aTVShow)
     {            
-        $aTVShow = ConvertTVShow($aTVShow);
-        
+        $aTVShow = ConvertTVShow($aTVShow);        
         InsertTVShow($aTVShow);
     }
 }
-
 
 /*
  * Function:	ProcessAlbums
@@ -444,26 +449,24 @@ function ProcessTVShows($aTVShows, $counter)
  *
  * Description: Process the music albums. 
  *
- * In:  $aAlbums, $counter
+ * In:  $aAlbums
  * Out: -
  *
  */
-function ProcessAlbums($aAlbums, $counter)
+function ProcessAlbums($aAlbums)
 {  
     foreach ($aAlbums as $aAlbum)
     {            
-        $aAlbum = ConvertAlbum($aAlbum);
-        
+        $aAlbum = ConvertAlbum($aAlbum);        
         InsertAlbum($aAlbum);
     }
 }
-
 
 /*
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Jun 17, 2013
+ * Updated on Jun 24, 2013
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -473,15 +476,15 @@ function ProcessAlbums($aAlbums, $counter)
  */
 function ConvertMovie($aXbmc)
 {
-    $poster = "images/no_poster.jpg";
+    //$poster = "images/no_poster.jpg";
     
     $aMovie["xbmcid"] = $aXbmc["movieid"];
     $aMovie["title"]  = $aXbmc["label"];
-    //$aMovie["genre"]  = $aXbmc["genre"];
+    $aMovie["genre"]  = ConvertGenre($aXbmc["genre"], "movies");
     $aMovie["year"]   = $aXbmc["year"];
     
     $aMovie["rating"]   = $aXbmc["rating"];
-    //$aMovie["director"] = $aXbmc["director"];    
+    $aMovie["director"] = implode("|", $aXbmc["director"]);  
     $aMovie["trailer"]  = $aXbmc["trailer"];
     $aMovie["tagline"]  = $aXbmc["tagline"]; 
     
@@ -491,37 +494,66 @@ function ConvertMovie($aXbmc)
     $aMovie["lastplayed"]    = $aXbmc["lastplayed"];
     
     $aMovie["playcount"] = $aXbmc["playcount"];
-    //$aMovie["writer"]    = $aXbmc["writer"];    
-    //$aMovie["studio"]    = $aXbmc["studio"];
+    $aMovie["writer"]    = implode("|", $aXbmc["writer"]);   
+    $aMovie["studio"]    = implode("|", $aXbmc["studio"]);
     $aMovie["mpaa"]      = $aXbmc["mpaa"];
     
-    //$aMovie["cast"]    = $aXbmc["cast"];
-    //$aMovie["country"] = $aXbmc["country"];      
+    $aMovie["cast"]    = ConvertCast($aXbmc["cast"]);
+    $aMovie["country"] = implode("|", $aXbmc["country"]);
     $aMovie["imdbnr"]  = $aXbmc["imdbnumber"];
     $aMovie["runtime"] = $aXbmc["runtime"];   
     
-    $aMovie["set"]           = $aXbmc["set"];
+    $aMovie["set"]   = $aXbmc["set"];
     //$aMovie["showlink"]      = $aXbmc["showlink"];      
-    //$aMovie["streamdetails"] = $aXbmc["streamdetails"];
-    $aMovie["top250"]        = $aXbmc["top250"];
+    $aMovie["audio"] = ConvertAudio($aXbmc["streamdetails"]["audio"]);
+    $aMovie["video"] = ConvertVideo($aXbmc["streamdetails"]["video"]);
     
+    $aMovie["top250"]    = $aXbmc["top250"];    
     $aMovie["votes"]     = $aXbmc["votes"];
     $aMovie["file"]      = $aXbmc["file"];      
-    $aMovie["sorttitle"] = $aXbmc["sorttitle"];
-    //$aMovie["resume"]    = $aXbmc["resume"];   
-    
+    $aMovie["sorttitle"] = CreateSortTitle($aXbmc["label"]);
+
+    //$aMovie["resume"]    = $aXbmc["resume"];    
     $aMovie["setid"]     = $aXbmc["setid"];
     $aMovie["dateadded"] = $aXbmc["dateadded"];      
     //$aMovie["tag"]       = $aXbmc["tag"];
-         
-    if (!empty($aXbmc["art"]["fanart"])) {
+
+    $aMovie["fanart"] = CreateImageLink($aXbmc["art"], "fanart");
+    $aMovie["poster"] = CreateImageLink($aXbmc["art"], "poster");
+    $aMovie["thumb"]  = CreateImageLink($aXbmc, "thumbnail");   
+    
+    if (!empty($aMovie["poster"]))
+    {
+        $img = GetImageFromXbmc("pos", $aMovie["xbmcid"], $aMovie["poster"]);
+        if ($img) {
+            ResizeJpegImage($img, 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
+        }
+        else {
+            ResizeJpegImage("images/no_poster.jpg", 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
+        }
+    }
+    else {
+        ResizeJpegImage("images/no_poster.jpg", 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
+    }
+    
+    if (!empty($aMovie["fanart"]))
+    {
+        $img = GetImageFromXbmc("fan", $aMovie["xbmcid"], $aMovie["fanart"]);
+        if ($img) {
+            ResizeJpegImage($img, 600, 360, cMOVIESFANART."/".$aMovie["xbmcid"].".jpg");
+        }
+    }     
+    
+/*    
+    if (!empty($aXbmc["art"]["fanart"])) 
+    {
         $fanart = CleanImageLink($aXbmc["art"]["fanart"]); 
         
         // Download fanart to a temporary folder.
         $tmp = cTEMPPOSTERS."/fan".$aMovie["xbmcid"].".jpg";
         DownloadFile($fanart, $tmp);
         
-        // Create thumbnail locally.
+        // Create fanart locally.
         ResizeJpegImage($tmp, 600, 360, cMOVIESFANART."/".$aMovie["xbmcid"].".jpg");
     }
     else {
@@ -553,20 +585,17 @@ function ConvertMovie($aXbmc)
     
     // Create thumbnail locally.
     ResizeJpegImage($tmp, 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
+  
+ */    
     
-    //Delete the temporary poster.
-    //DeleteFile(cTEMPPOSTERS."/*.j*");
-    //DeleteFile(cTEMPPOSTERS."/*.p*"); 
-      
     return $aMovie;
 }
-
 
 /*
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jun 25, 2013
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -575,59 +604,81 @@ function ConvertMovie($aXbmc)
  *
  */
 function ConvertTVShow($aXbmc)
-{
-    $poster = "images/no_poster.jpg";
-            
-    $aTVShow["xbmcid"]  = $aXbmc["tvshowid"];
-    $aTVShow["title"]   = $aXbmc["label"];
-    $aTVShow["imdbnr" ] = $aXbmc["imdbnumber"];
+{     
+    $year = explode("-", $aXbmc["premiered"]);
     
-    if (!empty($aXbmc["art"]["fanart"])) {
-        $fanart = CleanImageLink($aXbmc["art"]["fanart"]);
-    }
-    else {
-        $fanart = null;  
-    }
+    $aTVShow["xbmcid"] = $aXbmc["tvshowid"];
+    $aTVShow["title"]  = $aXbmc["label"];
+    $aTVShow["genre"]  = ConvertGenre($aXbmc["genre"], "tvshows");
+    $aTVShow["year"]   = $year[0];
     
-    if (!empty($aXbmc["art"]["poster"])) 
-    {
-        $poster = CleanImageLink($aXbmc["art"]["poster"]);
+    $aTVShow["rating"] = $aXbmc["rating"];
+    $aTVShow["plot"]   = $aXbmc["plot"];
+    $aTVShow["studio"] = implode("|", $aXbmc["studio"]);
+    $aTVShow["mpaa"]   = $aXbmc["mpaa"];    
+
+    $aTVShow["cast"]      = ConvertCast($aXbmc["cast"]);
+    $aTVShow["playcount"] = $aXbmc["playcount"];
+    $aTVShow["episode"]   = $aXbmc["episode"];  
+    $aTVShow["imdbnr" ]   = $aXbmc["imdbnumber"];
+    
+    $aTVShow["premiered"]  = $aXbmc["premiered"];
+    $aTVShow["votes"]      = $aXbmc["votes"];
+    $aTVShow["lastplayed"] = $aXbmc["lastplayed"];  
+    $aTVShow["fanart"]     = CreateImageLink($aXbmc["art"], "fanart");
         
-        // Download the poster to a temporary folder.
-        DownloadFile($poster, cTEMPPOSTERS."/".$aTVShow["xbmcid"].".jpg");
-        $tmp = cTEMPPOSTERS."/".$aTVShow["xbmcid"].".jpg";
+    $aTVShow["poster"]        = CreateImageLink($aXbmc["art"], "poster");
+    $aTVShow["thumb"]         = CreateImageLink($aXbmc, "thumbnail");
+    $aTVShow["file"]          = $aXbmc["file"];
+    $aTVShow["originaltitle"] = $aXbmc["originaltitle"];   
+    
+    $aTVShow["sorttitle"]       = CreateSortTitle($aXbmc["label"]);
+    $aTVShow["episodeguide"]    = $aXbmc["episodeguide"];
+    $aTVShow["season"]          = $aXbmc["season"];
+    $aTVShow["watchedepisodes"] = $aXbmc["watchedepisodes"];        
+
+    $aTVShow["dateadded"] = $aXbmc["dateadded"]; 
+    //$aTVShow["tag"]      = $aXbmc["tag"];
+      
+    
+/*
+"title", "genre", "year", "rating", "plot", "studio", "mpaa", "cast", "playcount", 
+"episode", "imdbnumber", "premiered", "votes", "lastplayed", "fanart", "thumbnail", 
+"file", "originaltitle", "sorttitle", "episodeguide", "season", "watchedepisodes", 
+"dateadded", "tag", "art"
+*/
+    
+    
+    if (!empty($aTVShow["poster"]))
+    {
+        $img = GetImageFromXbmc("pos", $aTVShow["xbmcid"], $aTVShow["poster"]);
+        if ($img) {
+            ResizeJpegImage($img, 100, 140, cTVSHOWSPOSTERS."/".$aTVShow["xbmcid"].".jpg");
+        }
+        else {
+            ResizeJpegImage("images/no_poster.jpg", 100, 140, cTVSHOWSPOSTERS."/".$aTVShow["xbmcid"].".jpg");
+        }
     }
     else {
-        $tmp = $poster;
+        ResizeJpegImage("images/no_poster.jpg", 100, 140, cTVSHOWSPOSTERS."/".$aTVShow["xbmcid"].".jpg");
     }
     
-    if (!empty($aXbmc["thumbnail"])) {
-        $thumb = CleanImageLink($aXbmc["thumbnail"]);
-    }
-    else {
-        $thumb = null;  
-    }    
-    
-    $aTVShow["fanart"]  = $fanart;
-    $aTVShow["poster"]  = $poster;
-    $aTVShow["thumb"]   = $thumb;       
-    
-    // Create thumbnail locally.
-    ResizeJpegImage($tmp, 100, 140, cTVSHOWSPOSTERS."/".$aTVShow["xbmcid"].".jpg");
-    
-    // Delete the temporary poster.
-    //DeleteFile(cTEMPPOSTERS."/*.j*");
-    //DeleteFile(cTEMPPOSTERS."/*.p*");    
+    if (!empty($aTVShow["fanart"]))
+    {
+        $img = GetImageFromXbmc("fan", $aTVShow["xbmcid"], $aTVShow["fanart"]);
+        if ($img) {
+            ResizeJpegImage($img, 600, 360, cTVSHOWSFANART."/".$aTVShow["xbmcid"].".jpg");
+        }
+    } 
     
     return $aTVShow;
 }
-
 
 /*
  * Function:	ConvertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jun 24, 2013
  *
  * Description: Convert XBMC album items. For instance to readably URL's.
  *
@@ -637,42 +688,167 @@ function ConvertTVShow($aXbmc)
  */
 function ConvertAlbum($aXbmc)
 {
-    $no_cover = "images/no_cover.jpg";
     $aAlbum["xbmcid"] = $aXbmc["albumid"];
     $aAlbum["title"]  = addcslashes($aXbmc["label"], "'");
     $aAlbum["artist"] = addcslashes($aXbmc["artist"][0], "'");
     
-    if (!empty($aXbmc["thumbnail"])) 
+    $aAlbum["cover"]  = CreateImageLink($aXbmc, "thumbnail");
+    
+    if (!empty($aAlbum["cover"]))
     {
-        $cover = CleanImageLink($aXbmc["thumbnail"]);  
-        $http = parse_url($cover, PHP_URL_SCHEME);
-        if ($http == 'http') 
-        {
-            $ext = strtolower(pathinfo($cover, PATHINFO_EXTENSION));
-            
-            // Download the poster to a temporary folder.
-            DownloadFile($cover, cTEMPPOSTERS."/".$aAlbum["xbmcid"].".".$ext);
-            $tmp = cTEMPPOSTERS."/".$aAlbum["xbmcid"].".".$ext;     
+        $img = GetImageFromXbmc("cov", $aAlbum["xbmcid"], $aAlbum["cover"]);
+        if ($img) {
+            ResizeJpegImage($img, 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
         }
         else {
-            $tmp = $no_cover;
+            ResizeJpegImage("images/no_cover.jpg", 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
         }
     }
-    else 
-    {
-        $cover = $no_cover;
-        $tmp = $no_cover;
-    }    
-    
-    $aAlbum["cover"] = $cover;
-    
-    // Create thumbnail locally. This cost some time.
-    ResizeJpegImage($tmp, 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
-    
-    // Delete the temporary poster.
-    //DeleteFile(cTEMPPOSTERS."/*.j*");
-    //DeleteFile(cTEMPPOSTERS."/*.p*");  
+    else {
+        ResizeJpegImage("images/no_cover.jpg", 100, 100, cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
+    }
     
     return $aAlbum;
+}
+
+/*
+ * Function:	ConvertGenres
+ *
+ * Created on Jun 22, 2013
+ * Updated on Jun 23, 2013
+ *
+ * Description: Convert genres from array to string and insert genres in database.
+ *
+ * In:  $aGenre, $media
+ * Out: $genres
+ *
+ */
+function ConvertGenre($aGenres, $media)
+{
+    InsertGenres($aGenres, $media);
+    $genres = implode("|", $aGenres);
+    
+    return $genres;
+}
+
+/*
+ * Function:	ConvertCast
+ *
+ * Created on Jun 22, 2013
+ * Updated on Jun 22, 2013
+ *
+ * Description: Convert cast from array to string.
+ *
+ * In:  $aGenre
+ * Out: $cast
+ *
+ */
+function ConvertCast($aCast)
+{
+    $i = 0;
+    $cast = null;
+    $aDummy = null;
+    
+    foreach($aCast as $value)
+    {    
+        $aDummy[$i] = $value["name"].":".$value["role"];
+        $i++;
+    }
+    
+    if (!empty($aDummy)) {
+        $cast = implode("|", $aDummy);
+    }
+    
+    return $cast;
+}
+
+/*
+ * Function:	ConvertAudio
+ *
+ * Created on Jun 22, 2013
+ * Updated on Jun 22, 2013
+ *
+ * Description: Convert audio from array to string.
+ *
+ * In:  $aAudio
+ * Out: $audio
+ *
+ */
+function ConvertAudio($aAudio)
+{
+    $i = 0;
+    $audio = null;
+    $aDummy = null;
+    
+    foreach($aAudio as $value)
+    {    
+        $aDummy[$i] = $value["channels"].":".$value["codec"];
+        $i++;
+    }
+    
+    if (!empty($aDummy)) {
+        $audio = implode("|", $aDummy);
+    }
+    
+    return $audio;
+}
+
+/*
+ * Function:	ConvertVideo
+ *
+ * Created on Jun 22, 2013
+ * Updated on Jun 22, 2013
+ *
+ * Description: Convert video from array to string.
+ *
+ * In:  $aVideo
+ * Out: $video
+ *
+ */
+function ConvertVideo($aVideo)
+{
+    $i = 0;
+    $video = null;
+    $aDummy = null;
+    
+    foreach($aVideo as $value)
+    {    
+        $aDummy[$i] = $value["aspect"].":".$value["codec"].":".$value["height"].":".$value["width"];
+        $i++;
+    }
+    
+    if (!empty($aDummy)) {
+        $video = implode("|", $aDummy);
+    }
+    
+    return $video;
+}
+
+/*
+ * Function:	CreateSortTitle
+ *
+ * Created on Jun 22, 2013
+ * Updated on Jun 22, 2013
+ *
+ * Description: Create sort title (remove "The ").
+ *
+ * In:  $title
+ * Out: $sorttitle
+ *
+ */
+function CreateSortTitle($title)
+{
+    $aTitle = explode("The ", $title, 2);
+    
+    if (isset($aTitle[1]))
+    {
+        $sorttitle = $aTitle[1];
+    }
+    else 
+    {    
+        $sorttitle = $title;
+    }
+    
+    return $sorttitle;
 }
 ?>

@@ -7,7 +7,7 @@
  * File:    xbmc.php
  *
  * Created on Mar 22, 2013
- * Updated on Jun 16, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: The main XBMC functions page. 
  * 
@@ -40,10 +40,9 @@ switch ($action)
                      $aJson = ImportMedia($start, $media);
                      break;
    
-    case "test"    : $aJson = ImportMedia(25, "movies");
-                     //$aJson = GetMoviesFromXBMC(11, 3);
-                     break;
-                   
+    case "test"    : $aJson = ImportMedia(7, "tvshows");
+                     //$aJson = GetTVShowsFromXBMC(6, 3);
+                     break;                   
 }
 
 if (empty($aJson)) {

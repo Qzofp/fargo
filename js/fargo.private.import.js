@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Apr 14, 2013
- * Updated on Jun 22, 2013
+ * Updated on Jun 24, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -54,7 +54,7 @@ function SetImportHandler()
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jun 24, 2013
  *
  * Description: Set the import handler, cancel or finish the import.
  * 
@@ -70,6 +70,10 @@ function SetImportCancelHandler()
     // Abort pending ajax request.
     if(typeof global_status_request !== 'undefined') {
         global_status_request.abort();
+    }
+    
+    if(typeof global_import_request !== 'undefined') {
+        global_import_request.abort();
     }
     
     global_cancel = true;
@@ -274,7 +278,7 @@ function ShowStatus(delta, end, status, media, msg)
  * Function:	StartImport
  *
  * Created on Apr 17, 2013
- * Updated on Jun 22, 2013
+ * Updated on Jun 24, 2013
  *
  * Description: Start the import process.
  *
@@ -287,13 +291,15 @@ function StartImport(start, media)
     if(typeof global_import_request !== 'undefined') {
         global_import_request.abort();
     }
+        
     global_import_request = $.ajax({
         url: 'jsonxbmc.php?action=import&media=' + media + '&start=' + start,
         dataType: 'json',
         success: function(json) 
-        { 
+        {   
             if (json.online == -1) {
                 SetState("xbmc", "offline");
+                
             }
         }, // End Success.
         error: function(xhr, status, error) // Begin Error.
@@ -301,11 +307,11 @@ function StartImport(start, media)
             // Log error or warning.
             if (status !== "abort") {
                 LogEvent("Error", "During the import a " + status + " occured!");
-                //LogEvent("Error", xhr.responseText);
-                //LogEvent("Error", error);
+                LogEvent("Error", xhr.responseText);
+                LogEvent("Error", error);
             }
             else {
-                LogEvent("Warning", "Import is to busy processing " + ConvertMedia(media) + "!");
+                //LogEvent("Warning", "Import is to busy processing " + ConvertMedia(media) + "!");
             }
         } // End Error.                        
     }); // End Ajax;

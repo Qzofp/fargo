@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jun 22, 2013
+ * Updated on Jun 24, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *

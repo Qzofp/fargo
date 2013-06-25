@@ -254,7 +254,12 @@ function ToggleProperty(arrow)
             {
                 value  = CheckForPassword(input);
                 number = row.closest("tr").index();
-                ChangeProperty(number, value);
+                if (CheckInput(number, value)) {
+                    ChangeProperty(number, value);
+                }
+                else {
+                    input.val(current);
+                }
             }              
               
             if (input.attr("type") == "password") {
@@ -331,7 +336,12 @@ function SelectProperty(arrow)
     if (current != value && value != "")
     {
         number = active.closest("tr").index();
-        ChangeProperty(number, value);
+        if (CheckInput(number, value)) {
+            ChangeProperty(number, value);
+        }
+        else {
+            input.val(current);
+        }
     }
     
     target.addClass('on'); 
@@ -359,7 +369,7 @@ function SelectProperty(arrow)
  * Function:	SetPropertyMouseHandler
  *
  * Created on May 26, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: Show property on hover and update value when changed.
  *
@@ -415,14 +425,19 @@ function SetPropertyMouseHandler(event)
         number = row.closest("tr").index();
         rownr  = GetState("row");
         
-        if (input.length && number == rownr) { 
-            value = CheckForPassword(input);
+        if (input.length && number == rownr) {
+            value = CheckForPassword(input);     
         }
         
         // Property has change, update value.
         if (current != value && value != "" && number == rownr)
         {
-           ChangeProperty(number, value);
+            if (CheckInput(number, value)) {
+                ChangeProperty(number, value);
+            }
+            else {
+                input.val(current);
+            }
         }
     }  
 }

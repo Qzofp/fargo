@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jun 17, 2013
+ * Updated on Jun 25, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -127,7 +127,7 @@ function ShowHiddenCleanLibraryBox()
  * Function:	InsertMovie
  *
  * Created on Mar 09, 2013
- * Updated on Jun 17, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: Insert movie in the database.
  *
@@ -145,11 +145,11 @@ function InsertMovie($aMovie)
     
     $aItems[0] = $aMovie["xbmcid"];
     $aItems[1] = $aMovie["title"]; 
-    $aItems[2] = null; //$aMovie["genre"];
+    $aItems[2] = $aMovie["genre"];
     $aItems[3] = $aMovie["year"];
     
     $aItems[4] = $aMovie["rating"];
-    $aItems[5] = null; //$aMovie["director"];    
+    $aItems[5] = $aMovie["director"];    
     $aItems[6] = $aMovie["trailer"];
     $aItems[7] = $aMovie["tagline"]; 
     
@@ -159,45 +159,46 @@ function InsertMovie($aMovie)
     $aItems[11] = $aMovie["lastplayed"];
     
     $aItems[12] = $aMovie["playcount"];
-    $aItems[13] = null; //$aMovie["writer"];    
-    $aItems[14] = null; //$aMovie["studio"];
+    $aItems[13] = $aMovie["writer"];    
+    $aItems[14] = $aMovie["studio"];
     $aItems[15] = $aMovie["mpaa"];
     
-    $aItems[16] = null; //$aMovie["cast"];
-    $aItems[17] = null; //$aMovie["country"];     
+    $aItems[16] = $aMovie["cast"];
+    $aItems[17] = $aMovie["country"];   
     $aItems[18] = $aMovie["imdbnr"];
     $aItems[19] = $aMovie["runtime"];
     
     $aItems[20] = $aMovie["fanart"];
     $aItems[21] = $aMovie["poster"];
-    $aItems[22] = $aMovie["thumb"];
-    
+    $aItems[22] = $aMovie["thumb"];    
     $aItems[23] = $aMovie["set"];
+    
     $aItems[24] = null; //$aMovie["showlink"];      
-    $aItems[25] = null; //$aMovie["streamdetails"];
-    $aItems[26] = $aMovie["top250"];
+    $aItems[25] = $aMovie["audio"];
+    $aItems[26] = $aMovie["video"];    
+    $aItems[27] = $aMovie["top250"];    
     
-    $aItems[27] = $aMovie["votes"];
-    $aItems[28] = $aMovie["file"];      
-    $aItems[29] = $aMovie["sorttitle"];
-    $aItems[30] = null; //$aMovie["resume"];   
+    $aItems[28] = $aMovie["votes"];
+    $aItems[29] = $aMovie["file"];      
+    $aItems[30] = $aMovie["sorttitle"];   
+    $aItems[31] = null; //$aMovie["resume"];    
     
-    $aItems[31] = $aMovie["setid"];
-    $aItems[32] = $aMovie["dateadded"];      
-    $aItems[33] = null; //$aMovie["tag"];    
+    $aItems[32] = $aMovie["setid"];
+    $aItems[33] = $aMovie["dateadded"];      
+    $aItems[34] = null; //$aMovie["tag"];    
     
     $db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aItems);
     
     $sql = "INSERT INTO movies(xbmcid, title, genre, `year`, rating, director, trailer, tagline, plot,".
            " plotoutline, originaltitle, lastplayed, playcount, writer, studio, mpaa, `cast`, country,".
-           " imdbnr, runtime, fanart, poster, thumb, `set`, showlink, streamdetails, top250, votes,". 
+           " imdbnr, runtime, fanart, poster, thumb, `set`, showlink, audio, video, top250, votes,". 
            " `file`, sorttitle, setid, dateadded, tag) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]', '$aItems[7]',".
            " '$aItems[8]', '$aItems[9]', '$aItems[10]', '$aItems[11]', $aItems[12], '$aItems[13]', '$aItems[14]', '$aItems[15]',".
            " '$aItems[16]', '$aItems[17]', '$aItems[18]', $aItems[19], '$aItems[20]', '$aItems[21]', '$aItems[22]', '$aItems[23]',". 
-           " '$aItems[24]', '$aItems[25]', '$aItems[26]', $aItems[27], '$aItems[28]', '$aItems[29]', $aItems[31], '$aItems[32]',".
-           " '$aItems[33]')";
+           " '$aItems[24]', '$aItems[25]', '$aItems[26]', $aItems[27], $aItems[28], '$aItems[29]', '$aItems[30]', $aItems[32],".
+           " '$aItems[33]', '$aItems[34]')";
 
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);    
@@ -207,7 +208,7 @@ function InsertMovie($aMovie)
  * Function:	InsertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Apr 20, 2013
+ * Updated on Jun 25, 2013
  *
  * Description: Insert TV Show in the database.
  *
@@ -217,17 +218,57 @@ function InsertMovie($aMovie)
  */
 function InsertTVShow($aTVShow)
 {
-    $xbmcid = $aTVShow["xbmcid"];
-    $title  = $aTVShow["title"];
-    $imdbnr = $aTVShow["imdbnr"];
-    $fanart = $aTVShow["fanart"];
-    $poster = $aTVShow["poster"];
-    $thumb  = $aTVShow["thumb"];     
+    //debug
+    //echo "<pre>";
+    //print_r($aTVShow);
+    //echo "</pre></br>";    
     
-    $sql = "INSERT INTO tvshows(xbmcid, title, imdbnr, fanart, poster, thumb) ".
-           "VALUES ($xbmcid, '$title', '$imdbnr', '$fanart', '$poster', '$thumb')";
+    $aItems[0] = $aTVShow["xbmcid"];
+    $aItems[1] = $aTVShow["title"];
+    $aItems[2] = $aTVShow["genre"];
+    $aItems[3] = $aTVShow["year"]; 
       
-    ExecuteQuery($sql);
+    $aItems[4] = $aTVShow["rating"];
+    $aItems[5] = $aTVShow["plot"];
+    $aItems[6] = $aTVShow["studio"];
+    $aItems[7] = $aTVShow["mpaa"];    
+
+    $aItems[8]  = $aTVShow["cast"];
+    $aItems[9]  = $aTVShow["playcount"];
+    $aItems[10] = $aTVShow["episode"];  
+    $aItems[11] = $aTVShow["imdbnr" ];
+    
+    $aItems[12] = $aTVShow["premiered"];
+    $aItems[13] = $aTVShow["votes"];
+    $aItems[14] = $aTVShow["lastplayed"];  
+    $aItems[15] = $aTVShow["fanart"];
+        
+    $aItems[16] = $aTVShow["poster"];
+    $aItems[17] = $aTVShow["thumb"];
+    $aItems[18] = $aTVShow["file"];
+    $aItems[19] = $aTVShow["originaltitle"];   
+    
+    $aItems[20] = $aTVShow["sorttitle"];
+    $aItems[21] = $aTVShow["episodeguide"];
+    $aItems[22] = $aTVShow["season"];
+    $aItems[23] = $aTVShow["watchedepisodes"];        
+
+    $aItems[24] = $aTVShow["dateadded"]; 
+    $aItems[25] = null; //$aTVShow["tag"]      = $aXbmc["tag"];
+    
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aItems);    
+    
+    $sql = "INSERT INTO tvshows(xbmcid, title, genre, `year`, rating, plot, studio, mpaa, `cast`,".
+           " playcount, episode, imdbnr, premiered, votes, lastplayed, fanart, poster, thumb, `file`,".
+           " originaltitle, sorttitle, episodeguide, season, watchedepisodes, dateadded, tag) ". 
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]', '$aItems[7]',".
+           " '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', '$aItems[13]', '$aItems[14]', '$aItems[15]',".
+           " '$aItems[16]', '$aItems[17]', '$aItems[18]', '$aItems[19]', '$aItems[20]', '$aItems[21]', $aItems[22], $aItems[23],". 
+           " '$aItems[24]', '$aItems[25]')";
+      
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);   
 }
 
 /*
@@ -253,6 +294,35 @@ function InsertAlbum($aAlbum)
            "VALUES ($xbmcid, '$title', '$artist', '$cover')";
       
     ExecuteQuery($sql);
+}
+
+/*
+ * Function:	InsertGenres
+ *
+ * Created on Jun 22, 2013
+ * Updated on Jun 23, 2013
+ *
+ * Description: Insert genres in the database.
+ *
+ * In:  $aGenres, $media
+ * Out:	Genres in database table genres.
+ *
+ */
+function InsertGenres($aGenres, $media)
+{
+    foreach ($aGenres as $genre)
+    {
+        $find = "SELECT * FROM genres ".
+                "WHERE genre = '$genre' AND media = '$media'";
+        
+        if (CountRowsWithQuery($find) == 0)
+        {
+            $sql = "INSERT INTO genres(genre, media) ".
+                   "VALUES ('$genre', '$media')";
+            
+            ExecuteQuery($sql);
+        }
+    }
 }
 
 /*
@@ -385,25 +455,63 @@ function UpdatePassword($id, $pass)
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
 
 /*
- * Function:    CleanImageLink
+ * Function:    CreateImageLink
  *
- * Created on Mar 03, 2013
- * Updated on Apr 21, 2013
+ * Created on Jun 24, 2013
+ * Updated on Jun 24, 2013
  *
  * Description: Cleans the image link from XBMC.
  *
- * In:  $dirty (link)
- * Out:	$clean (link)
+ * In:  $aUrl, $type
+ * Out:	$link
  *
  */
-function CleanImageLink($dirty)
+function CreateImageLink($aUrl, $type)
 {
-    $dummy = str_replace("image://http%3a", "http:", $dirty);
-    $dummy = rtrim(str_replace("%2f", "/", $dummy), "/");
+    $link = null;
     
-    $dummy = str_replace("%3f", "?", $dummy);
-    $clean = explode("?", $dummy);
-     
-    return $clean[0];
+    if (!empty($aUrl["$type"]))
+    {
+        $dummy = str_replace("image://", "", $aUrl["$type"]);
+        $link = rtrim($dummy, "/");
+    }
+    
+    return $link;
+}
+
+/*
+ * Function:    GetImageFromXbmc
+ *
+ * Created on Jun 24, 2013
+ * Updated on Jun 24, 2013
+ *
+ * Description: Get image (poster, fanart) from XBMC.
+ *
+ * In:  $type, $id, $link
+ * Out:	$image
+ *
+ */
+function GetImageFromXbmc($type, $id, $link)
+{
+   $conn = GetSetting("XBMCconnection");
+   $port = GetSetting("XBMCport");
+        
+   $url = "http://$conn:$port/image/$link";
+   
+   // Get extension.
+   $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
+   if ($ext == "com") {
+       $ext = "jpg";
+   }
+   
+   $image = cTEMPPOSTERS."/$type$id.$ext";
+   $check = DownloadFile($url, $image);
+    
+   // download failed!
+   if(!$check) {
+       $image = null;
+   }    
+   
+   return $image;
 }
 ?>

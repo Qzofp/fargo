@@ -248,7 +248,7 @@ function GetImportStatus($media, $id, $thumbs)
  * Function:	CreateQuery
  *
  * Created on Apr 08, 2013
- * Updated on Apr 20, 2013
+ * Updated on Jun 22, 2013
  *
  * Description: Create the sql query for the media table. 
  *
@@ -593,7 +593,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Jun 16, 2013
+ * Updated on Jun 23, 2013
  *
  * Description: Clean the media library. 
  *
@@ -618,6 +618,7 @@ function CleanLibrary($number)
                  $aJson['counter'] = CountRows("tvshows");
                  EmptyTable("tvshows");
                  DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
+                 DeleteFile(cTVSHOWSFANART."/*.jpg");
                  break;
         
         case 7 : $aJson['name']   = "music";

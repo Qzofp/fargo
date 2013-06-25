@@ -1,0 +1,29 @@
+
+
+
+
+image://D%3a%5cAnime%5cBleach%5cfanart.jpg/
+
+http://localhost:8080/image/image://D%3a%5cAnime%5cBleach%5cfanart.jpg/
+
+http://localhost:8080/image/image://http%3a%2f%2fthetvdb.com%2fbanners%2fgraphical%2f74796-g7.jpg/
+
+http://xbmc:@192.168.0.101:8080/vfs/image://N%3a%5cMovies%5c3D_SBS%5cCars%202%20(2011)%5cCars%202%20(2011).3dbd.tbn/
+
+D:\Temp\XBMC\Movies\Akira\Akira.avi
+
+
+
+http://localhost:8080/image/D%3a%5cTemp%5cXBMC%5cMovies%5cAkira%5cAkira.tbn
+
+http://localhost:8080/image/D%3a%5cTemp%5cXBMC%5cMovies%5cAkira.tbn
+
+Werkt (is niet lokaal, komt vanaf het internet via XBMC):
+
+http://localhost:8080/image/http%3a%2f%2fthetvdb.com%2fbanners%2fgraphical%2f81651-g.jpg
+http://localhost:8080/image/http%3a%2f%2fthetvdb.com%2fbanners%2fposters%2f81651-2.jpg
+http://localhost:8080/image/http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f81651-1.jpg
+
+Werkt lokaal:
+
+http://localhost:8080/image/C%3A%5CDocuments%20and%20Settings%5CQzofp%5CApplication%20Data%5CXBMC%5Cuserdata%5CThumbnails%5C1%5C1cf98e39.jpg
