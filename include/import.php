@@ -367,7 +367,7 @@ function GetTVShowsFromXBMC($counter, $offset)
  * Function:	GetAlbumsFromXBMC
  *
  * Created on Apr 20, 2013
- * Updated on Apr 20, 2013
+ * Updated on Jun 25, 2013
  *
  * Description: Connect to XBMC and get the Albums information.
  *
@@ -381,7 +381,9 @@ function GetAlbumsFromXBMC($counter, $offset)
 
     $request = '{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums",'.
                '"params": {"limits": {"start": '.$counter.', "end": '.($counter+$offset).'},'.
-               '"properties": ["artist", "thumbnail"] }, "id": "libAlbums"}';
+               '"properties": ["title", "description", "artist", "genre", "theme", "mood", "style","type",'.
+               '"albumlabel", "rating", "year", "musicbrainzalbumid", "musicbrainzalbumartistid", "fanart",'.
+               '"thumbnail","playcount", "genreid", "artistid", "displayartist"] }, "id": "libAlbums"}';    
     
     $aJson = GetHttpRequest(cURL, $request);
     
@@ -542,51 +544,7 @@ function ConvertMovie($aXbmc)
         if ($img) {
             ResizeJpegImage($img, 600, 360, cMOVIESFANART."/".$aMovie["xbmcid"].".jpg");
         }
-    }     
-    
-/*    
-    if (!empty($aXbmc["art"]["fanart"])) 
-    {
-        $fanart = CleanImageLink($aXbmc["art"]["fanart"]); 
-        
-        // Download fanart to a temporary folder.
-        $tmp = cTEMPPOSTERS."/fan".$aMovie["xbmcid"].".jpg";
-        DownloadFile($fanart, $tmp);
-        
-        // Create fanart locally.
-        ResizeJpegImage($tmp, 600, 360, cMOVIESFANART."/".$aMovie["xbmcid"].".jpg");
-    }
-    else {
-        $fanart = null;  
-    }
-    
-    if (!empty($aXbmc["art"]["poster"])) 
-    {
-        $poster = CleanImageLink($aXbmc["art"]["poster"]);
-        
-        // Download the poster to a temporary folder.
-        $tmp = cTEMPPOSTERS."/pos".$aMovie["xbmcid"].".jpg";
-        DownloadFile($poster, $tmp);        
-    }
-    else { 
-        $tmp = $poster;
-    }
-    
-    if (!empty($aXbmc["thumbnail"])) {
-        $thumb = CleanImageLink($aXbmc["thumbnail"]);
-    }
-    else {
-        $thumb = null;  
-    }     
-    
-    $aMovie["fanart"]  = $fanart;
-    $aMovie["poster"]  = $poster;
-    $aMovie["thumb"]   = $thumb;        
-    
-    // Create thumbnail locally.
-    ResizeJpegImage($tmp, 100, 140, cMOVIESPOSTERS."/".$aMovie["xbmcid"].".jpg");
-  
- */    
+    }   
     
     return $aMovie;
 }
@@ -638,16 +596,7 @@ function ConvertTVShow($aXbmc)
     $aTVShow["watchedepisodes"] = $aXbmc["watchedepisodes"];        
 
     $aTVShow["dateadded"] = $aXbmc["dateadded"]; 
-    //$aTVShow["tag"]      = $aXbmc["tag"];
-      
-    
-/*
-"title", "genre", "year", "rating", "plot", "studio", "mpaa", "cast", "playcount", 
-"episode", "imdbnumber", "premiered", "votes", "lastplayed", "fanart", "thumbnail", 
-"file", "originaltitle", "sorttitle", "episodeguide", "season", "watchedepisodes", 
-"dateadded", "tag", "art"
-*/
-    
+    //$aTVShow["tag"]      = $aXbmc["tag"];   
     
     if (!empty($aTVShow["poster"]))
     {
@@ -678,7 +627,7 @@ function ConvertTVShow($aXbmc)
  * Function:	ConvertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Jun 24, 2013
+ * Updated on Jun 25, 2013
  *
  * Description: Convert XBMC album items. For instance to readably URL's.
  *
@@ -688,11 +637,32 @@ function ConvertTVShow($aXbmc)
  */
 function ConvertAlbum($aXbmc)
 {
-    $aAlbum["xbmcid"] = $aXbmc["albumid"];
-    $aAlbum["title"]  = addcslashes($aXbmc["label"], "'");
-    $aAlbum["artist"] = addcslashes($aXbmc["artist"][0], "'");
+    $aAlbum["xbmcid"]      = $aXbmc["albumid"];
+    $aAlbum["title"]       = $aXbmc["label"];
+    $aAlbum["description"] = $aXbmc["description"];    
+    $aAlbum["artist"]      = implode("|", $aXbmc["artist"]);
+
+    $aAlbum["genre"] = ConvertGenre($aXbmc["genre"], "music");
+    $aAlbum["theme"] = implode("|", $aXbmc["theme"]);
+    $aAlbum["mood"]  = implode("|", $aXbmc["mood"]);
+    $aAlbum["style"] = implode("|", $aXbmc["style"]);
     
-    $aAlbum["cover"]  = CreateImageLink($aXbmc, "thumbnail");
+    $aAlbum["type"]       = $aXbmc["type"];    
+    $aAlbum["albumlabel"] = $aXbmc["albumlabel"];
+    $aAlbum["rating"]     = $aXbmc["rating"];
+    $aAlbum["year"]       = $aXbmc["year"];
+    
+    $aAlbum["mbalbumid"]       = $aXbmc["musicbrainzalbumid"];    
+    $aAlbum["mbalbumartistid"] = $aXbmc["musicbrainzalbumartistid"];
+    $aAlbum["fanart"]          = $aXbmc["fanart"];
+    $aAlbum["cover"]           = CreateImageLink($aXbmc, "thumbnail");
+    
+    $aAlbum["playcount"]     = $aXbmc["playcount"];
+    $aAlbum["displayartist"] = $aXbmc["displayartist"]; 
+    $aAlbum["sorttitle"]     = CreateSortTitle($aXbmc["label"]);
+    //$aAlbum["genreid"]       = $aXbmc["genreid"];
+    
+    //$aAlbum["artistid"]      = $aXbmc["artistid"];
     
     if (!empty($aAlbum["cover"]))
     {

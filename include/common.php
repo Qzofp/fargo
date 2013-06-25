@@ -275,7 +275,7 @@ function InsertTVShow($aTVShow)
  * Function:	InsertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Apr 22, 2013
+ * Updated on Jun 25, 2013
  *
  * Description: Insert music album in the database.
  *
@@ -285,15 +285,50 @@ function InsertTVShow($aTVShow)
  */
 function InsertAlbum($aAlbum)
 {
-    $xbmcid = $aAlbum["xbmcid"];
-    $title  = $aAlbum["title"];
-    $artist = $aAlbum["artist"];
-    $cover  = $aAlbum["cover"];
+    //debug
+    //echo "<pre>";
+    //print_r($aAlbum);
+    //echo "</pre></br>";    
     
-    $sql = "INSERT INTO music(xbmcid, title, artist, cover) ".
-           "VALUES ($xbmcid, '$title', '$artist', '$cover')";
+    $aItems[0] = $aAlbum["xbmcid"];
+    $aItems[1] = $aAlbum["title"];
+    $aItems[2] = $aAlbum["description"];    
+    $aItems[3] = $aAlbum["artist"];
+
+    $aItems[4] = $aAlbum["genre"];
+    $aItems[5] = $aAlbum["theme"];
+    $aItems[6] = $aAlbum["mood"];
+    $aItems[7] = $aAlbum["style"];
+    
+    $aItems[8]  = $aAlbum["type"];    
+    $aItems[9]  = $aAlbum["albumlabel"];
+    $aItems[10] = $aAlbum["rating"];
+    $aItems[11] = $aAlbum["year"];
+    
+    $aItems[12] = $aAlbum["mbalbumid"];        
+    $aItems[13] = $aAlbum["mbalbumartistid"];
+    $aItems[14] = $aAlbum["fanart"];
+    $aItems[15] = $aAlbum["cover"];
+    
+    $aItems[16] = $aAlbum["playcount"];
+    $aItems[17] = $aAlbum["displayartist"];  
+    $aItems[18] = $aAlbum["sorttitle"];  
+    $aItems[19] = null; //$aAlbum["genreid"];
+    
+    $aItems[20] = null; //$aAlbum["artistid"];
+
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aItems);      
+    
+    $sql = "INSERT INTO music(xbmcid, title, description, artist, genre, theme, mood, style, type, albumlabel,".
+           " rating, `year`, mbalbumid, mbalbumartistid, fanart, cover, playcount, displayartist, sorttitle,".
+           " genreid, artistid) ".
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', '$aItems[4]', '$aItems[5]', '$aItems[6]', '$aItems[7]',".
+           " '$aItems[8]', '$aItems[9]', $aItems[10], $aItems[11], '$aItems[12]', '$aItems[13]', '$aItems[14]', '$aItems[15]',".
+           " $aItems[16], '$aItems[17]', '$aItems[18]', '$aItems[19]', '$aItems[20]')";
       
-    ExecuteQuery($sql);
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);  
 }
 
 /*

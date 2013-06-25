@@ -156,7 +156,7 @@ function LogEvent($type, $event)
  * Function:	GetFargoValues
  *
  * Created on Apr 06, 2013
- * Updated on May 18, 2013
+ * Updated on jun 25, 2013
  *
  * Description: Get a the initialize values from Fargo and return it as Json data. 
  *
@@ -173,7 +173,7 @@ function GetFargoValues($media, $sort)
            "FROM $media ";
     
     if ($sort) {
-        $sql .= "WHERE title LIKE '$sort%'";
+        $sql .= "WHERE sorttitle LIKE '$sort%'";
     }    
     
     $total = CountRowsWithQuery($sql);
@@ -248,7 +248,7 @@ function GetImportStatus($media, $id, $thumbs)
  * Function:	CreateQuery
  *
  * Created on Apr 08, 2013
- * Updated on Jun 22, 2013
+ * Updated on Jun 25, 2013
  *
  * Description: Create the sql query for the media table. 
  *
@@ -266,8 +266,8 @@ function CreateQuery($media, $page, $sort)
     $offset = ($page - 1) * $total;
     
     if ($sort) {
-        $sql .= "WHERE title LIKE '$sort%' ".
-                "ORDER BY title ";
+        $sql .= "WHERE sorttitle LIKE '$sort%' ".
+                "ORDER BY sorttitle ";
     }
     else {
         $sql .= "ORDER BY id DESC ";

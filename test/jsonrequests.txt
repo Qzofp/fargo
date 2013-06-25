@@ -22,3 +22,9 @@ localhost:8080/jsonrpc?request={"jsonrpc": "2.0", "method": "VideoLibrary.GetTVS
 "episode", "imdbnumber", "premiered", "votes", "lastplayed", "fanart", "thumbnail", 
 "file", "originaltitle", "sorttitle", "episodeguide", "season", "watchedepisodes", 
 "dateadded", "tag", "art"
+
+localhost:8080/jsonrpc?request={"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums","params": {"limits": {"start": 0, "end": 1}, "properties": ["artist", "thumbnail"] }, "id": "libAlbums"}
+
+"title", "description", "artist", "genre", "theme", "mood", "style", "type", "albumlabel", 
+"rating", "year", "musicbrainzalbumid", "musicbrainzalbumartistid", "fanart", "thumbnail", 
+"playcount", "genreid", "artistid", "displayartist"
