@@ -7,7 +7,7 @@
  * File:    databases.php
  *
  * Created on Mar 09, 2013
- * Updated on Jun 17, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Database toolbox functions.
  *
@@ -49,7 +49,6 @@ function OpenDatabase()
     return $db;
 }
 
-
 /*
  * Function:	CloseDatabase
  *
@@ -66,7 +65,6 @@ function CloseDatabase($db)
 {
     mysqli_close($db);
 }
-
 
 /*
  * Function:	EmptyTable
@@ -91,7 +89,6 @@ function EmptyTable($table)
     
     CloseDatabase($db);
 }
-
 
 /*
  * Function:	ExecuteQuery
@@ -309,5 +306,92 @@ function CountRows($table)
     CloseDatabase($db);
     
     return $rows;
+}
+
+/*
+ * Function:	GetLastItemFromTable
+ *
+ * Created on Jun 26, 2013
+ * Updated on Jun 26, 2013
+ *
+ * Description: Get last added item from a database table.
+ *
+ * In:	$item, $sql
+ * Out:	$item
+ * 
+ * Note: Returns 1 item. The item must exist in the select query ($sql).
+ * 
+ */
+function GetItemFromDatabase($item, $sql)
+{
+    $db = OpenDatabase();
+    $item = 0;
+
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            $stmt->bind_result($item);
+            $stmt->fetch();
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
+    
+    CloseDatabase($db);
+    
+    return $item;
+}
+
+/*
+ * Function:	GetLastItemFromTable
+ *
+ * Created on Jun 26, 2013
+ * Updated on Jun 26, 2013
+ *
+ * Description: Get last added item from a database table.
+ *
+ * In:	$item, $table
+ * Out:	$item
+ * 
+ */
+function GetLastItemFromTable($item, $table)
+{
+    $db = OpenDatabase();
+
+    $sql = "SELECT $item FROM $table ".
+           "ORDER BY $item DESC ".
+           "LIMIT 0, 1"; 
+    
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            $stmt->bind_result($item);
+            $stmt->fetch();
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
+    
+    CloseDatabase($db);
+    
+    return $item;
 }
 ?>

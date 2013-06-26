@@ -40,7 +40,7 @@ switch ($action)
                      $aJson = ImportMedia($start, $media);
                      break;
    
-    case "test"    : $aJson = ImportMedia(1, "music");
+    case "test"    : $aJson = ImportMedia(1, "movies");
                      //$aJson = GetTVShowsFromXBMC(6, 3);
                      //$aJson = GetAlbumsFromXBMC(0, 3);
                      break;                   

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jun 22, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -593,7 +593,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Jun 23, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Clean the media library. 
  *
@@ -610,6 +610,7 @@ function CleanLibrary($number)
         case 1 : $aJson['name']   = "movies";
                  $aJson['counter'] = CountRows("movies");
                  EmptyTable("movies");
+                 EmptyTable("genretomovie");
                  DeleteFile(cMOVIESPOSTERS."/*.jpg");
                  DeleteFile(cMOVIESFANART."/*.jpg");
                  break;
@@ -617,6 +618,7 @@ function CleanLibrary($number)
         case 4 : $aJson['name']   = "tvshows";
                  $aJson['counter'] = CountRows("tvshows");
                  EmptyTable("tvshows");
+                 EmptyTable("genretotvshow");
                  DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
                  DeleteFile(cTVSHOWSFANART."/*.jpg");
                  break;
@@ -624,6 +626,7 @@ function CleanLibrary($number)
         case 7 : $aJson['name']   = "music";
                  $aJson['counter'] = CountRows("music");
                  EmptyTable("music");
+                 EmptyTable("genretomusic");
                  DeleteFile(cALBUMSCOVERS."/*.jpg");
                  break;
     }

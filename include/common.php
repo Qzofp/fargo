@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jun 25, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -354,6 +354,51 @@ function InsertGenres($aGenres, $media)
         {
             $sql = "INSERT INTO genres(genre, media) ".
                    "VALUES ('$genre', '$media')";
+            
+            ExecuteQuery($sql);
+        }
+    }
+}
+
+/*
+ * Function:	InsertGenreToMedia
+ *
+ * Created on Jun 26, 2013
+ * Updated on Jun 26, 2013
+ *
+ * Description: Insert genres linked to media in the database.
+ *
+ * In:  $aGenres, $media
+ * Out:	Genres in database table genretomovie, genretotvshows or genretomusic table.
+ *
+ */
+function InsertGenreToMedia($aGenres, $media)
+{
+    // Get highest movie id.
+    $mediaid = GetLastItemFromTable("id", $media);
+    
+    foreach ($aGenres as $genre)
+    {
+        $find = "SELECT id FROM genres ".
+                "WHERE genre = '$genre' AND media = '$media'";
+        
+        $genreid = GetItemFromDatabase("id", $find);        
+        if (!empty($genreid))
+        {
+            switch ($media)
+            {
+                case "movies"  : $name = "movie";
+                                 break;
+                            
+                case "tvshows" : $name = "tvshow";
+                                 break;
+                            
+                case "music"   : $name = "music";
+                                 break;                             
+            }
+            
+            $sql = "INSERT INTO genreto$name(genreid, ".$name."id) ".
+                   "VALUES ($genreid, $mediaid)";
             
             ExecuteQuery($sql);
         }

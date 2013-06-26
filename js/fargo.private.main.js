@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jun 24, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -139,7 +139,7 @@ function SetMediaHandler(event)
  * Function:	SetFullSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Show the full system page with all the options.
  * 
@@ -151,7 +151,10 @@ function SetFullSystemHandler(event)
 {            
    var media  = event.data.media;  
    var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
-   var last = $('#display_system_left .option').last().text();
+   var $option = $('#display_system_left .option');
+   var option_menu;
+   
+   var last = $option.last().text();
    SetState("page", media);
 
    global_page = 1;
@@ -163,21 +166,22 @@ function SetFullSystemHandler(event)
    $("#display_left").hide();
    $("#display_right").hide();
    
-   $('#display_content').hide();
-   $('#display_content').html("");
+   $('#display_content').hide().html("");
    $('#display_system').show();
 
    if ($('#display_system_left #fargo').length == false) {
-       $('#display_system_left').append('<div id=\"fargo\">Qzofp\'s Fargo</div>');
+       option_menu = '<div id=\"fargo\">Qzofp\'s Fargo</div>';
    }
    if(last != aOptions[aOptions.length-1])
    {
-        $.each(aOptions, function(key, option) 
-        {
-            $('#display_system_left').append('<div class="option">' + option + '</div>');
-        });  
+        $.each(aOptions, function(i, value) {
+            option_menu += '<div class="option">' + value + '</div>';
+        });
+        
+        $('#display_system_left').append(option_menu);
    }
-   $('#display_system_left .option').removeClass('on');
+   
+   $option.removeClass('on');
    $('#display_system_left .option').first().addClass('on'); 
    
    ShowProperty("Statistics");

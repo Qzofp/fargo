@@ -1,0 +1,29 @@
+Queries
+-------
+
+Geeft alle genres van een film
+------------------------------
+SELECT genres.`genre` FROM genres, genretomovie
+WHERE genres.id = genretomovie.genreid AND genretomovie.`movieid` = 8
+
+SELECT g.`genre` FROM genres g, genretomovie gtm
+WHERE g.id = gtm.genreid AND gtm.`movieid` = 12
+
+Geeft alle films van een bepaalde genre
+---------------------------------------
+SELECT m.title FROM movies m, genretomovie gtm
+WHERE m.id = gtm.`movieid` AND gtm.`genreid` = 4
+
+SELECT m.title FROM movies m, genretomovie gtm, genres g
+WHERE m.id = gtm.`movieid` AND gtm.`genreid` = g.`id` 
+AND g.`genre` = 'Comedy'
+
+SELECT m.title FROM movies m, genretomovie gtm, genres g
+WHERE m.id = gtm.`movieid` AND gtm.`genreid` = g.`id` 
+AND g.`genre` = 'Animation'
+ORDER BY m.sorttitle
+
+SELECT m.title FROM movies m, genretomovie gtm, genres g
+WHERE m.id = gtm.`movieid` AND gtm.`genreid` = g.`id` 
+AND g.`genre` = 'Action'
+ORDER BY m.id DESC

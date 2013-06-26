@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -115,7 +115,7 @@ function SetMediaHandler(event)
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Show the system page with minimum options.
  * 
@@ -125,9 +125,12 @@ function SetMediaHandler(event)
  */
 function SetSystemHandler(event)
 {            
-   var media  = event.data.media;
+   var media = event.data.media;
    var aOptions = ['Statistics', 'Credits', 'About'];
-   var last = $('#display_system_left .option').last().text();
+   var $option = $('#display_system_left .option');
+   var option_menu;
+   
+   var last = $option.last().text();
    SetState("page", media);
    
    global_page = 1;
@@ -138,27 +141,27 @@ function SetSystemHandler(event)
    $("#display_left").hide();
    $("#display_right").hide();  
    
-   $('#display_content').hide();
-   $('#display_content').html("");
+   $('#display_content').hide().html("");
    $('#display_system').show();
    
    if ($('#display_system_left #fargo').length == false) {
-       $('#display_system_left').append('<div id=\"fargo\">Qzofp\'s Fargo</div>');
+       option_menu = '<div id=\"fargo\">Qzofp\'s Fargo</div>';
    }
    if(last != aOptions[aOptions.length-1])
    {
-        $.each(aOptions, function(key, option) 
-        {
-            $('#display_system_left').append('<div class="option">' + option + '</div>');
-        });  
+        $.each(aOptions, function(i, value) {
+            option_menu += '<div class="option">' + value + '</div>';
+        });
+        
+        $('#display_system_left').append(option_menu);
    }
-   $('#display_system_left .option').removeClass('on');
+   
+   $option.removeClass('on');
    $('#display_system_left .option').first().addClass('on');   
    
    ShowProperty("Statistics");
    
-   $("#control_sub").stop().slideUp("slow");
-   $("#control_sub").slideDown("slow");
+   $("#control_sub").stop().slideUp("slow").slideDown("slow");
 }
 
 /*

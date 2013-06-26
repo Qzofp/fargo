@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on Jun 25, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -405,7 +405,7 @@ function GetAlbumsFromXBMC($counter, $offset)
  * Function:	ProcessMovies
  *
  * Created on Mar 11, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Process the movies. 
  *
@@ -417,8 +417,11 @@ function ProcessMovies($aMovies)
 {  
     foreach ($aMovies as $aMovie)
     {            
-        $aMovie = ConvertMovie($aMovie);        
+        $aGenres = $aMovie["genre"];
+        
+        $aMovie = ConvertMovie($aMovie);    
         InsertMovie($aMovie);
+        InsertGenreToMedia($aGenres, "movies");
     }
 }
 
@@ -426,7 +429,7 @@ function ProcessMovies($aMovies)
  * Function:	ProcessTVShows
  *
  * Created on Apr 19, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Process the TV Shows. 
  *
@@ -438,8 +441,11 @@ function ProcessTVShows($aTVShows)
 {  
     foreach ($aTVShows as $aTVShow)
     {            
+        $aGenres = $aTVShow["genre"];
+        
         $aTVShow = ConvertTVShow($aTVShow);        
         InsertTVShow($aTVShow);
+        InsertGenreToMedia($aGenres, "tvshows");
     }
 }
 
@@ -447,7 +453,7 @@ function ProcessTVShows($aTVShows)
  * Function:	ProcessAlbums
  *
  * Created on Apr 19, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Process the music albums. 
  *
@@ -459,8 +465,11 @@ function ProcessAlbums($aAlbums)
 {  
     foreach ($aAlbums as $aAlbum)
     {            
+        $aGenres = $aAlbum["genre"];
+        
         $aAlbum = ConvertAlbum($aAlbum);        
         InsertAlbum($aAlbum);
+        InsertGenreToMedia($aGenres, "music");
     }
 }
 
@@ -468,7 +477,7 @@ function ProcessAlbums($aAlbums)
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Jun 24, 2013
+ * Updated on Jun 25, 2013
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -477,9 +486,7 @@ function ProcessAlbums($aAlbums)
  *
  */
 function ConvertMovie($aXbmc)
-{
-    //$poster = "images/no_poster.jpg";
-    
+{  
     $aMovie["xbmcid"] = $aXbmc["movieid"];
     $aMovie["title"]  = $aXbmc["label"];
     $aMovie["genre"]  = ConvertGenre($aXbmc["genre"], "movies");
