@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jun 26, 2013
+ * Updated on Jun 28, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -28,8 +28,9 @@ var global_cancel = false;
 var global_total_fargo = 0;
 var global_total_xbmc  = 0;
 
-// Fargo setting
+// Fargo globals.
 var global_setting_fargo;
+var global_list_fargo;
 
 // Ajax requests.
 var global_status_request;
@@ -39,7 +40,7 @@ var global_import_request;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 28, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -49,11 +50,11 @@ var global_import_request;
  */
 function LoadFargoMedia(media)
 {      
+    var system_options = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
     global_media = media;
     
     ChangeControlBar(global_media);
     ChangeSubControlBar(global_media);
-    $("#control_sub").show();
         
     GetFargoValues(media, global_sort);
     ShowMediaTable(media, global_page, global_column, global_sort);
@@ -62,7 +63,7 @@ function LoadFargoMedia(media)
     $("#movies").on("click", {media:"movies"}, SetMediaHandler);
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
-    $("#system").on("click", {media:"system"}, SetFullSystemHandler);
+    $("#system").on("click", {media:"system", options:system_options}, SetSystemHandler);
     
     // Options event.
     $("#display_system_left").on("click", ".option", SetOptionHandler);
@@ -81,6 +82,9 @@ function LoadFargoMedia(media)
     // Cancel or finish import. 
     $(".button").on("click", ".cancel", SetCloseHandler);
     
+    // Genres click events.
+    $("#genres").on("click", SetGenresHandler);    
+    
     // No button is pressed, close popup.
     $(".button").on("click", ".no", SetCloseHandler);
             
@@ -96,97 +100,6 @@ function LoadFargoMedia(media)
             
     // Keyboard events.
     $(document).on("keydown", SetKeyHandler);
-}
-
-/*
- * Function:	SetMediaHandler
- *
- * Created on Apr 13, 2013
- * Updated on Jun 02, 2013
- *
- * Description: Set the media and show the media table.
- * 
- * In:	event
- * Out:	Media
- *
- */
-function SetMediaHandler(event)
-{            
-   var media  = event.data.media;  
-   SetState("page", media);
-
-   global_page = 1;
-   global_sort = "";
-   
-   $('#display_system').hide();
-   $('#display_system_left').html("");  
-   $('#display_system_right').html("");  
-   $('#display_content').show();
-   
-   global_media = ChangeControlBar(media);
-   ChangeSubControlBar(media);
-   
-   $("#display_left").show();
-   $("#display_right").show();
-   
-   $("#control_sub").slideDown("slow");
-   
-   GetFargoValues(global_media, global_sort);
-   ShowMediaTable(global_media, global_page, global_column, global_sort);
-}
-
-/*
- * Function:	SetFullSystemHandler
- *
- * Created on May 04, 2013
- * Updated on Jun 26, 2013
- *
- * Description: Show the full system page with all the options.
- * 
- * In:	event
- * Out:	Media
- *
- */
-function SetFullSystemHandler(event)
-{            
-   var media  = event.data.media;  
-   var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
-   var $option = $('#display_system_left .option');
-   var option_menu;
-   
-   var last = $option.last().text();
-   SetState("page", media);
-
-   global_page = 1;
-   global_sort = "";
-   
-   global_media = ChangeControlBar(media);
-   ChangeSubControlBar(media);
-   
-   $("#display_left").hide();
-   $("#display_right").hide();
-   
-   $('#display_content').hide().html("");
-   $('#display_system').show();
-
-   if ($('#display_system_left #fargo').length == false) {
-       option_menu = '<div id=\"fargo\">Qzofp\'s Fargo</div>';
-   }
-   if(last != aOptions[aOptions.length-1])
-   {
-        $.each(aOptions, function(i, value) {
-            option_menu += '<div class="option">' + value + '</div>';
-        });
-        
-        $('#display_system_left').append(option_menu);
-   }
-   
-   $option.removeClass('on');
-   $('#display_system_left .option').first().addClass('on'); 
-   
-   ShowProperty("Statistics");
-   
-   $("#control_sub").slideDown("slow");
 }
 
 /*
@@ -226,7 +139,7 @@ function ChangeProperty(number, value)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on May 10, 2013
+ * Updated on Jun 26, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -235,21 +148,36 @@ function ChangeProperty(number, value)
  *
  */
 function ChangeSubControlBar(media)
-{
-    var txt_media = ConvertMedia(media);
+{   
+    var $control = $("#control_sub");
     
-    $("#control_sub").stop().slideUp("slow", function(){
-        if (media != 'system') 
+    $control.stop().slideUp("slow", function()
+    {
+        switch(media)
         {
-            $("#import").css( "display", "inline").text("Import " + txt_media);
-            $("#logout").hide();
+            case "movies"  : $("#import").show();
+                             $("#logout").hide();
+                             $("#genres").show();
+                             break;
+
+            case "tvshows" : $("#import").show();
+                             $("#logout").hide();
+                             $("#genres").show();
+                             break;
+
+            case "music"   : $("#import").show();
+                             $("#logout").hide();
+                             $("#genres").show();
+                             break;
+                           
+            case "system" : $("#logout").show();
+                            $("#import").hide();
+                            $("#genres").hide();
+                            break;                      
         }
-        else
-        {
-            $("#import").hide();
-            $("#logout").show();        
-        }
-    });    
+        
+        $control.slideDown("slow");
+    });
 }
 
 /*

@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Jun 26, 2013
+ * Updated on Jun 27, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -22,14 +22,15 @@ var global_sort  = "";
 var global_lastpage = 1; //last page
 var global_column   = 0;
 
-// Fargo setting 
+// Fargo globals.
 var global_setting_fargo;
+var global_list_fargo;
 
 /*
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 27, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -38,12 +39,13 @@ var global_setting_fargo;
  *
  */
 function LoadFargoMedia(media)
-{      
+{    
+    var system_options = ['Statistics', 'Credits', 'About'];
     global_media = media;
     
     ChangeControlBar(global_media);
-    var title = "";
-    
+    ChangeSubControlBar(global_media);
+ 
     GetFargoValues(media, global_sort);
     ShowMediaTable(media, global_page, global_column, global_sort);
 
@@ -51,17 +53,23 @@ function LoadFargoMedia(media)
     $("#movies").on("click", {media:"movies"}, SetMediaHandler);
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
-    $("#system").on("click", {media:"system"}, SetSystemHandler);
+    $("#system").on("click", {media:"system", options:system_options}, SetSystemHandler);
     
     // Option event.
     $("#display_system_left").on("click", ".option", SetOptionHandler);
     
     // Properties event.
     $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);    
-      
+    
+    // Genres click events.
+    $("#genres").on("click", SetGenresHandler);
+    $(".button").on("click", ".genre", SetShowGenreHandler);
+    
     // Login click event.
-    $("#login").on("click", {title:title}, SetPopupHandler);
-    $("#mask, .close_right").on("click", SetCloseHandler);
+    $("#login").on("click", {type:"#login_box", title:"Login"}, SetPopupHandler);
+    
+    // Close popup.
+    $("#mask, .close_right").on("click", SetMaskHandler);
     
     // Login validation event.
     $(".login").on("click", SetLoginValidateHandler);
@@ -74,126 +82,52 @@ function LoadFargoMedia(media)
     $(document).on("keydown", SetKeyHandler);
 }
 
-
 /*
- * Function:	SetMediaHandler
+ * Function:	ChangeSubControlBar
  *
- * Created on Apr 13, 2013
- * Updated on Jun 02, 2013
- *
- * Description: Set the media and show the media table.
- * 
- * In:	event
- * Out:	Media
- *
- */
-function SetMediaHandler(event)
-{            
-   var media  = event.data.media;
-   SetState("page", media);
-
-   global_page = 1;
-   global_sort = "";
-   
-   $('#display_system').hide();
-   $('#display_system_left').html(""); 
-   $('#display_system_right').html("");   
-   $('#display_content').show();
-   
-   global_media = ChangeControlBar(media);
-   $("#control_sub").stop().slideUp("slow");
-    
-   $("#display_left").show();
-   $("#display_right").show();
-   
-   GetFargoValues(global_media, global_sort);
-   ShowMediaTable(global_media, global_page, global_column, global_sort);
-}
-
-
-/*
- * Function:	SetSystemHandler
- *
- * Created on May 04, 2013
+ * Created on May 09, 2013
  * Updated on Jun 26, 2013
  *
- * Description: Show the system page with minimum options.
- * 
- * In:	event
- * Out:	Media
+ * Description: Change the sub control bar for Movies, TV Shows, Music or System.
+ *
+ * In:	media
+ * Out:	-
  *
  */
-function SetSystemHandler(event)
-{            
-   var media = event.data.media;
-   var aOptions = ['Statistics', 'Credits', 'About'];
-   var $option = $('#display_system_left .option');
-   var option_menu;
-   
-   var last = $option.last().text();
-   SetState("page", media);
-   
-   global_page = 1;
-   global_sort = "";
-   
-   global_media = ChangeControlBar(media);
-   
-   $("#display_left").hide();
-   $("#display_right").hide();  
-   
-   $('#display_content').hide().html("");
-   $('#display_system').show();
-   
-   if ($('#display_system_left #fargo').length == false) {
-       option_menu = '<div id=\"fargo\">Qzofp\'s Fargo</div>';
-   }
-   if(last != aOptions[aOptions.length-1])
-   {
-        $.each(aOptions, function(i, value) {
-            option_menu += '<div class="option">' + value + '</div>';
-        });
-        
-        $('#display_system_left').append(option_menu);
-   }
-   
-   $option.removeClass('on');
-   $('#display_system_left .option').first().addClass('on');   
-   
-   ShowProperty("Statistics");
-   
-   $("#control_sub").stop().slideUp("slow").slideDown("slow");
-}
+function ChangeSubControlBar(media)
+{   
+    var $control = $("#control_sub");
+    
+    $control.stop().slideUp("slow", function()
+    {
+        switch(media)
+        {
+            case "movies"  : $("#login").hide();
+                             $("#genres").show();
+                             break;
 
-/*
- * Function:	SetCloseHandler
- *
- * Created on Jun 09, 2013
- * Updated on Jun 15, 2013
- *
- * Description: Close login or other popup windows.
- * 
- * In:	-
- * Out:	disable mask and popup
- *
- */
-function SetCloseHandler()
-{
-    //var popup = $("#login_box");
+            case "tvshows" : $("#login").hide();
+                             $("#genres").show();
+                             break;
+
+            case "music"   : $("#login").hide();
+                             $("#genres").show();
+                             break;
+                           
+            case "system" : $("#login").show();
+                            $("#genres").hide();
+                            break;               
+        }
         
-    // Close login popup.
-    //if (popup.is(":visible")) {
-        SetMaskHandler();
-    //}
-    //else {
-        //SetMaskHandler("#info");
-    //}
+        $control.slideDown("slow");
+    });
 }
 
 /*
  * Function:	SetPopupKeyHandler
  *
  * Created on Apr 28, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jun 27, 2013
  *
  * Description: Disable popup window.
  * 
@@ -203,17 +137,10 @@ function SetCloseHandler()
  */
 function SetPopupKeyHandler(key)
 { 
-    var popup = $("#popup.login_size");
+    //var popup = $(".popup#login_box");
     
-    if (key == 27) // ESC key
-    {   
-        // Close login popup.
-        if (popup.is(":visible")) {
-            SetMaskHandler(".login_size");
-        }
-        else {
-            //SetMaskHandler(".info");
-        }
+    if (key == 27) { // ESC key
+        SetMaskHandler();
     }    
 }
 

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jun 26, 2013
+ * Updated on Jun 27, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -72,6 +72,11 @@ switch ($action)
                     $aJson = ProcessSetting($name);
                     break;
                 
+    case "list"   : $type  = GetPageValue('type');
+                    $media = GetPageValue('media');
+                    $aJson = GetSortList($type, $media);
+                    break;            
+                
     case "log"    : $type  = GetPageValue('type');
                     $event = GetPageValue('event');
                     $aJson = LogEvent($type, $event);
@@ -113,6 +118,57 @@ function GetStatus($media, $id)
         case "tvshows"  : $aJson = GetImportStatus($media, $id, cTVSHOWSPOSTERS);
                           break;
     }    
+    return $aJson;
+}
+
+/*
+ * Function:	GetSortList
+ *
+ * Created on Jun 27, 2013
+ * Updated on Jun 28, 2013
+ *
+ * Description: Get list of items for sorting purposes. 
+ *
+ * In:  $type, $media
+ * Out: $aJson
+ *
+ */
+function GetSortList($type, $media)
+{
+    $aJson = null;
+    
+    switch($type)
+    {
+        case "genres" : $aJson["list"] = GetGenres($media);
+                        break;
+    
+        case "year"   : break;
+    }
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetGenres
+ *
+ * Created on Jun 27, 2013
+ * Updated on Jun 27, 2013
+ *
+ * Description: Get genres from database table genres. 
+ *
+ * In:  $media
+ * Out: $aJson
+ *
+ */
+function GetGenres($media)
+{
+    $sql = "SELECT genre FROM genres ".
+           "WHERE media = '$media' ".
+           "ORDER BY genre ";
+           //"LIMIT 0, 5";
+    
+    $aJson = GetItemsFromDatabase($sql);
+    
     return $aJson;
 }
 

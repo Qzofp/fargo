@@ -7,13 +7,41 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jun 26, 2013
+ * Updated on Jun 27, 2013
  *
  * Description: The main Fargo functions page.
  *
  */
 
 ////////////////////////////////////////    Interface Functions    ////////////////////////////////////////
+
+/*
+ * Function:	ShowHiddenGenresBox
+ *
+ * Created on Jun 27, 2013
+ * Updated on Jun 27, 2013
+ *
+ * Description: Show hidden genres box.
+ *
+ * In:  -
+ * Out:	Hidden login box.
+ *
+ */
+function ShowHiddenGenresBox()
+{
+    echo "   <div class=\"popup\" id=\"genres_box\">\n";
+    
+    echo "    <form method=\"post\" action=\"#\">\n";
+    echo "     <div class=\"close_left\">&nbsp;</div>\n";       
+    echo "     <div class=\"close_right\">x</div>\n";    
+    echo "     <div class=\"title\">Genres Box</div>\n";
+    //echo "     <div class=\"message\"></div>\n";
+
+    echo "     <div class=\"button\">\n";
+    echo "     </div>\n";    
+    echo "    </form>\n";
+    echo "   </div>\n";
+}
 
 /*
  * Function:	ShowHiddenLoginBox
@@ -34,7 +62,7 @@ function ShowHiddenLoginBox()
     echo "    <form method=\"post\" action=\"#\">\n";
     echo "     <div class=\"close_left\">&nbsp;</div>\n";       
     echo "     <div class=\"close_right\">x</div>\n";    
-    echo "     <div class=\"title\">Login</div>\n";
+    echo "     <div class=\"title\">Login Box</div>\n";
 
 //    echo "     <div class=\"message\">Warning!!!</div>\n";
     echo "     <fieldset class=\"textbox\">\n";

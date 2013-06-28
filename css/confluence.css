@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 28, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -206,6 +206,27 @@ font-size:1.2em;
 width:214px;    
 }
 /* End Popup part */
+
+/* Begin Genres Popup part */
+#genres_box{
+width:250px;
+max-height:500px;
+margin-left:-127px;
+}
+
+#genres_box .button{
+margin-top:10px;
+}
+
+#genres_box button{
+margin:2px 0px 2px 0px;
+}
+
+#genres_box button:last-child{
+margin-bottom:10px;  
+} 
+
+/* End Genres Popup part */
 
 /* Begin Import Popup part */
 #import_box{
@@ -593,10 +614,10 @@ cursor:pointer;
 color:dodgerblue;
 }
 
-#control_sub #import,
-#control_sub #genres{
+/*
+#control_sub #import{
 display:none;
-}
+}*/
 /* End Control Bar part */
 
 /* Page states */

@@ -71,7 +71,7 @@ function ShowProperty(name)
             $("#display_system_right .system_scroll").slimScroll({
                     width:width,
                     height:'auto',
-                    alwaysVisible:'true',
+                    alwaysVisible:true,
                     color:'dodgerblue'
             });
         } // End Success.        
