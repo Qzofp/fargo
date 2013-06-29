@@ -83,7 +83,8 @@ function LoadFargoMedia(media)
     $(".button").on("click", ".cancel", SetCloseHandler);
     
     // Genres click events.
-    $("#genres").on("click", SetGenresHandler);    
+    $("#genres").on("click", SetGenresHandler);
+    $(".button").on("click", ".genre", SetShowGenreHandler);
     
     // No button is pressed, close popup.
     $(".button").on("click", ".no", SetCloseHandler);

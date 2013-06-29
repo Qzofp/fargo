@@ -623,6 +623,7 @@ display:none;
 /* Page states */
 #state_media,
 #state_page,
+#state_genre,
 #state_xbmc,
 #state_row,
 #state_property{
@@ -641,14 +642,17 @@ top:10px;
 #state_page{
 top:32px;     
 }
+#state_genre{
+top:54px;  
+}
 #state_xbmc{
-top:54px;     
+top:76px;     
 }
 #state_row{
-top:76px;   
+top:98px;   
 }
 #state_property{
-top:98px;    
+top:120px;    
 }
 /* end debug */
 

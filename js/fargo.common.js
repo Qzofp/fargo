@@ -15,188 +15,10 @@
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
 
 /*
- * Function:	SetMediaHandler
- *
- * Created on Apr 13, 2013
- * Updated on Jun 26, 2013
- *
- * Description: Set the media and show the media table.
- * 
- * In:	event
- * Out:	Media
- *
- */
-function SetMediaHandler(event)
-{            
-   var media  = event.data.media;
-   SetState("page", media);
-
-   global_page = 1;
-   global_sort = "";
-   
-   $('#display_system').hide();
-   $('#display_system_left').html(""); 
-   $('#display_system_right').html("");   
-   $('#display_content').show();
-   
-   global_media = ChangeControlBar(media);
-   ChangeSubControlBar(media);
-    
-   $("#display_left").show();
-   $("#display_right").show();
-   
-   GetFargoValues(global_media, global_sort);
-   ShowMediaTable(global_media, global_page, global_column, global_sort);
-}
-
-/*
- * Function:	SetSystemHandler
- *
- * Created on May 04, 2013
- * Updated on Jun 26, 2013
- *
- * Description: Show the system page with minimum options.
- * 
- * In:	event
- * Out:	Media
- *
- */
-function SetSystemHandler(event)
-{            
-   var media = event.data.media;
-   var aOptions = event.data.options;
-   var $option = $('#display_system_left .option');
-   var option_menu;
-   
-   var last = $option.last().text();
-   SetState("page", media);
-   
-   global_page = 1;
-   global_sort = "";
-   
-   global_media = ChangeControlBar(media);
-   ChangeSubControlBar(media);
-   
-   $("#display_left").hide();
-   $("#display_right").hide();  
-   
-   $('#display_content').hide().html("");
-   $('#display_system').show();
-   
-   if ($('#display_system_left #fargo').length == false) {
-       option_menu = '<div id=\"fargo\">Qzofp\'s Fargo</div>';
-   }
-   if(last != aOptions[aOptions.length-1])
-   {
-        $.each(aOptions, function(i, value) {
-            option_menu += '<div class="option">' + value + '</div>';
-        });
-        
-        $('#display_system_left').append(option_menu);
-   }
-   
-   $option.removeClass('on');
-   $('#display_system_left .option').first().addClass('on');   
-   
-   ShowProperty("Statistics");
-}
-
-/*
- * Function:	SetGenresHandler
- *
- * Created on Jun 27, 2013
- * Updated on Jun 28, 2013
- *
- * Description: Show the genres popup.
- * 
- * In:	-
- * Out:	Genres popup.
- *
- */
-function SetGenresHandler()
-{ 
-    var buttons;
-    var aGenres;
-    var height_box;
-    var $btns = $("#genres_box .button");
-    var $scroll = $("#genres_box .slimScrollDiv");
-    var media = GetState("media");
-
-    // Returns global_list_fargo.
-    GetFargoSortList("genres", media);
-    aGenres = global_list_fargo;
-    
-    // Check if genres exits (not empty)
-    if (aGenres) 
-    {    
-        // SlimScroll fix.
-        if ($scroll.length) 
-        {
-            $scroll.css('height', '');
-            $(".ui-draggable").css({'width':'0px', 'top':'0px'});
-            $btns.css('height', '');
-        }
-    
-        // Reset old buttons.
-        $($btns).text("");
-
-        // Show buttons
-        buttons = "";
-        $.each(aGenres, function(i, value) 
-        {
-            if (value == "") {
-            value = "&nbsp;";
-            }        
-            buttons += '<button type=\"button\" class=\"genre\">' + value + '</button>';
-       
-        });
-        $($btns).append(buttons);
-    
-        height_box = $("#genres_box").css('height');
-        if (parseInt(height_box) >= 500)
-        {    
-            $($btns).slimScroll({
-                height:478,
-                color:'gray',
-                alwaysVisible:true
-            });
-            
-            // SlimScroll height fix.
-            $scroll.css('height', '478px');
-            $(".ui-draggable").css('width','7px');
-            $btns.css('height', '478px');
-            
-            $($btns).children().last().css({"margin-bottom":"20px"});
-        }
-   
-        ShowPopupBox("#genres_box", "Genres");
-        SetState("page", "popup");
-    }
-}
-
-/*
- * Function:	SetShowGenreHandler
- *
- * Created on Jun 27, 2013
- * Updated on Jun 28, 2013
- *
- * Description: Show the genre.
- * 
- * In:	-
- * Out:	Genre.
- *
- */
-function SetShowGenreHandler()
-{
-    var $this = $(this);
-    alert($this.text());
-}
-
-/*
  * Function:	GetFargoValues
  *
  * Created on Apr 13, 2013
- * Updated on May 04, 2013
+ * Updated on Jun 28, 2013
  *
  * Description: Get the  initial values from Fargo.
  *
@@ -206,9 +28,11 @@ function SetShowGenreHandler()
  */
 function GetFargoValues(media, sort)
 {    
+    var genre = GetState("genre");
+    
     $.ajax
     ({
-        url: 'jsonfargo.php?action=init&media=' + media + '&sort=' + sort,
+        url: 'jsonfargo.php?action=init&media=' + media + '&genre=' + genre + '&sort=' + sort,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -270,41 +94,6 @@ function GetState(name)
 {
     var state = "#state_" + name;
     return $(state).text();
-}
-
-/*
- * Function:	ConvertMedia
- *
- * Created on May 10, 2013
- * Updated on May 20, 2013
- *
- * Description: Convert the media string to a more readable string.
- * 
- * In:	media
- * Out:	media
-
- *
- */
-function ConvertMedia(media)
-{
-    switch (media)
-    {
-        case 'movies' : media = "Movies";
-                        break;
-                        
-        case 'tvshows': media = "TV Shows";
-                        break;
-                        
-        case 'music'  : media = "Music";
-                        break;
-                        
-        case 'system' : media = "System";
-                        break;
-        
-        default       : break;
-    }
-    
-    return media;
 }
 
 /*

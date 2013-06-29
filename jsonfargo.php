@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jun 27, 2013
+ * Updated on Jun 28, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -27,8 +27,9 @@ $action = GetPageValue('action');
 switch ($action) 
 {
     case "init"    : $media = GetPageValue('media');
+                     $genre = GetPageValue('genre');
                      $sort  = GetPageValue('sort');
-                     $aJson = GetFargoValues($media, $sort);
+                     $aJson = GetFargoValues($media, $genre, $sort);
                      break;
                  
     case "counter" : $media = GetPageValue('media');
@@ -41,20 +42,23 @@ switch ($action)
                      break;                 
         
     case "movies"  : $page  = GetPageValue('page');
+                     $genre = GetPageValue('genre');
                      $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $page, $sort);
+                     $sql   = CreateQuery($action, $page, $genre, $sort);
                      $aJson = GetMedia($action, $sql);
                      break;
                 
     case "tvshows" : $page  = GetPageValue('page');
+                     $genre = GetPageValue('genre');
                      $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $page, $sort);
+                     $sql   = CreateQuery($action, $page, $genre, $sort);
                      $aJson = GetMedia($action, $sql);
                      break;    
                  
     case "music"  : $page  = GetPageValue('page');
+                    $genre = GetPageValue('genre');
                     $sort  = GetPageValue('sort');
-                    $sql   = CreateQuery($action, $page, $sort);
+                    $sql   = CreateQuery($action, $page, $genre, $sort);
                     $aJson = GetMedia($action, $sql);
                     break;   
     
@@ -164,8 +168,8 @@ function GetGenres($media)
 {
     $sql = "SELECT genre FROM genres ".
            "WHERE media = '$media' ".
-           "ORDER BY genre ";
-           //"LIMIT 0, 5";
+           "ORDER BY genre";
+           //" LIMIT 0, 5";
     
     $aJson = GetItemsFromDatabase($sql);
     
@@ -212,15 +216,15 @@ function LogEvent($type, $event)
  * Function:	GetFargoValues
  *
  * Created on Apr 06, 2013
- * Updated on jun 25, 2013
+ * Updated on jun 28, 2013
  *
  * Description: Get a the initialize values from Fargo and return it as Json data. 
  *
- * In:  $media, $sort
+ * In:  $media, $genre, $sort
  * Out: $aJson
  *
  */
-function GetFargoValues($media, $sort)
+function GetFargoValues($media, $genre, $sort)
 {
     $aJson['row']    = cMediaRow;
     $aJson['column'] = cMediaColumn;
@@ -228,9 +232,17 @@ function GetFargoValues($media, $sort)
     $sql = "SELECT id, xbmcid, title ".
            "FROM $media ";
     
+    $stm = "WHERE";
+    
+    if ($genre) 
+    {
+        $sql .= "$stm genre LIKE '%$genre%' ";
+        $stm = "AND";
+    }
+    
     if ($sort) {
-        $sql .= "WHERE sorttitle LIKE '$sort%'";
-    }    
+        $sql .= "$stm sorttitle LIKE '$sort%'";
+    }  
     
     $total = CountRowsWithQuery($sql);
     
@@ -304,25 +316,33 @@ function GetImportStatus($media, $id, $thumbs)
  * Function:	CreateQuery
  *
  * Created on Apr 08, 2013
- * Updated on Jun 25, 2013
+ * Updated on Jun 28, 2013
  *
  * Description: Create the sql query for the media table. 
  *
- * In:  $media, $page, $sort
+ * In:  $media, $page, $genre, $sort
  * Out: $sql
  *
  */
-function CreateQuery($media, $page, $sort)
+function CreateQuery($media, $page, $genre, $sort)
 {
-     $sql = "SELECT id, xbmcid, title ".
-            "FROM $media ";
+    $sql = "SELECT id, xbmcid, title ".
+           "FROM $media ";
+    
+    $stm = "WHERE";
     
     // Number of movies for 1 page
     $total = cMediaRow * cMediaColumn;
     $offset = ($page - 1) * $total;
     
+    if ($genre) 
+    {
+        $sql .= "$stm genre LIKE '%$genre%' ";
+        $stm = "AND";
+    }
+    
     if ($sort) {
-        $sql .= "WHERE sorttitle LIKE '$sort%' ".
+        $sql .= "$stm sorttitle LIKE '$sort%' ".
                 "ORDER BY sorttitle ";
     }
     else {
@@ -330,6 +350,9 @@ function CreateQuery($media, $page, $sort)
     }
     
     $sql .= "LIMIT $offset , $total";
+    
+    // Debug
+    //echo $sql;
      
     return $sql;
 }

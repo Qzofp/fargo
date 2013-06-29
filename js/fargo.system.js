@@ -6,13 +6,66 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jun 28, 2013
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
  */
 
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
+
+/*
+ * Function:	SetSystemHandler
+ *
+ * Created on May 04, 2013
+ * Updated on Jun 28, 2013
+ *
+ * Description: Show the system page with minimum options.
+ * 
+ * In:	event
+ * Out:	Media
+ *
+ */
+function SetSystemHandler(event)
+{            
+   var media = event.data.media;
+   var aOptions = event.data.options;
+   var $option = $('#display_system_left .option');
+   var option_menu;
+   
+   var last = $option.last().text();
+   SetState("page", media);
+   
+   global_page = 1;
+   global_sort = "";
+   SetState("genre", "");
+   
+   global_media = ChangeControlBar(media);
+   ChangeSubControlBar(media);
+   
+   $("#display_left").hide();
+   $("#display_right").hide();  
+   
+   $('#display_content').hide().html("");
+   $('#display_system').show();
+   
+   if ($('#display_system_left #fargo').length == false) {
+       option_menu = '<div id=\"fargo\">Qzofp\'s Fargo</div>';
+   }
+   if(last != aOptions[aOptions.length-1])
+   {
+        $.each(aOptions, function(i, value) {
+            option_menu += '<div class="option">' + value + '</div>';
+        });
+        
+        $('#display_system_left').append(option_menu);
+   }
+   
+   $option.removeClass('on');
+   $('#display_system_left .option').first().addClass('on');   
+   
+   ShowProperty("Statistics");
+}
 
 /*
  * Function:	SetOptionHandler

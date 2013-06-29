@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Jun 27, 2013
+ * Updated on Jun 28, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -144,6 +144,7 @@ else
 // Page States.
 echo "   <div id=\"state_media\">movies</div>\n";
 echo "   <div id=\"state_page\">movies</div>\n"; // movies, tvshows, music, system or popup.
+echo "   <div id=\"state_genre\"></div>\n";
 echo $system_states;
 
 PageEnd("LoadFargoMedia('$media')");
