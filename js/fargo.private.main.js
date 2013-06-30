@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -20,7 +20,7 @@ var global_page  = 1;
 var global_sort  = "";
 
 var global_lastpage = 1; //last page
-var global_column   = 0;
+//var global_column   = 0;
 
 var global_cancel = false;
 
@@ -40,7 +40,7 @@ var global_import_request;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -50,20 +50,22 @@ var global_import_request;
  */
 function LoadFargoMedia(media)
 {      
-    var system_options = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
+    var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
     global_media = media;
+    
+    SetState("title", "Latest");
     
     ChangeControlBar(global_media);
     ChangeSubControlBar(global_media);
         
-    GetFargoValues(media, global_sort);
-    ShowMediaTable(media, global_page, global_column, global_sort);
+    //GetFargoValues(media, global_sort);
+    ShowMediaTable(media, global_page, global_sort);
 
     // The media click events.
     $("#movies").on("click", {media:"movies"}, SetMediaHandler);
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
-    $("#system").on("click", {media:"system", options:system_options}, SetSystemHandler);
+    $("#system").on("click", {media:"system", options:aOptions}, SetSystemHandler);
     
     // Options event.
     $("#display_system_left").on("click", ".option", SetOptionHandler);
@@ -82,9 +84,11 @@ function LoadFargoMedia(media)
     // Cancel or finish import. 
     $(".button").on("click", ".cancel", SetCloseHandler);
     
-    // Genres click events.
-    $("#genres").on("click", SetGenresHandler);
-    $(".button").on("click", ".genre", SetShowGenreHandler);
+    // Title, Genres or Years click events.
+    $("#title").on("click", SetButtonsHandler);
+    $("#genres").on("click", SetButtonsHandler);
+    $("#years").on("click", SetButtonsHandler);
+    $(".button").on("click", ".choice", SetShowButtonHandler);
     
     // No button is pressed, close popup.
     $(".button").on("click", ".no", SetCloseHandler);
@@ -140,7 +144,7 @@ function ChangeProperty(number, value)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Jun 26, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -156,24 +160,20 @@ function ChangeSubControlBar(media)
     {
         switch(media)
         {
-            case "movies"  : $("#import").show();
-                             $("#logout").hide();
-                             $("#genres").show();
+            case "movies"  : $("#logout").hide();
+                             $("#import, #title, #genres, #years").show();
                              break;
 
-            case "tvshows" : $("#import").show();
-                             $("#logout").hide();
-                             $("#genres").show();
+            case "tvshows" : $("#logout").hide();
+                             $("#import, #title, #genres, #years").show();
                              break;
 
-            case "music"   : $("#import").show();
-                             $("#logout").hide();
-                             $("#genres").show();
+            case "music"   : $("#logout").hide();
+                             $("#import, #title, #genres, #years").show();
                              break;
                            
             case "system" : $("#logout").show();
-                            $("#import").hide();
-                            $("#genres").hide();
+                            $("#import, #title, #genres, #years").hide();
                             break;                      
         }
         

@@ -27,14 +27,14 @@
  * Out:	Hidden login box.
  *
  */
-function ShowHiddenGenresBox()
+function ShowHiddenButtonsBox()
 {
-    echo "   <div class=\"popup\" id=\"genres_box\">\n";
+    echo "   <div class=\"popup\" id=\"buttons_box\">\n";
     
     echo "    <form method=\"post\" action=\"#\">\n";
     echo "     <div class=\"close_left\">&nbsp;</div>\n";       
     echo "     <div class=\"close_right\">x</div>\n";    
-    echo "     <div class=\"title\">Genres Box</div>\n";
+    echo "     <div class=\"title\">Buttons Box</div>\n";
     //echo "     <div class=\"message\"></div>\n";
 
     echo "     <div class=\"button\">\n";
@@ -111,7 +111,7 @@ function ShowHiddenImportBox()
     echo "     <div id=\"import_wrapper\">\n";
     echo "      <div id=\"thumb\"><img src=\"\"/></div>\n";
     echo "     </div>\n";
-    echo "     <div id=\"title\">&nbsp;</div>\n";
+    echo "     <div id=\"media_title\">&nbsp;</div>\n";
     echo "     <div id=\"progress\"></div>\n";    
     echo "     <div class=\"button\">\n";
     echo "      <button type=\"button\" class=\"cancel\">Cancel</button>\n";

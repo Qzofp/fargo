@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -25,7 +25,7 @@
  * In:	media, sort
  * Out:	Media
  *
- */
+ *
 function GetFargoValues(media, sort)
 {    
     var genre = GetState("genre");
@@ -55,6 +55,7 @@ function GetFargoValues(media, sort)
         }  // End Succes.
     }); // End Ajax.       
 }
+*/
 
 /*
  * Function:	SetState

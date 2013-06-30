@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -116,7 +116,9 @@ echo "    </div>\n";
 echo "    <div id=\"control_sub\">\n";
 echo "     <ul>\n";
 echo "      $li_import";
+echo "      <li id=\"title\">Title</li>\n";
 echo "      <li id=\"genres\">Genres</li>\n";
+echo "      <li id=\"years\">Years</li>\n";
 echo "      $li_login";
 echo "     </ul>\n";
 echo "    </div>\n";
@@ -132,19 +134,22 @@ echo "   <div id=\"mask\"></div>\n";
 if (!$login)
 {
     ShowHiddenLoginBox();
-    ShowHiddenGenresBox();
+    ShowHiddenButtonsBox();
 }
 else 
 {
     ShowHiddenImportBox();
-    ShowHiddenGenresBox();
+    ShowHiddenButtonsBox();
     ShowHiddenCleanLibraryBox();
 }
 
 // Page States.
 echo "   <div id=\"state_media\">movies</div>\n";
 echo "   <div id=\"state_page\">movies</div>\n"; // movies, tvshows, music, system or popup.
+echo "   <div id=\"state_choice\"></div>\n"; // title, genre or year.
+echo "   <div id=\"state_title\"></div>\n";
 echo "   <div id=\"state_genre\"></div>\n";
+echo "   <div id=\"state_year\"></div>\n";
 echo $system_states;
 
 PageEnd("LoadFargoMedia('$media')");

@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -207,26 +207,25 @@ width:214px;
 }
 /* End Popup part */
 
-/* Begin Genres Popup part */
-#genres_box{
+/* Begin Buttons Popup part */
+#buttons_box{
 width:250px;
 max-height:500px;
 margin-left:-127px;
 }
 
-#genres_box .button{
+#buttons_box .button{
 margin-top:10px;
 }
 
-#genres_box button{
+#buttons_box button{
 margin:2px 0px 2px 0px;
 }
 
-#genres_box button:last-child{
+#buttons_box button:last-child{
 margin-bottom:10px;  
 } 
-
-/* End Genres Popup part */
+/* End Buttons Popup part */
 
 /* Begin Import Popup part */
 #import_box{
@@ -254,7 +253,7 @@ background:#454647;
 border-radius:5px;
 }
 
-#title{
+#media_title{
 font-weight:bold;
 font-size:0.9em;
 text-shadow:2px 2px 2px #000;
@@ -613,17 +612,15 @@ cursor:pointer;
 #control_sub li:hover{
 color:dodgerblue;
 }
-
-/*
-#control_sub #import{
-display:none;
-}*/
 /* End Control Bar part */
 
 /* Page states */
 #state_media,
 #state_page,
+#state_choice,
+#state_title,
 #state_genre,
+#state_year,
 #state_xbmc,
 #state_row,
 #state_property{
@@ -636,24 +633,15 @@ color:#fff;
 }
 
 /* begin debug */
-#state_media{
-top:10px;  
-}
-#state_page{
-top:32px;     
-}
-#state_genre{
-top:54px;  
-}
-#state_xbmc{
-top:76px;     
-}
-#state_row{
-top:98px;   
-}
-#state_property{
-top:120px;    
-}
+#state_media{top:10px;}
+#state_page{top:32px;}
+#state_choice{top:54px;}
+#state_title{top:76px;}
+#state_genre{top:98px;}
+#state_year{top:120px;}
+#state_xbmc{top:144px;}
+#state_row{top:166px;}
+#state_property{top:188px;}
 /* end debug */
 
 #footer{

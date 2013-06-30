@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -26,11 +26,11 @@ $action = GetPageValue('action');
 
 switch ($action) 
 {
-    case "init"    : $media = GetPageValue('media');
+    /*case "init"    : $media = GetPageValue('media');
                      $genre = GetPageValue('genre');
                      $sort  = GetPageValue('sort');
                      $aJson = GetFargoValues($media, $genre, $sort);
-                     break;
+                     break;*/
                  
     case "counter" : $media = GetPageValue('media');
                      $aJson['counter'] = CountRows($media);
@@ -42,24 +42,30 @@ switch ($action)
                      break;                 
         
     case "movies"  : $page  = GetPageValue('page');
+                     $title = GetPageValue('title');
                      $genre = GetPageValue('genre');
+                     $year  = GetPageValue('year');
                      $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $page, $genre, $sort);
-                     $aJson = GetMedia($action, $sql);
+                     $sql   = CreateQuery($action, $title, $genre, $year, $sort);
+                     $aJson = GetMedia($action, $page, $sql);
                      break;
                 
     case "tvshows" : $page  = GetPageValue('page');
+                     $title = GetPageValue('title');
                      $genre = GetPageValue('genre');
+                     $year  = GetPageValue('year');
                      $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $page, $genre, $sort);
-                     $aJson = GetMedia($action, $sql);
+                     $sql   = CreateQuery($action, $title, $genre, $year, $sort);
+                     $aJson = GetMedia($action, $page, $sql);
                      break;    
                  
-    case "music"  : $page  = GetPageValue('page');
-                    $genre = GetPageValue('genre');
-                    $sort  = GetPageValue('sort');
-                    $sql   = CreateQuery($action, $page, $genre, $sort);
-                    $aJson = GetMedia($action, $sql);
+    case "music"  : $page   = GetPageValue('page');
+                     $title = GetPageValue('title');
+                     $genre = GetPageValue('genre');
+                     $year  = GetPageValue('year');
+                     $sort  = GetPageValue('sort');
+                     $sql   = CreateQuery($action, $title, $genre, $year, $sort);
+                     $aJson = GetMedia($action, $page, $sql);
                     break;   
     
     case "option" : $name  = GetPageValue('name');
@@ -129,7 +135,7 @@ function GetStatus($media, $id)
  * Function:	GetSortList
  *
  * Created on Jun 27, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Get list of items for sorting purposes. 
  *
@@ -141,12 +147,13 @@ function GetSortList($type, $media)
 {
     $aJson = null;
     
-    switch($type)
+    switch(strtolower($type))
     {
         case "genres" : $aJson["list"] = GetGenres($media);
                         break;
     
-        case "year"   : break;
+        case "years"  : $aJson["list"] = GetYears($media);
+                        break;
     }
     
     return $aJson;
@@ -169,7 +176,29 @@ function GetGenres($media)
     $sql = "SELECT genre FROM genres ".
            "WHERE media = '$media' ".
            "ORDER BY genre";
-           //" LIMIT 0, 5";
+    
+    $aJson = GetItemsFromDatabase($sql);
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetYears
+ *
+ * Created on Jun 30, 2013
+ * Updated on Jun 30, 2013
+ *
+ * Description: Get years from database media table. 
+ *
+ * In:  $media
+ * Out: $aJson
+ *
+ */
+function GetYears($media)
+{
+    $sql = "SELECT YEAR FROM $media ".
+           "GROUP BY `year` ".
+           "ORDER BY `year` DESC";
     
     $aJson = GetItemsFromDatabase($sql);
     
@@ -223,7 +252,7 @@ function LogEvent($type, $event)
  * In:  $media, $genre, $sort
  * Out: $aJson
  *
- */
+ *
 function GetFargoValues($media, $genre, $sort)
 {
     $aJson['row']    = cMediaRow;
@@ -250,6 +279,7 @@ function GetFargoValues($media, $genre, $sort)
     
     return $aJson;
 }
+*/
 
 ////////////////////////////////////////    Database Functions    /////////////////////////////////////////
 
@@ -316,43 +346,53 @@ function GetImportStatus($media, $id, $thumbs)
  * Function:	CreateQuery
  *
  * Created on Apr 08, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Create the sql query for the media table. 
  *
- * In:  $media, $page, $genre, $sort
+ * In:  $media, $title, $genre, $year, $sort
  * Out: $sql
  *
  */
-function CreateQuery($media, $page, $genre, $sort)
+function CreateQuery($media, $title, $genre, $year, $sort)
 {
     $sql = "SELECT id, xbmcid, title ".
            "FROM $media ";
     
     $stm = "WHERE";
     
-    // Number of movies for 1 page
-    $total = cMediaRow * cMediaColumn;
-    $offset = ($page - 1) * $total;
+    if (strlen($sort) == 1) {
+        $sql .= "$stm sorttitle LIKE '$sort%' ";
+        $stm = "AND";
+    }
+    
+    if ($year) 
+    {
+        $sql .= "$stm  `year` = $year ";
+        $stm = "AND";
+    }
     
     if ($genre) 
     {
         $sql .= "$stm genre LIKE '%$genre%' ";
-        $stm = "AND";
+        //$stm = "AND";
     }
     
-    if ($sort) {
-        $sql .= "$stm sorttitle LIKE '$sort%' ".
-                "ORDER BY sorttitle ";
+    // Add sort order.
+    switch ($title) 
+    {
+        case "Latest"     : $sql .= "ORDER BY id DESC";
+                            break;
+        
+        case "Oldest"     : $sql .= "ORDER BY id";
+                            break;
+        
+        case "Ascending"  : $sql .= "ORDER BY sorttitle";
+                            break;
+        
+        case "Descending" : $sql .= "ORDER BY sorttitle DESC";
+                            break;
     }
-    else {
-        $sql .= "ORDER BY id DESC ";
-    }
-    
-    $sql .= "LIMIT $offset , $total";
-    
-    // Debug
-    //echo $sql;
      
     return $sql;
 }
@@ -361,7 +401,7 @@ function CreateQuery($media, $page, $genre, $sort)
  * Function:	GetMedia
  *
  * Created on Apr 03, 2013
- * Updated on May 18, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -369,23 +409,24 @@ function CreateQuery($media, $page, $genre, $sort)
  * Out: $aJson
  *
  */
-function GetMedia($media, $sql)
+function GetMedia($media, $page, $sql)
 {
     $aJson   = null;
     $aParams = null;
     $aMedia  = null;
     
-    switch($media)
-    {
-        case "movies"   : $aParams['thumbs'] = cMOVIESPOSTERS;
-                          break;
-                      
-        case "tvshows"  : $aParams['thumbs'] = cTVSHOWSPOSTERS;
-                          break; 
-                      
-        case "music"    : $aParams['thumbs'] = cALBUMSCOVERS;
-                          break;
-    }
+    // Get total number of media items.
+    $total = CountRowsWithQuery($sql);    
+
+    // Number of movies for 1 page
+    $end   = cMediaRow * cMediaColumn;
+    $start = ($page - 1) * $end;
+    
+    // Add limit.
+    $sql .=  " LIMIT $start , $end";
+    
+    // debug
+    //echo $sql;
     
     $db = OpenDatabase();
     $stmt = $db->prepare($sql);
@@ -432,8 +473,25 @@ function GetMedia($media, $sql)
 
     CloseDatabase($db);  
     
-    $aJson['params'] = $aParams;
-    $aJson['media']  = $aMedia;
+    // Get Json parameters.
+    switch($media)
+    {
+        case "movies"   : $aParams['thumbs'] = cMOVIESPOSTERS;
+                          break;
+                      
+        case "tvshows"  : $aParams['thumbs'] = cTVSHOWSPOSTERS;
+                          break; 
+                      
+        case "music"    : $aParams['thumbs'] = cALBUMSCOVERS;
+                          break;
+    }    
+    $aParams['lastpage'] = ceil($total / (cMediaRow * cMediaColumn));
+    $aParams['row']      = cMediaRow;
+    $aParams['column']   = cMediaColumn;
+    
+     // Fill Json.
+    $aJson['params']   = $aParams;
+    $aJson['media']    = $aMedia;
     
     return $aJson;
 }

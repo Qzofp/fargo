@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Jun 27, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -20,7 +20,7 @@ var global_page  = 1;
 var global_sort  = "";
 
 var global_lastpage = 1; //last page
-var global_column   = 0;
+//var global_column   = 0;
 
 // Fargo globals.
 var global_setting_fargo;
@@ -30,7 +30,7 @@ var global_list_fargo;
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Jun 27, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -40,30 +40,34 @@ var global_list_fargo;
  */
 function LoadFargoMedia(media)
 {    
-    var system_options = ['Statistics', 'Credits', 'About'];
+    var aOptions = ['Statistics', 'Credits', 'About'];
     global_media = media;
+    
+    SetState("title", "Latest");
     
     ChangeControlBar(global_media);
     ChangeSubControlBar(global_media);
  
-    GetFargoValues(media, global_sort);
-    ShowMediaTable(media, global_page, global_column, global_sort);
+    //GetFargoValues(media, global_sort);
+    ShowMediaTable(media, global_page, global_sort);
 
     // The media click events.
     $("#movies").on("click", {media:"movies"}, SetMediaHandler);
     $("#tvshows").on("click", {media:"tvshows"}, SetMediaHandler);
     $("#music").on("click", {media:"music"}, SetMediaHandler);
-    $("#system").on("click", {media:"system", options:system_options}, SetSystemHandler);
+    $("#system").on("click", {media:"system", options:aOptions}, SetSystemHandler);
     
     // Option event.
     $("#display_system_left").on("click", ".option", SetOptionHandler);
     
     // Properties event.
-    $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);    
+    $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);
     
-    // Genres click events.
-    $("#genres").on("click", SetGenresHandler);
-    $(".button").on("click", ".genre", SetShowGenreHandler);
+    // Title, Genres or Years click events.
+    $("#title").on("click", SetButtonsHandler);
+    $("#genres").on("click", SetButtonsHandler);
+    $("#years").on("click", SetButtonsHandler);
+    $(".button").on("click", ".choice", SetShowButtonHandler);
     
     // Login click event.
     $("#login").on("click", {type:"#login_box", title:"Login"}, SetPopupHandler);
@@ -86,7 +90,7 @@ function LoadFargoMedia(media)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Jun 26, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -103,19 +107,19 @@ function ChangeSubControlBar(media)
         switch(media)
         {
             case "movies"  : $("#login").hide();
-                             $("#genres").show();
+                             $("#title, #genres, #years").show();
                              break;
 
             case "tvshows" : $("#login").hide();
-                             $("#genres").show();
+                             $("#title, #genres, #years").show();
                              break;
 
             case "music"   : $("#login").hide();
-                             $("#genres").show();
+                             $("#title, #genres, #years").show();
                              break;
                            
             case "system" : $("#login").show();
-                            $("#genres").hide();
+                            $("#title, #genres, #years").hide();
                             break;               
         }
         

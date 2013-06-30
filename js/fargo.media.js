@@ -6,7 +6,7 @@
  * File:    fargo.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -31,9 +31,12 @@ function SetMediaHandler(event)
    var media  = event.data.media;
    SetState("page", media);
 
+   // Initialize parameters.
    global_page = 1;
    global_sort = "";
+   SetState("title", "Latest");
    SetState("genre", "");
+   SetState("year", "");
    
    $('#display_system').hide();
    $('#display_system_left').html(""); 
@@ -46,37 +49,79 @@ function SetMediaHandler(event)
    $("#display_left").show();
    $("#display_right").show();
    
-   GetFargoValues(global_media, global_sort);
-   ShowMediaTable(global_media, global_page, global_column, global_sort);
+   //GetFargoValues(global_media, global_sort);
+   ShowMediaTable(global_media, global_page, global_sort);
 }
 
 /*
- * Function:	SetGenresHandler
+ * Function:	SetTitleHandler
  *
- * Created on Jun 27, 2013
- * Updated on Jun 28, 2013
+ * Created on Jun 30, 2013
+ * Updated on Jun 30, 2013
  *
- * Description: Show the genres popup.
+ * Description: Show the title popup.
  * 
  * In:	-
- * Out:	Genres popup.
+ * Out:	Title popup.
  *
  */
-function SetGenresHandler()
-{ 
+function SetTitleHandler()
+{
     var buttons;
-    var aGenres;
-    var height_box;
-    var $btns = $("#genres_box .button");
-    var $scroll = $("#genres_box .slimScrollDiv");
-    var media = GetState("media");
-
-    // Returns global_list_fargo.
-    GetFargoSortList("genres", media);
-    aGenres = global_list_fargo;
+    var aList = ["Latest", "Oldest", "Ascending", "Descending"];
+    var $btns = $("#buttons_box .button");
     
-    // Check if genres exits (not empty)
-    if (aGenres) 
+    // Reset old buttons.
+    $($btns).text("");
+
+    // Show buttons
+    buttons = "";
+    $.each(aList, function(i, value) {
+        buttons += '<button type=\"button\" class=\"test\">' + value + '</button>';
+    });
+    $($btns).append(buttons);    
+    
+    ShowPopupBox("#buttons_box", "Title");
+    SetState("page", "popup");    
+}
+
+/*
+ * Function:	SetButtonsHandler
+ *
+ * Created on Jun 27, 2013
+ * Updated on Jun 30, 2013
+ *
+ * Description: Show the buttons (Title, Genres or Years) popup.
+ * 
+ * In:	-
+ * Out:	Buttons popup.
+ *
+ */
+function SetButtonsHandler()
+{ 
+    var $this = $(this);
+    var buttons = "";
+    var aList;
+    var height_box;
+    var $btns = $("#buttons_box .button");
+    var $scroll = $("#buttons_box .slimScrollDiv");
+    var media = GetState("media");
+    
+    SetState("choice", $this.text());
+
+    if ($this.text() == "Title"){
+        aList = ["Latest", "Oldest", "Ascending", "Descending"];  
+    }
+    else
+    {
+        // Returns global_list_fargo.
+        GetFargoSortList($this.text(), media);
+        aList = global_list_fargo;
+        buttons = '<button type=\"button\" class=\"choice\">- Show All -</button>';
+    }
+    
+    // Check if list exits (not empty)
+    if (aList) 
     {    
         // SlimScroll fix.
         if ($scroll.length) 
@@ -90,18 +135,15 @@ function SetGenresHandler()
         $($btns).text("");
 
         // Show buttons
-        buttons = "";
-        $.each(aGenres, function(i, value) 
+        $.each(aList, function(i, value) 
         {
-            if (value == "") {
-            value = "&nbsp;";
-            }        
-            buttons += '<button type=\"button\" class=\"genre\">' + value + '</button>';
-       
+            if (value != "") {
+                buttons += '<button type=\"button\" class=\"choice\">' + value + '</button>';
+            }       
         });
         $($btns).append(buttons);
     
-        height_box = $("#genres_box").css('height');
+        height_box = $("#buttons_box").css('height');
         if (parseInt(height_box) >= 500)
         {    
             $($btns).slimScroll({
@@ -118,16 +160,16 @@ function SetGenresHandler()
             $($btns).children().last().css({"margin-bottom":"20px"});
         }
    
-        ShowPopupBox("#genres_box", "Genres");
+        ShowPopupBox("#buttons_box", $this.text());
         SetState("page", "popup");
     }
 }
 
 /*
- * Function:	SetShowGenreHandler
+ * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Show the genre.
  * 
@@ -135,10 +177,29 @@ function SetGenresHandler()
  * Out:	Genre.
  *
  */
-function SetShowGenreHandler()
+function SetShowButtonHandler()
 {
+    var state; 
     var $this = $(this);
-    SetState("genre", $this.text());
+    var choice = GetState("choice");
+    
+    switch (choice)
+    {
+        case "Title"  : state = "title";
+                        break;
+                       
+        case "Genres" : state = "genre";
+                        break;
+                       
+        case "Years"  : state = "year";
+                        break;                   
+    }
+    
+    if ($this.text() == "- Show All -") {
+        $this.text("");
+    }
+    
+    SetState(state, $this.text());
     
     // Reset page and sort globals;
     global_page = 1;
@@ -149,8 +210,8 @@ function SetShowGenreHandler()
     SetMaskHandler();
     
     // Show media table.
-    GetFargoValues(global_media, global_sort);
-    ShowMediaTable(global_media, global_page, global_column, global_sort);    
+    //GetFargoValues(global_media, global_sort);
+    ShowMediaTable(global_media, global_page, global_sort);    
 }
 
 /*
@@ -220,7 +281,7 @@ function SetPageHandler(event)
         global_page = 1;
     } 
         
-    ShowMediaTable(global_media, global_page, global_column, global_sort);
+    ShowMediaTable(global_media, global_page, global_sort);
 } 
 
 /*
@@ -336,8 +397,8 @@ function SetMainKeyHandler(key, event)
         $("#sort").css("visibility", "hidden");
     }
     
-    GetFargoValues(global_media, global_sort);
-    ShowMediaTable(global_media, global_page, global_column, global_sort);    
+    //GetFargoValues(global_media, global_sort);
+    ShowMediaTable(global_media, global_page, global_sort);    
 }
 
 /*
@@ -379,7 +440,7 @@ function ConvertMedia(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Shows the media table.
  *
@@ -387,18 +448,26 @@ function ConvertMedia(media)
  * Out:	Media Table
  *
  */
-function ShowMediaTable(media, page, column, sort)
+function ShowMediaTable(media, page, sort)
 {   
+    var title = GetState("title");
     var genre = GetState("genre");
+    var year  = GetState("year");
     
     $.ajax
     ({
-        url: 'jsonfargo.php?action=' + media + '&page=' + page + '&genre=' + genre + '&sort=' + sort,
+        url: 'jsonfargo.php?action=' + media + '&page=' + page + '&title=' + title + '&genre=' + genre 
+                                     + '&year=' + year + '&sort=' + sort,
+        async: false,
         dataType: 'json',
         success: function(json)
-        {  
+        {
+            // Return global lastpage.
+            global_lastpage = json.params.lastpage;
+            ShowNextPrevButtons(global_lastpage);
+            
             var i = 0, j = 0;
-            var img, html = [];
+            var img, html = [];            
             
             if (json.media[0].id > 0)
             {
@@ -409,7 +478,7 @@ function ShowMediaTable(media, page, column, sort)
                     if (j == 0) {
                         html[i++] = '<tr>';
                     }
-                    else if ( j == column) {
+                    else if ( j == json.params.column) {
                         html[i++] = '</tr>';
                         j = 0;
                     }
@@ -428,4 +497,31 @@ function ShowMediaTable(media, page, column, sort)
             $('#sort').html(sort);            
         } // End success.
     }); // End Ajax. 
+}
+
+/*
+ * Function:	ShowNextPrevButtons
+ *
+ * Created on Jun 30, 2013
+ * Updated on Jun 30, 2013
+ *
+ * Description: Shows next/prev arrows buttons on page.
+ *
+ * In:	lastpage
+ * Out:	Next/Prev
+ *
+ */
+function ShowNextPrevButtons(lastpage)
+{
+    // Show Prev and Next buttons if there is more than 1 page.
+    if (lastpage > 1)
+    {
+        $("#prev").css("visibility", "visible");
+        $("#next").css("visibility", "visible");
+    }
+        else 
+    {
+        $("#prev").css("visibility", "hidden");
+        $("#next").css("visibility", "hidden");            
+    }    
 }
