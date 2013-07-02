@@ -278,7 +278,7 @@ function ShowStatus(delta, end, status, media, msg)
  * Function:	StartImport
  *
  * Created on Apr 17, 2013
- * Updated on Jun 24, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: Start the import process.
  *
@@ -311,7 +311,7 @@ function StartImport(start, media)
                 LogEvent("Error", error);
             }
             else {
-                //LogEvent("Warning", "Import is to busy processing " + ConvertMedia(media) + "!");
+                LogEvent("Warning", "Import is to busy processing " + ConvertMedia(media) + "!");
             }
         } // End Error.                        
     }); // End Ajax;

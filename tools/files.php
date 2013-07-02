@@ -17,7 +17,7 @@
  * Function:	ResizeJpegImage
  *
  * Created on Mar 04, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: Resize an Image and save it to a file.
  *
@@ -29,34 +29,34 @@
  * From: http://php.net/manual/en/function.imagejpeg.php
  * 
  */
-
 function ResizeJpegImage($image, $new_w, $new_h, $destination)
 {
     list($old_w, $old_h) = getimagesize($image);
     
+    // Get file parts (dirname, filename and extension).
+    $ext = pathinfo($image, PATHINFO_EXTENSION);
+    
     // Check extension.
-    $ext = strtolower(pathinfo($image, PATHINFO_EXTENSION));
-    if ($ext == 'jpg')
+    if (strtolower($ext) == "jpg")
     {
-        $img = @imagecreatefromjpeg($image);
+        $img = @imagecreatefromjpeg($image); 
+        if (!$img) { // Retry with png.
+            $img = @imagecreatefrompng($image);
+        }         
     }
     else // if png.
     {
         $img = @imagecreatefrompng($image);
+        if (!$img) { // Retry with jpg.
+            $img = @imagecreatefromjpeg($image);
+        }           
     }
- 
+     
     // Check if the creation of the image failed!
     if (!$img) 
     {
-        /* Create a blank image */
-        $img = imagecreatetruecolor($new_w, $new_h);
-        $bgc = imagecolorallocate($img, 255, 255, 255);
-        $tc  = imagecolorallocate($img, 0, 0, 0);
-
-        imagefilledrectangle($img, 0, 0, $new_w, $new_h, $bgc);
-
-        /* Output an error message */
-        imagestring($img, 1, 5, 5, 'Error loading ' . $image, $tc);
+        list($old_w, $old_h) = getimagesize("images/error.jpg");
+        $img = @imagecreatefromjpeg("images/error.jpg");
     }
 
     // Create a new temporary image.
@@ -70,8 +70,8 @@ function ResizeJpegImage($image, $new_w, $new_h, $destination)
     imagejpeg($tmp_img);
     $i = ob_get_clean();
     
-    imagedestroy ($img);
-    imagedestroy ($tmp_img);
+    imagedestroy($img);
+    imagedestroy($tmp_img);
     
     // Save file
     $fp = fopen ($destination, 'w');

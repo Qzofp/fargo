@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jul 01, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -281,35 +281,61 @@ function UpdatePassword($id, $pass)
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
 
 /*
+ * Function:    EncodeLink
+ *
+ * Created on Jul 02, 2013
+ * Updated on Jul 02, 2013
+ *
+ * Description: Encode image link from XBMC.
+ *
+ * In:  $aUrl, $type
+ * Out:	$link
+ *
+ */
+function EncodeLink($aUrl, $type)
+{
+    $link = null;
+    
+    if (!empty($aUrl["$type"]))
+    {
+        $dummy = rtrim($aUrl["$type"], "/");
+        $link = urlencode($dummy);
+    }    
+    
+    return $link;
+}        
+
+/*
  * Function:    CreateImageLink
  *
  * Created on Jun 24, 2013
- * Updated on Jun 24, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: Cleans the image link from XBMC.
  *
  * In:  $aUrl, $type
  * Out:	$link
  *
- */
+ *
 function CreateImageLink($aUrl, $type)
 {
     $link = null;
     
     if (!empty($aUrl["$type"]))
     {
-        $dummy = str_replace("image://", "", $aUrl["$type"]);
-        $link = rtrim($dummy, "/");
+        $link = str_replace("image://", "", $aUrl["$type"]);
+        //$link = rtrim($dummy, "/");
     }
     
     return $link;
 }
+*/
 
 /*
  * Function:    GetImageFromXbmc
  *
  * Created on Jun 24, 2013
- * Updated on Jun 24, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: Get image (poster, fanart) from XBMC.
  *
@@ -322,7 +348,7 @@ function GetImageFromXbmc($type, $id, $link)
    $conn = GetSetting("XBMCconnection");
    $port = GetSetting("XBMCport");
         
-   $url = "http://$conn:$port/image/$link";
+   $url = "http://$conn:$port/image/$link/";
    
    // Get extension.
    $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));

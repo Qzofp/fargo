@@ -216,7 +216,7 @@ function ProcessAlbums($aAlbums)
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Jun 25, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -266,9 +266,9 @@ function ConvertMovie($aXbmc)
     $aMovie["dateadded"] = $aXbmc["dateadded"];      
     //$aMovie["tag"]       = $aXbmc["tag"];
 
-    $aMovie["fanart"] = CreateImageLink($aXbmc["art"], "fanart");
-    $aMovie["poster"] = CreateImageLink($aXbmc["art"], "poster");
-    $aMovie["thumb"]  = CreateImageLink($aXbmc, "thumbnail");   
+    $aMovie["fanart"] = EncodeLink($aXbmc["art"], "fanart");
+    $aMovie["poster"] = EncodeLink($aXbmc["art"], "poster");
+    $aMovie["thumb"]  = EncodeLink($aXbmc, "thumbnail");   
     
     if (!empty($aMovie["poster"]))
     {
@@ -299,7 +299,7 @@ function ConvertMovie($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Jun 25, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -329,10 +329,10 @@ function ConvertTVShow($aXbmc)
     $aTVShow["premiered"]  = $aXbmc["premiered"];
     $aTVShow["votes"]      = $aXbmc["votes"];
     $aTVShow["lastplayed"] = $aXbmc["lastplayed"];  
-    $aTVShow["fanart"]     = CreateImageLink($aXbmc["art"], "fanart");
+    $aTVShow["fanart"]     = EncodeLink($aXbmc["art"], "fanart");
         
-    $aTVShow["poster"]        = CreateImageLink($aXbmc["art"], "poster");
-    $aTVShow["thumb"]         = CreateImageLink($aXbmc, "thumbnail");
+    $aTVShow["poster"]        = EncodeLink($aXbmc["art"], "poster");
+    $aTVShow["thumb"]         = EncodeLink($aXbmc, "thumbnail");
     $aTVShow["file"]          = $aXbmc["file"];
     $aTVShow["originaltitle"] = $aXbmc["originaltitle"];   
     
@@ -373,7 +373,7 @@ function ConvertTVShow($aXbmc)
  * Function:	ConvertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Jun 25, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: Convert XBMC album items. For instance to readably URL's.
  *
@@ -401,7 +401,7 @@ function ConvertAlbum($aXbmc)
     $aAlbum["mbalbumid"]       = $aXbmc["musicbrainzalbumid"];    
     $aAlbum["mbalbumartistid"] = $aXbmc["musicbrainzalbumartistid"];
     $aAlbum["fanart"]          = $aXbmc["fanart"];
-    $aAlbum["cover"]           = CreateImageLink($aXbmc, "thumbnail");
+    $aAlbum["cover"]           = EncodeLink($aXbmc, "thumbnail");
     
     $aAlbum["playcount"]     = $aXbmc["playcount"];
     $aAlbum["displayartist"] = $aXbmc["displayartist"]; 

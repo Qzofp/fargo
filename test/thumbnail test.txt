@@ -1,5 +1,8 @@
 
 
+http://localhost:8080/image/image%3A%2F%2Fhttp%253a%252f%252fthetvdb.com%252fbanners%252fposters%252f139631-1.jpg/
+										  http%3a%2f%2fthetvdb.com%2fbanners%2fposters%2f139631-1.jpg/
+
 
 
 image://D%3a%5cAnime%5cBleach%5cfanart.jpg/
@@ -24,6 +27,9 @@ http://localhost:8080/image/http%3a%2f%2fthetvdb.com%2fbanners%2fgraphical%2f816
 http://localhost:8080/image/http%3a%2f%2fthetvdb.com%2fbanners%2fposters%2f81651-2.jpg
 http://localhost:8080/image/http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f81651-1.jpg
 
-Werkt lokaal:
+http%3a%2f%2fwww.theaudiodb.com%2fimages%2fmedia%2falbum%2fthumb%2fwprvrw1372079954.jpg
 
+Werkt lokaal:
 http://localhost:8080/image/C%3A%5CDocuments%20and%20Settings%5CQzofp%5CApplication%20Data%5CXBMC%5Cuserdata%5CThumbnails%5C1%5C1cf98e39.jpg
+http://localhost:8080/image/image%3A%2F%2Fhttp%253a%252f%252fthetvdb.com%252fbanners%252fposters%252f139631-1.jpg/ 
+
