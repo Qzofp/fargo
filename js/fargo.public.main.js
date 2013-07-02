@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 01, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *

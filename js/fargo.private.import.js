@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Apr 14, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jun 01, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -146,10 +146,10 @@ function ImportMedia(media)
         }
         else 
         {
-            finish = 2 + Math.floor(Math.random() * 3);
+            var finish = 2 + Math.floor(Math.random() * 3);
             $(".message").html(msg[0]);
             SetState("xbmc", "online");
-            DisplayStatusMessage(msg[2], msg[5], 3);
+            DisplayStatusMessage(msg[2], msg[5], finish);
             LogEvent("Information", "No new " + ConvertMedia(media) + " found.");
         }
     }
@@ -352,7 +352,7 @@ function AdjustImageSize(media)
  * Function:	DisplayStatusMessage
  *
  * Created on May 17, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jul 01, 2013
  *
  * Description: Display status message.
  *
@@ -362,12 +362,19 @@ function AdjustImageSize(media)
  */
 function DisplayStatusMessage(str1, str2, end)
 {
-    var i = 0; 
+    var i = 0;
+    var percent;
     var timer = setInterval(function(){
 
         if (!global_cancel)
         {
             $(".message").html(str1);
+            
+            percent = Math.round(i/end * 100);
+            $("#progress").progressbar({
+                    value : percent       
+            });
+            
             i++; 
 	
             // End interval loop.

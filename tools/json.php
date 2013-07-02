@@ -42,33 +42,4 @@ function GetHttpRequest($url, $request)
         
     return $json;
 }
-
-/*
- * Function:	OnlineCheckXBMC
- *
- * Created on Mar 11, 2013
- * Updated on May 15, 2013
- *
- * Description: Check with JSON if XBMC is online.
- *
- * In:  -
- * Out:	$online (true|false)
- *
- * Note: XBMC Connection is defined in constant cXBMC.
- * 
- */
-function OnlineCheckXBMC()
-{
-    $online = true;
-    
-    // Check if JSON response.
-    // JSON: {"jsonrpc": "2.0", "method": "JSONRPC.Ping", "id": 1}
-    $request = '{"jsonrpc": "2.0", "method": "JSONRPC.Ping", "id": 1}';
-    $aJson = GetHttpRequest(cURL, $request);    
-    
-    if ($aJson["result"] != "pong") {
-        $online = -1;
-    }
-    return $online;
-}
 ?>

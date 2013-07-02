@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Jun 23, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: Fargo's settings page.
  *
@@ -21,7 +21,7 @@ define("cPASS",  "Mime1276");
 
 // XBMC connection setting.
 //define("cXBMC", "xbmc:xbmc@localhost:8080");
-define("cURL", "http://localhost:8080/jsonrpc");
+//define("cURL", "http://localhost:8080/jsonrpc");
 
 // Path settings.
 define("cMOVIESPOSTERS", "images/movies/posters");

@@ -55,6 +55,8 @@ function LoadFargoMedia(media)
     
     SetState("title", "Latest");
     
+    
+    
     ChangeControlBar(global_media);
     ChangeSubControlBar(global_media);
         

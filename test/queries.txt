@@ -27,3 +27,19 @@ SELECT m.title FROM movies m, genretomovie gtm, genres g
 WHERE m.id = gtm.`movieid` AND gtm.`genreid` = g.`id` 
 AND g.`genre` = 'Action'
 ORDER BY m.id DESC
+
+Geeft genres weer van een bepaald jaar
+--------------------------------------
+SELECT g.genre FROM genres g, genretomovie gtm, movies m
+WHERE g.`id` = gtm.`genreid` AND m.`id` = gtm.`movieid`
+AND m.`year` = 2000
+GROUP BY g.genre
+ORDER BY g.`genre`
+
+Geef jaren weer van een bepaalde genre
+--------------------------------------
+SELECT m.year FROM movies m, genretomovie gtm, genres g
+WHERE m.id = gtm.`movieid` AND gtm.`genreid` = g.`id`
+AND g.genre = 'Drama'
+GROUP BY m.`year`
+ORDER BY m.`year`

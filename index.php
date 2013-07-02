@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 01, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -19,7 +19,7 @@ session_start();
 if(!isset($_SESSION['LOGIN']))
 {
     $login = false;
-    $user = "";
+    $user = "&nbsp;";
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js", 
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
@@ -72,7 +72,8 @@ PageHeader($title, $aCss, $aJavascript);
 
 // Header section. 
 echo "   <div id=\"header\">\n";
-echo "    <div id=\"header_txt\">$user</div>\n";
+echo "    <div id=\"header_login\">$user</div>\n";
+echo "    <div id=\"header_info\"></div>\n";
 echo "   </div>\n";
 
 // Display section.

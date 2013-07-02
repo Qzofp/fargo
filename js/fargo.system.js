@@ -6,7 +6,7 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jul 01, 2013
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jul 01, 2013
  *
  * Description: Show the system page with minimum options.
  * 
@@ -42,6 +42,8 @@ function SetSystemHandler(event)
    
    global_media = ChangeControlBar(media);
    ChangeSubControlBar(media);
+   
+   $("#header_info").hide();
    
    $("#display_left").hide();
    $("#display_right").hide();  

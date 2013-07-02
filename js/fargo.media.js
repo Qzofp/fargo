@@ -6,7 +6,7 @@
  * File:    fargo.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 01, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -169,7 +169,7 @@ function SetButtonsHandler()
  * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 01, 2013
  *
  * Description: Show the genre.
  * 
@@ -195,12 +195,6 @@ function SetShowButtonHandler()
                         break;                   
     }
     
-    if ($this.text() == "- Show All -") {
-        $this.text("");
-    }
-    
-    SetState(state, $this.text());
-    
     // Reset page and sort globals;
     global_page = 1;
     global_sort = "";
@@ -209,8 +203,15 @@ function SetShowButtonHandler()
     // Remove popup.
     SetMaskHandler();
     
+    // Show all genres or years.
+    if ($this.text() == "- Show All -") {
+        SetState(state, "");
+    }
+    else {
+        SetState(state, $this.text());
+    }
+    
     // Show media table.
-    //GetFargoValues(global_media, global_sort);
     ShowMediaTable(global_media, global_page, global_sort);    
 }
 
@@ -440,7 +441,7 @@ function ConvertMedia(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 01, 2013
  *
  * Description: Shows the media table.
  *
@@ -453,6 +454,8 @@ function ShowMediaTable(media, page, sort)
     var title = GetState("title");
     var genre = GetState("genre");
     var year  = GetState("year");
+    
+    ShowInfoHeader(title, genre, year);
     
     $.ajax
     ({
@@ -497,6 +500,33 @@ function ShowMediaTable(media, page, sort)
             $('#sort').html(sort);            
         } // End success.
     }); // End Ajax. 
+}
+
+/*
+ * Function:	ShowInfoHeader
+ *
+ * Created on Jul 01, 2013
+ * Updated on Jul 01, 2013
+ *
+ * Description: Shows to info header.
+ *
+ * In:	lastpage
+ * Out:	Info header.
+ *
+ */
+function ShowInfoHeader(title, genre, year)
+{
+    var info = title;
+ 
+    if (genre) {
+        info += " / " + genre;
+    }
+    
+    if (year) {
+        info += " / " + year;
+    }
+        
+    $("#header_info").text(info).show();
 }
 
 /*

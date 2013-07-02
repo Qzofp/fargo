@@ -162,7 +162,7 @@ function CheckInput(number, value)
  * Function:	CheckSettings
  *
  * Created on Jun 22, 2013
- * Updated on Jun 22, 2013
+ * Updated on Jun 02, 2013
  *
  * Description: Check input fields. If value is wrong return current value.
  * 
@@ -177,7 +177,7 @@ function CheckSettings(number, value)
     switch (number)
     {
         case 1 : // Check XBMC Connection
-
+                 check = true;
                  break;
              
         case 2 : // Check XBMC Port
@@ -185,14 +185,14 @@ function CheckSettings(number, value)
                  break;
              
         case 3 : // Set XBMC Username
-
+                 check = true;
                  break;
              
         //case 4 : // Check XBMC Password
         //         break; 
              
         case 6 : // Check Fargo Username
-
+                 check = true;
                  break;
              
         //case 7 : // Check Fargo Password
@@ -283,7 +283,7 @@ function SetPopupHandler(event)
  * Function:	ShowPopupBox
  *
  * Created on May 08, 2013
- * Updated on Jun 27, 2013
+ * Updated on Jul 01, 2013
  *
  * Description: Show popup box.
  * 
@@ -300,6 +300,10 @@ function ShowPopupBox(type, title)
     
     if (title) {
         $(".title").text(title);
+    }
+    
+    if (title == "Login") {
+        $("#password").attr("type", "password");
     }
     
     popup.fadeIn("300");
@@ -331,7 +335,7 @@ function SetMaskHandler()
  * Function:	GetFargoSortList
  *
  * Created on Jun 27, 2013
- * Updated on Jun 28, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Get sort list from one of the Fargo databases.
  * 
@@ -341,9 +345,18 @@ function SetMaskHandler()
  */
 function GetFargoSortList(type, media)
 {
+    var filter;
+    
+    if (type == 'Genres') {
+        filter = GetState("year");
+    }
+    else {
+        filter = GetState("genre");
+    }
+    
     $.ajax
     ({
-        url: 'jsonfargo.php?action=list&type=' + type + '&media=' + media,
+        url: 'jsonfargo.php?action=list&type=' + type + '&filter=' + filter + '&media=' + media,
         async: false,
         dataType: 'json',
         success: function(json) 
@@ -425,7 +438,10 @@ function GetFargoCounter(media)
         dataType: 'json',
         success: function(json) 
         {    
-            global_total_fargo = Number(json.counter);        
+            global_total_fargo = Number(json.counter);
+            
+            // debug
+            //alert(global_total_fargo);
         } // End Success.        
     }); // End Ajax;
 }

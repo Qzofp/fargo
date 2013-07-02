@@ -1,13 +1,13 @@
 <?php
 /*
- * Title:   AXMC (Working title)
+ * Title:   Fargo
  * Author:  Qzofp Productions
  * Version: 0.1
  *
- * File:    xbmc.php
+ * File:    jsonxbmc.php
  *
  * Created on Mar 22, 2013
- * Updated on Jun 22, 2013
+ * Updated on Jul 02, 2013
  *
  * Description: The main XBMC functions page. 
  * 

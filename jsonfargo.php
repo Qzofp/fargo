@@ -82,9 +82,10 @@ switch ($action)
                     $aJson = ProcessSetting($name);
                     break;
                 
-    case "list"   : $type  = GetPageValue('type');
-                    $media = GetPageValue('media');
-                    $aJson = GetSortList($type, $media);
+    case "list"   : $type   = GetPageValue('type');
+                    $filter = GetPageValue('filter');
+                    $media  = GetPageValue('media');
+                    $aJson  = GetSortList($type, $filter, $media);
                     break;            
                 
     case "log"    : $type  = GetPageValue('type');
@@ -139,20 +140,20 @@ function GetStatus($media, $id)
  *
  * Description: Get list of items for sorting purposes. 
  *
- * In:  $type, $media
+ * In:  $type, $filter, $media
  * Out: $aJson
  *
  */
-function GetSortList($type, $media)
+function GetSortList($type, $filter, $media)
 {
     $aJson = null;
     
     switch(strtolower($type))
     {
-        case "genres" : $aJson["list"] = GetGenres($media);
+        case "genres" : $aJson["list"] = GetGenres($filter, $media);
                         break;
     
-        case "years"  : $aJson["list"] = GetYears($media);
+        case "years"  : $aJson["list"] = GetYears($filter, $media);
                         break;
     }
     
@@ -163,7 +164,7 @@ function GetSortList($type, $media)
  * Function:	GetGenres
  *
  * Created on Jun 27, 2013
- * Updated on Jun 27, 2013
+ * Updated on Jun 30, 2013
  *
  * Description: Get genres from database table genres. 
  *
@@ -171,11 +172,27 @@ function GetSortList($type, $media)
  * Out: $aJson
  *
  */
-function GetGenres($media)
+function GetGenres($filter, $media)
 {
-    $sql = "SELECT genre FROM genres ".
-           "WHERE media = '$media' ".
-           "ORDER BY genre";
+    if ($filter)
+    {
+        $md = "music";
+        if ($media != "music") {
+            $md = rtrim($media, "s");
+        }
+        
+        $sql = "SELECT g.genre FROM genres g, genreto$md gtm, $media m ".
+               "WHERE g.id = gtm.genreid AND m.id = gtm.".$md."id ".
+               "AND m.`year` = $filter ".
+               "GROUP BY g.genre ".
+               "ORDER BY g.genre"; 
+    }    
+    else
+    {    
+        $sql = "SELECT genre FROM genres ".
+               "WHERE media = '$media' ".
+               "ORDER BY genre";
+    }
     
     $aJson = GetItemsFromDatabase($sql);
     
@@ -190,15 +207,31 @@ function GetGenres($media)
  *
  * Description: Get years from database media table. 
  *
- * In:  $media
+ * In:  $filter, $media
  * Out: $aJson
  *
  */
-function GetYears($media)
+function GetYears($filter, $media)
 {
-    $sql = "SELECT YEAR FROM $media ".
-           "GROUP BY `year` ".
-           "ORDER BY `year` DESC";
+    if ($filter)
+    {   
+        $md = "music";
+        if ($media != "music") {
+            $md = rtrim($media, "s");
+        }        
+        
+        $sql = "SELECT m.year FROM $media m, genreto$md gtm, genres g ".
+               "WHERE m.id = gtm.".$md."id AND gtm.genreid = g.id ".
+               "AND g.genre = '$filter' ".
+               "GROUP BY m.`year` ".
+               "ORDER BY m.`year` DESC"; 
+    }
+    else 
+    {    
+        $sql = "SELECT YEAR FROM $media ".
+               "GROUP BY `year` ".
+               "ORDER BY `year` DESC";
+    }
     
     $aJson = GetItemsFromDatabase($sql);
     
