@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 03, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -162,7 +162,7 @@ function CheckInput(number, value)
  * Function:	CheckSettings
  *
  * Created on Jun 22, 2013
- * Updated on Jun 02, 2013
+ * Updated on Jun 03, 2013
  *
  * Description: Check input fields. If value is wrong return current value.
  * 
@@ -188,15 +188,17 @@ function CheckSettings(number, value)
                  check = true;
                  break;
              
-        //case 4 : // Check XBMC Password
-        //         break; 
+        case 4 : // Check XBMC Password
+                 check = true;
+                 break; 
              
         case 6 : // Check Fargo Username
                  check = true;
                  break;
              
-        //case 7 : // Check Fargo Password
-        //         break; 
+        case 7 : // Check Fargo Password
+                 check = true;
+                 break; 
              
         case 9 : // Check Timer
                  if (value > 0 && value <= 10) {

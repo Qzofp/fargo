@@ -576,7 +576,7 @@ function ActivateProperty()
  * Function:	CleanPopupBox
  *
  * Created on Jun 09, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Show clean library popup box
  *
@@ -586,6 +586,9 @@ function ActivateProperty()
  */
 function CleanPopupBox(name)
 {
+    $("#clean_box .progress").hide();
+    $("#clean_box .message").css({"margin-bottom":"30px"});
+    
     $(".message").html("Do you want to clean the " + name + "?");
     $(".yes").show();
     $(".no").html('No');

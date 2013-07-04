@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Apr 14, 2013
- * Updated on Jun 01, 2013
+ * Updated on Jun 04, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -54,7 +54,7 @@ function SetImportHandler()
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Set the import handler, cancel or finish the import.
  * 
@@ -82,7 +82,7 @@ function SetImportCancelHandler()
     global_total_fargo = 0;
     global_total_xbmc  = 0;    
     $("#thumb img").attr('src', 'images/no_poster.jpg');
-    $("#progress").progressbar({
+    $("#import_box .progress").progressbar({
         value : 0       
     });
     $("#media_title").html("&nbsp;");
@@ -96,7 +96,7 @@ function SetImportCancelHandler()
  * Function:	ImportMedia
  *
  * Created on Apr 14, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Import the media from XBMC.
  *
@@ -170,7 +170,7 @@ function ImportMedia(media)
                 // Calculate percentage.
                 percent = global_total_fargo - (end - delta);
                 percent = Math.round(percent/delta * 100);
-                $("#progress").progressbar({
+                $("#import_box .progress").progressbar({
                     value : percent       
                 });
                 
@@ -352,7 +352,7 @@ function AdjustImageSize(media)
  * Function:	DisplayStatusMessage
  *
  * Created on May 17, 2013
- * Updated on Jul 01, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Display status message.
  *
@@ -371,7 +371,7 @@ function DisplayStatusMessage(str1, str2, end)
             $(".message").html(str1);
             
             percent = Math.round(i/end * 100);
-            $("#progress").progressbar({
+            $("#import_box .progress").progressbar({
                     value : percent       
             });
             

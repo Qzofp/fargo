@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -187,7 +187,7 @@ function ChangeSubControlBar(media)
  * Function:	CleanDatabaseHandler
  *
  * Created on Jun 10, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Clean a database table (Library or Event Log).
  * 
@@ -200,18 +200,27 @@ function CleanDatabaseHandler()
     // Get option.
     var option = $('#display_system_left .dim').text();
     // Get active row number.
-    var number = $(".property .on").closest("tr").index();  
+    var number = $(".property .on").closest("tr").index();
+    
+    var $clean = $("#clean_box .progress");
+    var finish = 3 + Math.floor(Math.random() * 3);
+    
+    // Reset and show progress bar.
+    $clean.progressbar({value : 0});
+    $clean.show();
+    
+     $("#clean_box .message").css({"margin-bottom":"20px"});
     
     // Truncate table
     ChangeProperty(number, "");
     
     if (option == "Library") 
     {
-        DisplayMessage("Cleaning library...", "Library cleaned!", ".no", 1);
+        DisplayCleaningMessage("Cleaning library...", "Library cleaned!", $clean, ".no", finish);
     }
     else 
     {
-        DisplayMessage("Cleaning event log...", "Event log cleaned!", ".no", 1);   
+        DisplayCleaningMessage("Cleaning event log...", "Event log cleaned!", $clean, ".no", finish);   
         
         setTimeout(function(){
             $(".option.dim").addClass('on');  
@@ -221,8 +230,45 @@ function CleanDatabaseHandler()
     }
     
     $(".yes").hide();
-    $(".no").html('Ok');
+    $(".no").html('Cancel');
 
+}
+
+/*
+ * Function:	DisplayCleaningMessage
+ *
+ * Created on Jun 15, 2013
+ * Updated on Jul 04, 2013
+ *
+ * Description: Display cleaning message.
+ *
+ * In:	str1, str2, prg, btn, end
+ * Out:	message
+ *
+ */
+function DisplayCleaningMessage(str1, str2, prg, btn, end)
+{   
+    var i = 0; 
+    var percent;
+    
+    $(".message").html(str1);
+    var timer = setInterval(function(){
+ 
+        percent = Math.round(i/end * 100);
+        prg.progressbar({
+            value : percent       
+        });
+        i++; 
+	
+        // End interval loop.
+        if (i > end)
+        {
+            clearInterval(timer);
+            $(".message").html(str2);
+            $(btn).html("Ok");           
+        }  
+        
+    }, 500);	
 }
 
 /*

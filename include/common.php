@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jul 02, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -87,7 +87,7 @@ function ShowHiddenLoginBox()
  * Function:	ShowHiddenImportBox
  *
  * Created on May 06, 2013
- * Updated on Jun 12, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Show hidden import box.
  *
@@ -112,7 +112,7 @@ function ShowHiddenImportBox()
     echo "      <div id=\"thumb\"><img src=\"\"/></div>\n";
     echo "     </div>\n";
     echo "     <div id=\"media_title\">&nbsp;</div>\n";
-    echo "     <div id=\"progress\"></div>\n";    
+    echo "     <div class=\"progress\"></div>\n";    
     echo "     <div class=\"button\">\n";
     echo "      <button type=\"button\" class=\"cancel\">Cancel</button>\n";
     echo "     </div>\n";
@@ -124,7 +124,7 @@ function ShowHiddenImportBox()
  * Function:	ShowHiddenCleanLibraryBox
  *
  * Created on Jun 09, 2013
- * Updated on Jun 12, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Show hidden clean library box.
  *
@@ -141,6 +141,7 @@ function ShowHiddenCleanLibraryBox()
     echo "     <div class=\"title\">Clean Library Box</div>\n";
     echo "     <div class=\"message\"><br/></div>\n";
     
+    echo "     <div class=\"progress\"></div>\n";
     echo "     <div class=\"button\">\n";
     echo "      <button type=\"button\" class=\"yes\">Yes</button>\n";
     echo "      <button type=\"button\" class=\"no\">No</button>\n";

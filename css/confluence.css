@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jul 01, 2013
+ * Updated on Jul 03, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -267,7 +267,7 @@ text-shadow:2px 2px 2px #000;
 text-align:center;
 }
 
-#progress{
+.progress{
 height:10px;
 margin:4px 20px 4px 20px;
 border:1px solid grey;
@@ -284,7 +284,7 @@ margin-top:100px;
 }
 
 #clean_box .message{
-margin-bottom:50px;
+margin-bottom:30px;
 font-weight:bold;
 font-size:1.2em;
 color:#FFF;
@@ -579,7 +579,7 @@ padding:0;
 
 #control_bar li{
 display:inline;
-padding-right:30px;
+padding:0 25px 0 25px;
 font-family:Bebas, sans-serif;
 font-size:4.5em;
 color:grey;
@@ -592,10 +592,10 @@ color:dodgerblue;
 
 #control_sub{
 display:none;
-width:500px;
+width:600px;
 height:30px;
 left:50%;
-margin-left:-250px;
+margin-left:-300px;
 position:fixed;
 padding-top:5px;
 border:1px solid #454647;
@@ -631,7 +631,7 @@ color:dodgerblue;
 #state_xbmc,
 #state_row,
 #state_property{
-/*display:none;*/
+display:none;
 
 /* debug */
 position:absolute;

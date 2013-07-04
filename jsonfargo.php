@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -763,7 +763,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Jun 26, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Clean the media library. 
  *
@@ -781,6 +781,7 @@ function CleanLibrary($number)
                  $aJson['counter'] = CountRows("movies");
                  EmptyTable("movies");
                  EmptyTable("genretomovie");
+                 DeleteGenres("movies");
                  DeleteFile(cMOVIESPOSTERS."/*.jpg");
                  DeleteFile(cMOVIESFANART."/*.jpg");
                  break;
@@ -789,6 +790,7 @@ function CleanLibrary($number)
                  $aJson['counter'] = CountRows("tvshows");
                  EmptyTable("tvshows");
                  EmptyTable("genretotvshow");
+                 DeleteGenres("tvshows");
                  DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
                  DeleteFile(cTVSHOWSFANART."/*.jpg");
                  break;
@@ -797,11 +799,32 @@ function CleanLibrary($number)
                  $aJson['counter'] = CountRows("music");
                  EmptyTable("music");
                  EmptyTable("genretomusic");
+                 DeleteGenres("music");
                  DeleteFile(cALBUMSCOVERS."/*.jpg");
                  break;
     }
     
     return $aJson;
+}
+
+/*
+ * Function:	CleanLibrary
+ *
+ * Created on Jul 04, 2013
+ * Updated on Jul 04, 2013
+ *
+ * Description: Delete media genres.
+ *
+ * In:  $media
+ * Out: Deleted Genres
+ *
+ */
+function DeleteGenres($media)
+{
+    $sql = "DELETE FROM genres ".
+           "WHERE media = '$media'";
+    
+    ExecuteQuery($sql);
 }
 
 /*
