@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jul 03, 2013
+ * Updated on Jul 07, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -234,6 +234,76 @@ margin-bottom:10px;
 } 
 /* End Buttons Popup part */
 
+/* Begin Info Popup part */
+#info_box{
+top:6%;
+width:64%;
+/*height:60%;*/
+margin-left:-33%;
+}
+
+#info_main{
+margin-top:10px; 
+}
+
+#info_wrapper_left{
+float:left;
+width:100%; 
+}
+
+#info_left{ 
+margin: 0 510px 0 10px;
+/*background:whitesmoke;*/
+}
+
+#info_left table{
+/*width:100%;*/
+border-collapse:separate;
+border-spacing:10px 5px;
+font-size:1.3em;
+/*font-weight:bold;*/
+color:#FFF;
+}
+
+#info_left td.left{
+width:30px;
+text-align:right;
+vertical-align:top;
+color:dodgerblue;
+}
+
+#info_right{
+float:left;
+width:510px;
+margin-left:-510px;
+}
+
+#info_right img{
+width:500px;
+height:300px;    
+border:1px solid grey;
+border-radius:7px;
+}
+
+#info_plot{
+clear:left;
+margin:0 10px 5px 10px;
+padding-top:10px;
+border-bottom:1px solid grey;
+font-size:1.3em;
+color:dodgerblue;
+/*background:lightyellow;*/
+}
+
+#info_plot_text{
+height:120px;
+margin:0 10px 0 10px;
+font-size:1.2em;
+color:#FFF;
+}    
+
+/* End Info Popup part */
+
 /* Begin Import Popup part */
 #import_box{
 width:500px;
@@ -384,9 +454,23 @@ border-radius:5px;
 background-color:rgba(0,0,0,0.5);
 }
 
+#display_content td:hover{
+border:1px solid dodgerblue;
+color:dodgerblue;
+cursor:pointer;
+}
+
+#display_content td:hover img{
+border:2px solid dodgerblue;
+}
+
 #display_content img{
 border:1px solid grey;
 border-radius:5px;
+}
+
+#display_content .info{
+display:none;    
 }
 
 /* Display System page */
@@ -412,7 +496,6 @@ background-color:rgba(0,0,0,0.5);
 #display_system_left,
 #display_system_right{
 float:left;
-/*display:table;*/
 }
 
 #display_system_left{

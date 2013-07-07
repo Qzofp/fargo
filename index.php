@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Jul 01, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -135,14 +135,16 @@ echo "   <div id=\"mask\"></div>\n";
 if (!$login)
 {
     ShowHiddenLoginBox();
-    ShowHiddenButtonsBox();
+
 }
 else 
 {
     ShowHiddenImportBox();
-    ShowHiddenButtonsBox();
     ShowHiddenCleanLibraryBox();
 }
+
+ShowHiddenButtonsBox();
+ShowHiddenInfoBox();
 
 // Page States.
 echo "   <div id=\"state_media\">movies</div>\n";

@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Jul 01, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -30,7 +30,7 @@ var global_list_fargo;
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -50,6 +50,9 @@ function LoadFargoMedia(media)
  
     //GetFargoValues(media, global_sort);
     ShowMediaTable(media, global_page, global_sort);
+
+    // The media info click events
+    $("#display_content").on("click", "td", SetInfoHandler);
 
     // The media click events.
     $("#movies").on("click", {media:"movies"}, SetMediaHandler);
@@ -73,7 +76,7 @@ function LoadFargoMedia(media)
     $("#login").on("click", {type:"#login_box", title:"Login"}, SetPopupHandler);
     
     // Close popup.
-    $("#mask, .close_right").on("click", SetMaskHandler);
+    $("#mask, .close, .close_right").on("click", SetMaskHandler);
     
     // Login validation event.
     $(".login").on("click", SetLoginValidateHandler);

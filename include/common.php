@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jul 04, 2013
+ * Updated on Jul 06, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -16,7 +16,7 @@
 ////////////////////////////////////////    Interface Functions    ////////////////////////////////////////
 
 /*
- * Function:	ShowHiddenGenresBox
+ * Function:	ShowHiddenButtonsBox
  *
  * Created on Jun 27, 2013
  * Updated on Jun 27, 2013
@@ -78,6 +78,44 @@ function ShowHiddenLoginBox()
     
     echo "     <div class=\"button\">\n";
     echo "      <button type=\"button\" class=\"login\">Login</button>\n";
+    echo "     </div>\n";    
+    echo "    </form>\n";
+    echo "   </div>\n";
+}
+
+/*
+ * Function:	ShowHiddenInfoBox
+ *
+ * Created on Jul 05, 2013
+ * Updated on Jul 06, 2013
+ *
+ * Description: Show hidden info media box.
+ *
+ * In:  -
+ * Out:	Hidden login box.
+ *
+ */
+function ShowHiddenInfoBox()
+{
+    echo "   <div class=\"popup\" id=\"info_box\">\n";
+    
+    echo "    <form method=\"post\" action=\"#\">\n";
+    echo "     <div class=\"close_left\">&nbsp;</div>\n";       
+    echo "     <div class=\"close_right\">x</div>\n";    
+    echo "     <div class=\"title\">Info Box</div>\n";
+    //echo "     <div class=\"message\"></div>\n";
+
+    echo "     <div id=\"info_main\">\n";    
+    echo "      <div id=\"info_wrapper_left\">\n";
+    echo "          <div id=\"info_left\"></div>\n";
+    echo "      </div>\n";  
+    echo "      <div id=\"info_right\"><img src=\"images/no_fanart.jpg\"></div>\n";
+    echo "      <div id=\"info_plot\">Plot</div>\n";
+    echo "       <div id=\"info_plot_text\"></div>\n";
+    echo "      </div>\n";
+    
+    echo "     <div class=\"button\">\n";
+    echo "      <button type=\"button\" class=\"close\">Close</button>\n";
     echo "     </div>\n";    
     echo "    </form>\n";
     echo "   </div>\n";

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jul 04, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -25,13 +25,12 @@ $aJson = null;
 $action = GetPageValue('action');
 
 switch ($action) 
-{
-    /*case "init"    : $media = GetPageValue('media');
-                     $genre = GetPageValue('genre');
-                     $sort  = GetPageValue('sort');
-                     $aJson = GetFargoValues($media, $genre, $sort);
-                     break;*/
-                 
+{                
+    case "info"    : $media = GetPageValue('media');
+                     $id    = GetPageValue('id');
+                     $aJson = GetMediaInfo($media, $id);
+                     break;
+    
     case "counter" : $media = GetPageValue('media');
                      $aJson['counter'] = CountRows($media);
                      break;
@@ -98,7 +97,8 @@ switch ($action)
 
 // Return JSON code which is used as input for the JQuery functions.
 if (!empty($aJson)) {
-    echo json_encode($aJson, JSON_UNESCAPED_SLASHES);
+    //echo json_encode($aJson, JSON_UNESCAPED_SLASHES);
+    echo json_encode($aJson);
 }
 
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
@@ -203,7 +203,7 @@ function GetGenres($filter, $media)
  * Function:	GetYears
  *
  * Created on Jun 30, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Get years from database media table. 
  *
@@ -274,46 +274,6 @@ function LogEvent($type, $event)
     return $aItems;
 }
 
-/*
- * Function:	GetFargoValues
- *
- * Created on Apr 06, 2013
- * Updated on jun 28, 2013
- *
- * Description: Get a the initialize values from Fargo and return it as Json data. 
- *
- * In:  $media, $genre, $sort
- * Out: $aJson
- *
- *
-function GetFargoValues($media, $genre, $sort)
-{
-    $aJson['row']    = cMediaRow;
-    $aJson['column'] = cMediaColumn;
-    
-    $sql = "SELECT id, xbmcid, title ".
-           "FROM $media ";
-    
-    $stm = "WHERE";
-    
-    if ($genre) 
-    {
-        $sql .= "$stm genre LIKE '%$genre%' ";
-        $stm = "AND";
-    }
-    
-    if ($sort) {
-        $sql .= "$stm sorttitle LIKE '$sort%'";
-    }  
-    
-    $total = CountRowsWithQuery($sql);
-    
-    $aJson['lastpage'] = ceil($total / (cMediaRow * cMediaColumn));
-    
-    return $aJson;
-}
-*/
-
 ////////////////////////////////////////    Database Functions    /////////////////////////////////////////
 
 /*
@@ -379,7 +339,7 @@ function GetImportStatus($media, $id, $thumbs)
  * Function:	CreateQuery
  *
  * Created on Apr 08, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Create the sql query for the media table. 
  *
@@ -407,7 +367,7 @@ function CreateQuery($media, $title, $genre, $year, $sort)
     
     if ($genre) 
     {
-        $sql .= "$stm genre LIKE '%$genre%' ";
+        $sql .= "$stm genre LIKE '%\"$genre\"%' ";
         //$stm = "AND";
     }
     
@@ -431,6 +391,102 @@ function CreateQuery($media, $title, $genre, $year, $sort)
 }
 
 /*
+ * Function:	GetMediaInfo
+ *
+ * Created on Jul 05, 2013
+ * Updated on Jul 05, 2013
+ *
+ * Description: Get the media info from Fargo and return it as Json data. 
+ *
+ * In:  $media, $id 
+ * Out: $aJson
+ *
+ */
+function GetMediaInfo($media, $id)
+{
+    $aJson = null;
+    
+    switch($media)
+    {
+        case "movies"  : $aJson = GetMovieInfo($id);
+                         break;
+        
+        case "tvshows" : break;
+        
+        case "music"   : break;
+    }
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetMovieInfo
+ *
+ * Created on Jul 05, 2013
+ * Updated on Jul 05, 2013
+ *
+ * Description: Get the movie info from Fargo and return it as Json data. 
+ *
+ * In:  $id 
+ * Out: $aJson
+ *
+ */
+function GetMovieInfo($id)
+{
+    $aJson = null;
+    
+    $sql = "SELECT xbmcid, title, director, writer, studio, genre, `year`, runtime, rating,". 
+                  "votes, tagline, plot, mpaa, country, trailer ".
+           "FROM movies ".
+           "WHERE id = $id";
+    
+    $db = OpenDatabase();
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            $stmt->bind_result($xbmcid, $title, $director, $writer, $studio, $genre, $year, $runtime, $rating,
+                               $votes, $tagline, $plot, $mpaa, $country, $trailer);
+            $stmt->fetch();
+            
+            $genre = str_replace('"', '', $genre);
+            
+            $aJson["xbmcid"]   = $xbmcid;
+            $aJson["title"]    = $title;
+            $aJson["director"] = str_replace("|", " / ", $director);
+            $aJson["writer"]   = str_replace("|", " / ", $writer);
+            $aJson["studio"]   = $studio;
+            $aJson["genre"]    = str_replace("|", " / ", $genre);
+            $aJson["year"]     = $year;
+            $aJson["runtime"]  = round($runtime/60)." Minutes";
+            $aJson["votes"]    = $votes;
+            $aJson["rating"]   = $rating." ($votes votes)";
+            $aJson["tagline"]  = $tagline;
+            $aJson["plot"]     = $plot;
+            $aJson["mpaa"]     = $mpaa;
+            $aJson["country"]  = $country;
+            $aJson["trailer"]  = $trailer;
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    }
+    CloseDatabase($db);      
+    
+    return $aJson;
+}
+
+
+
+
+/*
  * Function:	GetMedia
  *
  * Created on Apr 03, 2013
@@ -438,7 +494,7 @@ function CreateQuery($media, $title, $genre, $year, $sort)
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
- * In:  $media, $sql, 
+ * In:  $media, $sql
  * Out: $aJson
  *
  */

@@ -6,56 +6,13 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jul 03, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
  */
 
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
-
-/*
- * Function:	GetFargoValues
- *
- * Created on Apr 13, 2013
- * Updated on Jun 28, 2013
- *
- * Description: Get the  initial values from Fargo.
- *
- * In:	media, sort
- * Out:	Media
- *
- *
-function GetFargoValues(media, sort)
-{    
-    var genre = GetState("genre");
-    
-    $.ajax
-    ({
-        url: 'jsonfargo.php?action=init&media=' + media + '&genre=' + genre + '&sort=' + sort,
-        async: false,
-        dataType: 'json',
-        success: function(json)
-        {  
-            global_lastpage = json.lastpage;
-            global_column   = json.column;
-            
-            // Show Prev and Next buttons if there is more than 1 page.
-            if (global_lastpage > 1)
-            {
-                $("#prev").css("visibility", "visible");
-                $("#next").css("visibility", "visible");
-            }
-            else 
-            {
-                $("#prev").css("visibility", "hidden");
-                $("#next").css("visibility", "hidden");            
-            }
-            
-        }  // End Succes.
-    }); // End Ajax.       
-}
-*/
 
 /*
  * Function:	SetState
@@ -337,7 +294,7 @@ function SetMaskHandler()
  * Function:	GetFargoSortList
  *
  * Created on Jun 27, 2013
- * Updated on Jun 30, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: Get sort list from one of the Fargo databases.
  * 
@@ -358,7 +315,7 @@ function GetFargoSortList(type, media)
     
     $.ajax
     ({
-        url: 'jsonfargo.php?action=list&type=' + type + '&filter=' + filter + '&media=' + media,
+        url: 'jsonfargo.php?action=list&type=' + type + '&filter=' + escape(filter) + '&media=' + media,
         async: false,
         dataType: 'json',
         success: function(json) 

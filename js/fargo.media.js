@@ -6,13 +6,134 @@
  * File:    fargo.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jul 01, 2013
+ * Updated on Jul 07, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
  */
 
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
+
+/*
+ * Function:	SetMediaHandler
+ *
+ * Created on Jul 05, 2013
+ * Updated on Jul 05, 2013
+ *
+ * Description: Set and show the media info.
+ * 
+ * In:	-
+ * Out:	Media Info
+ *
+ */
+function SetInfoHandler()
+{   
+    var media = GetState("media");
+    var id = $(this).children(":first-child").text();
+    
+    switch(media)
+    {
+        case "movies"  : ShowMovieInfo(id);
+                         break;
+
+        case "tvshows" : 
+                         break;
+                    
+        case "music"   : 
+                         break;                    
+        
+    } 
+}
+
+/*
+ * Function:	ShowMovieInfo
+ *
+ * Created on Jul 05, 2013
+ * Updated on Jul 07, 2013
+ *
+ * Description: Show the movie info.
+ * 
+ * In:	-
+ * Out:	Media Info
+ *
+ */
+function ShowMovieInfo(id)
+{
+    $.ajax
+    ({
+        url: 'jsonfargo.php?action=info&media=movies' + '&id=' + id,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {   
+            var aInfo = [{left:"Director:", right:json.director},
+                         {left:"Writer:",   right:json.writer},
+                         {left:"Studio:",   right:json.studio},
+                         {left:"Genre:",    right:json.genre},
+                         {left:"Year:",     right:json.year},
+                         {left:"Runtime:",  right:json.runtime},
+                         {left:"Rating:",   right:json.rating},
+                         {left:"Tagline:",  right:json.tagline},
+                         {left:"Country:",  right:json.country}];
+            
+            // Show info.
+            ShowInfoTable(aInfo);
+            
+            
+            // Show fanart.
+            $("#info_right img").error(function(){
+                $(this).attr('src', 'images/no_fanart.jpg');
+            })
+            .attr('src', 'images/movies/fanart/' + json.xbmcid + '.jpg');
+            
+            // Show plot.
+            $("#info_plot_text").text(json.plot).slimScroll({
+                height:'120px',
+                color:'gray',
+                alwaysVisible:true
+            });
+            
+            // Show buttons (imdb, refresh, trailer).
+            
+            // Show popup.
+            ShowPopupBox("#info_box", json.title);
+            SetState("page", "popup");    
+        } // End succes.
+    }); // End Ajax.       
+}
+
+/*
+ * Function:	ShowInfoTable
+ *
+ * Created on Jul 06, 2013
+ * Updated on Jul 06, 2013
+ *
+ * Description: Show the info.
+ * 
+ * In:	aInfo
+ * Out:	Info table
+ *
+ */
+function ShowInfoTable(aInfo)
+{
+    var table;
+    var $info = $("#info_left");
+    
+    // Reset info
+    $info.html("");
+    
+    table = '<table>';    
+    $.each(aInfo, function(){
+        table += '<tr>';
+        table += '<td class="left">' + this.left + '</td>';
+        table += '<td>' + this.right + '</td>';
+        table += '</tr>';
+    });   
+    table += '</table>';
+ 
+    $info.append(table);
+}
+
 
 /*
  * Function:	SetMediaHandler
@@ -441,7 +562,7 @@ function ConvertMedia(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Jul 01, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: Shows the media table.
  *
@@ -459,7 +580,7 @@ function ShowMediaTable(media, page, sort)
     
     $.ajax
     ({
-        url: 'jsonfargo.php?action=' + media + '&page=' + page + '&title=' + title + '&genre=' + genre 
+        url: 'jsonfargo.php?action=' + media + '&page=' + page + '&title=' + title + '&genre=' + escape(genre) 
                                      + '&year=' + year + '&sort=' + sort,
         async: false,
         dataType: 'json',
@@ -487,7 +608,7 @@ function ShowMediaTable(media, page, sort)
                     }
                     
                     img = json.params.thumbs + '/' + value.xbmcid + '.jpg';    
-                    html[i++] = '<td><img src="' + img + '"/></br>' + value.title + '</td>';
+                    html[i++] = '<td><div class="info">' + value.id + '</div><img src="' + img + '"/></br>' + value.title + '</td>';
                     j++;
                 });
 

@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on Jul 02, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -216,7 +216,7 @@ function ProcessAlbums($aAlbums)
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Jul 02, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -242,7 +242,7 @@ function ConvertMovie($aXbmc)
     $aMovie["lastplayed"]    = $aXbmc["lastplayed"];
     
     $aMovie["playcount"] = $aXbmc["playcount"];
-    $aMovie["writer"]    = implode("|", $aXbmc["writer"]);   
+    $aMovie["writer"]    = ConvertWriter($aXbmc["writer"]);
     $aMovie["studio"]    = implode("|", $aXbmc["studio"]);
     $aMovie["mpaa"]      = $aXbmc["mpaa"];
     
@@ -288,7 +288,7 @@ function ConvertMovie($aXbmc)
     {
         $img = GetImageFromXbmc("fan", $aMovie["xbmcid"], $aMovie["fanart"]);
         if ($img) {
-            ResizeJpegImage($img, 600, 360, cMOVIESFANART."/".$aMovie["xbmcid"].".jpg");
+            ResizeJpegImage($img, 500, 300, cMOVIESFANART."/".$aMovie["xbmcid"].".jpg");
         }
     }   
     
@@ -299,7 +299,7 @@ function ConvertMovie($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Jul 02, 2013
+ * Updated on Jul 05, 2013
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -362,7 +362,7 @@ function ConvertTVShow($aXbmc)
     {
         $img = GetImageFromXbmc("fan", $aTVShow["xbmcid"], $aTVShow["fanart"]);
         if ($img) {
-            ResizeJpegImage($img, 600, 360, cTVSHOWSFANART."/".$aTVShow["xbmcid"].".jpg");
+            ResizeJpegImage($img, 500, 300, cTVSHOWSFANART."/".$aTVShow["xbmcid"].".jpg");
         }
     } 
     
@@ -431,7 +431,7 @@ function ConvertAlbum($aXbmc)
  * Function:	ConvertGenres
  *
  * Created on Jun 22, 2013
- * Updated on Jun 23, 2013
+ * Updated on Jul 04, 2013
  *
  * Description: Convert genres from array to string and insert genres in database.
  *
@@ -442,9 +442,34 @@ function ConvertAlbum($aXbmc)
 function ConvertGenre($aGenres, $media)
 {
     InsertGenres($aGenres, $media);
-    $genres = implode("|", $aGenres);
+    $genres = '"'.implode('"|"', $aGenres).'"';
     
     return $genres;
+}
+
+/*
+ * Function:	ConvertWriter
+ *
+ * Created on Jul 06, 2013
+ * Updated on Jul 06, 2013
+ *
+ * Description: Remove duplicates and convert writers from array to string.
+ *
+ * In:  $aWriters
+ * Out: $writer
+ *
+ */
+function ConvertWriter($aWriters)
+{
+    $i = 0;
+    $writer = null;
+    $aDummy = array_unique($aWriters);
+    
+    if (!empty($aDummy)) {
+        $writer = implode("|", $aDummy);
+    }
+    
+    return $writer;
 }
 
 /*
@@ -455,7 +480,7 @@ function ConvertGenre($aGenres, $media)
  *
  * Description: Convert cast from array to string.
  *
- * In:  $aGenre
+ * In:  $aCast
  * Out: $cast
  *
  */
