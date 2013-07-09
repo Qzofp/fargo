@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Apr 14, 2013
- * Updated on Jul 05, 2013
+ * Updated on Jul 08, 2013
  *
  * Description: Fargo's import functions page for the XBMC media import.
  *
@@ -23,7 +23,7 @@ require_once 'include/import_db.php';
  * Function:	ImportMedia
  *
  * Created on Apr 19, 2013
- * Updated on Jun 21, 2013
+ * Updated on Jul 07, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -50,6 +50,7 @@ function ImportMedia($start, $media)
     // Delete the temporary poster.
     DeleteFile(cTEMPPOSTERS."/*.j*");
     DeleteFile(cTEMPPOSTERS."/*.p*");
+    DeleteFile(cTEMPPOSTERS."/*.m*");
     
     return $aJson;
 }
@@ -216,7 +217,7 @@ function ProcessAlbums($aAlbums)
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Jul 05, 2013
+ * Updated on Jul 08, 2013
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -288,7 +289,7 @@ function ConvertMovie($aXbmc)
     {
         $img = GetImageFromXbmc("fan", $aMovie["xbmcid"], $aMovie["fanart"]);
         if ($img) {
-            ResizeJpegImage($img, 500, 300, cMOVIESFANART."/".$aMovie["xbmcid"].".jpg");
+            ResizeJpegImage($img, 450, 280, cMOVIESFANART."/".$aMovie["xbmcid"].".jpg"); //500, 300
         }
     }   
     
@@ -299,7 +300,7 @@ function ConvertMovie($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Jul 05, 2013
+ * Updated on Jul 08, 2013
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -362,7 +363,7 @@ function ConvertTVShow($aXbmc)
     {
         $img = GetImageFromXbmc("fan", $aTVShow["xbmcid"], $aTVShow["fanart"]);
         if ($img) {
-            ResizeJpegImage($img, 500, 300, cTVSHOWSFANART."/".$aTVShow["xbmcid"].".jpg");
+            ResizeJpegImage($img, 450, 280, cTVSHOWSFANART."/".$aTVShow["xbmcid"].".jpg"); //500, 300
         }
     } 
     

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jul 05, 2013
+ * Updated on Jul 09, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -45,7 +45,7 @@ switch ($action)
                      $genre = GetPageValue('genre');
                      $year  = GetPageValue('year');
                      $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $title, $genre, $year, $sort);
+                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort);
                      $aJson = GetMedia($action, $page, $sql);
                      break;
                 
@@ -54,7 +54,7 @@ switch ($action)
                      $genre = GetPageValue('genre');
                      $year  = GetPageValue('year');
                      $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $title, $genre, $year, $sort);
+                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort);
                      $aJson = GetMedia($action, $page, $sql);
                      break;    
                  
@@ -63,7 +63,7 @@ switch ($action)
                      $genre = GetPageValue('genre');
                      $year  = GetPageValue('year');
                      $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $title, $genre, $year, $sort);
+                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort);
                      $aJson = GetMedia($action, $page, $sql);
                     break;   
     
@@ -423,7 +423,7 @@ function GetMediaInfo($media, $id)
  * Function:	GetMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Jul 05, 2013
+ * Updated on Jul 09, 2013
  *
  * Description: Get the movie info from Fargo and return it as Json data. 
  *
@@ -436,7 +436,8 @@ function GetMovieInfo($id)
     $aJson = null;
     
     $sql = "SELECT xbmcid, title, director, writer, studio, genre, `year`, runtime, rating,". 
-                  "votes, tagline, plot, mpaa, country, trailer ".
+                  "votes, tagline, plot, mpaa, country, trailer, audio, video, file,".
+                  "imdbnr, trailer ".
            "FROM movies ".
            "WHERE id = $id";
     
@@ -447,7 +448,8 @@ function GetMovieInfo($id)
         if($stmt->execute())
         {
             $stmt->bind_result($xbmcid, $title, $director, $writer, $studio, $genre, $year, $runtime, $rating,
-                               $votes, $tagline, $plot, $mpaa, $country, $trailer);
+                               $votes, $tagline, $plot, $mpaa, $country, $trailer, $audio, $video, $file,
+                               $imdbnr, $trailer);
             $stmt->fetch();
             
             $genre = str_replace('"', '', $genre);
@@ -464,9 +466,15 @@ function GetMovieInfo($id)
             $aJson["rating"]   = $rating." ($votes votes)";
             $aJson["tagline"]  = $tagline;
             $aJson["plot"]     = $plot;
-            $aJson["mpaa"]     = $mpaa;
+            $aJson["mpaa"]     = ConvertToRatingsFlag($mpaa);
             $aJson["country"]  = $country;
             $aJson["trailer"]  = $trailer;
+            $aJson["audio"]    = ConvertToAudioFlag($audio);
+            $aJson["video"]    = ConvertToVideoFlag($video);
+            $aJson["aspect"]   = ConvertToAspectFlag($video, $file);
+            $aJson["imdbnr"]   = ConverToMovieUrl($imdbnr);
+            $aJson["trailer"]  = ConverToMovieUrl($trailer);
+            
         }
         else
         {
@@ -484,7 +492,233 @@ function GetMovieInfo($id)
 }
 
 
+/*
+ * Function:	ConvertToRatingsFlag
+ *
+ * Created on Jul 08, 2013
+ * Updated on Jul 08, 2013
+ *
+ * Description: Convert to ratings flag (media flag icons). 
+ *
+ * In:  $mpaa 
+ * Out: $flag
+ *
+ */
+function ConvertToRatingsFlag($mpaa)
+{
+    $flag = "&nbsp;";
+    $rating = null;
 
+    if ($mpaa)
+    {    
+        switch(strtolower($mpaa))
+        {
+            case "rated g"     : $rating = "mpaa_general";
+                                 break;
+                        
+            case "rated nc-17" : $rating = "mpaa_nc17";
+                                 break;
+                          
+            case "rated nr"    : $rating = "mpaa_notrated";
+                                 break;     
+                          
+            case "rated pg-13" : $rating = "mpaa_pg13";
+                                 break; 
+                          
+            case "rated pg"    : $rating = "mpaa_pg";
+                                 break;
+                          
+            case "rated r"     : $rating = "mpaa_restricted";
+                                 break;                            
+                          
+            default : break;                  
+        }
+        
+        if ($rating) {
+            $flag = '<img src="images/flagging/ratings/'.$rating.'.png">';   
+        }
+    }
+    
+    return $flag;
+}
+
+/*
+ * Function:	ConvertToAudioFlag
+ *
+ * Created on Jul 08, 2013
+ * Updated on Jul 08, 2013
+ *
+ * Description: Convert to audio flag (media flag icons). 
+ *
+ * In:  $audio
+ * Out: $flag
+ *
+ */
+function ConvertToAudioFlag($audio)
+{
+    $flag = "&nbsp;";
+    if ($audio)
+    {
+        $aStreams = explode("|", $audio);    
+        $aAudio   = explode(":", $aStreams[0]);
+    
+        if ($aAudio[0]) {
+            $channels = '<img src="images/flagging/audio/'.$aAudio[0].'.png">';
+        }
+        
+        if ($aAudio[1]) {
+            $codec =  '<img src="images/flagging/audio/'.$aAudio[1].'.png">';
+        }
+        
+        $flag = $codec.$channels;
+    }  
+    return $flag;
+}
+
+/*
+ * Function:	ConvertToVideoFlag
+ *
+ * Created on Jul 08, 2013
+ * Updated on Jul 08, 2013
+ *
+ * Description: Convert to video flag (media flag icons). 
+ *
+ * In:  $video 
+ * Out: $flag
+ *
+ */
+function ConvertToVideoFlag($video)
+{
+    $flag = "&nbsp;";
+    if ($video)
+    {
+        $aStreams = explode("|", $video);    
+        $aVideo   = explode(":", $aStreams[0]);
+    
+        // Determine resolution (height x width).
+        if ($aVideo[2] <= 480 && $aVideo[3] <= 720) {
+            $res = "480";
+        }
+        elseif ($aVideo[2] <= 544 && $aVideo[3] <= 960) {
+            $res = "540";
+        }        
+        elseif ($aVideo[2] <= 576 && $aVideo[3] <= 768) {
+            $res = "576";
+        }
+        elseif ($aVideo[2] <= 720 && $aVideo[3] <= 1280) {
+            $res = "720";
+        }        
+        else {
+            $res = "1080";
+        }
+        
+        $resolution = '<img src="images/flagging/video/'.$res.'.png">';
+        $codec = '<img src="images/flagging/video/'.$aVideo[1].'.png">';
+        
+        $flag = $resolution.$codec;
+    }    
+    return $flag;
+}
+
+/*
+ * Function:	ConvertToAspectFlag
+ *
+ * Created on Jul 08, 2013
+ * Updated on Jul 08, 2013
+ *
+ * Description: Convert to aspect flag (media flag icons). 
+ *
+ * In:  $video, file 
+ * Out: $flag
+ *
+ */
+function ConvertToAspectFlag($video, $file)
+{
+    $flag = "&nbsp;";
+    $aspect = null;
+    $source = null;
+    
+    if ($video)
+    {
+        $aStreams = explode("|", $video);    
+        $aVideo   = explode(":", $aStreams[0]);
+        
+        // Determine aspect ratio.
+        if ($aVideo[0] <= 1.4859) {
+            $aspect = "1.33";
+        }
+        elseif ($aVideo[0] <= 1.7190) {
+            $aspect = "1.66";
+        }        
+        elseif ($aVideo[0] <= 1.8147) {
+            $aspect = "1.78";
+        }
+        elseif ($aVideo[0] <= 2.0174) {
+            $aspect = "1.85";
+        }    
+        elseif ($aVideo[0] <= 2.2738) {
+            $aspect = "2.20";
+        }            
+        else {
+            $aspect = "2.35";
+        }        
+        $aspect = '<img src="images/flagging/aspectratio/'.$aspect.'.png">';        
+    }        
+    
+    if ($file) 
+    {
+        if(preg_match("/dvd/i", $file)) {
+            $source = "dvd";
+        }
+        elseif(preg_match("/((blu[\s\-_]?ray)|(bd[\s\-_]?rip)|(br[\s\-_]?rip)|(bd25)|db50)/i", $file)) {
+            $source = "bluray";
+        }
+        elseif(preg_match("/(hd[\s\-_]?dvd)/i", $file)) {
+            $source = "hddvd";
+        }
+        elseif(preg_match("/((hd[\s\-_]?tv)|(pd[\s\-_]?tv)|(dsr))/i", $file)) {
+            $source = "tv";
+        }
+        elseif(preg_match("/vhs/i", $file)) {
+            $source = "vhs";
+        }
+      
+        if ($source) {
+            $source = '<img src="images/flagging/video/'.$source.'.png">';
+        }  
+    }
+    
+    $flag = $aspect.$source;
+    
+    return $flag;
+}
+
+/*
+ * Function:	ConverToMovieUrl
+ *
+ * Created on Jul 09, 2013
+ * Updated on Jul 09, 2013
+ *
+ * Description: Convert to movie or TV shows database web site URL.
+ *
+ * In:  $id 
+ * Out: $url
+ * 
+ * Note: The first part of the URLs can be found in the settings.php page.
+ *
+ */
+function ConverToMovieUrl($id)
+{
+    $url = null;
+    if (preg_match("/tt\\d{7}/", $id)) {
+        $url = cIMDB.$id;
+    }        
+    elseif (preg_match("/(?<=videoid=)\s?.+/", $id, $aMatches)) {
+        $url = cYOUTUBE.$aMatches[0];
+    }
+    
+    return $url;
+}
 
 /*
  * Function:	GetMedia

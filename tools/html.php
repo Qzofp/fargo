@@ -7,7 +7,7 @@
  * File:    html.php
  *
  * Created on Mar 02, 2013
- * Updated on Jun 12, 2013
+ * Updated on Jul 08, 2013
  *
  * Description: HTML toolbox functions.
  *
@@ -186,4 +186,24 @@ function ShortenString($string, $length)
     return $short;
 }
 
+
+/*
+ * Function:	unescape
+ *
+ * Created on Jul 08, 2013
+ * Updated on Jul 08, 2013
+ *
+ * Description: Decode the Jquery escape(string) function.
+ *
+ * In:	$str
+ * Out:	unescaped string
+ *
+ * Note: Code from: http://nl1.php.net/urldecode
+ * 
+ */
+function unescape($str) 
+{
+    $str = preg_replace("/%u([0-9a-f]{3,4})/i","&#x\\1;",urldecode($str));
+    return html_entity_decode($str,null,'UTF-8');;
+}
 ?>

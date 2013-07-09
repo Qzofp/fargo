@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jul 07, 2013
+ * Updated on Jul 08, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -252,8 +252,7 @@ width:100%;
 }
 
 #info_left{ 
-margin: 0 510px 0 10px;
-/*background:whitesmoke;*/
+margin: 0 460px 0 10px; /* 510 */
 }
 
 #info_left table{
@@ -274,15 +273,35 @@ color:dodgerblue;
 
 #info_right{
 float:left;
-width:510px;
-margin-left:-510px;
+width:460px; /* 510 */
+margin-left:-460px; /*510 */
 }
 
-#info_right img{
-width:500px;
-height:300px;    
+#info_fanart img{
+width:450px;  /* 500 */
+height:280px; /* 300 */ 
 border:1px solid grey;
 border-radius:7px;
+}
+
+#info_video,
+#info_audio,
+#info_aspect{
+float:left;
+width:105px;
+margin-right:10px;
+}
+
+#info_mpaa{
+float:right;
+margin-right:10px;
+}
+
+#info_video img,
+#info_audio img,
+#info_aspect img,
+#info_mpaa img{
+height:30px;
 }
 
 #info_plot{
