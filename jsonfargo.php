@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jul 09, 2013
+ * Updated on Jul 10, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -394,7 +394,7 @@ function CreateQuery($media, $title, $genre, $year, $sort)
  * Function:	GetMediaInfo
  *
  * Created on Jul 05, 2013
- * Updated on Jul 05, 2013
+ * Updated on Jul 10, 2013
  *
  * Description: Get the media info from Fargo and return it as Json data. 
  *
@@ -411,9 +411,11 @@ function GetMediaInfo($media, $id)
         case "movies"  : $aJson = GetMovieInfo($id);
                          break;
         
-        case "tvshows" : break;
+        case "tvshows" : $aJson = GetTVShowInfo($id);
+                         break;
         
-        case "music"   : break;
+        case "music"   : $aJson = GetAlbumInfo($id);
+                         break;
     }
     
     return $aJson;
@@ -462,7 +464,7 @@ function GetMovieInfo($id)
             $aJson["genre"]    = str_replace("|", " / ", $genre);
             $aJson["year"]     = $year;
             $aJson["runtime"]  = round($runtime/60)." Minutes";
-            $aJson["votes"]    = $votes;
+            //$aJson["votes"]    = $votes;
             $aJson["rating"]   = $rating." ($votes votes)";
             $aJson["tagline"]  = $tagline;
             $aJson["plot"]     = $plot;
@@ -473,8 +475,7 @@ function GetMovieInfo($id)
             $aJson["video"]    = ConvertToVideoFlag($video);
             $aJson["aspect"]   = ConvertToAspectFlag($video, $file);
             $aJson["imdbnr"]   = ConverToMovieUrl($imdbnr);
-            $aJson["trailer"]  = ConverToMovieUrl($trailer);
-            
+            $aJson["trailer"]  = ConverToMovieUrl($trailer);   
         }
         else
         {
@@ -491,6 +492,136 @@ function GetMovieInfo($id)
     return $aJson;
 }
 
+/*
+ * Function:	GetTVShowInfo
+ *
+ * Created on Jul 09, 2013
+ * Updated on Jul 10, 2013
+ *
+ * Description: Get the TV show info from Fargo and return it as Json data. 
+ *
+ * In:  $id 
+ * Out: $aJson
+ *
+ */
+function GetTVShowInfo($id)
+{
+    $aJson = null;
+    
+    $sql = "SELECT xbmcid, title, studio, genre, `year`, premiered, rating, votes, plot, episode,".
+                  "watchedepisodes, episodeguide, imdbnr ".
+           "FROM tvshows ".
+           "WHERE id = $id";
+    
+    $db = OpenDatabase();
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            $stmt->bind_result($xbmcid, $title, $studio, $genre, $year, $premiered, $rating, $votes, 
+                               $plot, $episode, $watchedepisodes, $episodeguide, $imdbnr);
+            $stmt->fetch();
+            
+            $genre = str_replace('"', '', $genre);
+            
+            $aJson["xbmcid"]          = $xbmcid;
+            $aJson["title"]           = $title;
+            $aJson["studio"]          = $studio;
+            $aJson["genre"]           = str_replace("|", " / ", $genre);
+            $aJson["year"]            = $year;
+            $aJson["premiered"]       = date( 'd/m/Y', strtotime($premiered));
+            //$aJson["votes"]           = $votes;
+            $aJson["rating"]          = $rating." ($votes votes)";
+            $aJson["plot"]            = $plot;
+            $aJson["episode"]         = $episode;
+            $aJson["watchedepisodes"] = $watchedepisodes;
+            //$aJson["episodeguide"]    = $episodeguide;
+            $aJson["imdbnr"]          = ConverToMovieUrl($imdbnr, $episodeguide); 
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    }
+    CloseDatabase($db);      
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetAlbumInfo
+ *
+ * Created on Jul 10, 2013
+ * Updated on Jul 10, 2013
+ *
+ * Description: Get the album info from Fargo and return it as Json data. 
+ *
+ * In:  $id 
+ * Out: $aJson
+ *
+ */
+function GetAlbumInfo($id)
+{
+    $aJson = null;
+    
+    $sql = "SELECT xbmcid, title, genre, theme, mood, style, `year`, artist, displayartist, rating,".
+           "description, albumlabel ".
+           "FROM music ".
+           "WHERE id = $id";
+    
+    $db = OpenDatabase();
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            $stmt->bind_result($xbmcid, $title, $genre, $theme, $mood, $style, $year, $artist, $displayartist,
+                               $rating, $description, $albumlabel);
+            $stmt->fetch();
+            
+            $genre = str_replace('"', '', $genre);
+            
+            if ($rating < 0) {
+                $rating = 0;
+            }
+            
+            if (!$description) {
+                $description = "No review for this album.";
+            }
+            
+            $aJson["xbmcid"]        = $xbmcid;
+            $aJson["title"]         = $title;
+            $aJson["genre"]         = str_replace("|", " / ", $genre);
+            $aJson["theme"]         = str_replace("|", " / ", $theme);
+            $aJson["mood"]          = str_replace("|", " / ", $mood);
+            $aJson["style"]         = str_replace("|", " / ", $style);            
+            $aJson["year"]          = $year;
+            $aJson["artist"]        = $artist;
+            $aJson["displayartist"] = $displayartist;
+            $aJson["rating"]        = $rating." (from 5 starts)";
+            $aJson["description"]   = $description;
+            $aJson["albumlabel"]    = $albumlabel;
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    }
+    CloseDatabase($db);     
+    
+    return $aJson;
+}
 
 /*
  * Function:	ConvertToRatingsFlag
@@ -697,17 +828,17 @@ function ConvertToAspectFlag($video, $file)
  * Function:	ConverToMovieUrl
  *
  * Created on Jul 09, 2013
- * Updated on Jul 09, 2013
+ * Updated on Jul 10, 2013
  *
  * Description: Convert to movie or TV shows database web site URL.
  *
- * In:  $id 
+ * In:  $id, $guide
  * Out: $url
  * 
  * Note: The first part of the URLs can be found in the settings.php page.
  *
  */
-function ConverToMovieUrl($id)
+function ConverToMovieUrl($id, $guide="")
 {
     $url = null;
     if (preg_match("/tt\\d{7}/", $id)) {
@@ -715,6 +846,12 @@ function ConverToMovieUrl($id)
     }        
     elseif (preg_match("/(?<=videoid=)\s?.+/", $id, $aMatches)) {
         $url = cYOUTUBE.$aMatches[0];
+    }
+    elseif (preg_match("/thetvdb.com/", $guide)) {
+        $url = cTVDB.$id;
+    }
+    elseif (preg_match("/api.anidb.net/", $guide)) {
+        $url = cANIDB.$id;
     }
     
     return $url;

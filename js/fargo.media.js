@@ -6,7 +6,7 @@
  * File:    fargo.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jul 09, 2013
+ * Updated on Jul 10, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetMediaHandler
  *
  * Created on Jul 05, 2013
- * Updated on Jul 05, 2013
+ * Updated on Jul 10, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -36,12 +36,11 @@ function SetInfoHandler()
         case "movies"  : ShowMovieInfo(id);
                          break;
 
-        case "tvshows" : 
+        case "tvshows" : ShowTVShowInfo(id);
                          break;
                     
-        case "music"   : 
-                         break;                    
-        
+        case "music"   : ShowAlbumInfo(id);
+                         break;        
     } 
 }
 
@@ -49,12 +48,12 @@ function SetInfoHandler()
  * Function:	ShowMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Jul 09, 2013
+ * Updated on Jul 10, 2013
  *
  * Description: Show the movie info.
  * 
- * In:	-
- * Out:	Media Info
+ * In:	id
+ * Out:	Movie Info
  *
  */
 function ShowMovieInfo(id)
@@ -66,9 +65,7 @@ function ShowMovieInfo(id)
         dataType: 'json',
         success: function(json)
         {   
-            //var $btns = $("#info_box .button");
-            var buttons = "";
-            
+            var buttons = "";            
             var aInfo = [{left:"Director:", right:json.director},
                          {left:"Writer:",   right:json.writer},
                          {left:"Studio:",   right:json.studio},
@@ -95,6 +92,7 @@ function ShowMovieInfo(id)
             $("#info_mpaa").html(json.mpaa);            
             
             // Show plot.
+            $("#info_plot").text("Plot");
             $("#info_plot_text").text(json.plot).slimScroll({
                 height:'120px',
                 color:'gray',
@@ -118,6 +116,147 @@ function ShowMovieInfo(id)
             SetState("page", "popup");    
         } // End succes.
     }); // End Ajax.       
+}
+
+/*
+ * Function:	ShowTVShowInfo
+ *
+ * Created on Jul 09, 2013
+ * Updated on Jul 10, 2013
+ *
+ * Description: Show the TV show info.
+ * 
+ * In:	id
+ * Out:	TV Show Info
+ *
+ */
+function ShowTVShowInfo(id)
+{
+    $.ajax
+    ({
+        url: 'jsonfargo.php?action=info&media=tvshows' + '&id=' + id,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {   
+            var btnname, pattern;
+            var buttons = "";            
+            var aInfo = [{left:"Episodes:", right:json.episode},
+                         {left:"Aired:",    right:json.premiered},
+                         {left:"Genre:",    right:json.genre},
+                         {left:"Studio:",   right:json.studio},
+                         {left:"Year:",     right:json.year},
+                         {left:"Rating:",   right:json.rating}];
+            
+            // Show info.
+            ShowInfoTable(aInfo);
+            
+            // Show fanart.
+            $("#info_fanart img").error(function(){
+                $(this).attr('src', 'images/no_fanart.jpg');
+            })
+            .attr('src', 'images/tvshows/fanart/' + json.xbmcid + '.jpg');       
+
+            // Reset media flags. Aren't used for TV Shows.
+            $("#info_video").html("");
+            $("#info_audio").html("");
+            $("#info_aspect").html("");
+            $("#info_mpaa").html("");  
+            
+            // Show plot.
+            $("#info_plot").text("Plot");
+            $("#info_plot_text").text(json.plot).slimScroll({
+                height:'120px',
+                color:'gray',
+                alwaysVisible:true
+            });
+            
+            // Show buttons (imdb, refresh, trailer).
+            $("#info_box .url").remove();
+            if (json.imdbnr)
+            {
+               pattern = /thetvdb/;            
+               if(pattern.exec(json.imdbnr)) {
+                   btnname = "TheTVDB";
+               }
+               else {
+                   btnname = "AniDB";
+               }
+                
+               buttons += '<button type="button" class="url" value="' + json.imdbnr + '">' + btnname + '</button>';
+            }
+            
+            $("#info_box .button").append(buttons);
+            
+            // Show popup.
+            ShowPopupBox("#info_box", json.title);
+            SetState("page", "popup");    
+        } // End succes.
+    }); // End Ajax.       
+}
+
+/*
+ * Function:	ShowAlbumInfo
+ *
+ * Created on Jul 10, 2013
+ * Updated on Jul 10, 2013
+ *
+ * Description: Show the album info.
+ * 
+ * In:	id
+ * Out:	Album Info
+ *
+ */
+function ShowAlbumInfo(id)
+{
+    $.ajax
+    ({
+        url: 'jsonfargo.php?action=info&media=music' + '&id=' + id,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {   
+            //var buttons = "";            
+            var aInfo = [{left:"Artist:", right:json.artist},
+                         {left:"Genre:",  right:json.genre},
+                         {left:"Rating:", right:json.rating},
+                         {left:"Moods:",  right:json.mood},
+                         {left:"Style:",  right:json.style},
+                         {left:"Themes:", right:json.theme},
+                         {left:"Label:",  right:json.albumlabel},
+                         {left:"Year:",   right:json.year}];
+            
+            // Show info.
+            ShowInfoTable(aInfo);
+            
+            // Show fanart.
+            $("#info_fanart img").error(function(){
+                $(this).attr('src', 'images/no_fanart.jpg');
+            })
+            .attr('src', 'images/music/fanart/' + json.xbmcid + '.jpg');
+    
+            // Reset media flags. Aren't used for TV Shows.
+            $("#info_video").html("");
+            $("#info_audio").html("");
+            $("#info_aspect").html("");
+            $("#info_mpaa").html("");           
+            
+            // Show plot.
+            $("#info_plot").text("Description");
+            $("#info_plot_text").text(json.description).slimScroll({
+                height:'120px',
+                color:'gray',
+                alwaysVisible:true
+            });
+            
+            // Reset buttons (imdb, refresh, trailer).
+            $("#info_box .url").remove();
+            
+            // Show popup.
+            ShowPopupBox("#info_box", json.title);
+            SetState("page", "popup");    
+        } // End succes.
+    }); // End Ajax.        
 }
 
 /*
