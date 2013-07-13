@@ -322,7 +322,7 @@ function GetFargoSortList(type, media)
         {
             global_list_fargo = json.list;
         } // End succes.
-  }); // End Ajax.
+    }); // End Ajax.
 }
 
 /*

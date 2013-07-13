@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jul 10, 2013
+ * Updated on Jul 11, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -828,7 +828,7 @@ function ConvertToAspectFlag($video, $file)
  * Function:	ConverToMovieUrl
  *
  * Created on Jul 09, 2013
- * Updated on Jul 10, 2013
+ * Updated on Jul 11, 2013
  *
  * Description: Convert to movie or TV shows database web site URL.
  *
@@ -844,7 +844,7 @@ function ConverToMovieUrl($id, $guide="")
     if (preg_match("/tt\\d{7}/", $id)) {
         $url = cIMDB.$id;
     }        
-    elseif (preg_match("/(?<=videoid=)\s?.+/", $id, $aMatches)) {
+    elseif (preg_match("/(?<=\=)([^\=]+)$/", $id, $aMatches)) {
         $url = cYOUTUBE.$aMatches[0];
     }
     elseif (preg_match("/thetvdb.com/", $guide)) {
