@@ -247,7 +247,7 @@ function GetMoviesFromXBMC($counter, $offset)
     //echo "</pre></br>";    
     
     if (!empty($aJson["result"]["movies"])) {
-        $aMovies = $aJson["result"]["movies"];        
+        $aMovies = $aJson["result"]["movies"];     
     }
 
     //debug

@@ -406,6 +406,35 @@ function GetFargoCounter(media)
 }
 
 /*
+ * Function:	GetXbmcAndFargoCounters
+ *
+ * Created on Jul 22, 2013
+ * Updated on Jul 22, 2013
+ *
+ * Description: Get the XBMC and Frago media counters from Fargo.
+ *
+ * In:	media
+ * Out:	counter
+ *
+ */
+function GetXbmcAndFargoCounters(media) 
+{
+    $.ajax({
+        url: 'jsonfargo.php?action=counter&media=' + media,
+        async: false,
+        dataType: 'json',
+        success: function(json) 
+        {                
+            global_total_fargo = Number(json.counter);
+            global_total_xbmc  = Number(json.xbmc.counter);
+            
+            // debug
+            //alert(global_total_xbmc);
+        } // End Success.        
+    }); // End Ajax;
+}
+
+/*
  * Function:	GetXbmcCounter
  *
  * Created on May 15, 2013

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jul 11, 2013
+ * Updated on Jul 22, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -30,14 +30,19 @@ switch ($action)
                      $id    = GetPageValue('id');
                      $aJson = GetMediaInfo($media, $id);
                      break;
+                 
+    case "reset"   : $media = GetPageValue('media');  
+                     $aJson = ResetStatus($media);
+                     break;
     
     case "counter" : $media = GetPageValue('media');
                      $aJson['counter'] = CountRows($media);
+                     $aJson['xbmc']['counter'] = GetStatus("Xbmc".$media."Counter");
                      break;
                  
     case "status"  : $media = GetPageValue('media');
                      $id    = GetPageValue('id');
-                     $aJson = GetStatus($media, $id);
+                     $aJson = GetMediaStatus($media, $id);
                      break;                 
         
     case "movies"  : $page  = GetPageValue('page');
@@ -59,12 +64,12 @@ switch ($action)
                      break;    
                  
     case "music"  : $page   = GetPageValue('page');
-                     $title = GetPageValue('title');
-                     $genre = GetPageValue('genre');
-                     $year  = GetPageValue('year');
-                     $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort);
-                     $aJson = GetMedia($action, $page, $sql);
+                    $title = GetPageValue('title');
+                    $genre = GetPageValue('genre');
+                    $year  = GetPageValue('year');
+                    $sort  = GetPageValue('sort');
+                    $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort);
+                    $aJson = GetMedia($action, $page, $sql);
                     break;   
     
     case "option" : $name  = GetPageValue('name');
@@ -104,10 +109,32 @@ if (!empty($aJson)) {
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
 
 /*
+ * Function:	ResetStatus
+ *
+ * Created on Jul 22, 2013
+ * Updated on Jul 22, 2013
+ *
+ * Description: Reset the status. 
+ *
+ * In:  $media
+ * Out: $aJson
+ *
+ */
+function ResetStatus($media)
+{
+    UpdateStatus("Xbmc".$media."Counter", -1);
+    
+    $aJson["status"] = "reset";
+    
+    return $aJson;
+}
+
+
+/*
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on May 18, 2013
+ * Updated on Jul 22, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -115,7 +142,7 @@ if (!empty($aJson)) {
  * Out: $aJson
  *
  */
-function GetStatus($media, $id)
+function GetMediaStatus($media, $id)
 {
     $aJson = null;   
     switch ($media)    
@@ -960,7 +987,7 @@ function GetMedia($media, $page, $sql)
  * Function:	ProcessSetting
  *
  * Created on Jun 09, 2013
- * Updated on Jun 22, 2013
+ * Updated on Jul 15, 2013
  *
  * Description: Get value from settings database and process value if necessary. 
  *
@@ -973,7 +1000,7 @@ function ProcessSetting($name)
     $aJson = null;
     $value = GetSetting($name);
     
-    if ($value == "Hash") {
+    if ($name == "Hash") {
         $value = md5($value);
     }
     

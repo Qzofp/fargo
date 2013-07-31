@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jul 08, 2013
+ * Updated on Jul 22, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -235,6 +235,50 @@ function GetSetting($name)
 function UpdateSetting($name, $value)
 {
     $sql = "UPDATE settings ".
+           "SET value='$value' ".
+           "WHERE name = '$name'";
+    
+    ExecuteQuery($sql);
+}
+
+/*
+ * Function:	GetStatus
+ *
+ * Created on Jul 22, 2013
+ * Updated on Jul 22, 2013
+ *
+ * Description: Get a value from the status table.
+ *
+ * In:  $name
+ * Out:	$value
+ * 
+ */
+function GetStatus($name)
+{
+    $sql = "SELECT value ".
+           "FROM status ".
+           "WHERE name = '$name'";
+    
+    list($value) = GetItemsFromDatabase($sql);
+    
+    return $value;
+}
+
+/*
+ * Function:	UpdateStatus
+ *
+ * Created on Jul 22, 2013
+ * Updated on Jul 22, 2013
+ *
+ * Description: Update a row in the status table.
+ *
+ * In:  $name, $value
+ * Out:	Updated value.
+ * 
+ */
+function UpdateStatus($name, $value)
+{
+    $sql = "UPDATE status ".
            "SET value='$value' ".
            "WHERE name = '$name'";
     

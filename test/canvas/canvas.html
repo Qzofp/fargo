@@ -1,0 +1,57 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+        <script type="text/javascript" src="pixastic.custom.js"></script>
+        <script type="text/javascript" src="base64.js"></script>
+        <script type="text/javascript" src="canvas2image.js"></script>        
+        <script type="text/javascript" src="canvas.js"></script>    
+    </head>
+    <body>
+        <h1>Canvas Test</h1>
+    
+    <img width="100" height="140" src="http://localhost:8080/image/image%3A%2F%2Fhttp%253a%252f%252fcf2.imgobject.com%252ft%252fp%252foriginal%252fz7lvVd5JIj3JAHy3mC8eUtzrsTJ.jpg">
+    <canvas id="poster"></canvas>   
+    <img src="artist_tmb.jpg">
+
+
+<!--            
+function onPhotoDataSuccess()
+{
+    var canvas = document.getElementById("poster");
+    var context = canvas.getContext("2d");
+    var img = new Image();
+
+    img.onload = function() {
+        var options = {"amount":0.25};            
+	var newimg = Pixastic.process(img, "blurfast", options);
+        canvas.width  = 100;
+        canvas.height = 140;
+        
+        //options.resultCanvas;
+        context.drawImage(newimg, 0, 0, 100, 140);
+                
+    };
+       
+    img.src = "http://localhost:8080/image/image%3A%2F%2Fhttp%253a%252f%252fcf2.imgobject.com%252ft%252fp%252foriginal%252fz7lvVd5JIj3JAHy3mC8eUtzrsTJ.jpg"
+}
+
+
+onPhotoDataSuccess();
+*/       
+-->
+      <script type="text/javascript">
+       $(document).ready(function() {
+         TestCanvas();
+       });
+      </script>
+
+        
+    </body>
+</html>
