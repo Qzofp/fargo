@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 17, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -888,7 +888,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetMedia
  *
  * Created on Apr 03, 2013
- * Updated on Jun 30, 2013
+ * Updated on Aug 17, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -963,7 +963,7 @@ function GetMedia($media, $page, $sql)
     // Get Json parameters.
     switch($media)
     {
-        case "movies"   : $aParams['thumbs'] = cMOVIESPOSTERS;
+        case "movies"   : $aParams['thumbs'] = cMOVIESTHUMBS;
                           break;
                       
         case "tvshows"  : $aParams['thumbs'] = cTVSHOWSPOSTERS;

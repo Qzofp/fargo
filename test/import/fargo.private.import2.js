@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 12, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -41,7 +41,7 @@ function TestImport()
  * Function:	SetImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 11, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -59,7 +59,7 @@ function SetImportHandler(event)
         success: function(json)
         {    
             var start, end;
-            var offset = 10;
+            //var offset = 10;
             var timer, i = 0;
             
             // Check if XBMC is online and transfer XMBC media counter (total).
@@ -79,7 +79,7 @@ function SetImportHandler(event)
                     if (end > 0 || i > 3)
                     {
                         if (end > 0 && end > start) {
-                            StartImport(event.data.media, start, end, offset);
+                            StartImport(event.data.media, start, end);
                             //alert("Online, start import.");  
                         }
                         else if (end >= 0) {
@@ -106,21 +106,21 @@ function SetImportHandler(event)
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 11, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
- * In:	media, start, end, offset
+ * In:	media, start, end
  * Out:	Imported media
  *
  */
-function StartImport(media, start, end, offset)
+function StartImport(media, start, end)
 {
     var busy = true;
         
     // Import media process.
-    ImportMedia(media, start, offset);
-    start += offset;
+    ImportMedia(media, start);
+    start += 1;
     (function setImportTimer() {
             
         //alert("timer");
@@ -135,12 +135,12 @@ function StartImport(media, start, end, offset)
             if (busy == false)
             {    
                 busy = true; // stop import.
-                ImportMedia(media, start, offset);        
-                start += offset;
+                ImportMedia(media, start);        
+                start += 1;
             }
         }
         
-        setTimeout(setImportTimer, 1000);
+        setTimeout(setImportTimer, 500);
             
     }()); // End setImportTimer.   
         
@@ -158,7 +158,7 @@ function StartImport(media, start, end, offset)
             busy = false; // resume import.
         }
         
-    }, 900);    
+    }, 500);    
     
     
 }
@@ -180,7 +180,7 @@ function ImportCounter(media)
     var $result = $("#result");
     var $ready  = $("#ready");  
     
-    var url    = "http://192.168.219.129:8080/fargo/transfer.html?action=counter&media=" + media;
+    var url    = "http://192.168.114.128:8080/fargo/transfer.html?action=counter&media=" + media;
     var iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';
     
     // Reset values.
@@ -198,25 +198,25 @@ function ImportCounter(media)
  * Function:	ImportMedia
  *
  * Created on Jul 20, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 11, 2013
  *
  * Description: Import the media transfered from XBMC.
  *
- * In:	media, start, offset
+ * In:	media, start
  * Out:	Imported media
  *
  */
-function ImportMedia(media, start, offset)
+function ImportMedia(media, start)
 {
     var $result = $("#result");
     var $ready  = $("#ready");    
-    var url    = "http://192.168.219.129:8080/fargo/transfer.html?action=" + media + "&start=" + start + 
-                 "&offset=" + offset;
+    var url    = "http://192.168.114.128:8080/fargo/transfer.html?action=" + media + "&start=" + start;
     var iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';   
     
     // Reset values.
     $ready.text("false");    
     $result.text("");
+    
     // Run transfer data in iframe.
     $result.append(iframe); 
     

@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jul 08, 2013
+ * Updated on Aug 12, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -465,6 +465,17 @@ text-align:center;
 color:#FFF;
 }
 
+#display_content .movies img,
+#display_content .tvshows img{
+width:100px;
+height:140px;
+}
+
+#display_content .music img{
+width:100px;
+height:100px;
+}
+
 #display_content td{
 width:150px;
 height:175px;
@@ -510,7 +521,7 @@ border:1px solid grey;
 border-radius:10px;
 background-color:lightblue;
 background-color:rgba(0,0,0,0.5);
-}    
+} 
 
 #display_system_left,
 #display_system_right{

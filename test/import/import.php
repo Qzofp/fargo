@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 17, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  * 
@@ -41,7 +41,7 @@ ProcessDataFromXbmc($aData);
  * Function:	ReceiveDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Jul 15, 2013
+ * Updated on Aug 11, 2013
  *
  * Description: Receive data from XBMC. 
  *
@@ -53,11 +53,25 @@ function ReceiveDataFromXbmc()
 {
     $aData = null;    
     
+    $aData["action"] = null;
     if (isset($_POST["action"]) && !empty($_POST["action"]))
     {
         $aData["action"] = $_POST["action"];
     }    
     
+    $aData["poster"] = null;
+    if (isset($_POST["poster"]) && !empty($_POST["poster"]))
+    {
+        $aData["poster"] = $_POST["poster"];   
+    }
+
+    $aData["fanart"] = null;
+    if (isset($_POST["fanart"]) && !empty($_POST["fanart"]))
+    {
+        $aData["fanart"] = $_POST["fanart"];
+    }      
+    
+    $aData["result"] = null;
     if (isset($_POST["result"]) && !empty($_POST["result"]))
     {
         $aData["result"] = $_POST["result"];
@@ -70,7 +84,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 11, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -86,7 +100,7 @@ function ProcessDataFromXbmc($aData)
         case "counter" : ProcessCounter($aData["result"]);
                          break;
         
-        case "movies"  : ProcessMovies($aData["result"]["movies"]);                             
+        case "movies"  : ProcessMovie($aData["poster"], $aData["fanart"], $aData["result"]);                             
                          break;
             
         case "tvshows" : break;
@@ -96,7 +110,7 @@ function ProcessDataFromXbmc($aData)
 }
 
 /*
- * Function:	ProcessMovies
+ * Function:	ProcessCounter
  *
  * Created on Jul 22, 2013
  * Updated on Jul 22, 2013
@@ -130,39 +144,73 @@ function ProcessCounter($aResults)
 }
 
 /*
- * Function:	ProcessMovies
+ * Function:	ProcessMovie
  *
  * Created on Jul 15, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 17, 2013
  *
- * Description: Process the movies. 
+ * Description: Process the movie. 
  *
- * In:  $aMovies
+ * In:  $poster, $fanart, $aResult
  * Out: -
  *
  */
-function ProcessMovies($aMovies)
+function ProcessMovie($poster, $fanart, $aResult)
 {   
-   // echo $aLimits["total"];
+    $aMovie = $aResult["movies"][0];
+    $aGenres = $aMovie["genre"];
     
-   // if ($aLimits["total"] > CountRows("movies"))
-   // {
-        // Start import.
-        foreach($aMovies as $aMovie) 
-        {
-            $aGenres = $aMovie["genre"];
-        
-            $aMovie = ConvertMovie($aMovie);
-            InsertMovie($aMovie);
-            InsertGenreToMedia($aGenres, "movies");
-        } 
-        
-        
-   // }
-   // else {
-        // Import is finished.
-        //UpdateSetting("Status", "finished");
-   // }
+    //SaveImage($aMovie["movieid"], $poster, cMOVIESPOSTERS);
+    //SaveImage($aMovie["movieid"], $fanart, cMOVIESFANART);
+    
+    SaveImage($aMovie["movieid"], $poster, "../../".cMOVIESPOSTERS);
+    SaveImage($aMovie["movieid"], $fanart, "../../".cMOVIESFANART);
+    
+    CreateThumb($aMovie["movieid"], $poster, "../../".cMOVIESTHUMBS, 200, 280);
+    
+    $aMovie = ConvertMovie($aMovie);
+    InsertMovie($aMovie);
+    InsertGenreToMedia($aGenres, "movies");
+}
+
+/*
+ * Function:	SaveImage
+ *
+ * Created on Aug 11, 2013
+ * Updated on Aug 11, 2013
+ *
+ * Description: Save image.
+ *
+ * In:  $id, $image, $path
+ * Out: Saved image.
+ *
+ */
+function SaveImage($id, $image, $path)
+{
+    if ($image) 
+    {
+        $image = explode('base64,',$image); 
+        file_put_contents($path.'/'.$id.'.jpg', base64_decode($image[1]));
+    }    
+}
+
+/*
+ * Function:	CreateThumb
+ *
+ * Created on Aug 17, 2013
+ * Updated on Aug 17, 2013
+ *
+ * Description: Create thumb. 
+ *
+ * In:  $id, $image, $path
+ * Out: Thumb.
+ *
+ */
+function CreateThumb($id, $image, $path, $w, $h)
+{
+    if ($image) {
+        ResizeJpegImage($image, $w, $h, $path."/".$id.".jpg");
+    }    
 }
 
 ?>

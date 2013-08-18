@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    fargo.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jul 10, 2013
+ * Updated on Aug 17, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -737,7 +737,7 @@ function ConvertMedia(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Jul 05, 2013
+ * Updated on aug 12, 2013
  *
  * Description: Shows the media table.
  *
@@ -766,11 +766,11 @@ function ShowMediaTable(media, page, sort)
             ShowNextPrevButtons(global_lastpage);
             
             var i = 0, j = 0;
-            var img, html = [];            
+            var img, html = [];
             
             if (json.media[0].id > 0)
             {
-                html[i++] = '<table>';
+                html[i++] = '<table class="' + media + '">';
      
                 $.each(json.media, function(key, value)
                 {                
@@ -780,9 +780,9 @@ function ShowMediaTable(media, page, sort)
                     else if ( j == json.params.column) {
                         html[i++] = '</tr>';
                         j = 0;
-                    }
+                    }                    
                     
-                    img = json.params.thumbs + '/' + value.xbmcid + '.jpg';    
+                    img = json.params.thumbs + '/' + value.xbmcid + '.jpg';
                     html[i++] = '<td><div class="info">' + value.id + '</div><img src="' + img + '"/></br>' + value.title + '</td>';
                     j++;
                 });
@@ -791,6 +791,11 @@ function ShowMediaTable(media, page, sort)
             }
             
             $('#display_content')[0].innerHTML = html.join('');
+            
+            // If images not found then show no poster.
+            $("#display_content img").error(function(){
+                $(this).attr('src', 'images/no_poster.jpg');
+            });
             
             // Show sort character.
             $('#sort').html(sort);            
