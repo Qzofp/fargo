@@ -1,7 +1,7 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    fargo.system.js
  *

@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 18, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -132,7 +132,7 @@ function ShowHiddenInfoBox()
  * Function:	ShowHiddenImportBox
  *
  * Created on May 06, 2013
- * Updated on Jul 04, 2013
+ * Updated on Aug 18, 2013
  *
  * Description: Show hidden import box.
  *
@@ -152,6 +152,9 @@ function ShowHiddenImportBox()
     // debug.
     //echo "     <div id=\"counter\"><br/></div>\n";
     //echo "     <div id=\"start\"><br/></div>\n";
+ 
+    echo "     <div id=\"transfer\"><br/></div>\n";
+    echo "     <div id=\"ready\"><br/></div>\n";
     
     echo "     <div id=\"import_wrapper\">\n";
     echo "      <div id=\"thumb\"><img src=\"\"/></div>\n";

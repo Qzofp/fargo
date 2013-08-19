@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jul 09, 2013
+ * Updated on Aug 18, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -189,7 +189,7 @@ function ChangeSubControlBar(media)
  * Function:	CleanDatabaseHandler
  *
  * Created on Jun 10, 2013
- * Updated on Jul 04, 2013
+ * Updated on Aug 18, 2013
  *
  * Description: Clean a database table (Library or Event Log).
  * 
@@ -213,7 +213,7 @@ function CleanDatabaseHandler()
     
      $("#clean_box .message").css({"margin-bottom":"20px"});
     
-    // Truncate table
+    // Truncate table and delete pictures (posters, fanart and thumbs).
     ChangeProperty(number, "");
     
     if (option == "Library") 

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Aug 17, 2013
+ * Updated on Aug 19, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -43,6 +43,7 @@ switch ($action)
     case "status"  : $media = GetPageValue('media');
                      $id    = GetPageValue('id');
                      $aJson = GetMediaStatus($media, $id);
+                     $aJson['counter'] = CountRows($media);
                      break;                 
         
     case "movies"  : $page  = GetPageValue('page');
@@ -134,7 +135,7 @@ function ResetStatus($media)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 19, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -147,13 +148,13 @@ function GetMediaStatus($media, $id)
     $aJson = null;   
     switch ($media)    
     {   
-        case "movies"   : $aJson = GetImportStatus($media, $id, cMOVIESPOSTERS);
+        case "movies"   : $aJson = GetImportStatus($media, $id, cMOVIESTHUMBS);
                           break;
         
-        case "music"    : $aJson = GetImportStatus($media, $id, cALBUMSCOVERS);
+        case "music"    : $aJson = GetImportStatus($media, $id, cALBUMSTHUMBS);
                           break;
     
-        case "tvshows"  : $aJson = GetImportStatus($media, $id, cTVSHOWSPOSTERS);
+        case "tvshows"  : $aJson = GetImportStatus($media, $id, cTVSHOWSTHUMBS);
                           break;
     }    
     return $aJson;
@@ -1217,7 +1218,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Jul 04, 2013
+ * Updated on Aug 18, 2013
  *
  * Description: Clean the media library. 
  *
@@ -1236,6 +1237,7 @@ function CleanLibrary($number)
                  EmptyTable("movies");
                  EmptyTable("genretomovie");
                  DeleteGenres("movies");
+                 DeleteFile(cMOVIESTHUMBS."/*.jpg");
                  DeleteFile(cMOVIESPOSTERS."/*.jpg");
                  DeleteFile(cMOVIESFANART."/*.jpg");
                  break;
