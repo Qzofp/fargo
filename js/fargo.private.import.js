@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Aug 19, 2013
+ * Updated on Aug 20, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -149,7 +149,7 @@ function ShowNoNewMedia(media, msg)
  * Function:	ShowOffline
  *
  * Created on Aug 19, 2013
- * Updated on Aug 19, 2013
+ * Updated on Aug 20, 2013
  *
  * Description: Show offline message and add to log event.
  * 
@@ -160,7 +160,7 @@ function ShowNoNewMedia(media, msg)
 function ShowOffline(msg)
 {
     $(".message").html(msg[1]);
-    //SetState("xbmc", "offline");
+    SetState("xbmc", "offline");
     $(".cancel").toggleClass("cancel retry");
     $(".retry").html("Retry");
     LogEvent("Information", "XBMC is offline or not reachable."); 
@@ -233,7 +233,7 @@ function SetImportCancelHandler()
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Aug 19, 2013
+ * Updated on Aug 20, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -243,8 +243,10 @@ function SetImportCancelHandler()
  */
 function StartImport(media, start, end, msg)
 {
-    var busy = true;
-    var delta =  end - start;
+    var timeout = 0;
+    var busy    = true;
+    var delta   =  end - start;
+    var $ready  = $("#ready");
     
     // Import media process.
     ImportMedia(media, start);
@@ -265,8 +267,9 @@ function StartImport(media, start, end, msg)
             if (busy == false)
             {    
                 busy = true; // pause import.
-                ImportMedia(media, start);        
+                ImportMedia(media, start);       
                 start += 1;
+                timeout = 0; // reset timeout.
             }
         }
         
@@ -277,10 +280,13 @@ function StartImport(media, start, end, msg)
     // Check status.
     var status = setInterval(function()
     {
-        if (global_cancel || global_total_fargo >= end)
+        if (global_cancel || global_total_fargo >= end  || timeout > 3)
         {
             if (global_cancel) {
                 LogEvent("Warning", "Import " + ConvertMedia(media) + " canceled!");
+            }
+            else if (timeout > 3) {
+                ShowOffline(msg);
             }
             else {
                 ShowFinished(media, delta, msg);
@@ -288,12 +294,16 @@ function StartImport(media, start, end, msg)
             
             clearInterval(status);
         }
-        else 
+        else
         {
             // Show status and returns global_total_fargo.
             ShowStatus(delta, start, end, media, msg);
             if (global_total_fargo == start) {
                 busy = false; // resume import.
+            }
+            
+            if ($ready.text() == "true") {
+                timeout++;
             }
         }
         
