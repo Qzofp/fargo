@@ -1,0 +1,9 @@
+XBMC Fargo "Addon" 
+------------------
+To import the data from XBMC to Fargo you need to copy the fargo folder to the XBMC web server, i.e.:
+
+C:\Program Files\XBMC\addons\webinterface.default\
+
+Config Fargo "Addon" 
+--------------------
+Open the fargo.settings.js file and enter your Fargo web site URL.

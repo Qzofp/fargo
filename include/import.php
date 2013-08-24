@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Aug 17, 2013
+ * Updated on Aug 24, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  * 
@@ -20,9 +20,9 @@
 // Give the damn thing cross domain access. Something XBMC won't let you do, the bastards!!!
 header("Access-Control-Allow-Origin: *");  // Add "*" to settings.
 
-require_once '../../settings.php';
-require_once '../../tools/toolbox.php';
-require_once '../../include/common.php';
+require_once '../settings.php';
+require_once '../tools/toolbox.php';
+require_once 'common.php';
 require_once 'import_convert.php';
 require_once 'import_db.php';
     
@@ -84,7 +84,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Aug 11, 2013
+ * Updated on Aug 24, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -103,9 +103,11 @@ function ProcessDataFromXbmc($aData)
         case "movies"  : ProcessMovie($aData["poster"], $aData["fanart"], $aData["result"]);                             
                          break;
             
-        case "tvshows" : break;
+        case "tvshows" : ProcessTVShow($aData["poster"], $aData["fanart"], $aData["result"]); 
+                         break;
             
-        case "music"   : break; 
+        case "music"   : ProcessAlbum($aData["poster"], $aData["fanart"], $aData["result"]); 
+                         break; 
     }
 }
 
@@ -136,7 +138,7 @@ function ProcessCounter($aResults)
     elseif(!empty($aResults["tvshows"])) {
         $media = "TVShows";
     }
-    elseif(!empty($aResults["music"])) {
+    elseif(!empty($aResults["albums"])) {
         $media = "Music";
     }
     
@@ -147,7 +149,7 @@ function ProcessCounter($aResults)
  * Function:	ProcessMovie
  *
  * Created on Jul 15, 2013
- * Updated on Aug 17, 2013
+ * Updated on Aug 24, 2013
  *
  * Description: Process the movie. 
  *
@@ -160,17 +162,65 @@ function ProcessMovie($poster, $fanart, $aResult)
     $aMovie = $aResult["movies"][0];
     $aGenres = $aMovie["genre"];
     
-    //SaveImage($aMovie["movieid"], $poster, cMOVIESPOSTERS);
-    //SaveImage($aMovie["movieid"], $fanart, cMOVIESFANART);
-    
-    SaveImage($aMovie["movieid"], $poster, "../../".cMOVIESPOSTERS);
-    SaveImage($aMovie["movieid"], $fanart, "../../".cMOVIESFANART);
-    
-    CreateThumb($aMovie["movieid"], $poster, "../../".cMOVIESTHUMBS, 200, 280);
+    SaveImage($aMovie["movieid"], $poster, "../".cMOVIESPOSTERS);
+    SaveImage($aMovie["movieid"], $fanart, "../".cMOVIESFANART);    
+    CreateThumb($aMovie["movieid"], $poster, "../".cMOVIESTHUMBS, 200, 280);
     
     $aMovie = ConvertMovie($aMovie);
     InsertMovie($aMovie);
     InsertGenreToMedia($aGenres, "movies");
+}
+
+/*
+ * Function:	ProcessTVShow
+ *
+ * Created on Aug 24, 2013
+ * Updated on Aug 24, 2013
+ *
+ * Description: Process the tv show. 
+ *
+ * In:  $poster, $fanart, $aResult
+ * Out: -
+ *
+ */
+function ProcessTVShow($poster, $fanart, $aResult)
+{   
+    $aTVShow = $aResult["tvshows"][0];
+    $aGenres = $aTVShow["genre"];
+    
+    SaveImage($aTVShow["tvshowid"], $poster, "../".cTVSHOWSPOSTERS);
+    SaveImage($aTVShow["tvshowid"], $fanart, "../".cTVSHOWSFANART);    
+    CreateThumb($aTVShow["tvshowid"], $poster, "../".cTVSHOWSTHUMBS, 200, 280);
+    
+    $aTVShow = ConvertTVShow($aTVShow);
+    InsertTVShow($aTVShow);
+    InsertGenreToMedia($aGenres, "tvshows");
+}
+
+/*
+ * Function:	ProcessAlbum
+ *
+ * Created on Aug 24, 2013
+ * Updated on Aug 24, 2013
+ *
+ * Description: Process the music album. 
+ *
+ * In:  $poster, $fanart, $aResult
+ * Out: -
+ *
+ */
+function ProcessAlbum($poster, $fanart, $aResult)
+{   
+    $aAlbum = $aResult["albums"][0];
+    $aGenres = $aAlbum["genre"];
+    
+    SaveImage($aAlbum["albumid"], $poster, "../".cALBUMSCOVERS);
+    //SaveImage($aAlbum["albumid"], $fanart, "../".cALBUMSFANART);    
+    CreateThumb($aAlbum["albumid"], $poster, "../".cALBUMSTHUMBS, 200, 200);
+    
+    $aAlbum = ConvertAlbum($aAlbum);
+    InsertAlbum($aAlbum);
+    InsertGenreToMedia($aGenres, "music");
 }
 
 /*

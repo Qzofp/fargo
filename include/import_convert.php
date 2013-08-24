@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Jul 21, 2013
+ * Updated on Aug 24, 2013
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -53,7 +53,7 @@ function ConvertMovie($aXbmc)
         $aMovie["cast"] = ConvertCast($aXbmc["cast"]);
     }
     else {
-       $aMovie["cast"] = null; 
+        $aMovie["cast"] = null; 
     }
     
     $aMovie["country"] = implode("|", $aXbmc["country"]);
@@ -76,7 +76,6 @@ function ConvertMovie($aXbmc)
     else {
         $aMovie["video"] = null;
     }
-
     
     $aMovie["top250"]    = $aXbmc["top250"];    
     $aMovie["votes"]     = $aXbmc["votes"];
@@ -93,6 +92,109 @@ function ConvertMovie($aXbmc)
     $aMovie["thumb"]  = EncodeLink($aXbmc, "thumbnail");   
     
     return $aMovie;
+}
+
+/*
+ * Function:	ConvertTVShow
+ *
+ * Created on Apr 19, 2013
+ * Updated on Aug 24, 2013
+ *
+ * Description: Convert xbmc TV Show items. For instance to readably URL's.
+ *
+ * In:  $aXbmc
+ * Out: $aTVShow
+ *
+ */
+function ConvertTVShow($aXbmc)
+{     
+    $year = explode("-", $aXbmc["premiered"]);
+    
+    $aTVShow["xbmcid"] = $aXbmc["tvshowid"];
+    $aTVShow["title"]  = $aXbmc["label"];
+    $aTVShow["genre"]  = ConvertGenre($aXbmc["genre"], "tvshows");
+    $aTVShow["year"]   = $year[0];
+    
+    $aTVShow["rating"] = $aXbmc["rating"];
+    $aTVShow["plot"]   = $aXbmc["plot"];
+    $aTVShow["studio"] = implode("|", $aXbmc["studio"]);
+    $aTVShow["mpaa"]   = $aXbmc["mpaa"];    
+
+    //$aTVShow["cast"]      = ConvertCast($aXbmc["cast"]);  
+    if (!empty($aXbmc["cast"])) {
+        $aTVShow["cast"] = ConvertCast($aXbmc["cast"]);
+    }
+    else {
+        $aTVShow["cast"] = null; 
+    }    
+    
+    $aTVShow["playcount"] = $aXbmc["playcount"];
+    $aTVShow["episode"]   = $aXbmc["episode"];  
+    $aTVShow["imdbnr" ]   = $aXbmc["imdbnumber"];
+    
+    $aTVShow["premiered"]  = $aXbmc["premiered"];
+    $aTVShow["votes"]      = $aXbmc["votes"];
+    $aTVShow["lastplayed"] = $aXbmc["lastplayed"];  
+    $aTVShow["fanart"]     = EncodeLink($aXbmc["art"], "fanart");
+        
+    $aTVShow["poster"]        = EncodeLink($aXbmc["art"], "poster");
+    $aTVShow["thumb"]         = EncodeLink($aXbmc, "thumbnail");
+    $aTVShow["file"]          = $aXbmc["file"];
+    $aTVShow["originaltitle"] = $aXbmc["originaltitle"];   
+    
+    $aTVShow["sorttitle"]       = CreateSortTitle($aXbmc["label"]);
+    $aTVShow["episodeguide"]    = $aXbmc["episodeguide"];
+    $aTVShow["season"]          = $aXbmc["season"];
+    $aTVShow["watchedepisodes"] = $aXbmc["watchedepisodes"];        
+
+    $aTVShow["dateadded"] = $aXbmc["dateadded"]; 
+    //$aTVShow["tag"]      = $aXbmc["tag"];   
+    
+    return $aTVShow;
+}
+
+/*
+ * Function:	ConvertAlbum
+ *
+ * Created on Apr 20, 2013
+ * Updated on Aug 24, 2013
+ *
+ * Description: Convert XBMC album items. For instance to readably URL's.
+ *
+ * In:  $aXbmc
+ * Out: $aAlbum
+ *
+ */
+function ConvertAlbum($aXbmc)
+{
+    $aAlbum["xbmcid"]      = $aXbmc["albumid"];
+    $aAlbum["title"]       = $aXbmc["label"];
+    $aAlbum["description"] = $aXbmc["description"];    
+    $aAlbum["artist"]      = implode("|", $aXbmc["artist"]);
+
+    $aAlbum["genre"] = ConvertGenre($aXbmc["genre"], "music");
+    $aAlbum["theme"] = implode("|", $aXbmc["theme"]);
+    $aAlbum["mood"]  = implode("|", $aXbmc["mood"]);
+    $aAlbum["style"] = implode("|", $aXbmc["style"]);
+    
+    $aAlbum["type"]       = $aXbmc["type"];    
+    $aAlbum["albumlabel"] = $aXbmc["albumlabel"];
+    $aAlbum["rating"]     = $aXbmc["rating"];
+    $aAlbum["year"]       = $aXbmc["year"];
+    
+    $aAlbum["mbalbumid"]       = $aXbmc["musicbrainzalbumid"];    
+    $aAlbum["mbalbumartistid"] = $aXbmc["musicbrainzalbumartistid"];
+    $aAlbum["fanart"]          = $aXbmc["fanart"];
+    $aAlbum["cover"]           = EncodeLink($aXbmc, "thumbnail");
+    
+    $aAlbum["playcount"]     = $aXbmc["playcount"];
+    $aAlbum["displayartist"] = $aXbmc["displayartist"]; 
+    $aAlbum["sorttitle"]     = CreateSortTitle($aXbmc["label"]);
+    //$aAlbum["genreid"]       = $aXbmc["genreid"];
+    
+    //$aAlbum["artistid"]      = $aXbmc["artistid"];
+    
+    return $aAlbum;
 }
 
 /*
