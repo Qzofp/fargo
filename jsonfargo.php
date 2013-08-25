@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Aug 19, 2013
+ * Updated on Aug 25, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -32,7 +32,10 @@ switch ($action)
                      break;
                  
     case "reset"   : $media = GetPageValue('media');  
-                     $aJson = ResetStatus($media);
+                     $aJson["status"]     = ResetStatus($media);
+                     $aJson["connection"] = GetSetting("XBMCconnection");
+                     $aJson["port"]       = GetSetting("XBMCport");
+                     $aJson["timeout"]    = GetSetting("Timeout");
                      break;
     
     case "counter" : $media = GetPageValue('media');
@@ -64,7 +67,7 @@ switch ($action)
                      $aJson = GetMedia($action, $page, $sql);
                      break;    
                  
-    case "music"  : $page   = GetPageValue('page');
+    case "music"  : $page  = GetPageValue('page');
                     $title = GetPageValue('title');
                     $genre = GetPageValue('genre');
                     $year  = GetPageValue('year');
@@ -113,21 +116,21 @@ if (!empty($aJson)) {
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jul 22, 2013
+ * Updated on Aug 24, 2013
  *
  * Description: Reset the status. 
  *
  * In:  $media
- * Out: $aJson
+ * Out: $status
  *
  */
 function ResetStatus($media)
 {
     UpdateStatus("Xbmc".$media."Counter", -1);
     
-    $aJson["status"] = "reset";
+    $status = "reset";
     
-    return $aJson;
+    return $status;
 }
 
 
@@ -1014,7 +1017,7 @@ function ProcessSetting($name)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on Jun 22, 2013
+ * Updated on Aug 25, 2013
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -1039,7 +1042,7 @@ function GetSystemOptionProperties($name)
                             $html = str_replace("[xbmcuser]", GetSetting("XBMCusername"), $html);
                             $html = str_replace("[fargouser]", GetUser(1), $html);
                             $html = str_replace("[password]", "******", $html);
-                            $html = str_replace("[timer]", GetSetting("Timer")/1000, $html);
+                            $html = str_replace("[timeout]", GetSetting("Timeout")/1000, $html);
                             break;
                         
         case "library"    : $html = GetSetting($name);
@@ -1167,7 +1170,7 @@ function SetSystemProperty($option, $number, $value)
  * Function:	SetSettingProperty
  *
  * Created on May 27, 2013
- * Updated on Jun 22, 2013
+ * Updated on Aug 25, 2013
  *
  * Description: Set the setting property. 
  *
@@ -1207,7 +1210,7 @@ function SetSettingProperty($number, $value)
                  break; 
              
         case 9 : // Set Timer
-                 UpdateSetting("Timer", $value * 1000);
+                 UpdateSetting("Timeout", $value * 1000);
                  break;              
     }
     

@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Aug 18, 2013
+ * Updated on Aug 25, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -87,7 +87,7 @@ function ShowHiddenLoginBox()
  * Function:	ShowHiddenInfoBox
  *
  * Created on Jul 05, 2013
- * Updated on Jul 08, 2013
+ * Updated on Aug 25, 2013
  *
  * Description: Show hidden info media box.
  *
@@ -109,7 +109,7 @@ function ShowHiddenInfoBox()
     echo "      <div id=\"info_wrapper_left\">\n";
     echo "          <div id=\"info_left\"></div>\n";
     echo "      </div>\n";  
-    echo "      <div id=\"info_right\">\n";
+    echo "      <div id=\"info_right\" class=\"fanart_space\">\n";
     echo "       <div id=\"info_fanart\"><img src=\"images/no_fanart.jpg\"></div>\n";    
     echo "       <div id=\"info_video\">&nbsp;</div>\n";
     echo "       <div id=\"info_audio\">&nbsp;</div>\n";

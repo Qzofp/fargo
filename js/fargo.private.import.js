@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Aug 24, 2013
+ * Updated on Aug 25, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -44,7 +44,7 @@ function SetImportHandler()
            "No new " + ConvertMedia(media) + " found.",
            "Import is ready."];
   
-    // Reset media status and get fargo media counter.
+    // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
         url: 'jsonfargo.php?action=reset&media=' + media,
         async: false,
@@ -53,10 +53,9 @@ function SetImportHandler()
         {
             var start, end;
             var timer, i = 0;
-            var retry = 5;  // For the timeout, XBMC offline or not reachable.
             
             // Check if XBMC is online and transfer XMBC media counter (total).
-            ImportCounter(media);
+            ImportCounter(json, media);
             
             // Get XBMC media counter from Fargo.
             timer = setInterval(function()
@@ -72,7 +71,7 @@ function SetImportHandler()
                     if (end > 0 || i > 3)
                     {
                         if (end > 0 && end > start) {
-                            StartImport(media, start, end, msg, retry);
+                            StartImport(json, media, start, end, msg);
                         }
                         else if (end >= 0) {
                             ShowNoNewMedia(media, msg);
@@ -234,15 +233,15 @@ function SetImportCancelHandler()
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Aug 24, 2013
+ * Updated on Aug 25, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
- * In:	media, start, end, msg, retry
+ * In:	xbmc, media, start, end, msg, retry
  * Out:	Imported media
  *
  */
-function StartImport(media, start, end, msg, retry)
+function StartImport(xbmc, media, start, end, msg)
 {
     var timeout = 0;
     var busy    = true;
@@ -250,7 +249,7 @@ function StartImport(media, start, end, msg, retry)
     var $ready  = $("#ready");
     
     // Import media process.
-    ImportMedia(media, start);
+    ImportMedia(xbmc, media, start);
     start += 1;
     
     LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
@@ -268,7 +267,7 @@ function StartImport(media, start, end, msg, retry)
             if (busy == false)
             {    
                 busy = true; // pause import.
-                ImportMedia(media, start);       
+                ImportMedia(xbmc, media, start);       
                 start += 1;
                 timeout = 0; // reset timeout.
             }
@@ -281,12 +280,12 @@ function StartImport(media, start, end, msg, retry)
     // Check status.
     var status = setInterval(function()
     {
-        if (global_cancel || global_total_fargo >= end  || timeout > retry)
+        if (global_cancel || global_total_fargo >= end  || timeout > xbmc.timeout/1000)
         {
             if (global_cancel) {
                 LogEvent("Warning", "Import " + ConvertMedia(media) + " canceled!");
             }
-            else if (timeout > retry) {
+            else if (timeout > xbmc.timeout/1000) {
                 ShowOffline(msg);
             }
             else {
@@ -365,7 +364,7 @@ function ShowStatus(delta, start, end, media, msg)
  * Function:	ImportCounter
  *
  * Created on Jul 22, 2013
- * Updated on Aug 18, 2013
+ * Updated on Aug 24, 2013
  *
  * Description: Import the media counter transfered from XBMC.
  *
@@ -373,13 +372,19 @@ function ShowStatus(delta, start, end, media, msg)
  * Out:	Imported media counter
  *
  */
-function ImportCounter(media)
+function ImportCounter(xbmc, media)
 {
     var $result = $("#transfer");
     var $ready  = $("#ready");
+    var url, iframe;
     
-    var url    = "http://192.168.114.128:8080/fargo/transfer.html?action=counter&media=" + media;
-    var iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';
+    url = "http://" + xbmc.connection;
+    if (xbmc.port) {
+        url = "http://" + xbmc.connection + ":" + xbmc.port;
+    }
+    
+    url   += "/fargo/transfer.html?action=counter&media=" + media;
+    iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';
     
     // Reset values.
     $ready.text("false");    
@@ -396,7 +401,7 @@ function ImportCounter(media)
  * Function:	ImportMedia
  *
  * Created on Jul 20, 2013
- * Updated on Aug 19, 2013
+ * Updated on Aug 24, 2013
  *
  * Description: Import the media transfered from XBMC.
  *
@@ -404,12 +409,19 @@ function ImportCounter(media)
  * Out:	Imported media
  *
  */
-function ImportMedia(media, start)
+function ImportMedia(xbmc, media, start)
 {
     var $result = $("#transfer");
-    var $ready  = $("#ready");    
-    var url    = "http://192.168.114.128:8080/fargo/transfer.html?action=" + media + "&start=" + start;
-    var iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';   
+    var $ready  = $("#ready");   
+    var url, iframe;
+    
+    url = "http://" + xbmc.connection;
+    if (xbmc.port) {
+        url = "http://" + xbmc.connection + ":" + xbmc.port;
+    }    
+    
+    url   += "/fargo/transfer.html?action=" + media + "&start=" + start;
+    iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';   
     
     // Reset values.
     $ready.text("false");    

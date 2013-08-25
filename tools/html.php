@@ -7,7 +7,7 @@
  * File:    html.php
  *
  * Created on Mar 02, 2013
- * Updated on Jul 08, 2013
+ * Updated on Aug 24, 2013
  *
  * Description: HTML toolbox functions.
  *
@@ -17,7 +17,7 @@
  * Function:	PageHeader
  *
  * Created on Mar 02, 2013
- * Updated on May 11, 2013
+ * Updated on Aug 24, 2013
  *
  * Description: Returns a HTML5 page header.
  *
@@ -32,6 +32,7 @@ function PageHeader($title, $aCss, $aJscript)
     echo " <head>\n";
     echo "  <meta charset=\"utf-8\">\n";
     echo "  <title>$title</title>\n";
+    echo "  <link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"favicon.ico\">\n";
 
     if ($aCss) 
     {    
