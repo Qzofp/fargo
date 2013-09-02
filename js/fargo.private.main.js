@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Aug 18, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -62,7 +62,7 @@ function LoadFargoMedia(media)
     ShowMediaTable(media, global_page, global_sort);
     
     // The media info click events
-    $("#display_content").on("click", "td", SetInfoHandler);
+    $("#display_content").on("click", "td", SetInfoHandlerWithMode);
     $(".button").on("click", ".url", SetShowUrlHandler);
 
     // The media click events.
@@ -80,13 +80,16 @@ function LoadFargoMedia(media)
     
     // Clean database (library or event log) event.
     $(".button").on("click", ".yes", CleanDatabaseHandler);
-    
+     
     // Import click event.
     $("#import").on("click", SetImportHandler);
     $(".button").on("click", ".retry", SetImportHandler);
     
     // Cancel or finish import. 
-    $(".button").on("click", ".cancel", SetCloseHandler);
+    $(".button").on("click", ".cancel", SetCloseHandler);    
+    
+    // Manage (Show, Refresh, Hide and Delete) click events.
+    $("#modes").on("click", SetButtonsHandler);
     
     // Title, Genres or Years click events.
     $("#title").on("click", SetButtonsHandler);
@@ -148,7 +151,7 @@ function ChangeProperty(number, value)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Jun 30, 2013
+ * Updated on Aug 31, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -165,19 +168,19 @@ function ChangeSubControlBar(media)
         switch(media)
         {
             case "movies"  : $("#logout").hide();
-                             $("#import, #title, #genres, #years").show();
+                             $("#modes, #title, #genres, #years").show();
                              break;
 
             case "tvshows" : $("#logout").hide();
-                             $("#import, #title, #genres, #years").show();
+                             $("#modes, #title, #genres, #years").show();
                              break;
 
             case "music"   : $("#logout").hide();
-                             $("#import, #title, #genres, #years").show();
+                             $("#modes, #title, #genres, #years").show();
                              break;
                            
             case "system" : $("#logout").show();
-                            $("#import, #title, #genres, #years").hide();
+                            $("#modes, #title, #genres, #years").hide();
                             break;                      
         }
         
@@ -233,7 +236,33 @@ function CleanDatabaseHandler()
     
     $(".yes").hide();
     $(".no").html('Cancel');
+}
 
+/*
+ * Function:	ClearCleanBox
+ *
+ * Created on Sep 01, 2013
+ * Updated on Sep 01, 2013
+ *
+ * Description: Clear the clean box. Set back to initial values.
+ *
+ * In:	-
+ * Out:	-
+ *
+ */
+function ClearCleanBox()
+{
+    var $clean= $("#clean_box");
+    
+    setTimeout(function() {
+        $clean.find(".message").removeAttr("style").html("<br/>");
+        
+        // Remove progressbar.
+        if($clean.find(".ui-progressbar").length != 0) {   
+            $clean.find(".progress").progressbar( "destroy" );
+        }    
+   
+    }, 300); 
 }
 
 /*
@@ -271,31 +300,6 @@ function DisplayCleaningMessage(str1, str2, prg, btn, end)
         }  
         
     }, 500);	
-}
-
-/*
- * Function:	SetCloseHandler
- *
- * Created on Jun 09, 2013
- * Updated on Jun 15, 2013
- *
- * Description: Close import or other popup window.
- * 
- * In:	-
- * Out:	disable mask and popup
- *
- */
-function SetCloseHandler()
-{
-    var popup = $("#import_box");
-        
-    // Abort import.
-    if (popup.is(":visible")) {
-        SetImportCancelHandler();
-    }
-    
-    // Close popup.
-    SetMaskHandler();
 }
 
 /*

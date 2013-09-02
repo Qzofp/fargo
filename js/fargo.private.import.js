@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Aug 25, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -94,7 +94,7 @@ function SetImportHandler()
  * Function:	InitImportAndShowPopup
  *
  * Created on Aug 18, 2013
- * Updated on Aug 18, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Initialize import values and show popup.
  * 
@@ -104,7 +104,7 @@ function SetImportHandler()
  */
 function InitImportAndShowPopup()
 {
-    var title = "";
+    var title;
     var media = GetState("media"); // Get state media. 
     
     global_cancel = false;
@@ -116,7 +116,7 @@ function InitImportAndShowPopup()
     $(".retry").toggleClass("retry cancel");
     
     // Initialize status popup box.
-    $(".message").html("Connecting...");
+    $("#import_box .message").html("Connecting...");
     AdjustImageSize(media);
     $(".cancel").html("Cancel");    
     
@@ -127,7 +127,7 @@ function InitImportAndShowPopup()
  * Function:	ShowNoNewMedia
  *
  * Created on Aug 18, 2013
- * Updated on Aug 18, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Show no new media and add to log event.
  * 
@@ -139,7 +139,7 @@ function ShowNoNewMedia(media, msg)
 {
     var finish = 2 + Math.floor(Math.random() * 3);
     
-    $(".message").html(msg[0]);
+    $("#import_box .message").html(msg[0]);
     SetState("xbmc", "online");
     DisplayStatusMessage(msg[2], msg[5], finish);
     LogEvent("Information", "No new " + ConvertMedia(media) + " found.");      
@@ -149,7 +149,7 @@ function ShowNoNewMedia(media, msg)
  * Function:	ShowOffline
  *
  * Created on Aug 19, 2013
- * Updated on Aug 20, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Show offline message and add to log event.
  * 
@@ -159,7 +159,7 @@ function ShowNoNewMedia(media, msg)
  */
 function ShowOffline(msg)
 {
-    $(".message").html(msg[1]);
+    $("#import_box .message").html(msg[1]);
     SetState("xbmc", "offline");
     $(".cancel").toggleClass("cancel retry");
     $(".retry").html("Retry");
@@ -170,7 +170,7 @@ function ShowOffline(msg)
  * Function:	ShowFinished
  *
  * Created on Aug 19, 2013
- * Updated on Aug 19, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Show import finished message and add to log event.
  * 
@@ -179,8 +179,8 @@ function ShowOffline(msg)
  *
  */
 function ShowFinished(media, delta, msg)
-{
-    $(".message").html(msg[6]);
+{   
+    $("#import_box .message").html(msg[6]);
     $(".cancel").html("Finish");
     LogEvent("Information", "Import of " + delta + " " + ConvertMedia(media) + " finished.");    
 }
@@ -189,7 +189,7 @@ function ShowFinished(media, delta, msg)
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Aug 18, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Set the import handler, cancel or finish the import.
  * 
@@ -200,8 +200,11 @@ function ShowFinished(media, delta, msg)
 function SetImportCancelHandler()
 {
     var button = $(".cancel").text();
-    var media = GetState("media");
-
+    //var media = GetState("media");
+    
+    var media = $("#control_bar").find(".on").attr('id');
+    SetState("media", media); 
+    
     /*
     // Abort pending ajax request.
     if(typeof global_status_request !== 'undefined') {
@@ -227,6 +230,42 @@ function SetImportCancelHandler()
     if (button == "Finish" && media != "system") {
         window.location='index.php?media=' + media;
     }
+}
+
+/*
+ * Function:	ClearImportBox
+ *
+ * Created on Sep 02, 2013
+ * Updated on Sep 02, 2013
+ *
+ * Description: Clear the import box. Set back to initial values.
+ *
+ * In:	-
+ * Out:	-
+ *
+ */
+function ClearImportBox()
+{
+    var $import = $("#import_box");
+    var $thumb  = $("#thumb");
+    
+    setTimeout(function() {
+        $import.find(".title").text("");
+        $import.find(".message").html("<br/>");
+        
+        $("#transfer").html("<br/>");
+        $("#ready").html("<br/>");
+        
+        $("#import_wrapper").removeAttr("style");
+        $thumb.removeAttr("style");
+        $thumb.children("img").removeAttr("style").attr("src", "");
+        
+        // Remove progressbar.
+        if($import.find(".ui-progressbar").length != 0) {   
+            $import.find(".progress").progressbar( "destroy" );
+        }    
+   
+    }, 300);     
 }
 
 /*
@@ -313,7 +352,7 @@ function StartImport(xbmc, media, start, end, msg)
  * Function:	ShowStatus
  *
  * Created on Aug 19, 2013
- * Updated on Aug 19, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Show the import status.
  *
@@ -338,7 +377,7 @@ function ShowStatus(delta, start, end, media, msg)
                     value : percent       
                 });                
                 
-                $(".message").html(msg[4]);
+                $("#import_box .message").html(msg[4]);
                       
                 // Preload image.
                 var img = new Image();
@@ -354,7 +393,7 @@ function ShowStatus(delta, start, end, media, msg)
                 
             }  
             else {
-                $(".message").html(msg[3]);                    
+                $("#import_box .message").html(msg[3]);                    
             }              
         } // End succes.    
     }); // End Ajax. 
@@ -535,7 +574,7 @@ function DisplayStatusMessage(str1, str2, end)
 
         if (!global_cancel)
         {
-            $(".message").html(str1);
+            $("#import_box .message").html(str1);
             
             percent = Math.round(i/end * 100);
             $("#import_box .progress").progressbar({
@@ -548,7 +587,7 @@ function DisplayStatusMessage(str1, str2, end)
             if (i > end)
             {
                 clearInterval(timer);
-                $(".message").html(str2);
+                $("#import_box .message").html(str2);
                 $(".cancel").html("Ok");           
             }
         }    

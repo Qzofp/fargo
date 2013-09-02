@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Aug 25, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -892,7 +892,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetMedia
  *
  * Created on Apr 03, 2013
- * Updated on Aug 17, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -970,10 +970,10 @@ function GetMedia($media, $page, $sql)
         case "movies"   : $aParams['thumbs'] = cMOVIESTHUMBS;
                           break;
                       
-        case "tvshows"  : $aParams['thumbs'] = cTVSHOWSPOSTERS;
+        case "tvshows"  : $aParams['thumbs'] = cTVSHOWSTHUMBS;
                           break; 
                       
-        case "music"    : $aParams['thumbs'] = cALBUMSCOVERS;
+        case "music"    : $aParams['thumbs'] = cALBUMSTHUMBS;
                           break;
     }    
     $aParams['lastpage'] = ceil($total / (cMediaRow * cMediaColumn));
@@ -1221,7 +1221,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Aug 18, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Clean the media library. 
  *
@@ -1250,6 +1250,7 @@ function CleanLibrary($number)
                  EmptyTable("tvshows");
                  EmptyTable("genretotvshow");
                  DeleteGenres("tvshows");
+                 DeleteFile(cTVSHOWSTHUMBS."/*.jpg");
                  DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
                  DeleteFile(cTVSHOWSFANART."/*.jpg");
                  break;
@@ -1259,6 +1260,7 @@ function CleanLibrary($number)
                  EmptyTable("music");
                  EmptyTable("genretomusic");
                  DeleteGenres("music");
+                 DeleteFile(cALBUMSTHUMBS."/*.jpg");
                  DeleteFile(cALBUMSCOVERS."/*.jpg");
                  break;
     }

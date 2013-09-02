@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jul 05, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -242,7 +242,7 @@ function SetPopupHandler(event)
  * Function:	ShowPopupBox
  *
  * Created on May 08, 2013
- * Updated on Jul 01, 2013
+ * Updated on Sep 01, 2013
  *
  * Description: Show popup box.
  * 
@@ -256,9 +256,9 @@ function ShowPopupBox(type, title)
 {
     var popup = $(".popup" + type); 
     var mask = $("#mask");
-    
+        
     if (title) {
-        $(".title").text(title);
+        $(type + " .title").text(title);
     }
     
     if (title == "Login") {
@@ -267,6 +267,45 @@ function ShowPopupBox(type, title)
     
     popup.fadeIn("300");
     mask.fadeIn("300");
+}
+
+/*
+ * Function:	SetCloseHandler
+ *
+ * Created on Jun 09, 2013
+ * Updated on Sep 02, 2013
+ *
+ * Description: Close import or other popup window.
+ * 
+ * In:	-
+ * Out:	disable mask and popup
+ *
+ */
+function SetCloseHandler()
+{
+    // Clear popup box.
+    switch($(".popup:visible").attr('id'))
+    {
+        case "import_box"  : //alert ("import");
+                             ClearImportBox();
+                             SetImportCancelHandler(); //Abort import.
+                             break;
+
+        case "clean_box"   : //alert ("clean");
+                             ClearCleanBox();   
+                             break;
+                            
+        case "buttons_box" : //alert ("buttons");
+                             ClearButtonsBox();
+                             break;
+                         
+        case "info_box"    : //alert ("info");
+                             ClearInfoBox();
+                             break;                     
+    }
+    
+    // Close popup.
+    SetMaskHandler();
 }
 
 /*

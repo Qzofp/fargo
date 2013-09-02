@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Aug 24, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  * 
@@ -149,7 +149,7 @@ function ProcessCounter($aResults)
  * Function:	ProcessMovie
  *
  * Created on Jul 15, 2013
- * Updated on Aug 24, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Process the movie. 
  *
@@ -162,9 +162,11 @@ function ProcessMovie($poster, $fanart, $aResult)
     $aMovie = $aResult["movies"][0];
     $aGenres = $aMovie["genre"];
     
-    SaveImage($aMovie["movieid"], $poster, "../".cMOVIESPOSTERS);
-    SaveImage($aMovie["movieid"], $fanart, "../".cMOVIESFANART);    
-    CreateThumb($aMovie["movieid"], $poster, "../".cMOVIESTHUMBS, 200, 280);
+    //SaveImage($aMovie["movieid"], $poster, "../".cMOVIESPOSTERS);    
+    //SaveImage($aMovie["movieid"], $fanart, "../".cMOVIESFANART); 
+    
+    ResizeAndSaveImage($aMovie["movieid"], $fanart, "../".cMOVIESFANART, 675, 420);    
+    ResizeAndSaveImage($aMovie["movieid"], $poster, "../".cMOVIESTHUMBS, 200, 280);
     
     $aMovie = ConvertMovie($aMovie);
     InsertMovie($aMovie);
@@ -175,7 +177,7 @@ function ProcessMovie($poster, $fanart, $aResult)
  * Function:	ProcessTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Aug 24, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Process the tv show. 
  *
@@ -188,9 +190,11 @@ function ProcessTVShow($poster, $fanart, $aResult)
     $aTVShow = $aResult["tvshows"][0];
     $aGenres = $aTVShow["genre"];
     
-    SaveImage($aTVShow["tvshowid"], $poster, "../".cTVSHOWSPOSTERS);
-    SaveImage($aTVShow["tvshowid"], $fanart, "../".cTVSHOWSFANART);    
-    CreateThumb($aTVShow["tvshowid"], $poster, "../".cTVSHOWSTHUMBS, 200, 280);
+    //SaveImage($aTVShow["tvshowid"], $poster, "../".cTVSHOWSPOSTERS);
+    //SaveImage($aTVShow["tvshowid"], $fanart, "../".cTVSHOWSFANART);   
+    
+    ResizeAndSaveImage($aTVShow["tvshowid"], $fanart, "../".cTVSHOWSFANART, 675, 420);
+    ResizeAndSaveImage($aTVShow["tvshowid"], $poster, "../".cTVSHOWSTHUMBS, 200, 280);
     
     $aTVShow = ConvertTVShow($aTVShow);
     InsertTVShow($aTVShow);
@@ -201,7 +205,7 @@ function ProcessTVShow($poster, $fanart, $aResult)
  * Function:	ProcessAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Aug 24, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Process the music album. 
  *
@@ -214,9 +218,11 @@ function ProcessAlbum($poster, $fanart, $aResult)
     $aAlbum = $aResult["albums"][0];
     $aGenres = $aAlbum["genre"];
     
-    SaveImage($aAlbum["albumid"], $poster, "../".cALBUMSCOVERS);
-    //SaveImage($aAlbum["albumid"], $fanart, "../".cALBUMSFANART);    
-    CreateThumb($aAlbum["albumid"], $poster, "../".cALBUMSTHUMBS, 200, 200);
+    //SaveImage($aAlbum["albumid"], $poster, "../".cALBUMSCOVERS);
+    //SaveImage($aAlbum["albumid"], $fanart, "../".cALBUMSFANART);   
+    
+    ResizeAndSaveImage($aAlbum["albumid"], $poster, "../".cALBUMSCOVERS, 300, 300);
+    ResizeAndSaveImage($aAlbum["albumid"], $poster, "../".cALBUMSTHUMBS, 200, 200);
     
     $aAlbum = ConvertAlbum($aAlbum);
     InsertAlbum($aAlbum);
@@ -245,18 +251,18 @@ function SaveImage($id, $image, $path)
 }
 
 /*
- * Function:	CreateThumb
+ * Function:	ResizeAndSaveImage
  *
  * Created on Aug 17, 2013
- * Updated on Aug 17, 2013
+ * Updated on Sep 02, 2013
  *
- * Description: Create thumb. 
+ * Description: Resize and save image as jpg.
  *
  * In:  $id, $image, $path
- * Out: Thumb.
+ * Out: Resize jpg image.
  *
  */
-function CreateThumb($id, $image, $path, $w, $h)
+function ResizeAndSaveImage($id, $image, $path, $w, $h)
 {
     if ($image) {
         ResizeJpegImage($image, $w, $h, $path."/".$id.".jpg");

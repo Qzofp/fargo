@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Aug 25, 2013
+ * Updated on Aug 31, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -251,7 +251,7 @@ width:100%;
 }
 
 #info_left{ 
-margin: 0 460px 0 10px;
+margin:0 460px 0 10px;
 }
 
 #info_left table{
@@ -318,7 +318,6 @@ padding-top:10px;
 border-bottom:1px solid grey;
 font-size:1.3em;
 color:dodgerblue;
-/*background:lightyellow;*/
 }
 
 #info_plot_text{
@@ -762,13 +761,14 @@ color:dodgerblue;
 #state_media,
 #state_page,
 #state_choice,
+#state_mode,
 #state_title,
 #state_genre,
 #state_year,
 #state_xbmc,
 #state_row,
 #state_property{
-display:none;
+/*display:none;*/
 
 /* debug */
 position:absolute;
@@ -780,12 +780,13 @@ color:#fff;
 #state_media{top:10px;}
 #state_page{top:32px;}
 #state_choice{top:54px;}
-#state_title{top:76px;}
-#state_genre{top:98px;}
-#state_year{top:120px;}
-#state_xbmc{top:144px;}
-#state_row{top:166px;}
-#state_property{top:188px;}
+#state_mode{top:76px;}
+#state_title{top:98px;}
+#state_genre{top:120px;}
+#state_year{top:144px;}
+#state_xbmc{top:166px;}
+#state_row{top:188px;}
+#state_property{top:208px;}
 /* end debug */
 
 #footer{

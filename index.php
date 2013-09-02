@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Jul 05, 2013
+ * Updated on Aug 31, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -25,11 +25,11 @@ if(!isset($_SESSION['LOGIN']))
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js", 
                          "js/fargo.common.js", 
-                         "js/fargo.media.js",         
+                         "js/fargo.public.media.js",         
                          "js/fargo.system.js", 
                          "js/fargo.public.main.js");
     
-    $li_import = "";
+    $li_modes = "";
     $li_login  = "<li id=\"login\">Login</li>\n";
     $system_states = null;
 }
@@ -41,13 +41,14 @@ else
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js",
-                         "js/fargo.common.js",
-                         "js/fargo.media.js",         
+                         "js/fargo.common.js",       
+                         "js/fargo.public.media.js",         
                          "js/fargo.system.js", 
                          "js/fargo.private.main.js", 
+                         "js/fargo.private.media.js",         
                          "js/fargo.private.import.js");
      
-    $li_import = "<li id=\"import\">Import</li>\n";
+    $li_modes = "<li id=\"modes\">Modes</li>\n";
     $li_login  = "<li id=\"logout\">Logout</li>\n";
     $system_states = "   <div id=\"state_xbmc\">offline</div>\n".
                      "   <div id=\"state_property\"></div>\n".
@@ -116,7 +117,7 @@ echo "    </div>\n";
 // Sub control bar.
 echo "    <div id=\"control_sub\">\n";
 echo "     <ul>\n";
-echo "      $li_import";
+echo "      $li_modes";
 echo "      <li id=\"title\">Title</li>\n";
 echo "      <li id=\"genres\">Genres</li>\n";
 echo "      <li id=\"years\">Years</li>\n";
@@ -149,7 +150,8 @@ ShowHiddenInfoBox();
 // Page States.
 echo "   <div id=\"state_media\">movies</div>\n";
 echo "   <div id=\"state_page\">movies</div>\n"; // movies, tvshows, music, system or popup.
-echo "   <div id=\"state_choice\"></div>\n"; // title, genre or year.
+echo "   <div id=\"state_choice\"></div>\n"; // mode, title, genre or year.
+echo "   <div id=\"state_mode\"></div>\n";
 echo "   <div id=\"state_title\"></div>\n";
 echo "   <div id=\"state_genre\"></div>\n";
 echo "   <div id=\"state_year\"></div>\n";

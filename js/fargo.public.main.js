@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.2
  *
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Jul 09, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -30,7 +30,7 @@ var global_list_fargo;
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Jul 09, 2013
+ * Updated on Sep 02, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -77,7 +77,7 @@ function LoadFargoMedia(media)
     $("#login").on("click", {type:"#login_box", title:"Login"}, SetPopupHandler);
     
     // Close popup.
-    $("#mask, .close, .close_right").on("click", SetMaskHandler);
+    $("#mask, .close, .close_right").on("click", SetCloseHandler);
     
     // Login validation event.
     $(".login").on("click", SetLoginValidateHandler);
