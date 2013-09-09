@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Aug 31, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -52,7 +52,7 @@ font-family:Arial, Helvetica, Sans-Serif;
 
 /* Remove input and select borders Chrome */
 *:focus {
-    outline: 0;
+outline:0;
 }
 
 #main{
@@ -60,13 +60,33 @@ width:100%;
 height:100%;
 }
 
-#header{
-width:100%;
+/* Begin Header part */
+#header_left{
+float:left;
+width:120px;
 min-height:5%;
 }
 
+#header_right{
+float:right;
+width:120px;
+min-height:5%;    
+}
+
+#header_center{
+margin:0 120px 0 120px;
+min-height:5%;    
+}
+
+#header_mode{
+margin:0 0 0 5px;
+font-size:1.2em;
+text-shadow:2px 2px 2px #000;
+color:dodgerblue;
+}
+
 #header_login{
-margin:0 5px 5px 0;
+margin:0 5px 0 0;
 font-size:1.1em;
 text-shadow:2px 2px 2px #000;
 text-align:right;
@@ -74,11 +94,13 @@ color:#FFF;
 }
 
 #header_info{
+padding:15px 0 0 0;  
 font-size:2em;
 text-shadow:2px 2px 2px #000;
 text-align:center;
 color:lightgray;
 }
+/* End Header part */
 
 /* Begin Popup part*/
 #mask{
@@ -191,9 +213,15 @@ background: -o-linear-gradient(top, #289EC9, #076182);
 background: -ms-linear-gradient(top, #289EC9 0%, #076182 100%);
 }
 
+.popup .id{
+display:none;
+}
+
 .popup .message{
+text-align:center;
+font-weight:bold;
+font-size:1.2em;
 color:#999;
-text-align:center; /* Test */
 }
 
 .popup .button{
@@ -255,11 +283,9 @@ margin:0 460px 0 10px;
 }
 
 #info_left table{
-/*width:100%;*/
 border-collapse:separate;
 border-spacing:10px 5px;
 font-size:1.3em;
-/*font-weight:bold;*/
 color:#FFF;
 }
 
@@ -326,11 +352,76 @@ margin:0 10px 0 10px;
 font-size:1.2em;
 color:#FFF;
 }    
-
 /* End Info Popup part */
 
+/* Begin Action Popup part */
+#action_box{
+width:550px;
+margin:50px 0 0 -302px;
+color:#FFF;    
+}
+
+#action_wrapper{
+height:156px;    
+}
+
+#action_thumb{
+width:100px;
+height:140px; 
+left:50%;
+margin:10px 0 0 -65px;
+position:fixed;
+border:1px solid grey;
+border-radius:5px;
+background:#454647;   
+}
+
+#action_thumb img{
+width:100px;
+height:140px; 
+border-radius:5px;
+}
+
+#action_title{
+font-weight:bold;
+font-size:0.9em;
+text-shadow:2px 2px 2px #000;
+text-align:center;
+}
+
+#action_box .progress{
+height:10px;
+margin:4px 20px 4px 20px;
+border:1px solid grey;
+border-radius:5px;
+background:#454647;
+}
+
+#action_box .progress_off{
+height:20px;
+}
+
+
+#transfer{
+height:0px;
+}
+
+#transfer iframe{
+width:0px;
+height:0px;
+padding:0px;
+margin:0px;
+border:none;
+background-color:#fff;
+}
+
+#ready{
+display:none;    
+}
+/* End Action Popup part */
+
 /* Begin Import Popup part */
-#import_box{
+/*#import_box{
 width:500px;
 margin-left:-252px;
 color:#FFF;
@@ -385,11 +476,11 @@ margin:4px 20px 4px 20px;
 border:1px solid grey;
 border-radius:5px;
 background:#454647;
-}
+}*/
 /* End Import Popup part */
 
 /* Begin Clean Popup part */
-#clean_box{
+/*#clean_box{
 width:550px;
 margin-left:-302px;
 margin-top:100px;
@@ -400,7 +491,7 @@ margin-bottom:30px;
 font-weight:bold;
 font-size:1.2em;
 color:#FFF;
-}
+}*/
 /* End Clean Popup part */
 
 /* Begin Display part */
@@ -777,16 +868,16 @@ color:#fff;
 }
 
 /* begin debug */
-#state_media{top:10px;}
-#state_page{top:32px;}
-#state_choice{top:54px;}
-#state_mode{top:76px;}
-#state_title{top:98px;}
-#state_genre{top:120px;}
-#state_year{top:144px;}
-#state_xbmc{top:166px;}
-#state_row{top:188px;}
-#state_property{top:208px;}
+#state_media{top:50px;}
+#state_page{top:72px;}
+#state_choice{top:96px;}
+#state_mode{top:118px;}
+#state_title{top:142px;}
+#state_genre{top:165px;}
+#state_year{top:189px;}
+#state_xbmc{top:211px;}
+#state_row{top:235px;}
+#state_property{top:258px;}
 /* end debug */
 
 #footer{

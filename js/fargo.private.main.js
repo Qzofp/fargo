@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -40,7 +40,7 @@ var global_import_request;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Jul 09, 2013
+ * Updated on Sep 08, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -62,7 +62,7 @@ function LoadFargoMedia(media)
     ShowMediaTable(media, global_page, global_sort);
     
     // The media info click events
-    $("#display_content").on("click", "td", SetInfoHandlerWithMode);
+    $("#display_content").on("click", "td", SetInfoHandlerWithActions);
     $(".button").on("click", ".url", SetShowUrlHandler);
 
     // The media click events.
@@ -79,11 +79,17 @@ function LoadFargoMedia(media)
     $("#display_system_right").on("click", ".property .on", SetPropertyClickHandler);
     
     // Clean database (library or event log) event.
-    $(".button").on("click", ".yes", CleanDatabaseHandler);
+    //$(".button").on("click", ".yes", CleanDatabaseHandler);
+    
+    // Yes or retry button is pressed. Preform action
+    $(".button").on("click", ".yes", SetActionHandler);
+    $(".button").on("click", ".retry", SetActionHandler);
+    
+    // No button is pressed, close popup.
+    $(".button").on("click", ".no", SetCloseHandler);
      
     // Import click event.
-    $("#import").on("click", SetImportHandler);
-    $(".button").on("click", ".retry", SetImportHandler);
+    //$("#import").on("click", SetImportHandler);
     
     // Cancel or finish import. 
     $(".button").on("click", ".cancel", SetCloseHandler);    
@@ -96,9 +102,6 @@ function LoadFargoMedia(media)
     $("#genres").on("click", SetButtonsHandler);
     $("#years").on("click", SetButtonsHandler);
     $(".button").on("click", ".choice", SetShowButtonHandler);
-    
-    // No button is pressed, close popup.
-    $(".button").on("click", ".no", SetCloseHandler);
             
     // Close popup.
     $("#mask, .close, .close_right").on("click", SetCloseHandler);
@@ -189,10 +192,47 @@ function ChangeSubControlBar(media)
 }
 
 /*
- * Function:	CleanDatabaseHandler
+ * Function:	SetActionHandler
+ *
+ * Created on Sep 08, 2013
+ * Updated on Sep 09, 2013
+ *
+ * Description: Perform action
+ * 
+ * In:	-
+ * Out:	Action
+ *
+ */
+function SetActionHandler()
+{    
+    var $popup = $(".popup:visible");
+    
+    switch($popup.find(".title").text().split(" ")[0])
+    {
+        case "Refresh"   : //SetImportHandler("Refresh", $popup.find(".id").text());
+                           alert("Refresh Something! " + $popup.find(".id").text());                           
+                           break;
+                           
+        case "Hide/Show" : 
+                           break;
+                           
+        case "Delete"    : 
+                           break;
+                           
+        case "Cleaning"  : SetCleanDatabaseHandler();
+                           break;
+                           
+        case "Import"    : SetStartImportHandler(); //alert("Import Something!"); 
+                           break;
+                                              
+    }    
+}
+
+/*
+ * Function:	SetCleanDatabaseHandler
  *
  * Created on Jun 10, 2013
- * Updated on Aug 18, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Clean a database table (Library or Event Log).
  * 
@@ -200,21 +240,27 @@ function ChangeSubControlBar(media)
  * Out:	Table cleaned (truncate)
  *
  */
-function CleanDatabaseHandler()
+function SetCleanDatabaseHandler()
 {
+    var option, number,finish;
+    var $clean;
+    
+    // turn progress on.
+    $(".progress_off").toggleClass("progress_off progress");
+    
     // Get option.
-    var option = $('#display_system_left .dim').text();
+    option = $('#display_system_left .dim').text();
     // Get active row number.
-    var number = $(".property .on").closest("tr").index();
+    number = $(".property .on").closest("tr").index();
     
-    var $clean = $("#clean_box .progress");
-    var finish = 3 + Math.floor(Math.random() * 3);
-    
+    $clean = $("#action_box .progress");
+    finish = 3 + Math.floor(Math.random() * 3);
+
     // Reset and show progress bar.
     $clean.progressbar({value : 0});
     $clean.show();
     
-     $("#clean_box .message").css({"margin-bottom":"20px"});
+    //$("#clean_box .message").css({"margin-bottom":"20px"});
     
     // Truncate table and delete pictures (posters, fanart and thumbs).
     ChangeProperty(number, "");
@@ -236,33 +282,6 @@ function CleanDatabaseHandler()
     
     $(".yes").hide();
     $(".no").html('Cancel');
-}
-
-/*
- * Function:	ClearCleanBox
- *
- * Created on Sep 01, 2013
- * Updated on Sep 01, 2013
- *
- * Description: Clear the clean box. Set back to initial values.
- *
- * In:	-
- * Out:	-
- *
- */
-function ClearCleanBox()
-{
-    var $clean= $("#clean_box");
-    
-    setTimeout(function() {
-        $clean.find(".message").removeAttr("style").html("<br/>");
-        
-        // Remove progressbar.
-        if($clean.find(".ui-progressbar").length != 0) {   
-            $clean.find(".progress").progressbar( "destroy" );
-        }    
-   
-    }, 300); 
 }
 
 /*
@@ -306,7 +325,7 @@ function DisplayCleaningMessage(str1, str2, prg, btn, end)
  * Function:	SetPopupKeyHandler
  *
  * Created on Apr 28, 2013
- * Updated on Jun 15, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Disable popup window.
  * 
@@ -316,7 +335,7 @@ function DisplayCleaningMessage(str1, str2, prg, btn, end)
  */
 function SetPopupKeyHandler(key)
 { 
-    var popup = $("#import_box");
+    var popup = $("#action_box");
     
     if (key == 27) // ESC key
     {   

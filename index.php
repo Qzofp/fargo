@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Aug 31, 2013
+ * Updated on Sep 08, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -19,6 +19,7 @@ session_start();
 if(!isset($_SESSION['LOGIN']))
 {
     $login = false;
+    $mode = "&nbsp;";
     $user = "&nbsp;";
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js", 
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
@@ -36,6 +37,7 @@ if(!isset($_SESSION['LOGIN']))
 else
 {
     $login = true;
+    $mode = "Normal";
     $user = "Welcome: <span>".$_SESSION['USER']."</span>";
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js",
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
@@ -72,10 +74,24 @@ if (!isset($media)) {
 PageHeader($title, $aCss, $aJavascript);
 
 // Header section. 
+echo "   <div id=\"header_left\">\n";
+echo "    <div id=\"header_mode\">$mode</div>\n";
+echo "   </div>\n";
+
+echo "   <div id=\"header_right\">\n";
+echo "    <div id=\"header_login\">$user</div>\n";
+echo "   </div>\n";
+
+echo "   <div id=\"header_center\">\n";
+echo "    <div id=\"header_info\"></div>\n";
+echo "   </div>\n";
+
+/* 
 echo "   <div id=\"header\">\n";
 echo "    <div id=\"header_login\">$user</div>\n";
 echo "    <div id=\"header_info\"></div>\n";
 echo "   </div>\n";
+*/
 
 // Display section.
 echo "   <div id=\"display_left\">\n";
@@ -140,8 +156,9 @@ if (!$login)
 }
 else 
 {
-    ShowHiddenImportBox();
-    ShowHiddenCleanLibraryBox();
+    ShowHiddenActionBox();
+    //ShowHiddenImportBox();
+    //ShowHiddenCleanLibraryBox();
 }
 
 ShowHiddenButtonsBox();

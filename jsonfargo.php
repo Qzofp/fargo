@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -456,7 +456,7 @@ function GetMediaInfo($media, $id)
  * Function:	GetMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Jul 09, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Get the movie info from Fargo and return it as Json data. 
  *
@@ -466,7 +466,9 @@ function GetMediaInfo($media, $id)
  */
 function GetMovieInfo($id)
 {
-    $aJson = null;
+    $aJson   = null;
+    $aMedia  = null;
+    $aParams = null;
     
     $sql = "SELECT xbmcid, title, director, writer, studio, genre, `year`, runtime, rating,". 
                   "votes, tagline, plot, mpaa, country, trailer, audio, video, file,".
@@ -487,26 +489,26 @@ function GetMovieInfo($id)
             
             $genre = str_replace('"', '', $genre);
             
-            $aJson["xbmcid"]   = $xbmcid;
-            $aJson["title"]    = $title;
-            $aJson["director"] = str_replace("|", " / ", $director);
-            $aJson["writer"]   = str_replace("|", " / ", $writer);
-            $aJson["studio"]   = $studio;
-            $aJson["genre"]    = str_replace("|", " / ", $genre);
-            $aJson["year"]     = $year;
-            $aJson["runtime"]  = round($runtime/60)." Minutes";
-            //$aJson["votes"]    = $votes;
-            $aJson["rating"]   = $rating." ($votes votes)";
-            $aJson["tagline"]  = $tagline;
-            $aJson["plot"]     = $plot;
-            $aJson["mpaa"]     = ConvertToRatingsFlag($mpaa);
-            $aJson["country"]  = $country;
-            $aJson["trailer"]  = $trailer;
-            $aJson["audio"]    = ConvertToAudioFlag($audio);
-            $aJson["video"]    = ConvertToVideoFlag($video);
-            $aJson["aspect"]   = ConvertToAspectFlag($video, $file);
-            $aJson["imdbnr"]   = ConverToMovieUrl($imdbnr);
-            $aJson["trailer"]  = ConverToMovieUrl($trailer);   
+            $aMedia["xbmcid"]   = $xbmcid;
+            $aMedia["title"]    = ShortenString($title, 50);
+            $aMedia["director"] = str_replace("|", " / ", $director);
+            $aMedia["writer"]   = str_replace("|", " / ", $writer);
+            $aMedia["studio"]   = $studio;
+            $aMedia["genre"]    = str_replace("|", " / ", $genre);
+            $aMedia["year"]     = $year;
+            $aMedia["runtime"]  = round($runtime/60)." Minutes";
+            //$aMedia["votes"]    = $votes;
+            $aMedia["rating"]   = $rating." ($votes votes)";
+            $aMedia["tagline"]  = $tagline;
+            $aMedia["plot"]     = $plot;
+            $aMedia["mpaa"]     = ConvertToRatingsFlag($mpaa);
+            $aMedia["country"]  = $country;
+            $aMedia["trailer"]  = $trailer;
+            $aMedia["audio"]    = ConvertToAudioFlag($audio);
+            $aMedia["video"]    = ConvertToVideoFlag($video);
+            $aMedia["aspect"]   = ConvertToAspectFlag($video, $file);
+            $aMedia["imdbnr"]   = ConverToMovieUrl($imdbnr);
+            $aMedia["trailer"]  = ConverToMovieUrl($trailer);
         }
         else
         {
@@ -520,6 +522,14 @@ function GetMovieInfo($id)
     }
     CloseDatabase($db);      
     
+    // Fill parameters.
+    $aParams['thumbs'] = cMOVIESTHUMBS;
+    $aParams['fanart'] = cMOVIESFANART;
+    
+    // Fill Json.
+    $aJson['params']   = $aParams;
+    $aJson['media']    = $aMedia;
+    
     return $aJson;
 }
 
@@ -527,7 +537,7 @@ function GetMovieInfo($id)
  * Function:	GetTVShowInfo
  *
  * Created on Jul 09, 2013
- * Updated on Jul 10, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Get the TV show info from Fargo and return it as Json data. 
  *
@@ -537,7 +547,9 @@ function GetMovieInfo($id)
  */
 function GetTVShowInfo($id)
 {
-    $aJson = null;
+    $aJson   = null;
+    $aMedia  = null;
+    $aParams = null;  
     
     $sql = "SELECT xbmcid, title, studio, genre, `year`, premiered, rating, votes, plot, episode,".
                   "watchedepisodes, episodeguide, imdbnr ".
@@ -556,19 +568,19 @@ function GetTVShowInfo($id)
             
             $genre = str_replace('"', '', $genre);
             
-            $aJson["xbmcid"]          = $xbmcid;
-            $aJson["title"]           = $title;
-            $aJson["studio"]          = $studio;
-            $aJson["genre"]           = str_replace("|", " / ", $genre);
-            $aJson["year"]            = $year;
-            $aJson["premiered"]       = date( 'd/m/Y', strtotime($premiered));
-            //$aJson["votes"]           = $votes;
-            $aJson["rating"]          = $rating." ($votes votes)";
-            $aJson["plot"]            = $plot;
-            $aJson["episode"]         = $episode;
-            $aJson["watchedepisodes"] = $watchedepisodes;
-            //$aJson["episodeguide"]    = $episodeguide;
-            $aJson["imdbnr"]          = ConverToMovieUrl($imdbnr, $episodeguide); 
+            $aMedia["xbmcid"]          = $xbmcid;
+            $aMedia["title"]           = ShortenString($title, 50);
+            $aMedia["studio"]          = $studio;
+            $aMedia["genre"]           = str_replace("|", " / ", $genre);
+            $aMedia["year"]            = $year;
+            $aMedia["premiered"]       = date( 'd/m/Y', strtotime($premiered));
+            //$aMedia["votes"]           = $votes;
+            $aMedia["rating"]          = $rating." ($votes votes)";
+            $aMedia["plot"]            = $plot;
+            $aMedia["episode"]         = $episode;
+            $aMedia["watchedepisodes"] = $watchedepisodes;
+            //$aMedia["episodeguide"]    = $episodeguide;
+            $aMedia["imdbnr"]          = ConverToMovieUrl($imdbnr, $episodeguide); 
         }
         else
         {
@@ -582,6 +594,14 @@ function GetTVShowInfo($id)
     }
     CloseDatabase($db);      
     
+    // Fill parameters.
+    $aParams['thumbs'] = cTVSHOWSTHUMBS;
+    $aParams['fanart'] = cTVSHOWSFANART;
+    
+    // Fill Json.
+    $aJson['params']   = $aParams;
+    $aJson['media']    = $aMedia;
+    
     return $aJson;
 }
 
@@ -589,7 +609,7 @@ function GetTVShowInfo($id)
  * Function:	GetAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Jul 10, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Get the album info from Fargo and return it as Json data. 
  *
@@ -599,7 +619,9 @@ function GetTVShowInfo($id)
  */
 function GetAlbumInfo($id)
 {
-    $aJson = null;
+    $aJson   = null;
+    $aMedia  = null;
+    $aParams = null;  
     
     $sql = "SELECT xbmcid, title, genre, theme, mood, style, `year`, artist, displayartist, rating,".
            "description, albumlabel ".
@@ -626,18 +648,18 @@ function GetAlbumInfo($id)
                 $description = "No review for this album.";
             }
             
-            $aJson["xbmcid"]        = $xbmcid;
-            $aJson["title"]         = $title;
-            $aJson["genre"]         = str_replace("|", " / ", $genre);
-            $aJson["theme"]         = str_replace("|", " / ", $theme);
-            $aJson["mood"]          = str_replace("|", " / ", $mood);
-            $aJson["style"]         = str_replace("|", " / ", $style);            
-            $aJson["year"]          = $year;
-            $aJson["artist"]        = $artist;
-            $aJson["displayartist"] = $displayartist;
-            $aJson["rating"]        = $rating." (from 5 starts)";
-            $aJson["description"]   = $description;
-            $aJson["albumlabel"]    = $albumlabel;
+            $aMedia["xbmcid"]        = $xbmcid;
+            $aMedia["title"]         = ShortenString($title, 50);
+            $aMedia["genre"]         = str_replace("|", " / ", $genre);
+            $aMedia["theme"]         = str_replace("|", " / ", $theme);
+            $aMedia["mood"]          = str_replace("|", " / ", $mood);
+            $aMedia["style"]         = str_replace("|", " / ", $style);            
+            $aMedia["year"]          = $year;
+            $aMedia["artist"]        = $artist;
+            $aMedia["displayartist"] = $displayartist;
+            $aMedia["rating"]        = $rating." (from 5 starts)";
+            $aMedia["description"]   = $description;
+            $aMedia["albumlabel"]    = $albumlabel;
         }
         else
         {
@@ -650,6 +672,14 @@ function GetAlbumInfo($id)
         die('Invalid query: '.mysqli_error($db));
     }
     CloseDatabase($db);     
+
+    // Fill parameters.
+    $aParams['thumbs'] = cALBUMSTHUMBS;
+    $aParams['covers'] = cALBUMSCOVERS;
+    
+    // Fill Json.
+    $aJson['params']   = $aParams;
+    $aJson['media']    = $aMedia;    
     
     return $aJson;
 }

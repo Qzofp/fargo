@@ -28,3 +28,7 @@ localhost:8080/jsonrpc?request={"jsonrpc": "2.0", "method": "AudioLibrary.GetAlb
 "title", "description", "artist", "genre", "theme", "mood", "style", "type", "albumlabel", 
 "rating", "year", "musicbrainzalbumid", "musicbrainzalbumartistid", "fanart", "thumbnail", 
 "playcount", "genreid", "artistid", "displayartist"
+
+
+
+localhost:8080/jsonrpc?request={"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieDetails", "params": {"movieid": 3, "properties": ["title", "studio", "mpaa", "plot", "genre", "year", "runtime", "streamdetails", "rating", "tagline", "director", "writer", "fanart", "thumbnail", "file", "trailer"]}, "id": 1}

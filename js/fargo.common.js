@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -283,18 +283,22 @@ function ShowPopupBox(type, title)
  */
 function SetCloseHandler()
 {
-    // Clear popup box.
-    switch($(".popup:visible").attr('id'))
+    var $popup = $(".popup:visible");
+    
+    switch($popup.attr('id'))
     {
-        case "import_box"  : //alert ("import");
-                             ClearImportBox();
-                             SetImportCancelHandler(); //Abort import.
+        case "action_box"  : //alert ("import");
+                             ClearActionBox();
+                             if($popup.find(".title").text().split(" ")[0] == "Import") {
+                                //alert("close import");
+                                SetImportCancelHandler(); //Abort import.
+                             }
                              break;
-
+/*
         case "clean_box"   : //alert ("clean");
                              ClearCleanBox();   
                              break;
-                            
+*/                            
         case "buttons_box" : //alert ("buttons");
                              ClearButtonsBox();
                              break;

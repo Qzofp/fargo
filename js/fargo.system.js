@@ -6,7 +6,7 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 08, 2013
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Jul 01, 2013
+ * Updated on Sep 07, 2013
  *
  * Description: Show the system page with minimum options.
  * 
@@ -43,6 +43,7 @@ function SetSystemHandler(event)
    global_media = ChangeControlBar(media);
    ChangeSubControlBar(media);
    
+   $("#header_mode").hide();
    $("#header_info").hide();
    
    $("#display_left").hide();
@@ -501,7 +502,7 @@ function SetPropertyMouseHandler(event)
  * Function:	SetPropertyClickHandler
  *
  * Created on Jun 09, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Handle clicked property event.
  *
@@ -524,7 +525,7 @@ function SetPropertyClickHandler()
                     
             case 2: //Import Movies library.
                     SetState("media", "movies");
-                    SetImportHandler();
+                    SetImportPopupHandler("movies");
                     //SetState("media", "system");
                     break;
                     
@@ -534,7 +535,7 @@ function SetPropertyClickHandler()
                     
             case 5: //Import TV Shows library.
                     SetState("media", "tvshows");
-                    SetImportHandler();
+                    SetImportPopupHandler("tvshows");
                     //SetState("media", "system");                
                     break;
                     
@@ -544,7 +545,7 @@ function SetPropertyClickHandler()
                     
             case 8: //Import Music library.
                     SetState("media", "music");
-                    SetImportHandler();
+                    SetImportPopupHandler("music");;
                     //SetState("media", "system");                
                     break;                
         }
@@ -576,16 +577,17 @@ function ActivateProperty()
  * Function:	CleanPopupBox
  *
  * Created on Jun 09, 2013
- * Updated on Jul 04, 2013
+ * Updated on Sep 08, 2013
  *
  * Description: Show clean library popup box
  *
- * In:	name
+ * In:	msg
  * Out:	Popup box
  *
  */
-function CleanPopupBox(name)
+function CleanPopupBox(msg)
 {
+    /*
     $("#clean_box .progress").hide();
     $("#clean_box .message").css({"margin-bottom":"30px"});
     
@@ -594,6 +596,14 @@ function CleanPopupBox(name)
     $(".no").html('No');
     
     ShowPopupBox("#clean_box", "Cleaning database");
+    SetState("page", "popup");
+    */
+    
+    $("#action_box .message").text("Do you want to clean the " + msg + "?");
+    $("#action_wrapper").hide();
+    
+    
+    ShowPopupBox("#action_box", "Cleaning database");
     SetState("page", "popup");
 }
 

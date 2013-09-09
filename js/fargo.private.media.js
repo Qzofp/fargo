@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Aug 31, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	ChangeModeMediaInterface
  *
  * Created on Aug 31, 2013
- * Updated on Aug 31, 2013
+ * Updated on Sep 07, 2013
  *
  * Description: Change the interface (hover color and mode notifiction).
  * 
@@ -30,16 +30,20 @@ function ChangeModeMediaInterface(mode)
 {
     switch (mode)
     {
-        case "Normal"    : ChangeMediaTableHoverColor("dodgerblue", "dodgerblue");
+        case "Normal"    : $("#header_mode").text(mode).css({'color':'dodgerblue'});
+                           ChangeMediaTableHoverColor("dodgerblue", "dodgerblue");                           
                            break;
                         
-        case "Refresh"   : ChangeMediaTableHoverColor("#33BF38", "#33BF38");
+        case "Refresh"   : $("#header_mode").text(mode).css({'color':'#33BF38'});
+                           ChangeMediaTableHoverColor("#33BF38", "#33BF38");
                            break;
                         
-        case "Hide/Show" : ChangeMediaTableHoverColor("white", "white");
+        case "Hide/Show" : $("#header_mode").text(mode).css({'color':'white'});
+                           ChangeMediaTableHoverColor("white", "white");
                            break; 
 
-        case "Delete"    : ChangeMediaTableHoverColor("#D82020", "#D82020");
+        case "Delete"    : $("#header_mode").text(mode).css({'color':'#D82020'});
+                           ChangeMediaTableHoverColor("#D82020", "#D82020");
                            break;                   
     }
 }
@@ -72,7 +76,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Function:	SetMediaHandlerWithMode
  *
  * Created on Aug 31, 2013
- * Updated on Aug 31, 2013
+ * Updated on Sep 08, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -80,7 +84,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Out:	Media Info
  *
  */
-function SetInfoHandlerWithMode()
+function SetInfoHandlerWithActions()
 {   
     var mode  = GetState("mode");
     var media = GetState("media");
@@ -88,7 +92,8 @@ function SetInfoHandlerWithMode()
 
     switch(mode)
     {
-        case "Refresh"   : alert ("Refresh");
+        case "Refresh"   : //alert ("Refresh");
+                           ShowModePopup(mode, media, id);
                            break;
                          
         case "Hide/Show" : alert ("Hide and Seek");
@@ -100,4 +105,129 @@ function SetInfoHandlerWithMode()
         default          : ShowMediaInfo(media, id); //Mode is Normal.
                            break;
     }    
+}
+
+/*
+ * Function:	ShowModePopup
+ *
+ * Created on Sep 07, 2013
+ * Updated on Sep 09, 2013
+ *
+ * Description: Show the action popup with the yes/no buttons.
+ * 
+ * In:	mode, media, id
+ * Out:	Action Popup
+ *
+ */
+function ShowModePopup(mode, media, id)
+{
+    $.ajax
+    ({
+        url: 'jsonfargo.php?action=info&media=' + media + '&id=' + id,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {   
+            $("#action_box .id").text(json.media.xbmcid);
+            $("#action_box .message").text("Do you want to refresh this " + ConvertMediaToSingular(media) + "?");
+            
+            // Show fanart.
+            $("#action_thumb img").error(function(){
+                $(this).attr('src', 'images/no_poster.jpg');
+            })
+            .attr('src', json.params.thumbs + '/' + json.media.xbmcid + '.jpg');
+    
+            $("#action_title").text(json.media.title);
+
+            if (media == "music") 
+            {
+                $("#action_wrapper").height(116);
+                $("#action_thumb").height(100);
+                $("#action_thumb img").height(100);
+            }
+            else 
+            {
+                $("#action_wrapper").height(156);
+                $("#action_thumb").height(140);
+                $("#action_thumb img").height(140);
+            }
+            
+            // Show popup.
+            ShowPopupBox("#action_box", mode);
+            SetState("page", "popup");    
+        } // End succes.
+    }); // End Ajax.       
+}
+
+/*
+ * Function:	ClearCleanBox
+ *
+ * Created on Sep 01, 2013
+ * Updated on Sep 01, 2013
+ *
+ * Description: Clear the clean box. Set back to initial values.
+ *
+ * In:	-
+ * Out:	-
+ *
+ */
+/*function ClearCleanBox()
+{
+    var $clean= $("#clean_box");
+    
+    setTimeout(function() {
+        $clean.find(".message").removeAttr("style").html("<br/>");
+        
+        // Remove progressbar.
+        if($clean.find(".ui-progressbar").length != 0) {   
+            $clean.find(".progress").progressbar( "destroy" );
+        }    
+   
+    }, 300); 
+}*/
+
+/*
+ * Function:	ClearActionBox
+ *
+ * Created on Sep 08, 2013
+ * Updated on Sep 09, 2013
+ *
+ * Description: Clear the action box. Set back to initial values.
+ *
+ * In:	-
+ * Out:	-
+ *
+ */
+function ClearActionBox()
+{
+    var $action = $("#action_box");
+    var $thumb  = $("#action_thumb");
+    
+    setTimeout(function() {
+        $action.find(".id").text("");
+        $action.find(".title").text("");
+        $action.find(".message").html("<br/>");
+        
+        $("#transfer").html("<br/>");
+        $("#ready").html("<br/>");
+        
+        $("#action_wrapper").removeAttr("style");
+        $thumb.removeAttr("style");
+        $thumb.children("img").removeAttr("style").attr("src", "");
+        
+        $("#action_title").html("&nbsp;");
+        
+        // Remove progressbar.
+        if($action.find(".ui-progressbar").length != 0) {   
+            $action.find(".progress").progressbar( "destroy" );
+        }        
+        $(".progress").toggleClass("progress progress_off");
+        
+        // Reset buttons.
+        $(".yes").show();
+        $(".retry").toggleClass("retry no");
+        $(".cancel").toggleClass("cancel no");
+        $(".no").text("No");
+   
+    }, 300);     
 }

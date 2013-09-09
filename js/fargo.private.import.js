@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -22,8 +22,42 @@ var global_cancel      = false;
 /*
  * Function:	SetImportHandler
  *
+ * Created on Sep 09, 2013
+ * Updated on Sep 09, 2013
+ *
+ * Description: Set the import handler, show the import popup box with yes/no buttons.
+ * 
+ * In:	-
+ * Out:	Show Import Popup
+ *
+ */
+function SetImportPopupHandler(media)
+{
+    $("#action_box .message").text("Do you want to start importing " + ConvertMedia(media) + "?");
+    
+    if (media == "music") 
+    {
+        $("#action_wrapper").height(116);
+        $("#action_thumb").height(100);
+        $("#action_thumb img").height(100);
+    }
+    else 
+    {
+        $("#action_wrapper").height(156);
+        $("#action_thumb").height(140);
+        $("#action_thumb img").height(140);
+    }
+    
+    // Show popup.
+    ShowPopupBox("#action_box", "Import " + ConvertMedia(media));
+    SetState("page", "popup"); 
+}
+
+/*
+ * Function:	SetStartImportHandler
+ *
  * Created on Jul 14, 2013
- * Updated on Aug 24, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -31,7 +65,7 @@ var global_cancel      = false;
  * Out:	title
  *
  */
-function SetImportHandler()
+function SetStartImportHandler()
 {  
     var media, msg;
     
@@ -54,7 +88,7 @@ function SetImportHandler()
             var start, end;
             var timer, i = 0;
             
-            // Check if XBMC is online and transfer XMBC media counter (total).
+            // Check if XBMC is online and transfer XBMC media counter (total).
             ImportCounter(json, media);
             
             // Get XBMC media counter from Fargo.
@@ -94,7 +128,7 @@ function SetImportHandler()
  * Function:	InitImportAndShowPopup
  *
  * Created on Aug 18, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Initialize import values and show popup.
  * 
@@ -104,20 +138,28 @@ function SetImportHandler()
  */
 function InitImportAndShowPopup()
 {
-    var title;
+    //var title;
     var media = GetState("media"); // Get state media. 
     
     global_cancel = false;
   
-    title = "Import " + ConvertMedia(media); 
-    ShowPopupBox("#import_box", title);
-    SetState("page", "popup");
+    //title = "Import " + ConvertMedia(media); 
+    //ShowPopupBox("#import_box", title);
+    //SetState("page", "popup");
      
-    $(".retry").toggleClass("retry cancel");
+    //$(".retry").toggleClass("retry cancel");
     
     // Initialize status popup box.
-    $("#import_box .message").html("Connecting...");
-    AdjustImageSize(media);
+    $("#action_box .message").html("Connecting...");
+    //AdjustImageSize(media);
+    
+    // turn progress on.
+    $(".progress_off").toggleClass("progress_off progress");
+    
+    $(".yes").hide();
+    $(".no").toggleClass("no cancel");
+    $(".retry").toggleClass("retry cancel");  
+    
     $(".cancel").html("Cancel");    
     
     return media;
@@ -139,7 +181,7 @@ function ShowNoNewMedia(media, msg)
 {
     var finish = 2 + Math.floor(Math.random() * 3);
     
-    $("#import_box .message").html(msg[0]);
+    $("#action_box .message").html(msg[0]);
     SetState("xbmc", "online");
     DisplayStatusMessage(msg[2], msg[5], finish);
     LogEvent("Information", "No new " + ConvertMedia(media) + " found.");      
@@ -149,7 +191,7 @@ function ShowNoNewMedia(media, msg)
  * Function:	ShowOffline
  *
  * Created on Aug 19, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Show offline message and add to log event.
  * 
@@ -159,10 +201,12 @@ function ShowNoNewMedia(media, msg)
  */
 function ShowOffline(msg)
 {
-    $("#import_box .message").html(msg[1]);
+    $("#action_box .message").html(msg[1]);
     SetState("xbmc", "offline");
-    $(".cancel").toggleClass("cancel retry");
+    
+    $(".cancel").toggleClass("cancel retry");    
     $(".retry").html("Retry");
+    
     LogEvent("Information", "XBMC is offline or not reachable."); 
 }
 
@@ -180,7 +224,7 @@ function ShowOffline(msg)
  */
 function ShowFinished(media, delta, msg)
 {   
-    $("#import_box .message").html(msg[6]);
+    $("#action_box .message").html(msg[6]);
     $(".cancel").html("Finish");
     LogEvent("Information", "Import of " + delta + " " + ConvertMedia(media) + " finished.");    
 }
@@ -221,11 +265,12 @@ function SetImportCancelHandler()
     // Reset import values.
     global_total_fargo = 0;
     global_total_xbmc  = 0;    
-    $("#thumb img").attr('src', 'images/no_poster.jpg');
-    $("#import_box .progress").progressbar({
+    //$("#action_thumb img").attr('src', 'images/no_poster.jpg');
+    $("#action_box .progress").progressbar({
         value : 0       
     });
-    $("#media_title").html("&nbsp;");
+    
+    //$("#action_title").html("&nbsp;");
     
     if (button == "Finish" && media != "system") {
         window.location='index.php?media=' + media;
@@ -272,7 +317,7 @@ function ClearImportBox()
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Aug 25, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -286,6 +331,9 @@ function StartImport(xbmc, media, start, end, msg)
     var busy    = true;
     var delta   =  end - start;
     var $ready  = $("#ready");
+    
+    // turn progress on.
+    //$(".progress_off").toggleClass("progress_off progress");
     
     // Import media process.
     ImportMedia(xbmc, media, start);
@@ -352,7 +400,7 @@ function StartImport(xbmc, media, start, end, msg)
  * Function:	ShowStatus
  *
  * Created on Aug 19, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Show the import status.
  *
@@ -373,27 +421,27 @@ function ShowStatus(delta, start, end, media, msg)
             {
                 var percent = start - (end - delta);
                 percent = Math.round(percent/delta * 100);
-                $("#import_box .progress").progressbar({
+                $("#action_box .progress").progressbar({
                     value : percent       
                 });                
                 
-                $("#import_box .message").html(msg[4]);
+                $("#action_box .message").html(msg[4]);
                       
                 // Preload image.
                 var img = new Image();
                 img.src = json.thumbs + '/'+ json.xbmcid +'.jpg';
-                $("#thumb img").attr('src', img.src);
+                $("#action_thumb img").attr('src', img.src);
                                 
                 // If images not found then show no poster.
-                $("#thumb img").error(function(){
+                $("#action_thumb img").error(function(){
                     $(this).attr('src', 'images/no_poster.jpg');
                 });
                     
-                $("#media_title").html(json.title);
+                $("#action_title").html(json.title);
                 
             }  
             else {
-                $("#import_box .message").html(msg[3]);                    
+                $("#action_box .message").html(msg[3]);                    
             }              
         } // End succes.    
     }); // End Ajax. 
@@ -440,7 +488,7 @@ function ImportCounter(xbmc, media)
  * Function:	ImportMedia
  *
  * Created on Jul 20, 2013
- * Updated on Aug 24, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Import the media transfered from XBMC.
  *
@@ -459,7 +507,7 @@ function ImportMedia(xbmc, media, start)
         url = "http://" + xbmc.connection + ":" + xbmc.port;
     }    
     
-    url   += "/fargo/transfer.html?action=" + media + "&start=" + start;
+    url   += "/fargo/transfer.html?action=" + media + "&mode=import&start=" + start;
     iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';   
     
     // Reset values.
@@ -535,7 +583,7 @@ function IframeReady()
  * Out:	Adjusted image size
  *
  */
-function AdjustImageSize(media)
+/*function AdjustImageSize(media)
 {
     var img = new Image();
     if (media == "music") 
@@ -552,13 +600,13 @@ function AdjustImageSize(media)
         img.src = 'images/no_poster.jpg';
         $("#thumb img").attr('src', img.src).height(140).width(100);
     }    
-}
+}*/
 
 /*
  * Function:	DisplayStatusMessage
  *
  * Created on May 17, 2013
- * Updated on Jul 04, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Display status message.
  *
@@ -574,10 +622,10 @@ function DisplayStatusMessage(str1, str2, end)
 
         if (!global_cancel)
         {
-            $("#import_box .message").html(str1);
+            $("#action_box .message").html(str1);
             
             percent = Math.round(i/end * 100);
-            $("#import_box .progress").progressbar({
+            $("#action_box .progress").progressbar({
                 value : percent       
             });
             
@@ -587,7 +635,7 @@ function DisplayStatusMessage(str1, str2, end)
             if (i > end)
             {
                 clearInterval(timer);
-                $("#import_box .message").html(str2);
+                $("#action_box .message").html(str2);
                 $(".cancel").html("Ok");           
             }
         }    

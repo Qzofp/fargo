@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Aug 25, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -129,6 +129,46 @@ function ShowHiddenInfoBox()
 }
 
 /*
+ * Function:	ShowHiddenActionBox
+ *
+ * Created on Sep 07, 2013
+ * Updated on Sep 09, 2013
+ *
+ * Description: Show hidden action box. This box with yes/no buttons is used for the Refresh and Delete modes.
+ *
+ * In:  -
+ * Out:	Hidden action box.
+ *
+ */
+function ShowHiddenActionBox()
+{
+    // Note: This should als be used for Import and CleanLibrary.
+    echo "   <div class=\"popup\" id=\"action_box\">\n";
+    echo "    <form method=\"post\" action=\"#\">\n";
+    echo "     <div class=\"close_left\">&nbsp;</div>\n";       
+    echo "     <div class=\"close_right\">x</div>\n";
+    echo "     <div class=\"id\"></div>\n";
+    echo "     <div class=\"title\">Action Box</div>\n";
+    echo "     <div class=\"message\"><br/></div>\n";
+    
+    // Refresh or Import div's.
+    echo "     <div id=\"transfer\"><br/></div>\n";
+    echo "     <div id=\"ready\"><br/></div>\n";
+    
+    echo "     <div id=\"action_wrapper\">\n";
+    echo "      <div id=\"action_thumb\"><img src=\"\"/></div>\n";
+    echo "     </div>\n";
+    echo "     <div id=\"action_title\">&nbsp;</div>\n";
+    echo "     <div class=\"progress_off\"></div>\n";   
+    echo "     <div class=\"button\">\n";
+    echo "      <button type=\"button\" class=\"yes\">Yes</button>\n";
+    echo "      <button type=\"button\" class=\"no\">No</button>\n";
+    echo "     </div>\n";
+    echo "    </form>\n";    
+    echo "   </div>\n";
+}
+
+/*
  * Function:	ShowHiddenImportBox
  *
  * Created on May 06, 2013
@@ -140,7 +180,7 @@ function ShowHiddenInfoBox()
  * Out:	Hidden import box.
  *
  */
-function ShowHiddenImportBox()
+/*function ShowHiddenImportBox()
 {
     echo "   <div class=\"popup\" id=\"import_box\">\n";
     echo "    <form method=\"post\" action=\"#\">\n";
@@ -166,7 +206,7 @@ function ShowHiddenImportBox()
     echo "     </div>\n";
     echo "    </form>\n";    
     echo "   </div>\n";    
-}
+}*/
 
 /*
  * Function:	ShowHiddenCleanLibraryBox
@@ -180,7 +220,7 @@ function ShowHiddenImportBox()
  * Out:	Hidden clean library box.
  *
  */
-function ShowHiddenCleanLibraryBox()
+/*function ShowHiddenCleanLibraryBox()
 {
     echo "   <div class=\"popup\" id=\"clean_box\">\n";
     echo "    <form method=\"post\" action=\"#\">\n";
@@ -196,7 +236,7 @@ function ShowHiddenCleanLibraryBox()
     echo "     </div>\n";
     echo "    </form>\n";    
     echo "   </div>\n";    
-}
+}*/
 
 ////////////////////////////////////////    Database Functions    /////////////////////////////////////////
 
