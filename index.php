@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Sep 08, 2013
+ * Updated on Sep 09, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -86,13 +86,6 @@ echo "   <div id=\"header_center\">\n";
 echo "    <div id=\"header_info\"></div>\n";
 echo "   </div>\n";
 
-/* 
-echo "   <div id=\"header\">\n";
-echo "    <div id=\"header_login\">$user</div>\n";
-echo "    <div id=\"header_info\"></div>\n";
-echo "   </div>\n";
-*/
-
 // Display section.
 echo "   <div id=\"display_left\">\n";
 echo "    <div id=\"sort\"></div>\n";
@@ -149,16 +142,11 @@ PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true);
 echo "   <div id=\"mask\"></div>\n";
 
 // Popup section (default hidden).
-if (!$login)
-{
+if (!$login) {
     ShowHiddenLoginBox();
-
 }
-else 
-{
+else {
     ShowHiddenActionBox();
-    //ShowHiddenImportBox();
-    //ShowHiddenCleanLibraryBox();
 }
 
 ShowHiddenButtonsBox();

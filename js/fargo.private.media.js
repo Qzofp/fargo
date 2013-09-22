@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -73,10 +73,10 @@ function ChangeMediaTableHoverColor(color_text, color_border)
 }
 
 /*
- * Function:	SetMediaHandlerWithMode
+ * Function:	SetMediaHandlerWithActions
  *
  * Created on Aug 31, 2013
- * Updated on Sep 08, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -88,7 +88,8 @@ function SetInfoHandlerWithActions()
 {   
     var mode  = GetState("mode");
     var media = GetState("media");
-    var id    = $(this).children(":first-child").text();
+    //var id    = $(this).children(":first-child").text();  
+    var id = $(this).attr("class").match(/[0-9]+/);
 
     switch(mode)
     {
@@ -111,7 +112,7 @@ function SetInfoHandlerWithActions()
  * Function:	ShowModePopup
  *
  * Created on Sep 07, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 21, 2013
  *
  * Description: Show the action popup with the yes/no buttons.
  * 
@@ -128,14 +129,15 @@ function ShowModePopup(mode, media, id)
         dataType: 'json',
         success: function(json)
         {   
-            $("#action_box .id").text(json.media.xbmcid);
+            $("#action_box .id").text(id);
+            $("#action_box .xbmcid").text(json.media.xbmcid);
             $("#action_box .message").text("Do you want to refresh this " + ConvertMediaToSingular(media) + "?");
             
             // Show fanart.
             $("#action_thumb img").error(function(){
                 $(this).attr('src', 'images/no_poster.jpg');
             })
-            .attr('src', json.params.thumbs + '/' + json.media.xbmcid + '.jpg');
+            .attr('src', json.params.thumbs + '/' + json.media.xbmcid + '.jpg' + '?v=' + json.media.refresh);
     
             $("#action_title").text(json.media.title);
 
@@ -160,37 +162,10 @@ function ShowModePopup(mode, media, id)
 }
 
 /*
- * Function:	ClearCleanBox
- *
- * Created on Sep 01, 2013
- * Updated on Sep 01, 2013
- *
- * Description: Clear the clean box. Set back to initial values.
- *
- * In:	-
- * Out:	-
- *
- */
-/*function ClearCleanBox()
-{
-    var $clean= $("#clean_box");
-    
-    setTimeout(function() {
-        $clean.find(".message").removeAttr("style").html("<br/>");
-        
-        // Remove progressbar.
-        if($clean.find(".ui-progressbar").length != 0) {   
-            $clean.find(".progress").progressbar( "destroy" );
-        }    
-   
-    }, 300); 
-}*/
-
-/*
  * Function:	ClearActionBox
  *
  * Created on Sep 08, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 14, 2013
  *
  * Description: Clear the action box. Set back to initial values.
  *
@@ -205,6 +180,7 @@ function ClearActionBox()
     
     setTimeout(function() {
         $action.find(".id").text("");
+        $("#action_box .xbmcid").text("");
         $action.find(".title").text("");
         $action.find(".message").html("<br/>");
         

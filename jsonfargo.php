@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 21, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -31,7 +31,7 @@ switch ($action)
                      $aJson = GetMediaInfo($media, $id);
                      break;
                  
-    case "reset"   : $media = GetPageValue('media');  
+    case "reset"   : $media = GetPageValue('media'); 
                      $aJson["status"]     = ResetStatus($media);
                      $aJson["connection"] = GetSetting("XBMCconnection");
                      $aJson["port"]       = GetSetting("XBMCport");
@@ -39,14 +39,25 @@ switch ($action)
                      break;
     
     case "counter" : $media = GetPageValue('media');
-                     $aJson['counter'] = CountRows($media);
-                     $aJson['xbmc']['counter'] = GetStatus("Xbmc".$media."Counter");
+                     //$aJson['counter'] = CountRows($media);
+                     //$aJson['xbmc']['counter'] = GetStatus("Xbmc".$media."Counter");
+                     $aJson['xbmc']['start'] = GetStatus("Xbmc".$media."Start");
+                     $aJson['xbmc']['end']   = GetStatus("Xbmc".$media."End");
                      break;
                  
     case "status"  : $media = GetPageValue('media');
+                     $mode  = GetPageValue('mode');
                      $id    = GetPageValue('id');
                      $aJson = GetMediaStatus($media, $id);
-                     $aJson['counter'] = CountRows($media);
+                     
+                     if ($mode == "import" ) {
+                        //$aJson['counter'] = CountRows($media);
+                        $aJson['counter'] = GetStatus("Xbmc".$media."Start");
+                     }
+                     else {
+                        $aJson['ready'] = GetStatus("RefreshReady");
+                     }
+                     
                      break;                 
         
     case "movies"  : $page  = GetPageValue('page');
@@ -106,7 +117,6 @@ switch ($action)
 
 // Return JSON code which is used as input for the JQuery functions.
 if (!empty($aJson)) {
-    //echo json_encode($aJson, JSON_UNESCAPED_SLASHES);
     echo json_encode($aJson);
 }
 
@@ -116,7 +126,7 @@ if (!empty($aJson)) {
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Aug 24, 2013
+ * Updated on Sep 14, 2013
  *
  * Description: Reset the status. 
  *
@@ -126,13 +136,12 @@ if (!empty($aJson)) {
  */
 function ResetStatus($media)
 {
-    UpdateStatus("Xbmc".$media."Counter", -1);
+    UpdateStatus("Xbmc".$media."End", -1);
+    UpdateStatus("RefreshReady", true);
     
-    $status = "reset";
-    
+    $status = "reset";    
     return $status;
 }
-
 
 /*
  * Function:	GetMediaStatus
@@ -311,7 +320,7 @@ function LogEvent($type, $event)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on May 19, 2013
+ * Updated on Sep 21, 2013
  *
  * Description: Reports the status of the import process.
  *
@@ -321,13 +330,14 @@ function LogEvent($type, $event)
  */
 function GetImportStatus($media, $id, $thumbs)
 {
-    $aJson['xbmcid'] = 0; 
-    $aJson['title']  = "empty";
-    $aJson['thumbs'] = $thumbs;
+    $aJson['xbmcid']  = 0;
+    $aJson['refresh'] = 0;
+    $aJson['title']   = "empty";
+    $aJson['thumbs']  = $thumbs;
   
     $db = OpenDatabase();
 
-    $sql = "SELECT xbmcid, title ".
+    $sql = "SELECT xbmcid, refresh, title ".
            "FROM $media ".
            "WHERE id = $id";
         
@@ -342,11 +352,12 @@ function GetImportStatus($media, $id, $thumbs)
 
             if ($rows != 0)
             {              
-                $stmt->bind_result($xbmcid, $title);
+                $stmt->bind_result($xbmcid, $refresh, $title);
                 while($stmt->fetch())
                 {                
-                    $aJson['xbmcid'] = $xbmcid;  
-                    $aJson['title']  = ShortenString($title, 50);
+                    $aJson['xbmcid']  = $xbmcid;
+                    $aJson['refresh'] = $refresh;
+                    $aJson['title']   = ShortenString($title, 50);
                 }                  
             }
         }
@@ -370,7 +381,7 @@ function GetImportStatus($media, $id, $thumbs)
  * Function:	CreateQuery
  *
  * Created on Apr 08, 2013
- * Updated on Jul 04, 2013
+ * Updated on Sep 21, 2013
  *
  * Description: Create the sql query for the media table. 
  *
@@ -380,7 +391,7 @@ function GetImportStatus($media, $id, $thumbs)
  */
 function CreateQuery($media, $title, $genre, $year, $sort)
 {
-    $sql = "SELECT id, xbmcid, title ".
+    $sql = "SELECT id, xbmcid, refresh, title ".
            "FROM $media ";
     
     $stm = "WHERE";
@@ -456,7 +467,7 @@ function GetMediaInfo($media, $id)
  * Function:	GetMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 21, 2013
  *
  * Description: Get the movie info from Fargo and return it as Json data. 
  *
@@ -470,7 +481,7 @@ function GetMovieInfo($id)
     $aMedia  = null;
     $aParams = null;
     
-    $sql = "SELECT xbmcid, title, director, writer, studio, genre, `year`, runtime, rating,". 
+    $sql = "SELECT xbmcid, refresh, title, director, writer, studio, genre, `year`, runtime, rating,". 
                   "votes, tagline, plot, mpaa, country, trailer, audio, video, file,".
                   "imdbnr, trailer ".
            "FROM movies ".
@@ -482,7 +493,7 @@ function GetMovieInfo($id)
     {
         if($stmt->execute())
         {
-            $stmt->bind_result($xbmcid, $title, $director, $writer, $studio, $genre, $year, $runtime, $rating,
+            $stmt->bind_result($xbmcid, $refresh, $title, $director, $writer, $studio, $genre, $year, $runtime, $rating,
                                $votes, $tagline, $plot, $mpaa, $country, $trailer, $audio, $video, $file,
                                $imdbnr, $trailer);
             $stmt->fetch();
@@ -490,6 +501,7 @@ function GetMovieInfo($id)
             $genre = str_replace('"', '', $genre);
             
             $aMedia["xbmcid"]   = $xbmcid;
+            $aMedia["refresh"]  = $refresh;
             $aMedia["title"]    = ShortenString($title, 50);
             $aMedia["director"] = str_replace("|", " / ", $director);
             $aMedia["writer"]   = str_replace("|", " / ", $writer);
@@ -922,7 +934,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetMedia
  *
  * Created on Apr 03, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 21, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -963,13 +975,14 @@ function GetMedia($media, $page, $sql)
             {              
                 $i = 0;
                 
-                $stmt->bind_result($id, $xbmcid, $title);
+                $stmt->bind_result($id, $xbmcid, $refresh, $title);
                 while($stmt->fetch())
                 {                
                     
-                    $aMedia[$i]['id']     = $id;
-                    $aMedia[$i]['xbmcid'] = $xbmcid;  
-                    $aMedia[$i]['title']  = ShortenString($title, 22);
+                    $aMedia[$i]['id']      = $id;                    
+                    $aMedia[$i]['xbmcid']  = $xbmcid;  
+                    $aMedia[$i]['refresh'] = $refresh; 
+                    $aMedia[$i]['title']   = ShortenString($title, 22);
                     
                     $i++;
                 }                  
@@ -1251,7 +1264,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 16, 2013
  *
  * Description: Clean the media library. 
  *
@@ -1270,8 +1283,9 @@ function CleanLibrary($number)
                  EmptyTable("movies");
                  EmptyTable("genretomovie");
                  DeleteGenres("movies");
+                 UpdateStatus("XbmcMoviesStart", 0);
                  DeleteFile(cMOVIESTHUMBS."/*.jpg");
-                 DeleteFile(cMOVIESPOSTERS."/*.jpg");
+                 //DeleteFile(cMOVIESPOSTERS."/*.jpg");
                  DeleteFile(cMOVIESFANART."/*.jpg");
                  break;
         
@@ -1280,8 +1294,9 @@ function CleanLibrary($number)
                  EmptyTable("tvshows");
                  EmptyTable("genretotvshow");
                  DeleteGenres("tvshows");
+                 UpdateStatus("XbmcTVShowsStart", 0);
                  DeleteFile(cTVSHOWSTHUMBS."/*.jpg");
-                 DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
+                 //DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
                  DeleteFile(cTVSHOWSFANART."/*.jpg");
                  break;
         
@@ -1290,6 +1305,7 @@ function CleanLibrary($number)
                  EmptyTable("music");
                  EmptyTable("genretomusic");
                  DeleteGenres("music");
+                 UpdateStatus("XbmcMusicStart", 0);
                  DeleteFile(cALBUMSTHUMBS."/*.jpg");
                  DeleteFile(cALBUMSCOVERS."/*.jpg");
                  break;

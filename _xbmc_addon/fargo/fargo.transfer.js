@@ -6,7 +6,7 @@
  * File:    fargo.transfer.js
  *
  * Created on Jul 13, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Fargo Transfer jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	Transfer
  *
  * Created on Jul 13, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Transfers data from XBMC to Fargo.
  * 
@@ -35,13 +35,13 @@ function Transfer()
         case "counter" : TransferCounter(aRequest.media);
                          break
 
-        case "movies"  : TransferMovies(aRequest.mode, aRequest.start, 1);
+        case "movies"  : TransferMovies(aRequest.mode, aRequest.start, aRequest.fargoid, 1);
                          break;
             
-        case "tvshows" : TransferTVShows(aRequest.mode, aRequest.start, 1);
+        case "tvshows" : TransferTVShows(aRequest.mode, aRequest.start, aRequest.fargoid, 1);
                          break;
         
-        case "music"   : TransferAlbums(aRequest.mode, aRequest.start, 1); 
+        case "music"   : TransferAlbums(aRequest.mode, aRequest.start, aRequest.fargoid, 1); 
                          break
     }
 
@@ -89,15 +89,15 @@ function TransferCounter(media)
  * Function:	TransferMovies
  *
  * Created on Jul 13, 2013
- * Updated on Sep 08, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Transfers movies from XBMC to Fargo.
  * 
- * In:	mode, start, offset
+ * In:	mode, start, fargoid, offset
  * Out:	Transfered movies.
  *
  */
-function TransferMovies(mode, start, offset)
+function TransferMovies(mode, start, fargoid, offset)
 {
     var request;    
     var fargo   = "http://" + cFARGOSITE + "/include/" + cIMPORT;     
@@ -123,7 +123,7 @@ function TransferMovies(mode, start, offset)
                    "country","imdbnumber","runtime","set","showlink","streamdetails","top250","votes","fanart",\n\
                    "thumbnail","file","sorttitle","resume","setid","dateadded","tag","art"]}, "id": "libMovies"}'; 
         
-        TransferGetMovieDetails(fargo, request);
+        TransferGetMovieDetails(fargo, request, fargoid);
     }    
 }
 
@@ -135,7 +135,7 @@ function TransferMovies(mode, start, offset)
  *
  * Description: Transfers the GetMovies from XBMC to Fargo.
  * 
- * In:	request
+ * In:	fargo, request
  * Out:	Transfered movies.
  *
  */
@@ -181,15 +181,15 @@ function TransferGetMovies(fargo, request)
  * Function:	TransferGetMovieDetails
  *
  * Created on Sep 08, 2013
- * Updated on Sep 08, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Transfers the GetMovieDetails from XBMC to Fargo.
  * 
- * In:	request
+ * In:	fargo, request, id
  * Out:	Transfered movie details.
  *
  */
-function TransferGetMovieDetails(fargo, request)
+function TransferGetMovieDetails(fargo, request, id)
 {
     var a, b, a_chk, b_chk;
     var poster, fanart;
@@ -215,9 +215,10 @@ function TransferGetMovieDetails(fargo, request)
             // Wait until DrawImageOnCanvas functions are ready.
             $.when(a, b).done(function()
             { 
-                json.action = "MovieDetails";
-                json.poster = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
-                json.fanart = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                json.action  = "MovieDetails";
+                json.fargoid = id;
+                json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
+                json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
                 
                 // Transfer the data with Ajax.
                 CallAjax(fargo, json);
@@ -231,15 +232,15 @@ function TransferGetMovieDetails(fargo, request)
  * Function:	TransferTVShows
  *
  * Created on Jul 13, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Transfers TV Shows from XBMC to Fargo.
  * 
- * In:	mode, start, offset
+ * In:	mode, start, , fargoid, offset
  * Out:	Transfered TV Shows.
  *
  */
-function TransferTVShows(mode, start, offset)
+function TransferTVShows(mode, start, fargoid, offset)
 {
     var request;    
     var fargo   = "http://" + cFARGOSITE + "/include/" + cIMPORT;     
@@ -265,7 +266,7 @@ function TransferTVShows(mode, start, offset)
                     "originaltitle", "sorttitle", "episodeguide", "season", "watchedepisodes", "dateadded",\n\
                     "tag", "art"] }, "id": "libTvShows"}';
         
-        TransferGetTVShowDetails(fargo, request);
+        TransferGetTVShowDetails(fargo, request, fargoid);
     }
 }
 
@@ -323,15 +324,15 @@ function TransferGetTVShows(fargo, request)
  * Function:	TransferGetTVShowDetails
  *
  * Created on Sep 09, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Transfers the GetTVShowDetails from XBMC to Fargo.
  * 
- * In:	request
+ * In:	fargo, request, id
  * Out:	Transfered TV Show details.
  *
  */
-function TransferGetTVShowDetails(fargo, request)
+function TransferGetTVShowDetails(fargo, request, id)
 {
     var a, b, a_chk, b_chk;
     var poster, fanart;
@@ -357,9 +358,10 @@ function TransferGetTVShowDetails(fargo, request)
             // Wait until DrawImageOnCanvas functions are ready.
             $.when(a, b).done(function()
             { 
-                json.action = "TVShowDetails";
-                json.poster = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
-                json.fanart = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                json.action  = "TVShowDetails";
+                json.fargoid = id;
+                json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
+                json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
                 
                 // Transfer the data with Ajax.
                 CallAjax(fargo, json);
@@ -377,11 +379,11 @@ function TransferGetTVShowDetails(fargo, request)
  *
  * Description: Transfers music albums from XBMC to Fargo.
  * 
- * In:	mode, start, offset
+ * In:	mode, start, fargoid, offset
  * Out:	Transfered music albums.
  *
  */
-function TransferAlbums(mode, start, offset)
+function TransferAlbums(mode, start, fargoid, offset)
 {
     var request;    
     var fargo   = "http://" + cFARGOSITE + "/include/" + cIMPORT;     
@@ -405,7 +407,7 @@ function TransferAlbums(mode, start, offset)
                     "albumlabel", "rating", "year", "musicbrainzalbumid", "musicbrainzalbumartistid", "fanart",\n\
                     "thumbnail","playcount", "genreid", "artistid", "displayartist"] }, "id": "libAlbums"}';   
         
-        TransferGetAlbumDetails(fargo, request);
+        TransferGetAlbumDetails(fargo, request, fargoid);
     } 
 }
 
@@ -417,7 +419,7 @@ function TransferAlbums(mode, start, offset)
  *
  * Description: Transfers the GetAlbums from XBMC to Fargo.
  * 
- * In:	request
+ * In:	fargo, request
  * Out:	Transfered albums.
  *
  */
@@ -463,15 +465,15 @@ function TransferGetAlbums(fargo, request)
  * Function:	TransferGetAlbumDetails
  *
  * Created on Sep 09, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Transfers the GetAlbumDetails from XBMC to Fargo.
  * 
- * In:	request
+ * In:	fargo, request, id
  * Out:	Transfered album details.
  *
  */
-function TransferGetAlbumDetails(fargo, request)
+function TransferGetAlbumDetails(fargo, request, id)
 {
     var a, b, a_chk, b_chk;
     var poster, fanart;
@@ -497,9 +499,10 @@ function TransferGetAlbumDetails(fargo, request)
             // Wait until DrawImageOnCanvas functions are ready.
             $.when(a, b).done(function()
             { 
-                json.action = "MusicDetails";
-                json.poster = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
-                json.fanart = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                json.action  = "MusicDetails";
+                json.fargoid = id;
+                json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
+                json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
                 
                 // Transfer the data with Ajax.
                 CallAjax(fargo, json);

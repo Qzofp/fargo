@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 14, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -213,7 +213,8 @@ background: -o-linear-gradient(top, #289EC9, #076182);
 background: -ms-linear-gradient(top, #289EC9 0%, #076182 100%);
 }
 
-.popup .id{
+.popup .id,
+.popup .xbmcid{
 display:none;
 }
 
@@ -401,7 +402,6 @@ background:#454647;
 height:20px;
 }
 
-
 #transfer{
 height:0px;
 }
@@ -419,80 +419,6 @@ background-color:#fff;
 display:none;    
 }
 /* End Action Popup part */
-
-/* Begin Import Popup part */
-/*#import_box{
-width:500px;
-margin-left:-252px;
-color:#FFF;
-}
-
-#transfer{
-height:0px;
-}
-
-#transfer iframe{
-width:0px;
-height:0px;
-padding:0px;
-margin:0px;
-border:none;
-background-color:#fff;
-}
-
-#ready{
-display:none;    
-}
-
-#import_wrapper{
-height:154px;
-}
-
-#thumb{
-width:100px;
-height:140px;
-left:50%;
-margin:10px 0 0 -40px;
-position:fixed;
-border:1px solid grey;
-border-radius:5px;
-background:#454647;   
-}
-
-#thumb img{
-border-radius:5px;
-}
-
-#media_title{
-font-weight:bold;
-font-size:0.9em;
-text-shadow:2px 2px 2px #000;
-text-align:center;
-}
-
-.progress{
-height:10px;
-margin:4px 20px 4px 20px;
-border:1px solid grey;
-border-radius:5px;
-background:#454647;
-}*/
-/* End Import Popup part */
-
-/* Begin Clean Popup part */
-/*#clean_box{
-width:550px;
-margin-left:-302px;
-margin-top:100px;
-}
-
-#clean_box .message{
-margin-bottom:30px;
-font-weight:bold;
-font-size:1.2em;
-color:#FFF;
-}*/
-/* End Clean Popup part */
 
 /* Begin Display part */
 #display_left{

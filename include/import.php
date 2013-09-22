@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  * 
@@ -33,7 +33,6 @@ ProcessDataFromXbmc($aData);
 //echo "<pre>";
 //print_r($aData);
 //echo "</pre></br>";
-
     
 /////////////////////////////////////////    Import Functions    //////////////////////////////////////////    
 
@@ -41,7 +40,7 @@ ProcessDataFromXbmc($aData);
  * Function:	ReceiveDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Aug 11, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Receive data from XBMC. 
  *
@@ -77,6 +76,12 @@ function ReceiveDataFromXbmc()
         $aData["result"] = $_POST["result"];
     }
     
+    $aData["fargoid"] = null;
+    if (isset($_POST["fargoid"]) && !empty($_POST["fargoid"]))
+    {
+        $aData["fargoid"] = $_POST["fargoid"];
+    }    
+    
     return $aData;
 }
    
@@ -84,7 +89,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -103,19 +108,19 @@ function ProcessDataFromXbmc($aData)
         case "Movies"        : ProcessMovie($aData["poster"], $aData["fanart"], $aData["result"]);                             
                                break;
                      
-        case "MovieDetails"  : ProcessMovieDetails($aData["poster"], $aData["fanart"], $aData["result"]);                         
+        case "MovieDetails"  : ProcessMovieDetails($aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);                         
                                break;            
             
         case "TVShows"       : ProcessTVShow($aData["poster"], $aData["fanart"], $aData["result"]); 
                                break;
                           
-        case "TVShowDetails" : ProcessTVShowDetails($aData["poster"], $aData["fanart"], $aData["result"]); 
+        case "TVShowDetails" : ProcessTVShowDetails($aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]); 
                                break;
             
         case "Music"         : ProcessAlbum($aData["poster"], $aData["result"]); 
                                break;
                            
-        case "MusicDetails"  : ProcessAlbumDetails($aData["poster"], $aData["result"]);
+        case "MusicDetails"  : ProcessAlbumDetails($aData["poster"], $aData["result"], $aData["fargoid"]);
                                break;                            
     }
 }
@@ -124,7 +129,7 @@ function ProcessDataFromXbmc($aData)
  * Function:	ProcessCounter
  *
  * Created on Jul 22, 2013
- * Updated on Jul 22, 2013
+ * Updated on Sep 16, 2013
  *
  * Description: Process the media counter. 
  *
@@ -151,14 +156,14 @@ function ProcessCounter($aResults)
         $media = "Music";
     }
     
-    UpdateStatus("Xbmc".$media."Counter", $counter);
+    UpdateStatus("Xbmc".$media."End", $counter);
 }
 
 /*
  * Function:	ProcessMovie
  *
  * Created on Jul 15, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 16, 2013
  *
  * Description: Process the movie. 
  *
@@ -174,44 +179,48 @@ function ProcessMovie($poster, $fanart, $aResult)
     //SaveImage($aMovie["movieid"], $poster, "../".cMOVIESPOSTERS);    
     //SaveImage($aMovie["movieid"], $fanart, "../".cMOVIESFANART); 
     
-    ResizeAndSaveImage($aMovie["movieid"], $fanart, "../".cMOVIESFANART, 675, 420);    
-    ResizeAndSaveImage($aMovie["movieid"], $poster, "../".cMOVIESTHUMBS, 200, 280);
+    ResizeAndSaveImage($aMovie["movieid"], $fanart, "../".cMOVIESFANART, 562, 350); //675, 420  
+    ResizeAndSaveImage($aMovie["movieid"], $poster, "../".cMOVIESTHUMBS, 125, 175); //200, 280
     
     $aMovie = ConvertMovie($aMovie);
     InsertMovie($aMovie);
     InsertGenreToMedia($aGenres, "movies");
+    
+    IncrementStatus("XbmcMoviesStart", 1);
 }
 
 /*
  * Function:	ProcessMovieDetails
  *
  * Created on Sep 08, 2013
- * Updated on Sep 08, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Process the movie details. 
  *
- * In:  $poster, $fanart, $aResult
+ * In:  $poster, $fanart, $aResult, $id
  * Out: -
  *
  */
-function ProcessMovieDetails($poster, $fanart, $aResult)
+function ProcessMovieDetails($poster, $fanart, $aResult, $id)
 {   
     $aMovie  = $aResult["moviedetails"];
     $aGenres = $aMovie["genre"];
     
-    ResizeAndSaveImage($aMovie["movieid"], $fanart, "../".cMOVIESFANART, 675, 420);    
-    ResizeAndSaveImage($aMovie["movieid"], $poster, "../".cMOVIESTHUMBS, 200, 280);
+    ResizeAndSaveImage($aMovie["movieid"], $fanart, "../".cMOVIESFANART, 562, 350);  //675, 420    
+    ResizeAndSaveImage($aMovie["movieid"], $poster, "../".cMOVIESTHUMBS, 125, 175);  //200, 280
     
     $aMovie = ConvertMovie($aMovie);
-    InsertMovie($aMovie);
-    InsertGenreToMedia($aGenres, "movies");
+    UpdateMovie($id, $aMovie);
+    //InsertGenreToMedia($aGenres, "movies");
+    
+    UpdateStatus("Ready", 1);
 }
 
 /*
  * Function:	ProcessTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Process the tv show. 
  *
@@ -224,22 +233,21 @@ function ProcessTVShow($poster, $fanart, $aResult)
     $aTVShow = $aResult["tvshows"][0];
     $aGenres = $aTVShow["genre"];
     
-    //SaveImage($aTVShow["tvshowid"], $poster, "../".cTVSHOWSPOSTERS);
-    //SaveImage($aTVShow["tvshowid"], $fanart, "../".cTVSHOWSFANART);   
-    
     ResizeAndSaveImage($aTVShow["tvshowid"], $fanart, "../".cTVSHOWSFANART, 675, 420);
     ResizeAndSaveImage($aTVShow["tvshowid"], $poster, "../".cTVSHOWSTHUMBS, 200, 280);
     
     $aTVShow = ConvertTVShow($aTVShow);
     InsertTVShow($aTVShow);
     InsertGenreToMedia($aGenres, "tvshows");
+    
+    IncrementStatus("XbmcTVShowsStart", 1);
 }
 
 /*
  * Function:	ProcessTVShowDetails
  *
  * Created on Sep 09, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Process the tv show. 
  *
@@ -247,7 +255,7 @@ function ProcessTVShow($poster, $fanart, $aResult)
  * Out: -
  *
  */
-function ProcessTVShowDetails($poster, $fanart, $aResult)
+function ProcessTVShowDetails($poster, $fanart, $aResult, $id)
 {   
     $aTVShow = $aResult["tvshowdetails"];
     $aGenres = $aTVShow["genre"]; 
@@ -256,15 +264,17 @@ function ProcessTVShowDetails($poster, $fanart, $aResult)
     ResizeAndSaveImage($aTVShow["tvshowid"], $poster, "../".cTVSHOWSTHUMBS, 200, 280);
     
     $aTVShow = ConvertTVShow($aTVShow);
-    InsertTVShow($aTVShow);
-    InsertGenreToMedia($aGenres, "tvshows");
+    UpdateTVShow($id, $aTVShow);
+    //InsertGenreToMedia($aGenres, "tvshows");
+    
+    UpdateStatus("Ready", 1);
 }
 
 /*
  * Function:	ProcessAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 16, 2013
  *
  * Description: Process the music album. 
  *
@@ -275,34 +285,6 @@ function ProcessTVShowDetails($poster, $fanart, $aResult)
 function ProcessAlbum($poster, $aResult)
 {   
     $aAlbum = $aResult["albums"][0];
-    $aGenres = $aAlbum["genre"];
-    
-    //SaveImage($aAlbum["albumid"], $poster, "../".cALBUMSCOVERS);
-    //SaveImage($aAlbum["albumid"], $fanart, "../".cALBUMSFANART);   
-    
-    ResizeAndSaveImage($aAlbum["albumid"], $poster, "../".cALBUMSCOVERS, 300, 300);
-    ResizeAndSaveImage($aAlbum["albumid"], $poster, "../".cALBUMSTHUMBS, 200, 200);
-    
-    $aAlbum = ConvertAlbum($aAlbum);
-    InsertAlbum($aAlbum);
-    InsertGenreToMedia($aGenres, "music");
-}
-
-/*
- * Function:	ProcessAlbumDetails
- *
- * Created on Sep 09, 2013
- * Updated on Sep 09, 2013
- *
- * Description: Process the music album details. 
- *
- * In:  $poster, $aResult
- * Out: -
- *
- */
-function ProcessAlbumDetails($poster, $aResult)
-{   
-    $aAlbum = $aResult["albumdetails"];
     $aGenres = $aAlbum["genre"]; 
     
     ResizeAndSaveImage($aAlbum["albumid"], $poster, "../".cALBUMSCOVERS, 300, 300);
@@ -311,6 +293,35 @@ function ProcessAlbumDetails($poster, $aResult)
     $aAlbum = ConvertAlbum($aAlbum);
     InsertAlbum($aAlbum);
     InsertGenreToMedia($aGenres, "music");
+    
+    IncrementStatus("XbmcMusicStart", 1);
+}
+
+/*
+ * Function:	ProcessAlbumDetails
+ *
+ * Created on Sep 09, 2013
+ * Updated on Sep 22, 2013
+ *
+ * Description: Process the music album details. 
+ *
+ * In:  $poster, $aResult, $id
+ * Out: -
+ *
+ */
+function ProcessAlbumDetails($poster, $aResult, $id)
+{   
+    $aAlbum = $aResult["albumdetails"];
+    $aGenres = $aAlbum["genre"]; 
+    
+    ResizeAndSaveImage($aAlbum["albumid"], $poster, "../".cALBUMSCOVERS, 300, 300);
+    ResizeAndSaveImage($aAlbum["albumid"], $poster, "../".cALBUMSTHUMBS, 200, 200);
+    
+    $aAlbum = ConvertAlbum($aAlbum);
+    UpdateAlbum($id, $aAlbum);
+    //InsertGenreToMedia($aGenres, "music");
+    
+    UpdateStatus("Ready", 1);
 }
 
 /*

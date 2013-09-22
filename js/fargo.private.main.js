@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -20,27 +20,32 @@ var global_page  = 1;
 var global_sort  = "";
 
 var global_lastpage = 1; //last page
-//var global_column   = 0;
 
+var global_ready  = false;
 var global_cancel = false;
 
+// Xbmc media limits.
+var global_xbmc_start;
+var global_xbmc_end;
+
+
 // Media total.
-var global_total_fargo = 0;
-var global_total_xbmc  = 0;
+//var global_total_fargo = 0;
+//var global_total_xbmc  = 0;
 
 // Fargo globals.
 var global_setting_fargo;
 var global_list_fargo;
 
 // Ajax requests.
-var global_status_request;
-var global_import_request;
+//var global_status_request;
+//var global_import_request;
 
 /*
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Sep 08, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -78,18 +83,12 @@ function LoadFargoMedia(media)
     $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);
     $("#display_system_right").on("click", ".property .on", SetPropertyClickHandler);
     
-    // Clean database (library or event log) event.
-    //$(".button").on("click", ".yes", CleanDatabaseHandler);
-    
     // Yes or retry button is pressed. Preform action
     $(".button").on("click", ".yes", SetActionHandler);
     $(".button").on("click", ".retry", SetActionHandler);
     
     // No button is pressed, close popup.
     $(".button").on("click", ".no", SetCloseHandler);
-     
-    // Import click event.
-    //$("#import").on("click", SetImportHandler);
     
     // Cancel or finish import. 
     $(".button").on("click", ".cancel", SetCloseHandler);    
@@ -195,7 +194,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 14, 2013
  *
  * Description: Perform action
  * 
@@ -209,8 +208,8 @@ function SetActionHandler()
     
     switch($popup.find(".title").text().split(" ")[0])
     {
-        case "Refresh"   : //SetImportHandler("Refresh", $popup.find(".id").text());
-                           alert("Refresh Something! " + $popup.find(".id").text());                           
+        case "Refresh"   : SetStartRefreshHandler($popup.find(".id").text(), $popup.find(".xbmcid").text());
+                           //alert("Refresh Something! " + $popup.find(".id").text());                           
                            break;
                            
         case "Hide/Show" : 

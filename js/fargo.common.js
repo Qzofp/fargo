@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -273,7 +273,7 @@ function ShowPopupBox(type, title)
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Close import or other popup window.
  * 
@@ -287,18 +287,21 @@ function SetCloseHandler()
     
     switch($popup.attr('id'))
     {
-        case "action_box"  : //alert ("import");
-                             ClearActionBox();
-                             if($popup.find(".title").text().split(" ")[0] == "Import") {
-                                //alert("close import");
-                                SetImportCancelHandler(); //Abort import.
+        case "action_box"  : // Post ActionBox actions.
+                             switch($popup.find(".title").text().split(" ")[0])
+                             {
+                                case "Import"  : //alert("close import");
+                                                 SetImportCancelHandler(); //Abort import.
+                                                 break;
+                                                 
+                                case "Refresh" : //alert("Finish Refresh"); 
+                                                 RefreshMediaTable($popup);   
+                                                 break;   
                              }
+                                                          
+                             ClearActionBox();
                              break;
-/*
-        case "clean_box"   : //alert ("clean");
-                             ClearCleanBox();   
-                             break;
-*/                            
+                          
         case "buttons_box" : //alert ("buttons");
                              ClearButtonsBox();
                              break;
@@ -310,6 +313,33 @@ function SetCloseHandler()
     
     // Close popup.
     SetMaskHandler();
+}
+
+/*
+ * Function:	RefreshMediaTable
+ *
+ * Created on Sep 22, 2013
+ * Updated on Sep 22, 2013
+ *
+ * Description: When refresh media is finished then refresh media thumb on media table.
+ * 
+ * In:	popup
+ * Out:	-
+ *
+ */
+function RefreshMediaTable(popup)
+{
+    var id, $refresh;
+    
+    if (popup.find(".cancel").text() == "Finish") 
+    {
+        id = popup.find(".id").text();                                                   
+        $refresh = $("#action_thumb img").attr("src");
+
+        // Refresh image in media table.
+        $("#display_content .i" + id).find("img").attr("src", $refresh);
+                                                    
+    }    
 }
 
 /*
@@ -449,18 +479,18 @@ function GetFargoCounter(media)
 }
 
 /*
- * Function:	GetXbmcAndFargoCounters
+ * Function:	GetXbmcMediaLimits
  *
  * Created on Jul 22, 2013
- * Updated on Jul 22, 2013
+ * Updated on Sep 16, 2013
  *
- * Description: Get the XBMC and Frago media counters from Fargo.
+ * Description: Get the XBMC media limits (start and end values).
  *
  * In:	media
  * Out:	counter
  *
  */
-function GetXbmcAndFargoCounters(media) 
+function GetXbmcMediaLimits(media) 
 {
     $.ajax({
         url: 'jsonfargo.php?action=counter&media=' + media,
@@ -468,9 +498,11 @@ function GetXbmcAndFargoCounters(media)
         dataType: 'json',
         success: function(json) 
         {                
-            global_total_fargo = Number(json.counter);
-            global_total_xbmc  = Number(json.xbmc.counter);
+            //global_total_fargo = Number(json.counter);
+            //global_total_xbmc  = Number(json.xbmc.counter);
             
+            global_xbmc_start = Number(json.xbmc.start);
+            global_xbmc_end   = Number(json.xbmc.end);
             // debug
             //alert(global_total_xbmc);
         } // End Success.        

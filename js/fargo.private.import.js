@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 22, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -14,10 +14,23 @@
 
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
 
-// Global variables?!? jQuery sucks or I don't get it!!!
-var global_total_fargo = 0;
-var global_total_xbmc  = 0;
-var global_cancel      = false;
+// Import constants.
+var cIMPORT = {
+    IMPORT:   "Import",
+    REFRESH:  "Refresh"  
+}
+
+var cSTATUS = {
+    ONLINE:   "XBMC is online.",
+    OFFLINE:  "XBMC is offline!",  
+    CONNECT:  "Connecting...",
+    SEARCH:   "Searching...",
+    PROCESS:  "Processing...", 
+    IMPORT:   "Importing...",
+    REFRESH:  "Refreshing...",
+    READY:    "[dummy] is ready.",
+    NOTFOUND: "No new [dummy] found."
+};
 
 /*
  * Function:	SetImportHandler
@@ -51,6 +64,193 @@ function SetImportPopupHandler(media)
     // Show popup.
     ShowPopupBox("#action_box", "Import " + ConvertMedia(media));
     SetState("page", "popup"); 
+}
+
+/*
+ * Function:	SetStartRefreshHandler
+ *
+ * Created on Sep 14, 2013
+ * Updated on Sep 16, 2013
+ *
+ * Description: Set the refresh handler, show the refresh popup box and start the refresh.
+ * 
+ * In:	id, xbmcid
+ * Out:	title
+ *
+ */
+function SetStartRefreshHandler(id, xbmcid)
+{
+    var media;
+    media = InitImportAndShowPopup();
+    
+    // Reset status, get xbmc connection (url) and port.
+    $.ajax({
+        url: 'jsonfargo.php?action=reset&media=' + media,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {
+            var timer, i = 0;
+            var online;
+            
+            // Check if XBMC is online and transfer XBMC media counter (total).
+            ImportCounter(json, media);
+            
+            // Check if XBMC is online and start refresh.
+            timer = setInterval(function()
+            {
+                // Check if iframe from ImportCounter finished loading.
+                if ($("#ready").text() == "true")
+                {
+                    // Returns global_total_fargo and global_total_xbmc;
+                    GetXbmcMediaLimits(media);
+                    online = global_xbmc_end; // If value > 0 then XBMC is online.
+                    
+                    if (online > 0 || i > 3)
+                    {
+                        if (online > 0) {
+                            StartRefresh(json, media, id, xbmcid);
+                        }
+                        else {
+                            ShowOffline();
+                        }
+                        
+                        clearInterval(timer);
+                    }
+                }
+                i++;
+                
+            }, 1000); // End timer  
+        } // End Success.        
+    }); // End Ajax;    
+}
+
+/*
+ * Function:	StartRefresh
+ *
+ * Created on Sep 14, 2013
+ * Updated on Sep 22, 2013
+ *
+ * Description: Control and Refresh the media transfered from XBMC.
+ *
+ * In:	xbmc, media, id, xmbcid
+ * Out:	Refreshed media
+ *
+ */
+function StartRefresh(xbmc, media, id, xbmcid)
+{
+    var timeout = 0;
+    var delay   = 0;
+    var percent = 15;
+    var factor  = 1.5;
+    var $ready  = $("#ready");
+    
+    // Import media process.
+    $("#action_box .message").html(cSTATUS.ONLINE);  
+    ImportMedia(xbmc, media, "refresh", id, xbmcid);
+    LogEvent("Information", "Refresh " + ConvertMedia(media) + " started.");
+            
+    // Check status.
+    var status = setInterval(function()
+    {
+        if (global_cancel || delay >= xbmc.timeout/1000 || timeout > xbmc.timeout/1000)
+        {
+            if (global_cancel) {
+                LogEvent("Warning", "Refresh " + ConvertMedia(media) + " canceled!");
+            }
+            else if (timeout > xbmc.timeout/1000) {
+                ShowOffline();
+            }
+            else {
+                ShowRefreshFinished(media);
+            }             
+            
+            clearInterval(status);
+        }
+        else
+        {
+            // Show status and returns global_ready.
+            ShowRefreshStatus(media, id, percent);
+            percent = 100 - 100/factor;
+            
+            // Wait until thumb is ready.
+            if (global_ready) {
+                delay += 2;
+                factor *= 2;
+            }
+            else if ($ready.text() == "true") {
+                timeout++;
+            }
+        }        
+    }, 800);   
+}
+
+/*
+ * Function:	ShowRefreshStatus
+ *
+ * Created on Sep 14, 2013
+ * Updated on Sep 21, 2013
+ *
+ * Description: Show the refresh status.
+ *
+ * In:	media
+ * Out:	Status
+ *
+ */
+function ShowRefreshStatus(media, id, percent)
+{   
+    $.ajax({
+        url: 'jsonfargo.php?action=status&media=' + media + '&mode=refresh' + '&id=' + id,
+        dataType: 'json',
+        success: function(json) 
+        {     
+            global_ready = Number(json.ready);
+            
+            $("#action_box .message").html(cSTATUS.REFRESH);      
+                      
+            // Preload image.
+            var img = new Image();
+            img.src = json.thumbs + '/'+ json.xbmcid +'.jpg?v=' + json.refresh;
+            $("#action_thumb img").attr('src', img.src);
+                                
+            // If images not found then show no poster.
+            $("#action_thumb img").error(function(){
+                $(this).attr('src', 'images/no_poster.jpg');
+            });
+                    
+            $("#action_title").html(json.title);
+            
+            $("#action_box .progress").progressbar({
+                value:percent       
+            });
+            
+        } // End succes.    
+    }); // End Ajax. 
+}
+
+/*
+ * Function:	ShowRefreshFinished
+ *
+ * Created on Sep 14, 2013
+ * Updated on Sep 14, 2013
+ *
+ * Description: Show refresh finished message and add to log event.
+ * 
+ * In:	media
+ * Out:	-
+ *
+ */
+function ShowRefreshFinished(media)
+{   
+    var msg = cSTATUS.READY.replace("[dummy]", cIMPORT.REFRESH);
+    
+    $("#action_box .message").html(msg);             
+    $("#action_box .progress").progressbar({
+        value:100
+    });
+    
+    $(".cancel").html("Finish");
+    LogEvent("Information", "Refresh of " + ConvertMedia(media) + " finished.");    
 }
 
 /*
@@ -97,10 +297,12 @@ function SetStartImportHandler()
                 // Check if iframe from ImportCounter finished loading.
                 if ($("#ready").text() == "true")
                 {
-                    // Returns global_total_fargo and global_total_xbmc;
-                    GetXbmcAndFargoCounters(media);
-                    start = global_total_fargo;
-                    end   = global_total_xbmc;
+                    // Returns global_start and global_end;
+                    GetXbmcMediaLimits(media);
+                    //start = global_total_fargo;
+                    //end   = global_total_xbmc;
+                    start = global_xbmc_start;
+                    end   = global_xbmc_end;
                     
                     if (end > 0 || i > 3)
                     {
@@ -128,7 +330,7 @@ function SetStartImportHandler()
  * Function:	InitImportAndShowPopup
  *
  * Created on Aug 18, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 14, 2013
  *
  * Description: Initialize import values and show popup.
  * 
@@ -138,22 +340,14 @@ function SetStartImportHandler()
  */
 function InitImportAndShowPopup()
 {
-    //var title;
-    var media = GetState("media"); // Get state media. 
-    
+    var media = GetState("media"); // Get state media.
     global_cancel = false;
-  
-    //title = "Import " + ConvertMedia(media); 
-    //ShowPopupBox("#import_box", title);
-    //SetState("page", "popup");
-     
-    //$(".retry").toggleClass("retry cancel");
+    global_ready  = false;
     
     // Initialize status popup box.
-    $("#action_box .message").html("Connecting...");
-    //AdjustImageSize(media);
+    $("#action_box .message").html(cSTATUS.CONNECT);
     
-    // turn progress on.
+    // Turn progress on.
     $(".progress_off").toggleClass("progress_off progress");
     
     $(".yes").hide();
@@ -191,7 +385,7 @@ function ShowNoNewMedia(media, msg)
  * Function:	ShowOffline
  *
  * Created on Aug 19, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 14, 2013
  *
  * Description: Show offline message and add to log event.
  * 
@@ -199,9 +393,9 @@ function ShowNoNewMedia(media, msg)
  * Out:	-
  *
  */
-function ShowOffline(msg)
+function ShowOffline()
 {
-    $("#action_box .message").html(msg[1]);
+    $("#action_box .message").html(cSTATUS.OFFLINE);
     SetState("xbmc", "offline");
     
     $(".cancel").toggleClass("cancel retry");    
@@ -233,7 +427,7 @@ function ShowFinished(media, delta, msg)
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 14, 2013
  *
  * Description: Set the import handler, cancel or finish the import.
  * 
@@ -244,7 +438,6 @@ function ShowFinished(media, delta, msg)
 function SetImportCancelHandler()
 {
     var button = $(".cancel").text();
-    //var media = GetState("media");
     
     var media = $("#control_bar").find(".on").attr('id');
     SetState("media", media); 
@@ -265,12 +458,10 @@ function SetImportCancelHandler()
     // Reset import values.
     global_total_fargo = 0;
     global_total_xbmc  = 0;    
-    //$("#action_thumb img").attr('src', 'images/no_poster.jpg');
+
     $("#action_box .progress").progressbar({
         value : 0       
     });
-    
-    //$("#action_title").html("&nbsp;");
     
     if (button == "Finish" && media != "system") {
         window.location='index.php?media=' + media;
@@ -289,7 +480,7 @@ function SetImportCancelHandler()
  * Out:	-
  *
  */
-function ClearImportBox()
+/*function ClearImportBox()
 {
     var $import = $("#import_box");
     var $thumb  = $("#thumb");
@@ -311,13 +502,13 @@ function ClearImportBox()
         }    
    
     }, 300);     
-}
+}*/
 
 /*
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 16, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -332,11 +523,8 @@ function StartImport(xbmc, media, start, end, msg)
     var delta   =  end - start;
     var $ready  = $("#ready");
     
-    // turn progress on.
-    //$(".progress_off").toggleClass("progress_off progress");
-    
     // Import media process.
-    ImportMedia(xbmc, media, start);
+    ImportMedia(xbmc, media, "import", 0, start);
     start += 1;
     
     LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
@@ -354,20 +542,20 @@ function StartImport(xbmc, media, start, end, msg)
             if (busy == false)
             {    
                 busy = true; // pause import.
-                ImportMedia(xbmc, media, start);       
+                ImportMedia(xbmc, media, "import", 0, start);       
                 start += 1;
                 timeout = 0; // reset timeout.
             }
         }
         
-        setTimeout(setImportTimer, 500);
+        setTimeout(setImportTimer, 1200); // 500
             
     }()); // End setImportTimer.   
         
     // Check status.
     var status = setInterval(function()
     {
-        if (global_cancel || global_total_fargo >= end  || timeout > xbmc.timeout/1000)
+        if (global_cancel || global_xbmc_start >= end  || timeout > xbmc.timeout/1000)
         {
             if (global_cancel) {
                 LogEvent("Warning", "Import " + ConvertMedia(media) + " canceled!");
@@ -385,7 +573,7 @@ function StartImport(xbmc, media, start, end, msg)
         {
             // Show status and returns global_total_fargo.
             ShowStatus(delta, start, end, media, msg);
-            if (global_total_fargo == start) {
+            if (global_xbmc_start == start) {
                 busy = false; // resume import.
             }
             
@@ -393,14 +581,14 @@ function StartImport(xbmc, media, start, end, msg)
                 timeout++;
             }
         }        
-    }, 800);    
+    }, 1200); // 800
 }
 
 /*
  * Function:	ShowStatus
  *
  * Created on Aug 19, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 16, 2013
  *
  * Description: Show the import status.
  *
@@ -411,11 +599,11 @@ function StartImport(xbmc, media, start, end, msg)
 function ShowStatus(delta, start, end, media, msg)
 {   
     $.ajax({
-        url: 'jsonfargo.php?action=status&media=' + media + '&id=' + start,
+        url: 'jsonfargo.php?action=status&media=' + media + '&mode=import' + '&id=' + start,
         dataType: 'json',
         success: function(json) 
         {     
-            global_total_fargo = json.counter;
+            global_xbmc_start = json.counter;
             
             if (json.xbmcid > 0)
             {
@@ -488,15 +676,15 @@ function ImportCounter(xbmc, media)
  * Function:	ImportMedia
  *
  * Created on Jul 20, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 15, 2013
  *
  * Description: Import the media transfered from XBMC.
  *
- * In:	media, start
+ * In:	sbmc, media, mode, fargo, start
  * Out:	Imported media
  *
  */
-function ImportMedia(xbmc, media, start)
+function ImportMedia(xbmc, media, mode, fargo, start)
 {
     var $result = $("#transfer");
     var $ready  = $("#ready");   
@@ -507,7 +695,7 @@ function ImportMedia(xbmc, media, start)
         url = "http://" + xbmc.connection + ":" + xbmc.port;
     }    
     
-    url   += "/fargo/transfer.html?action=" + media + "&mode=import&start=" + start;
+    url   += "/fargo/transfer.html?action=" + media + "&mode=" + mode + "&start=" + start + "&fargoid=" + fargo;
     iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';   
     
     // Reset values.
@@ -570,37 +758,6 @@ function IframeReady()
         $("#ready").text("true");        
     }
 }
-
-/*
- * Function:	AdjustImageSize
- *
- * Created on May 17, 2013
- * Updated on May 25, 2013
- *
- * Description: Adjust the size of the image.
- *
- * In:	media
- * Out:	Adjusted image size
- *
- */
-/*function AdjustImageSize(media)
-{
-    var img = new Image();
-    if (media == "music") 
-    {   
-        $("#import_wrapper").height(114);
-        $("#thumb").height(100);
-        img.src = 'images/no_cover.jpg';
-        $("#thumb img").attr('src', img.src).height(100).width(100);
-    }
-    else 
-    {
-        $("#import_wrapper").height(154);
-        $("#thumb").height(140);  
-        img.src = 'images/no_poster.jpg';
-        $("#thumb img").attr('src', img.src).height(140).width(100);
-    }    
-}*/
 
 /*
  * Function:	DisplayStatusMessage
