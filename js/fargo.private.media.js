@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Sep 22, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -76,7 +76,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Function:	SetMediaHandlerWithActions
  *
  * Created on Aug 31, 2013
- * Updated on Sep 22, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -87,8 +87,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
 function SetInfoHandlerWithActions()
 {   
     var mode  = GetState("mode");
-    var media = GetState("media");
-    //var id    = $(this).children(":first-child").text();  
+    var media = GetState("media"); 
     var id = $(this).attr("class").match(/[0-9]+/);
 
     switch(mode)
@@ -97,7 +96,8 @@ function SetInfoHandlerWithActions()
                            ShowModePopup(mode, media, id);
                            break;
                          
-        case "Hide/Show" : alert ("Hide and Seek");
+        case "Hide/Show" : //alert ("Hide and Show");
+                           HideOrShowMedia(media, id);
                            break;               
 
         case "Delete"    : alert ("Delete");
@@ -157,6 +157,58 @@ function ShowModePopup(mode, media, id)
             // Show popup.
             ShowPopupBox("#action_box", mode);
             SetState("page", "popup");    
+        } // End succes.
+    }); // End Ajax.       
+}
+
+/*
+ * Function:	HideOrShowMedia
+ *
+ * Created on Sep 23, 2013
+ * Updated on Sep 23, 2013
+ *
+ * Description: Hide or show media.
+ * 
+ * In:	media, id
+ * Out:	-
+ *
+ */
+function HideOrShowMedia(media, id)
+{
+    var $cell = $("#display_content .i" + id);
+    
+    $cell.toggleClass("hide");
+    
+    if ($cell.hasClass('hide')) {
+        HideOrShowMediaInFargo(media, id, true);
+    }
+    else {
+        HideOrShowMediaInFargo(media, id, false);
+    }
+}
+
+/*
+ * Function:	HideOrShowMediaInFargo
+ *
+ * Created on Sep 23, 2013
+ * Updated on Sep 23, 2013
+ *
+ * Description: Hide or show media in Fargo. Update 
+ * 
+ * In:	media, id, value
+ * Out:	-
+ *
+ */
+function HideOrShowMediaInFargo(media, id, value)
+{
+    $.ajax
+    ({
+        url: 'jsonfargo.php?action=hide&media=' + media + '&id=' + id + '&value=' + value,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {   
+            
         } // End succes.
     }); // End Ajax.       
 }

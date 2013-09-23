@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Sep 21, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -16,6 +16,14 @@
  */
 
 /////////////////////////////////////////////    Main Code    /////////////////////////////////////////////
+session_start();
+
+if(!isset($_SESSION['LOGIN'])) {
+    $login = false;
+}
+else {
+    $login = true;    
+}
 
 require_once 'settings.php';
 require_once 'tools/toolbox.php';
@@ -29,6 +37,12 @@ switch ($action)
     case "info"    : $media = GetPageValue('media');
                      $id    = GetPageValue('id');
                      $aJson = GetMediaInfo($media, $id);
+                     break;
+                 
+    case "hide"    : $media = GetPageValue('media');
+                     $id    = GetPageValue('id');
+                     $value = GetPageValue('value');
+                     $aJson = HideOrShowMedia($media, $id, $value);
                      break;
                  
     case "reset"   : $media = GetPageValue('media'); 
@@ -65,7 +79,7 @@ switch ($action)
                      $genre = GetPageValue('genre');
                      $year  = GetPageValue('year');
                      $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort);
+                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort, $login);
                      $aJson = GetMedia($action, $page, $sql);
                      break;
                 
@@ -74,7 +88,7 @@ switch ($action)
                      $genre = GetPageValue('genre');
                      $year  = GetPageValue('year');
                      $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort);
+                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort, $login);
                      $aJson = GetMedia($action, $page, $sql);
                      break;    
                  
@@ -83,7 +97,7 @@ switch ($action)
                     $genre = GetPageValue('genre');
                     $year  = GetPageValue('year');
                     $sort  = GetPageValue('sort');
-                    $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort);
+                    $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort, $login);
                     $aJson = GetMedia($action, $page, $sql);
                     break;   
     
@@ -381,17 +395,17 @@ function GetImportStatus($media, $id, $thumbs)
  * Function:	CreateQuery
  *
  * Created on Apr 08, 2013
- * Updated on Sep 21, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: Create the sql query for the media table. 
  *
- * In:  $media, $title, $genre, $year, $sort
+ * In:  $media, $title, $genre, $year, $sort, $login
  * Out: $sql
  *
  */
-function CreateQuery($media, $title, $genre, $year, $sort)
+function CreateQuery($media, $title, $genre, $year, $sort, $login)
 {
-    $sql = "SELECT id, xbmcid, refresh, title ".
+    $sql = "SELECT id, xbmcid, hide, refresh, title ".
            "FROM $media ";
     
     $stm = "WHERE";
@@ -410,7 +424,12 @@ function CreateQuery($media, $title, $genre, $year, $sort)
     if ($genre) 
     {
         $sql .= "$stm genre LIKE '%\"$genre\"%' ";
-        //$stm = "AND";
+        $stm = "AND";
+    }
+    
+    // Hide media items if not login.
+    if(!$login) {
+        $sql .= "$stm hide = 0 ";
     }
     
     // Add sort order.
@@ -429,6 +448,9 @@ function CreateQuery($media, $title, $genre, $year, $sort)
                             break;
     }
      
+    //debug
+    //echo $sql;
+    
     return $sql;
 }
 
@@ -934,7 +956,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetMedia
  *
  * Created on Apr 03, 2013
- * Updated on Sep 21, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -975,12 +997,13 @@ function GetMedia($media, $page, $sql)
             {              
                 $i = 0;
                 
-                $stmt->bind_result($id, $xbmcid, $refresh, $title);
+                $stmt->bind_result($id, $xbmcid, $hide, $refresh, $title);
                 while($stmt->fetch())
                 {                
                     
                     $aMedia[$i]['id']      = $id;                    
                     $aMedia[$i]['xbmcid']  = $xbmcid;  
+                    $aMedia[$i]['hide']    = $hide;  
                     $aMedia[$i]['refresh'] = $refresh; 
                     $aMedia[$i]['title']   = ShortenString($title, 22);
                     

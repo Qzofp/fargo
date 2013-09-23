@@ -194,7 +194,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Sep 14, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: Perform action
  * 
@@ -212,8 +212,8 @@ function SetActionHandler()
                            //alert("Refresh Something! " + $popup.find(".id").text());                           
                            break;
                            
-        case "Hide/Show" : 
-                           break;
+       /* case "Hide/Show" : 
+                           break; */
                            
         case "Delete"    : 
                            break;

@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Sep 14, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -278,6 +278,32 @@ function IncrementStatus($name, $incr)
            "WHERE `name` = '$name'";
     
     ExecuteQuery($sql);
+}
+
+/*
+ * Function:	HideOrShowMedia
+ *
+ * Created on Sep 23, 2013
+ * Updated on Sep 23, 2013
+ *
+ * Description: Update hide media hide column.
+ *
+ * In:  $media, $id, $value
+ * Out:	Update hide column
+ * 
+ */
+function HideOrShowMedia($media, $id, $value)
+{
+    $aJson = null;
+    
+    $sql = "UPDATE $media ".
+           "SET hide = $value ".
+           "WHERE id = $id";
+            
+    ExecuteQuery($sql);
+    
+    $aJson["ready"] = true;
+    return $aJson;
 }
 
 /*
