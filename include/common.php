@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Sep 23, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -170,6 +170,26 @@ function ShowHiddenActionBox()
 }
 
 ////////////////////////////////////////    Database Functions    /////////////////////////////////////////
+
+/*
+ * Function:	GenerateKey
+ *
+ * Created on Sep 28, 2013
+ * Updated on Sep 28, 2013
+ *
+ * Description: Generate key and store it in the database status table.
+ *
+ * In:  -
+ * Out:	$key
+ * 
+ */
+function GenerateKey()
+{
+    $key = str_shuffle(md5(time()));    
+    UpdateStatus("ImportKey", $key);
+    
+    return $key;
+}
 
 /*
  * Function:	GetSetting
@@ -387,6 +407,42 @@ function UpdatePassword($id, $pass)
     
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);  
+}
+
+/*
+ * Function:	LogEvent
+ *
+ * Created on May 10, 2013
+ * Updated on Apr 10, 2013
+ *
+ * Description: Log event in the database log table. 
+ *
+ * In:  $type, $event
+ * Out: $aItems
+ *
+ */
+function LogEvent($type, $event)
+{
+    $aItems = null;
+    
+    if ($type != 'Error' && $type != 'Warning' && $type != 'Information') {
+        $type = 'Unknown';
+    }
+    
+    $aItems[0] = date("Y-m-d H:i:s");
+    $aItems[1] = $type; 
+    $aItems[2] = $event;
+    
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aItems);
+    
+    $sql = "INSERT INTO log (date, type, event) ".
+           "VALUES ('$aItems[0]', '$aItems[1]', '$aItems[2]')";
+    
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);
+    
+    return $aItems;
 }
 
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////

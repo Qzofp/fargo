@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Sep 23, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  * 
@@ -25,16 +25,55 @@ require_once '../tools/toolbox.php';
 require_once 'common.php';
 require_once 'import_convert.php';
 require_once 'import_db.php';
-    
-$aData = ReceiveDataFromXbmc();
-ProcessDataFromXbmc($aData);
-   
+
+$login = CheckImportKey();
+if($login)
+{
+    $aData = ReceiveDataFromXbmc();
+    ProcessDataFromXbmc($aData);
+}
+else 
+{
+    $aJson = LogEvent("Warning", "Unauthorized import call!");
+    echo json_encode($aJson);
+}
+
 //debug
 //echo "<pre>";
 //print_r($aData);
 //echo "</pre></br>";
     
 /////////////////////////////////////////    Import Functions    //////////////////////////////////////////    
+
+/*
+ * Function:	CheckImportKey()
+ *
+ * Created on Sep 28, 2013
+ * Updated on Sep 28, 2013
+ *
+ * Description: Check if import key is valid. This proves that the users has logged in. 
+ *
+ * In:  -
+ * Out: $login
+ *
+ */
+function CheckImportKey()
+{
+    $login = false;
+    
+    $key = null;    
+    if (isset($_POST["key"]) && !empty($_POST["key"]))
+    {
+        $key = $_POST["key"];
+    }      
+    
+    $import = GetStatus("ImportKey");
+    if ($import == $key){    
+        $login = true;
+    }
+    
+    return $login;
+}
 
 /*
  * Function:	ReceiveDataFromXbmc

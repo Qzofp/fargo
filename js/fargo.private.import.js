@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Sep 22, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -469,42 +469,6 @@ function SetImportCancelHandler()
 }
 
 /*
- * Function:	ClearImportBox
- *
- * Created on Sep 02, 2013
- * Updated on Sep 02, 2013
- *
- * Description: Clear the import box. Set back to initial values.
- *
- * In:	-
- * Out:	-
- *
- */
-/*function ClearImportBox()
-{
-    var $import = $("#import_box");
-    var $thumb  = $("#thumb");
-    
-    setTimeout(function() {
-        $import.find(".title").text("");
-        $import.find(".message").html("<br/>");
-        
-        $("#transfer").html("<br/>");
-        $("#ready").html("<br/>");
-        
-        $("#import_wrapper").removeAttr("style");
-        $thumb.removeAttr("style");
-        $thumb.children("img").removeAttr("style").attr("src", "");
-        
-        // Remove progressbar.
-        if($import.find(".ui-progressbar").length != 0) {   
-            $import.find(".progress").progressbar( "destroy" );
-        }    
-   
-    }, 300);     
-}*/
-
-/*
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
@@ -639,7 +603,7 @@ function ShowStatus(delta, start, end, media, msg)
  * Function:	ImportCounter
  *
  * Created on Jul 22, 2013
- * Updated on Aug 24, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Import the media counter transfered from XBMC.
  *
@@ -658,7 +622,7 @@ function ImportCounter(xbmc, media)
         url = "http://" + xbmc.connection + ":" + xbmc.port;
     }
     
-    url   += "/fargo/transfer.html?action=counter&media=" + media;
+    url   += "/fargo/transfer.html?action=counter&media=" + media + "&key=" + xbmc.key;
     iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';
     
     // Reset values.
@@ -676,7 +640,7 @@ function ImportCounter(xbmc, media)
  * Function:	ImportMedia
  *
  * Created on Jul 20, 2013
- * Updated on Sep 15, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Import the media transfered from XBMC.
  *
@@ -695,7 +659,7 @@ function ImportMedia(xbmc, media, mode, fargo, start)
         url = "http://" + xbmc.connection + ":" + xbmc.port;
     }    
     
-    url   += "/fargo/transfer.html?action=" + media + "&mode=" + mode + "&start=" + start + "&fargoid=" + fargo;
+    url   += "/fargo/transfer.html?action=" + media + "&mode=" + mode + "&start=" + start + "&fargoid=" + fargo + "&key=" + xbmc.key;
     iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';   
     
     // Reset values.

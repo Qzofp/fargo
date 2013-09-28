@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -15,7 +15,6 @@
 
 /////////////////////////////////////////////    Main Code    /////////////////////////////////////////////
 session_start();
-
 if(!isset($_SESSION['LOGIN']))
 {
     $login = false;

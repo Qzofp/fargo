@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Sep 23, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -529,7 +529,7 @@ function SetButtonsHandler()
  * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Sep 01, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Show the genre.
  * 
@@ -578,11 +578,11 @@ function SetShowButtonHandler()
         // Reset page and sort globals;
         global_page = 1;
         global_sort = "";
-        $("#sort").css("visibility", "hidden");
+        $("#sort").css("visibility", "hidden");   
+    } 
     
-        // Show media table.
-        ShowMediaTable(global_media, global_page, global_sort);    
-    }    
+    // Show media table.
+    ShowMediaTable(global_media, global_page, global_sort);  
 }
 
 /*
@@ -874,7 +874,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Sep 23, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Shows the media table.
  *
@@ -889,7 +889,9 @@ function ShowMediaTable(media, page, sort)
     var year  = GetState("year");
     var mode  = GetState("mode");
     
-    $("#header_mode").show();
+    var $header = $("#header_mode");
+    
+    $header.show();
     ShowInfoHeader(title, genre, year);
     
     $.ajax
@@ -922,7 +924,7 @@ function ShowMediaTable(media, page, sort)
                         j = 0;
                     }                    
                     
-                    if (value.hide) {
+                    if (value.hide && $header.text() == "Hide/Show") {
                         hide = " hide";
                     }
                     else {

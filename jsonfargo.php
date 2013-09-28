@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Sep 23, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -17,7 +17,6 @@
 
 /////////////////////////////////////////////    Main Code    /////////////////////////////////////////////
 session_start();
-
 if(!isset($_SESSION['LOGIN'])) {
     $login = false;
 }
@@ -32,46 +31,67 @@ require_once 'include/common.php';
 $aJson = null;
 $action = GetPageValue('action');
 
-switch ($action) 
+switch($action) 
 {                
     case "info"    : $media = GetPageValue('media');
                      $id    = GetPageValue('id');
                      $aJson = GetMediaInfo($media, $id);
                      break;
                  
-    case "hide"    : $media = GetPageValue('media');
-                     $id    = GetPageValue('id');
-                     $value = GetPageValue('value');
-                     $aJson = HideOrShowMedia($media, $id, $value);
+    case "hide"    : if($login)
+                     {
+                        $media = GetPageValue('media');
+                        $id    = GetPageValue('id');
+                        $value = GetPageValue('value');
+                        $aJson = HideOrShowMedia($media, $id, $value);
+                     }   
+                     else {
+                        $aJson = LogEvent("Warning", "Unauthorized hide action call!");
+                     }                     
                      break;
                  
-    case "reset"   : $media = GetPageValue('media'); 
-                     $aJson["status"]     = ResetStatus($media);
-                     $aJson["connection"] = GetSetting("XBMCconnection");
-                     $aJson["port"]       = GetSetting("XBMCport");
-                     $aJson["timeout"]    = GetSetting("Timeout");
-                     break;
-    
-    case "counter" : $media = GetPageValue('media');
-                     //$aJson['counter'] = CountRows($media);
-                     //$aJson['xbmc']['counter'] = GetStatus("Xbmc".$media."Counter");
-                     $aJson['xbmc']['start'] = GetStatus("Xbmc".$media."Start");
-                     $aJson['xbmc']['end']   = GetStatus("Xbmc".$media."End");
-                     break;
-                 
-    case "status"  : $media = GetPageValue('media');
-                     $mode  = GetPageValue('mode');
-                     $id    = GetPageValue('id');
-                     $aJson = GetMediaStatus($media, $id);
-                     
-                     if ($mode == "import" ) {
-                        //$aJson['counter'] = CountRows($media);
-                        $aJson['counter'] = GetStatus("Xbmc".$media."Start");
+    case "reset"   : if($login)
+                     {
+                        $media = GetPageValue('media'); 
+                        $aJson["status"]     = ResetStatus($media);
+                        $aJson["connection"] = GetSetting("XBMCconnection");
+                        $aJson["port"]       = GetSetting("XBMCport");
+                        $aJson["timeout"]    = GetSetting("Timeout");
+                        $aJson["key"]        = GenerateKey();
                      }
                      else {
-                        $aJson['ready'] = GetStatus("RefreshReady");
+                        $aJson = LogEvent("Warning", "Unauthorized reset action call!");
                      }
+                     break;
+    
+    case "counter" : if($login)
+                     {
+                        $media = GetPageValue('media');
+                        $aJson['xbmc']['start'] = GetStatus("Xbmc".$media."Start");
+                        $aJson['xbmc']['end']   = GetStatus("Xbmc".$media."End");
+                     }
+                     else {
+                        $aJson = LogEvent("Warning", "Unauthorized counter action call!");
+                     }                     
+                     break;
+                 
+    case "status"  : if($login)
+                     {
+                        $media = GetPageValue('media');
+                        $mode  = GetPageValue('mode');
+                        $id    = GetPageValue('id');
+                        $aJson = GetMediaStatus($media, $id);
                      
+                        if ($mode == "import" ) {
+                            $aJson['counter'] = GetStatus("Xbmc".$media."Start");
+                        }
+                        else {
+                            $aJson['ready'] = GetStatus("RefreshReady");
+                        }
+                     }
+                     else {
+                        $aJson = LogEvent("Warning", "Unauthorized status action call!");
+                     }                        
                      break;                 
         
     case "movies"  : $page  = GetPageValue('page');
@@ -105,25 +125,43 @@ switch ($action)
                     $aJson = GetSystemOptionProperties($name); 
                     break;
                 
-    case "property":$option = GetPageValue('option');
-                    $number = GetPageValue('number');
-                    $value  = GetPageValue('value');
-                    $aJson  = SetSystemProperty($option, $number, $value);
+    case "property":if($login)
+                    {
+                        $option = GetPageValue('option');
+                        $number = GetPageValue('number');
+                        $value  = GetPageValue('value');
+                        $aJson  = SetSystemProperty($option, $number, $value);
+                    }
+                    else {
+                        $aJson = LogEvent("Warning", "Unauthorized property action call!");
+                    }                       
                     break;                
                 
-    case "setting": $name  = GetPageValue('name');
-                    $aJson = ProcessSetting($name);
+    case "setting": //if($login)
+                    //{
+                        $name  = GetPageValue('name');
+                        $aJson = ProcessSetting($name);
+                    //}
+                    //else {
+                    //    $aJson = LogEvent("Warning", "Unauthorized setting action call!");
+                    //}                      
                     break;
                 
     case "list"   : $type   = GetPageValue('type');
                     $filter = GetPageValue('filter');
                     $media  = GetPageValue('media');
-                    $aJson  = GetSortList($type, $filter, $media);
+                    $aJson  = GetSortList($type, $filter, $media, $login);
                     break;            
                 
-    case "log"    : $type  = GetPageValue('type');
-                    $event = GetPageValue('event');
-                    $aJson = LogEvent($type, $event);
+    case "log"    : if($login)
+                    { 
+                        $type  = GetPageValue('type');
+                        $event = GetPageValue('event');
+                        $aJson = LogEvent($type, $event);
+                    }
+                    else {
+                        $aJson = LogEvent("Warning", "Unauthorized log action call!");
+                    }                    
                     break;
     
     case "test"   : break;                   
@@ -190,24 +228,24 @@ function GetMediaStatus($media, $id)
  * Function:	GetSortList
  *
  * Created on Jun 27, 2013
- * Updated on Jun 30, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: Get list of items for sorting purposes. 
  *
- * In:  $type, $filter, $media
+ * In:  $type, $filter, $media, $login
  * Out: $aJson
  *
  */
-function GetSortList($type, $filter, $media)
+function GetSortList($type, $filter, $media, $login)
 {
     $aJson = null;
     
     switch(strtolower($type))
     {
-        case "genres" : $aJson["list"] = GetGenres($filter, $media);
+        case "genres" : $aJson["list"] = GetGenres($filter, $media, $login);
                         break;
     
-        case "years"  : $aJson["list"] = GetYears($filter, $media);
+        case "years"  : $aJson["list"] = GetYears($filter, $media, $login);
                         break;
     }
     
@@ -218,34 +256,47 @@ function GetSortList($type, $filter, $media)
  * Function:	GetGenres
  *
  * Created on Jun 27, 2013
- * Updated on Jun 30, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: Get genres from database table genres. 
  *
- * In:  $media
+ * In:  $filter, $media, $login
  * Out: $aJson
  *
  */
-function GetGenres($filter, $media)
+function GetGenres($filter, $media, $login)
 {
+    $stm = "";
+    if (!$login) {
+        $stm = " AND hide = 0 ";
+    }   
+    
+    $md = "music";
+    if ($media != "music") {
+        $md = rtrim($media, "s");
+    }
+    
     if ($filter)
-    {
-        $md = "music";
-        if ($media != "music") {
-            $md = rtrim($media, "s");
-        }
-        
+    {   
         $sql = "SELECT g.genre FROM genres g, genreto$md gtm, $media m ".
                "WHERE g.id = gtm.genreid AND m.id = gtm.".$md."id ".
-               "AND m.`year` = $filter ".
+               "AND m.`year` = $filter $stm".
                "GROUP BY g.genre ".
                "ORDER BY g.genre"; 
     }    
     else
     {    
-        $sql = "SELECT genre FROM genres ".
+        /*$sql = "SELECT genre FROM genres ".
                "WHERE media = '$media' ".
                "ORDER BY genre";
+        
+        */
+        
+        $sql = "SELECT g.genre FROM genres g, genreto$md gtm, $media m ".
+               "WHERE g.id = gtm.genreid AND m.id = gtm.".$md."id ".
+               "$stm".
+               "GROUP BY g.genre ".
+               "ORDER BY g.genre";         
     }
     
     $aJson = GetItemsFromDatabase($sql);
@@ -257,75 +308,51 @@ function GetGenres($filter, $media)
  * Function:	GetYears
  *
  * Created on Jun 30, 2013
- * Updated on Jul 04, 2013
+ * Updated on Sep 23, 2013
  *
  * Description: Get years from database media table. 
  *
- * In:  $filter, $media
+ * In:  $filter, $media, $login
  * Out: $aJson
  *
  */
-function GetYears($filter, $media)
+function GetYears($filter, $media, $login)
 {
+    $stm = "";
+    if (!$login) {
+        $stm = " AND hide = 0 ";
+    }   
+    
+    $md = "music";
+    if ($media != "music") {
+        $md = rtrim($media, "s");
+    }
+    
     if ($filter)
-    {   
-        $md = "music";
-        if ($media != "music") {
-            $md = rtrim($media, "s");
-        }        
-        
+    {          
         $sql = "SELECT m.year FROM $media m, genreto$md gtm, genres g ".
                "WHERE m.id = gtm.".$md."id AND gtm.genreid = g.id ".
-               "AND g.genre = '$filter' ".
+               "AND g.genre = '$filter' $stm".
                "GROUP BY m.`year` ".
                "ORDER BY m.`year` DESC"; 
     }
     else 
     {    
-        $sql = "SELECT YEAR FROM $media ".
+        /*$sql = "SELECT YEAR FROM $media ".
                "GROUP BY `year` ".
                "ORDER BY `year` DESC";
+         */
+
+        $sql = "SELECT m.year FROM $media m, genreto$md gtm, genres g ".
+               "WHERE m.id = gtm.".$md."id AND gtm.genreid = g.id ".
+               "$stm".
+               "GROUP BY m.`year` ".
+               "ORDER BY m.`year` DESC";          
     }
     
     $aJson = GetItemsFromDatabase($sql);
     
     return $aJson;
-}
-
-/*
- * Function:	LogEvent
- *
- * Created on May 10, 2013
- * Updated on Apr 10, 2013
- *
- * Description: Log event in the database log table. 
- *
- * In:  $type, $event
- * Out: $aItems
- *
- */
-function LogEvent($type, $event)
-{
-    $aItems = null;
-    
-    if ($type != 'Error' && $type != 'Warning' && $type != 'Information') {
-        $type = 'Unknown';
-    }
-    
-    $aItems[0] = date("Y-m-d H:i:s");
-    $aItems[1] = $type; 
-    $aItems[2] = $event;
-    
-    $db = OpenDatabase();
-    $aItems = AddEscapeStrings($db, $aItems);
-    
-    $sql = "INSERT INTO log (date, type, event) ".
-           "VALUES ('$aItems[0]', '$aItems[1]', '$aItems[2]')";
-    
-    ExecuteQueryWithEscapeStrings($db, $sql);
-    CloseDatabase($db);
-    
-    return $aItems;
 }
 
 ////////////////////////////////////////    Database Functions    /////////////////////////////////////////
