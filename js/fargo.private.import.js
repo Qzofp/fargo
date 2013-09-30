@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Sep 28, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -18,7 +18,7 @@
 var cIMPORT = {
     IMPORT:   "Import",
     REFRESH:  "Refresh"  
-}
+};
 
 var cSTATUS = {
     ONLINE:   "XBMC is online.",
@@ -257,7 +257,7 @@ function ShowRefreshFinished(media)
  * Function:	SetStartImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Sep 09, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -267,16 +267,7 @@ function ShowRefreshFinished(media)
  */
 function SetStartImportHandler()
 {  
-    var media, msg;
-    
-    media = InitImportAndShowPopup();
-    msg = ["XBMC is online.", 
-           "XBMC is offline!", 
-           "Searching...", 
-           "Processing...",                
-           "Importing...", 
-           "No new " + ConvertMedia(media) + " found.",
-           "Import is ready."];
+    var media = InitImportAndShowPopup();
   
     // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
@@ -285,7 +276,7 @@ function SetStartImportHandler()
         dataType: 'json',
         success: function(json)
         {
-            var start, end;
+            var delta, start, end;
             var timer, i = 0;
             
             // Check if XBMC is online and transfer XBMC media counter (total).
@@ -299,21 +290,84 @@ function SetStartImportHandler()
                 {
                     // Returns global_start and global_end;
                     GetXbmcMediaLimits(media);
-                    //start = global_total_fargo;
-                    //end   = global_total_xbmc;
+                    start = global_xbmc_start;
+                    end   = global_xbmc_end;
+                    delta = end - start;
+                    
+                    if (end > 0 || i > 3)
+                    {
+                        if (end > 0 && end > start) 
+                        {
+                            LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
+                            StartImport(json, media, start, end, delta);
+                        }
+                        else if (end >= 0) {
+                            ShowNoNewMedia(media);
+                        }
+                        else {
+                            ShowOffline();
+                        }
+                        
+                        clearInterval(timer);
+                    }
+                }
+                i++;
+                
+            }, 1000); // End timer  
+        } // End Success.        
+    }); // End Ajax;
+}
+
+/*
+ * Function:	SetRetryImportHandler
+ *
+ * Created on Sep 30, 2013
+ * Updated on Sep 30, 2013
+ *
+ * Description: Set the import handler and retry the import.
+ * 
+ * In:	media, start, delta
+ * Out:	-
+ *
+ */
+function SetRetryImportHandler(media, start, delta)
+{   
+    // Reset media status, get xbmc connection (url), port and fargo media counter.
+    $.ajax({
+        url: 'jsonfargo.php?action=reset&media=' + media,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {
+            var end;
+            var timer, i = 0;
+            
+            // Check if XBMC is online and transfer XBMC media counter (total).
+            ImportCounter(json, media);
+            
+            // Get XBMC media counter from Fargo.
+            timer = setInterval(function()
+            {
+                // Check if iframe from ImportCounter finished loading.
+                if ($("#ready").text() == "true")
+                {
+                    // Returns global_start and global_end;
+                    GetXbmcMediaLimits(media);
                     start = global_xbmc_start;
                     end   = global_xbmc_end;
                     
                     if (end > 0 || i > 3)
                     {
-                        if (end > 0 && end > start) {
-                            StartImport(json, media, start, end, msg);
+                        if (end > 0 && end > start) 
+                        {
+                            LogEvent("Information", "Restart import from XBMC (Retry)."); 
+                            StartImport(json, media, start, end, delta);
                         }
                         else if (end >= 0) {
-                            ShowNoNewMedia(media, msg);
+                            ShowNoNewMedia(media);
                         }
                         else {
-                            ShowOffline(msg);
+                            ShowOffline();
                         }
                         
                         clearInterval(timer);
@@ -363,21 +417,22 @@ function InitImportAndShowPopup()
  * Function:	ShowNoNewMedia
  *
  * Created on Aug 18, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Show no new media and add to log event.
  * 
- * In:	media, msg
+ * In:	media
  * Out:	-
  *
  */
-function ShowNoNewMedia(media, msg)
+function ShowNoNewMedia(media)
 {
     var finish = 2 + Math.floor(Math.random() * 3);
+    var msg = cSTATUS.NOTFOUND.replace("[dummy]", ConvertMedia(media));
     
-    $("#action_box .message").html(msg[0]);
+    $("#action_box .message").html(cSTATUS.ONLINE);
     SetState("xbmc", "online");
-    DisplayStatusMessage(msg[2], msg[5], finish);
+    DisplayStatusMessage(cSTATUS.SEARCH, msg, finish);
     LogEvent("Information", "No new " + ConvertMedia(media) + " found.");      
 }
 
@@ -385,7 +440,7 @@ function ShowNoNewMedia(media, msg)
  * Function:	ShowOffline
  *
  * Created on Aug 19, 2013
- * Updated on Sep 14, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Show offline message and add to log event.
  * 
@@ -408,26 +463,28 @@ function ShowOffline()
  * Function:	ShowFinished
  *
  * Created on Aug 19, 2013
- * Updated on Sep 02, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Show import finished message and add to log event.
  * 
- * In:	media, delta, msg
+ * In:	media, counter
  * Out:	-
  *
  */
-function ShowFinished(media, delta, msg)
+function ShowFinished(media, counter)
 {   
-    $("#action_box .message").html(msg[6]);
+    var msg = cSTATUS.READY.replace("[dummy]", cIMPORT.IMPORT);
+    
+    $("#action_box .message").html(msg);
     $(".cancel").html("Finish");
-    LogEvent("Information", "Import of " + delta + " " + ConvertMedia(media) + " finished.");    
+    LogEvent("Information", "Import of " + counter + " " + ConvertMedia(media) + " finished.");    
 }
 
 /*
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Sep 14, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Set the import handler, cancel or finish the import.
  * 
@@ -436,9 +493,8 @@ function ShowFinished(media, delta, msg)
  *
  */
 function SetImportCancelHandler()
-{
-    var button = $(".cancel").text();
-    
+{    
+    var $popup = $(".popup:visible");
     var media = $("#control_bar").find(".on").attr('id');
     SetState("media", media); 
     
@@ -455,6 +511,10 @@ function SetImportCancelHandler()
    
     global_cancel = true;
     
+    if ($popup.find(".cancel").text() == "Cancel") {
+        LogEvent("Warning", "Import " + ConvertMedia(media) + " canceled!");
+    }
+    
     // Reset import values.
     global_total_fargo = 0;
     global_total_xbmc  = 0;    
@@ -463,7 +523,7 @@ function SetImportCancelHandler()
         value : 0       
     });
     
-    if (button == "Finish" && media != "system") {
+    if (media != "system") {
         window.location='index.php?media=' + media;
     }
 }
@@ -472,31 +532,30 @@ function SetImportCancelHandler()
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Sep 16, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
- * In:	xbmc, media, start, end, msg, retry
+ * In:	xbmc, media, start, end, delta
  * Out:	Imported media
  *
  */
-function StartImport(xbmc, media, start, end, msg)
+function StartImport(xbmc, media, start, end, delta)
 {
     var timeout = 0;
     var busy    = true;
-    var delta   =  end - start;
+    //var delta   =  end - start;
     var $ready  = $("#ready");
     
     // Import media process.
+    $("#action_box .message").html(cSTATUS.ONLINE);  
     ImportMedia(xbmc, media, "import", 0, start);
     start += 1;
-    
-    LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
     
     (function setImportTimer() {
             
         //alert("timer");
-        if (global_cancel || start >= end)  {
+        if (global_cancel || start >= end   || timeout > xbmc.timeout/1000) {
             return; // End Import.
         }
 
@@ -512,6 +571,9 @@ function StartImport(xbmc, media, start, end, msg)
             }
         }
         
+        // debug
+        // console.log("Import Timer, start: " + start);
+        
         setTimeout(setImportTimer, 1200); // 500
             
     }()); // End setImportTimer.   
@@ -521,14 +583,15 @@ function StartImport(xbmc, media, start, end, msg)
     {
         if (global_cancel || global_xbmc_start >= end  || timeout > xbmc.timeout/1000)
         {
-            if (global_cancel) {
+            /*if (global_cancel) {
                 LogEvent("Warning", "Import " + ConvertMedia(media) + " canceled!");
             }
-            else if (timeout > xbmc.timeout/1000) {
-                ShowOffline(msg);
+            else*/
+            if (timeout > xbmc.timeout/1000) {
+                SetRetryImportHandler(media, start, delta);
             }
             else {
-                ShowFinished(media, delta, msg);
+                ShowFinished(media, delta);
             }             
             
             clearInterval(status);
@@ -536,7 +599,7 @@ function StartImport(xbmc, media, start, end, msg)
         else
         {
             // Show status and returns global_total_fargo.
-            ShowStatus(delta, start, end, media, msg);
+            ShowStatus(delta, start, end, media);
             if (global_xbmc_start == start) {
                 busy = false; // resume import.
             }
@@ -552,15 +615,15 @@ function StartImport(xbmc, media, start, end, msg)
  * Function:	ShowStatus
  *
  * Created on Aug 19, 2013
- * Updated on Sep 16, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Show the import status.
  *
- * In:	delta, end, media, msg
+ * In:	delta, end, media
  * Out:	Status
  *
  */
-function ShowStatus(delta, start, end, media, msg)
+function ShowStatus(delta, start, end, media)
 {   
     $.ajax({
         url: 'jsonfargo.php?action=status&media=' + media + '&mode=import' + '&id=' + start,
@@ -577,7 +640,7 @@ function ShowStatus(delta, start, end, media, msg)
                     value : percent       
                 });                
                 
-                $("#action_box .message").html(msg[4]);
+                $("#action_box .message").html(cSTATUS.PROCESS);
                       
                 // Preload image.
                 var img = new Image();
@@ -593,7 +656,7 @@ function ShowStatus(delta, start, end, media, msg)
                 
             }  
             else {
-                $("#action_box .message").html(msg[3]);                    
+                $("#action_box .message").html(cSTATUS.IMPORT);                    
             }              
         } // End succes.    
     }); // End Ajax. 

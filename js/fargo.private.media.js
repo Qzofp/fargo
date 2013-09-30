@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Sep 23, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -18,33 +18,37 @@
  * Function:	ChangeModeMediaInterface
  *
  * Created on Aug 31, 2013
- * Updated on Sep 07, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Change the interface (hover color and mode notifiction).
  * 
- * In:	mode
+ * In:	mode, media
  * Out:	Changed Interface
  *
  */
-function ChangeModeMediaInterface(mode)
-{
+function ChangeModeMediaInterface(mode, media)
+{  
+    media = ConvertMediaToSingular(media);
+  
     switch (mode)
     {
-        case "Normal"    : $("#header_mode").text(mode).css({'color':'dodgerblue'});
-                           ChangeMediaTableHoverColor("dodgerblue", "dodgerblue");                           
-                           break;
+        case "Information" : media = media.substr(0,1).toUpperCase() + media.substr(1);
+                             mode = mode.substr(0,1).toLowerCase() + mode.substr(1);
+                             $("#header_mode").text(media + " " + mode).css({'color':'dodgerblue'});
+                             ChangeMediaTableHoverColor("dodgerblue", "dodgerblue");                           
+                             break;
                         
-        case "Refresh"   : $("#header_mode").text(mode).css({'color':'#33BF38'});
-                           ChangeMediaTableHoverColor("#33BF38", "#33BF38");
-                           break;
+        case "Refresh"     : $("#header_mode").text(mode + " " + media).css({'color':'#33BF38'});
+                             ChangeMediaTableHoverColor("#33BF38", "#33BF38");
+                             break;
                         
-        case "Hide/Show" : $("#header_mode").text(mode).css({'color':'white'});
-                           ChangeMediaTableHoverColor("white", "white");
-                           break; 
+        case "Hide/Show"   : $("#header_mode").text(mode + " " + media).css({'color':'white'});
+                             ChangeMediaTableHoverColor("white", "white");
+                             break; 
 
-        case "Delete"    : $("#header_mode").text(mode).css({'color':'#D82020'});
-                           ChangeMediaTableHoverColor("#D82020", "#D82020");
-                           break;                   
+        case "Remove"      : $("#header_mode").text(mode + " " + media).css({'color':'#D82020'});
+                             ChangeMediaTableHoverColor("#D82020", "#D82020");
+                             break;                   
     }
 }
 
@@ -76,7 +80,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Function:	SetMediaHandlerWithActions
  *
  * Created on Aug 31, 2013
- * Updated on Sep 23, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -100,7 +104,7 @@ function SetInfoHandlerWithActions()
                            HideOrShowMedia(media, id);
                            break;               
 
-        case "Delete"    : alert ("Delete");
+        case "Remove"    : alert ("Delete");
                            break;
         
         default          : ShowMediaInfo(media, id); //Mode is Normal.

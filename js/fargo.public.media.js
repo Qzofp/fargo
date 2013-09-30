@@ -446,7 +446,7 @@ function SetTitleHandler()
  * Function:	SetButtonsHandler
  *
  * Created on Jun 27, 2013
- * Updated on Aug 31, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Show the buttons (Title, Genres or Years) popup.
  * 
@@ -469,8 +469,8 @@ function SetButtonsHandler()
     if ($this.text() == "Title"){
         aList = ["Latest", "Oldest", "Ascending", "Descending"];  
     }
-    else if ($this.text() == "Modes") {
-        aList = ["Normal", "Refresh", "Hide/Show", "Delete"];  
+    else if ($this.text() == "Manage") {
+        aList = ["Information", "Hide/Show", "Import", "Refresh", "Remove"]; 
     }
     else
     {
@@ -539,7 +539,7 @@ function SetButtonsHandler()
  */
 function SetShowButtonHandler()
 {
-    var state; 
+    var state, media; 
     var $this = $(this);
     var choice = GetState("choice");
     
@@ -554,7 +554,8 @@ function SetShowButtonHandler()
         case "Years"  : state = "year";
                         break;   
                     
-        case "Modes"  : state = "mode";
+        case "Manage" : state = "mode";
+                        break;
     }
     
     ClearButtonsBox();
@@ -570,16 +571,21 @@ function SetShowButtonHandler()
         SetState(state, $this.text());
     }
     
-    if (choice == "Modes") {
-        ChangeModeMediaInterface($this.text());
+    if ($this.text() == "Import") 
+    {
+        media = GetState("media");  
+        setTimeout(function(){
+            SetImportPopupHandler(media);
+        }, 500);
     }
-    else 
+   
+    if (choice != "Manage") 
     {    
         // Reset page and sort globals;
         global_page = 1;
         global_sort = "";
         $("#sort").css("visibility", "hidden");   
-    } 
+    }
     
     // Show media table.
     ShowMediaTable(global_media, global_page, global_sort);  
@@ -858,7 +864,7 @@ function ConvertMediaToSingular(media)
         case 'movies' : media = "movie";
                         break;
                         
-        case 'tvshows': media = "TV Show";
+        case 'tvshows': media = "TV show";
                         break;
                         
         case 'music'  : media = "album";
@@ -924,7 +930,7 @@ function ShowMediaTable(media, page, sort)
                         j = 0;
                     }                    
                     
-                    if (value.hide && $header.text() == "Hide/Show") {
+                    if (value.hide && mode == "Hide/Show") {
                         hide = " hide";
                     }
                     else {
@@ -951,7 +957,7 @@ function ShowMediaTable(media, page, sort)
             
             // Change hover color.
             if (mode) {
-                ChangeModeMediaInterface(mode);
+                ChangeModeMediaInterface(mode, media);
             }
         } // End success.
     }); // End Ajax. 

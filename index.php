@@ -36,7 +36,7 @@ if(!isset($_SESSION['LOGIN']))
 else
 {
     $login = true;
-    $mode = "Normal";
+    $mode = "";
     $user = "Welcome: <span>".$_SESSION['USER']."</span>";
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js",
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
@@ -49,7 +49,7 @@ else
                          "js/fargo.private.media.js",         
                          "js/fargo.private.import.js");
      
-    $li_modes = "<li id=\"modes\">Modes</li>\n";
+    $li_modes = "<li id=\"modes\">Manage</li>\n";
     $li_login  = "<li id=\"logout\">Logout</li>\n";
     $system_states = "   <div id=\"state_xbmc\">offline</div>\n".
                      "   <div id=\"state_property\"></div>\n".

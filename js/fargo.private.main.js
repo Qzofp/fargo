@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Sep 22, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -45,7 +45,7 @@ var global_list_fargo;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Sep 22, 2013
+ * Updated on Sep 28, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -59,6 +59,7 @@ function LoadFargoMedia(media)
     global_media = media;
     
     SetState("title", "Latest");
+    SetState("mode", "Information");
 
     ChangeControlBar(global_media);
     ChangeSubControlBar(global_media);
