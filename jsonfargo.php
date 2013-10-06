@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 06, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -49,6 +49,18 @@ switch($action)
                         $aJson = LogEvent("Warning", "Unauthorized hide action call!");
                      }                     
                      break;
+                     
+    case "delete"  : if($login)
+                     {
+                        $media  = GetPageValue('media'); 
+                        $id     = GetPageValue('id');
+                        $xbmcid = GetPageValue('xbmcid');
+                        $aJson  = DeleteMedia($media, $id, $xbmcid);
+                     }
+                     else {
+                        $aJson = LogEvent("Warning", "Unauthorized delete action call!");
+                     }
+                     break;                  
                  
     case "reset"   : if($login)
                      {
@@ -122,7 +134,7 @@ switch($action)
                     break;   
     
     case "option" : $name  = GetPageValue('name');
-                    $aJson = GetSystemOptionProperties($name); 
+                    $aJson = GetSystemOptionProperties($name, $login); 
                     break;
                 
     case "property":if($login)
@@ -137,14 +149,9 @@ switch($action)
                     }                       
                     break;                
                 
-    case "setting": //if($login)
-                    //{
-                        $name  = GetPageValue('name');
-                        $aJson = ProcessSetting($name);
-                    //}
-                    //else {
-                    //    $aJson = LogEvent("Warning", "Unauthorized setting action call!");
-                    //}                      
+    case "setting": // Only used for login box.
+                    $name  = GetPageValue('name');
+                    $aJson = ProcessSetting($name);                   
                     break;
                 
     case "list"   : $type   = GetPageValue('type');
@@ -1110,23 +1117,23 @@ function ProcessSetting($name)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on Aug 25, 2013
+ * Updated on Oct 06, 2013
  *
  * Description: Get the system option properties page from the database table settings. 
  *
- * In:  $name
+ * In:  $name, $login
  * Out: $aJson
  *
  */
-function GetSystemOptionProperties($name)
+function GetSystemOptionProperties($name, $login)
 {
     $html = null;
     switch(strtolower($name))
     {
         case "statistics" : $html = GetSetting($name);                                
-                            $html = str_replace("[movies]", CountRows("movies"), $html);
-                            $html = str_replace("[tvshows]", CountRows("tvshows"), $html);
-                            $html = str_replace("[music]", CountRows("music"), $html);
+                            $html = str_replace("[movies]", CountMedia("movies", $login), $html);
+                            $html = str_replace("[tvshows]", CountMedia("tvshows", $login), $html);
+                            $html = str_replace("[music]", CountMedia("music", $login), $html);
                             break;
                                        
         case "settings"   : $html = GetSetting($name);

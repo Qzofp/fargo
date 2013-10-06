@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Sep 22, 2013
+ * Updated on Oct 06, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -273,7 +273,7 @@ function ShowPopupBox(type, title)
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Sep 22, 2013
+ * Updated on Oct 06, 2013
  *
  * Description: Close import or other popup window.
  * 
@@ -285,20 +285,27 @@ function SetCloseHandler()
 {
     var $popup = $(".popup:visible");
     
+    if ($popup.find(".no").text() == "Cancel") {
+        global_cancel = true;
+    }
+    
     switch($popup.attr('id'))
     {
         case "action_box"  : // Post ActionBox actions.
                              switch($popup.find(".title").text().split(" ")[0])
                              {
-                                case "Import"  : //alert("close import");
+                                case "Import"  : //alert("Close import");
                                                  SetImportCancelHandler(); //Abort import.
                                                  break;
                                                  
                                 case "Refresh" : //alert("Finish Refresh"); 
                                                  RefreshMediaTable($popup);   
-                                                 break;   
+                                                 break;  
+                                             
+                                case "Remove"  : //alert("Finish Remove");
+                                                 ShowMediaTable(global_media, global_page, global_sort);
+                                                 break;
                              }
-                                                          
                              ClearActionBox();
                              break;
                           
@@ -367,12 +374,12 @@ function SetMaskHandler()
  * Function:	GetFargoSortList
  *
  * Created on Jun 27, 2013
- * Updated on Jul 05, 2013
+ * Updated on Oct 05, 2013
  *
  * Description: Get sort list from one of the Fargo databases.
  * 
  * In:	type, media
- * Out:	global_setting_fargo
+ * Out:	global_list_fargo
  *
  */
 function GetFargoSortList(type, media)

@@ -789,7 +789,7 @@ color:dodgerblue;
 #state_xbmc,
 #state_row,
 #state_property{
-/*display:none;*/
+display:none;
 
 /* debug */
 position:absolute;

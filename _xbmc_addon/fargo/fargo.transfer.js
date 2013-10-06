@@ -132,6 +132,67 @@ function TransferGetMovies(key, start)
                    "country","imdbnumber","runtime","set","showlink","streamdetails","top250","votes","fanart",\n\
                    "thumbnail","file","sorttitle","resume","setid","dateadded","tag","art"]}, "id": "libMovies"}';
     
+    $.ajax({
+        url: '../jsonrpc?request=' + request,
+        type: 'get',
+        dataType: 'json',
+        timeout: 1000,
+        tryCount: 0,
+        retryLimit: 3,
+        success: function(json) {            
+            if (json.result && json.result.movies)
+            {
+                poster = CreateImageUrl(json.result.movies[0].art.poster);
+                fanart = CreateImageUrl(json.result.movies[0].art.fanart);
+        
+                // Show title.
+                $("#info").text(json.result.movies[0].label);
+        
+                // Draw image on canvas and wait until it's doen.
+                a = DrawImageOnCanvas("poster", poster);
+                b = DrawImageOnCanvas("fanart", fanart);
+
+                // Check if image loaded successfully.
+                a.done( function(a_check) { a_chk = a_check; });
+                b.done( function(b_check) { b_chk = b_check; });
+        
+                // Wait until DrawImageOnCanvas functions are ready.
+                $.when(a, b).done(function()
+                { 
+                    json.key    = key;
+                    json.action = "Movies";
+                    json.poster = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
+                    json.fanart = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                
+                    // Transfer the data with Ajax.
+                    TransferData(json);
+      
+                }); // End when.         
+            } // End if.
+        }, // End success.
+        error: function(xhr, textStatus, errorThrown ) {
+            if (textStatus == 'timeout') 
+            {
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) 
+                {
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+                console.log('We have tried ' + this.retryLimit + ' times and it is still not working. We give in. Sorry.');
+                return;
+            }
+            if (xhr.status == 500) {
+                console.log('Oops! There seems to be a server problem, please try again later.');
+            } 
+            else {
+                console.log('Oops! There was a problem, sorry.');
+            }
+        } // End error.
+    }); // End Ajax.    
+    
+ /*   
     $.getJSON("../jsonrpc?request=" + request, function(json)
     {    
         if (json.result && json.result.movies)
@@ -163,7 +224,8 @@ function TransferGetMovies(key, start)
       
             }); // End when.         
         } // End if.
-    }); // End getJSON.       
+    }); // End getJSON. 
+    */
 }
 
 /*
@@ -274,7 +336,68 @@ function TransferGetTVShows(key, start)
                     "originaltitle", "sorttitle", "episodeguide", "season", "watchedepisodes", "dateadded",\n\
                     "tag", "art"] }, "id": "libTvShows"}';    
     
-    $.getJSON("../jsonrpc?request=" + request, function(json)
+    $.ajax({
+        url: '../jsonrpc?request=' + request,
+        type: 'get',
+        dataType: 'json',
+        timeout: 1000,
+        tryCount: 0,
+        retryLimit: 3,
+        success: function(json) {            
+            if (json.result &&  json.result.tvshows)
+            {
+                poster = CreateImageUrl(json.result.tvshows[0].art.poster);
+                fanart = CreateImageUrl(json.result.tvshows[0].art.fanart);
+        
+                // Show title.
+                $("#info").text(json.result.tvshows[0].label);
+        
+                // Draw image on canvas and wait until it's doen.
+                a = DrawImageOnCanvas("poster", poster);
+                b = DrawImageOnCanvas("fanart", fanart);
+
+                // Check if image loaded successfully.
+                a.done( function(a_check) { a_chk = a_check; });
+                b.done( function(b_check) { b_chk = b_check; });
+        
+                // Wait until DrawImageOnCanvas functions are ready.
+                $.when(a, b).done(function()
+                { 
+                    json.key    = key;                
+                    json.action = "TVShows";
+                    json.poster = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
+                    json.fanart = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                
+                    // Transfer the data with Ajax.
+                    TransferData(json);
+      
+                }); // End when.         
+            } // End if.        
+        }, // End success.
+        error: function(xhr, textStatus, errorThrown ) {
+            if (textStatus == 'timeout') 
+            {
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) 
+                {
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+                console.log('We have tried ' + this.retryLimit + ' times and it is still not working. We give in. Sorry.');
+                return;
+            }
+            if (xhr.status == 500) {
+                console.log('Oops! There seems to be a server problem, please try again later.');
+            } 
+            else {
+                console.log('Oops! There was a problem, sorry.');
+            }
+        } // End error.
+    }); // End Ajax.
+    
+    
+/*    $.getJSON("../jsonrpc?request=" + request, function(json)
     {    
         if (json.result &&  json.result.tvshows)
         {
@@ -306,6 +429,7 @@ function TransferGetTVShows(key, start)
             }); // End when.         
         } // End if.
     }); // End getJSON.     
+*/
 }
 
 /*
@@ -414,7 +538,68 @@ function TransferGetAlbums(key, start)
                     "properties": ["title", "description", "artist", "genre", "theme", "mood", "style","type",\n\
                     "albumlabel", "rating", "year", "musicbrainzalbumid", "musicbrainzalbumartistid", "fanart",\n\
                     "thumbnail","playcount", "genreid", "artistid", "displayartist"] }, "id": "libAlbums"}';    
+ 
+    $.ajax({
+        url: '../jsonrpc?request=' + request,
+        type: 'get',
+        dataType: 'json',
+        timeout: 1000,
+        tryCount: 0,
+        retryLimit: 3,
+        success: function(json) {            
+            if (json.result &&  json.result.albums)
+            {
+                poster = CreateImageUrl(json.result.albums[0].thumbnail);
+                fanart = CreateImageUrl(json.result.albums[0].fanart);
+        
+                // Show title.
+                $("#info").text(json.result.albums[0].label);
+        
+                // Draw image on canvas and wait until it's doen.
+                a = DrawImageOnCanvas("poster", poster);
+                b = DrawImageOnCanvas("fanart", fanart);
+
+                // Check if image loaded successfully.
+                a.done( function(a_check) { a_chk = a_check; });
+                b.done( function(b_check) { b_chk = b_check; });
+        
+                // Wait until DrawImageOnCanvas functions are ready.
+                $.when(a, b).done(function()
+                { 
+                    json.key    = key;                
+                    json.action = "Music";
+                    json.poster = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
+                    json.fanart = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                
+                    // Transfer the data with Ajax.
+                    TransferData(json);
+      
+                }); // End when.         
+            } // End if.     
+        }, // End success.
+        error: function(xhr, textStatus, errorThrown ) {
+            if (textStatus == 'timeout') 
+            {
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) 
+                {
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+                console.log('We have tried ' + this.retryLimit + ' times and it is still not working. We give in. Sorry.');
+                return;
+            }
+            if (xhr.status == 500) {
+                console.log('Oops! There seems to be a server problem, please try again later.');
+            } 
+            else {
+                console.log('Oops! There was a problem, sorry.');
+            }
+        } // End error.
+    }); // End Ajax.
     
+/*    
     $.getJSON("../jsonrpc?request=" + request, function(json)
     {    
         if (json.result &&  json.result.albums)
@@ -447,6 +632,7 @@ function TransferGetAlbums(key, start)
             }); // End when.         
         } // End if.
     }); // End getJSON.   
+*/    
 }
 
 /*

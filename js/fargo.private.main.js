@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 06, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -28,11 +28,6 @@ var global_cancel = false;
 var global_xbmc_start;
 var global_xbmc_end;
 
-
-// Media total.
-//var global_total_fargo = 0;
-//var global_total_xbmc  = 0;
-
 // Fargo globals.
 var global_setting_fargo;
 var global_list_fargo;
@@ -45,7 +40,7 @@ var global_list_fargo;
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 05, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -94,7 +89,7 @@ function LoadFargoMedia(media)
     // Cancel or finish import. 
     $(".button").on("click", ".cancel", SetCloseHandler);    
     
-    // Manage (Show, Refresh, Hide and Delete) click events.
+    // Manage (Show, Refresh, Hide and Remove) click events.
     $("#modes").on("click", SetButtonsHandler);
     
     // Title, Genres or Years click events.
@@ -195,7 +190,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Sep 23, 2013
+ * Updated on Oct 06, 2013
  *
  * Description: Perform action
  * 
@@ -206,6 +201,7 @@ function ChangeSubControlBar(media)
 function SetActionHandler()
 {    
     var $popup = $(".popup:visible");
+    global_cancel = false;
     
     switch($popup.find(".title").text().split(" ")[0])
     {
@@ -213,10 +209,8 @@ function SetActionHandler()
                            //alert("Refresh Something! " + $popup.find(".id").text());                           
                            break;
                            
-       /* case "Hide/Show" : 
-                           break; */
-                           
-        case "Delete"    : 
+        case "Remove"    : SetRemoveHandler($popup.find(".id").text(), $popup.find(".xbmcid").text());
+                           //alert("Remove Something! " + $popup.find(".id").text()); 
                            break;
                            
         case "Cleaning"  : SetCleanDatabaseHandler();
@@ -226,6 +220,50 @@ function SetActionHandler()
                            break;
                                               
     }    
+}
+
+/*
+ * Function:	SetRemoveHandler
+ *
+ * Created on Oct 05, 2013
+ * Updated on Oct 05, 2013
+ *
+ * Description: Remove media from Frago handler.
+ * 
+ * In:	id, xbmcid
+ * Out:	-
+ *
+ */
+function SetRemoveHandler(id, xbmcid)
+{
+    var $remove, finish;
+    var media, name, title;
+    
+    finish  = 3 + Math.floor(Math.random() * 3);
+    media   = GetState("media");
+    
+    // Turn progress on.
+    $(".progress_off").toggleClass("progress_off progress");
+
+    // Reset and show progress bar.
+    $remove = $("#action_box .progress");
+    $remove.progressbar({value : 0});
+    $remove.show();  
+    
+    // Remove media from Fargo.
+    RemoveMediaFromFargo(media, id, xbmcid);
+    
+    media = ConvertMediaToSingular(media);
+    name  = media.substr(0,1).toUpperCase() + media.substr(1); 
+    DisplayCleaningMessage("Removing " + media + "...", name + " removed!", $remove, ".no", finish);
+    
+    setTimeout(function(){
+        title = $("#action_title").text();
+        LogEvent("Information", name + " " + title + " removed!");
+    }, 800);    
+    
+    $(".yes").hide();
+    $(".no").html('Cancel');
 }
 
 /*
@@ -245,7 +283,7 @@ function SetCleanDatabaseHandler()
     var option, number,finish;
     var $clean;
     
-    // turn progress on.
+    // Turn progress on.
     $(".progress_off").toggleClass("progress_off progress");
     
     // Get option.
@@ -288,7 +326,7 @@ function SetCleanDatabaseHandler()
  * Function:	DisplayCleaningMessage
  *
  * Created on Jun 15, 2013
- * Updated on Jul 04, 2013
+ * Updated on Oct 06, 2013
  *
  * Description: Display cleaning message.
  *
@@ -302,22 +340,27 @@ function DisplayCleaningMessage(str1, str2, prg, btn, end)
     var percent;
     
     $(".message").html(str1);
-    var timer = setInterval(function(){
- 
-        percent = Math.round(i/end * 100);
-        prg.progressbar({
-            value : percent       
-        });
-        i++; 
-	
-        // End interval loop.
-        if (i > end)
+    var timer = setInterval(function()
+    {
+        if (!global_cancel)
         {
-            clearInterval(timer);
-            $(".message").html(str2);
-            $(btn).html("Ok");           
-        }  
-        
+            percent = Math.round(i/end * 100);
+            prg.progressbar({
+                value : percent       
+            });
+            i++; 
+	
+            // End interval loop.
+            if (i > end)
+            {
+                clearInterval(timer);
+                $(".message").html(str2);
+                $(btn).html("Finish");        
+            }            
+        }
+        else {
+           clearInterval(timer); 
+        }
     }, 500);	
 }
 

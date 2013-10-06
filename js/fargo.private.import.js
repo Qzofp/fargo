@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Sep 30, 2013
+ * Updated on Oct 05, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -17,7 +17,8 @@
 // Import constants.
 var cIMPORT = {
     IMPORT:   "Import",
-    REFRESH:  "Refresh"  
+    REFRESH:  "Refresh",
+    FINISH:   "Finish"
 };
 
 var cSTATUS = {
@@ -790,7 +791,7 @@ function IframeReady()
  * Function:	DisplayStatusMessage
  *
  * Created on May 17, 2013
- * Updated on Sep 09, 2013
+ * Updated on Oct 05, 2013
  *
  * Description: Display status message.
  *
@@ -820,7 +821,7 @@ function DisplayStatusMessage(str1, str2, end)
             {
                 clearInterval(timer);
                 $("#action_box .message").html(str2);
-                $(".cancel").html("Ok");           
+                $(".cancel").html(cIMPORT.FINISH);           
             }
         }    
         else {

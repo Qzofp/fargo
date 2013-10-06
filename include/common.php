@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 06, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -304,7 +304,7 @@ function IncrementStatus($name, $incr)
  * Function:	HideOrShowMedia
  *
  * Created on Sep 23, 2013
- * Updated on Sep 23, 2013
+ * Updated on Oct 05, 2013
  *
  * Description: Update hide media hide column.
  *
@@ -314,7 +314,7 @@ function IncrementStatus($name, $incr)
  */
 function HideOrShowMedia($media, $id, $value)
 {
-    $aJson = null;
+    $aJson = false;
     
     $sql = "UPDATE $media ".
            "SET hide = $value ".
@@ -324,6 +324,99 @@ function HideOrShowMedia($media, $id, $value)
     
     $aJson["ready"] = true;
     return $aJson;
+}
+
+/*
+ * Function:	CountMedia
+ *
+ * Created on Oct 06, 2013
+ * Updated on Oct 06, 2013
+ *
+ * Description: Count media with hide.
+ *
+ * In:	$table, $login
+ * Out:	$rows
+ *
+ */
+function CountMedia($table, $login)
+{
+    $db = OpenDatabase();
+    $rows = 0;
+
+    $sql = "SELECT count(*) FROM $table";
+    if (!$login) {
+        $sql .= " WHERE hide = 0";
+    } 
+    
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            $stmt->bind_result($rows);
+            $stmt->fetch();
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
+    
+    CloseDatabase($db);
+    
+    return $rows;
+}
+
+/*
+ * Function:	DeleteMedia(
+ *
+ * Created on Oct 05, 2013
+ * Updated on Oct 05, 2013
+ *
+ * Description: Delete media from Fargo database.
+ *
+ * In:  $media, $id, $xbmcid
+ * Out:	Deleted media
+ * 
+ */
+function DeleteMedia($media, $id, $xbmcid)
+{
+    $aJson = false;
+    $name  = null;
+    
+    $sql = "DELETE FROM $media ".
+           "WHERE id = $id";
+    ExecuteQuery($sql);
+    
+    switch ($media)
+    {
+        case "movies"  : $name = "movie";
+                         DeleteFile(cMOVIESTHUMBS."/$xbmcid.jpg");
+                         DeleteFile(cMOVIESFANART."/$xbmcid.jpg");
+                         break;
+                            
+        case "tvshows" : $name = "tvshow";
+                         DeleteFile(cTVSHOWSTHUMBS."/$xbmcid.jpg");
+                         DeleteFile(cTVSHOWSFANART."/$xbmcid.jpg");
+                         break;
+                            
+        case "music"   : $name = "music";
+                         DeleteFile(cALBUMSTHUMBS."/$xbmcid.jpg");
+                         DeleteFile(cALBUMSCOVERS."/$xbmcid.jpg");
+                         break;                             
+    }
+    
+    $sql = "DELETE FROM genreto$name ".
+           "WHERE ".$name."id = $id";
+    ExecuteQuery($sql);
+    
+    $aJson["ready"] = true;
+    return $aJson;    
 }
 
 /*

@@ -80,7 +80,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Function:	SetMediaHandlerWithActions
  *
  * Created on Aug 31, 2013
- * Updated on Sep 28, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -104,7 +104,8 @@ function SetInfoHandlerWithActions()
                            HideOrShowMedia(media, id);
                            break;               
 
-        case "Remove"    : alert ("Delete");
+        case "Remove"    : //alert ("Delete");
+                           ShowModePopup(mode, media, id);
                            break;
         
         default          : ShowMediaInfo(media, id); //Mode is Normal.
@@ -116,7 +117,7 @@ function SetInfoHandlerWithActions()
  * Function:	ShowModePopup
  *
  * Created on Sep 07, 2013
- * Updated on Sep 21, 2013
+ * Updated on Sep 30, 2013
  *
  * Description: Show the action popup with the yes/no buttons.
  * 
@@ -135,7 +136,7 @@ function ShowModePopup(mode, media, id)
         {   
             $("#action_box .id").text(id);
             $("#action_box .xbmcid").text(json.media.xbmcid);
-            $("#action_box .message").text("Do you want to refresh this " + ConvertMediaToSingular(media) + "?");
+            $("#action_box .message").text("Do you want to " +  mode.toLowerCase() + " this " + ConvertMediaToSingular(media) + "?");
             
             // Show fanart.
             $("#action_thumb img").error(function(){
@@ -159,7 +160,8 @@ function ShowModePopup(mode, media, id)
             }
             
             // Show popup.
-            ShowPopupBox("#action_box", mode);
+            media = ConvertMediaToSingular(media);
+            ShowPopupBox("#action_box", mode + " " + media.substr(0,1).toUpperCase() + media.substr(1));
             SetState("page", "popup");    
         } // End succes.
     }); // End Ajax.       
@@ -210,11 +212,33 @@ function HideOrShowMediaInFargo(media, id, value)
         url: 'jsonfargo.php?action=hide&media=' + media + '&id=' + id + '&value=' + value,
         async: false,
         dataType: 'json',
-        success: function(json)
-        {   
-            
+        success: function(json) {
         } // End succes.
     }); // End Ajax.       
+}
+
+/*
+ * Function:	RemoveMediaFromFargo
+ *
+ * Created on Oct 05, 2013
+ * Updated on Oct 05, 2013
+ *
+ * Description: Remove media from Frago.
+ * 
+ * In:	media, id, xbmcid
+ * Out:	Removed media
+ *
+ */
+function RemoveMediaFromFargo(media, id, xbmcid)
+{
+    $.ajax
+    ({
+        url: 'jsonfargo.php?action=delete&media=' + media + '&id=' + id + '&xbmcid=' + xbmcid,
+        async: false,
+        dataType: 'json',
+        success: function(json) {
+        } // End succes.
+    });     
 }
 
 /*
