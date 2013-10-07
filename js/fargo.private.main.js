@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Oct 06, 2013
+ * Updated on Oct 07, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -27,6 +27,8 @@ var global_cancel = false;
 // Xbmc media limits.
 var global_xbmc_start;
 var global_xbmc_end;
+
+//var global_status_counter;
 
 // Fargo globals.
 var global_setting_fargo;

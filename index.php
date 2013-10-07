@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 06, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *

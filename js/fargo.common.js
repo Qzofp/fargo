@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Oct 06, 2013
+ * Updated on Oct 07, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -489,7 +489,7 @@ function GetFargoCounter(media)
  * Function:	GetXbmcMediaLimits
  *
  * Created on Jul 22, 2013
- * Updated on Sep 16, 2013
+ * Updated on Oct 07, 2013
  *
  * Description: Get the XBMC media limits (start and end values).
  *
@@ -504,14 +504,9 @@ function GetXbmcMediaLimits(media)
         async: false,
         dataType: 'json',
         success: function(json) 
-        {                
-            //global_total_fargo = Number(json.counter);
-            //global_total_xbmc  = Number(json.xbmc.counter);
-            
+        {           
             global_xbmc_start = Number(json.xbmc.start);
             global_xbmc_end   = Number(json.xbmc.end);
-            // debug
-            //alert(global_total_xbmc);
         } // End Success.        
     }); // End Ajax;
 }

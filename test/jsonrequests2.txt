@@ -1,0 +1,5 @@
+
+http://localhost:8080/jsonrpc?request={"jsonrpc":"2.0","method":"VideoLibrary.GetMovies","params":{"limits":{"end":1,"start":0}},"id":"libMovies"}
+http://localhost:8080/jsonrpc?request={"jsonrpc":"2.0","method":"VideoLibrary.GetMovies","params":{"limits":{"end":128,"start":127}},"id":10}
+http://localhost:8080/jsonrpc?request={"jsonrpc":"2.0","method":"VideoLibrary.GetEpisodes","params":{"limits":{"end":10,"start":0}},"id":22}
+http://localhost:8080/jsonrpc?request={"jsonrpc":"2.0","method":"VideoLibrary.GetMovieSets","params":{"limits":{"end":5,"start":0}},"id":35}

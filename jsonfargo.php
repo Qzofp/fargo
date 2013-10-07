@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Oct 06, 2013
+ * Updated on Oct 07, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -368,7 +368,7 @@ function GetYears($filter, $media, $login)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Sep 21, 2013
+ * Updated on Oct 07, 2013
  *
  * Description: Reports the status of the import process.
  *
@@ -387,7 +387,7 @@ function GetImportStatus($media, $id, $thumbs)
 
     $sql = "SELECT xbmcid, refresh, title ".
            "FROM $media ".
-           "WHERE id = $id";
+           "WHERE xbmcid = $id";
         
     $stmt = $db->prepare($sql);
     if($stmt)
@@ -1321,7 +1321,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Sep 16, 2013
+ * Updated on Oct 07, 2013
  *
  * Description: Clean the media library. 
  *
@@ -1335,34 +1335,34 @@ function CleanLibrary($number)
     
     switch($number)
     {
-        case 1 : $aJson['name']   = "movies";
+        case 1 : $aJson['name']    = "movies";
                  $aJson['counter'] = CountRows("movies");
                  EmptyTable("movies");
                  EmptyTable("genretomovie");
                  DeleteGenres("movies");
-                 UpdateStatus("XbmcMoviesStart", 0);
+                 UpdateStatus("XbmcMoviesStart", 1);
                  DeleteFile(cMOVIESTHUMBS."/*.jpg");
                  //DeleteFile(cMOVIESPOSTERS."/*.jpg");
                  DeleteFile(cMOVIESFANART."/*.jpg");
                  break;
         
-        case 4 : $aJson['name']   = "tvshows";
+        case 4 : $aJson['name']    = "tvshows";
                  $aJson['counter'] = CountRows("tvshows");
                  EmptyTable("tvshows");
                  EmptyTable("genretotvshow");
                  DeleteGenres("tvshows");
-                 UpdateStatus("XbmcTVShowsStart", 0);
+                 UpdateStatus("XbmcTVShowsStart", 1);
                  DeleteFile(cTVSHOWSTHUMBS."/*.jpg");
                  //DeleteFile(cTVSHOWSPOSTERS."/*.jpg");
                  DeleteFile(cTVSHOWSFANART."/*.jpg");
                  break;
         
-        case 7 : $aJson['name']   = "music";
+        case 7 : $aJson['name']    = "music";
                  $aJson['counter'] = CountRows("music");
                  EmptyTable("music");
                  EmptyTable("genretomusic");
                  DeleteGenres("music");
-                 UpdateStatus("XbmcMusicStart", 0);
+                 UpdateStatus("XbmcMusicStart", 1);
                  DeleteFile(cALBUMSTHUMBS."/*.jpg");
                  DeleteFile(cALBUMSCOVERS."/*.jpg");
                  break;
