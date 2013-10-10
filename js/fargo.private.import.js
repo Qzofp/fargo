@@ -258,7 +258,7 @@ function ShowRefreshFinished(media)
  * Function:	SetStartImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Sep 30, 2013
+ * Updated on Oct 07, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -297,7 +297,7 @@ function SetStartImportHandler()
                     
                     if (end > 0 || i > 3)
                     {
-                        if (end > 0 && end > start) 
+                        if (end > 0 && end >= start) 
                         {
                             LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
                             StartImport(json, media, start, end, delta);

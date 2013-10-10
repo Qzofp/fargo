@@ -233,7 +233,8 @@ function ProcessMovie($aError, $poster, $fanart, $aResult)
 
         ResizeAndSaveImage($aMovie["xbmcid"], $fanart, "../".cMOVIESFANART, 562, 350); //675, 420 
     
-        IncrementStatus("XbmcMoviesStart", 1);
+        //UpdateStatus("XbmcMoviesStart", $aMovie["xbmcid"] + 1);
+        IncrementStatus("XbmcMoviesStart", 1); 
     }
     else if ($aError["code"] == -32602) { // Movie not found, continue with the next one.
        IncrementStatus("XbmcMoviesStart", 1); 
