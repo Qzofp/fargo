@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 11, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -140,7 +140,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 11, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -154,28 +154,44 @@ function ProcessDataFromXbmc($aData)
     switch($aData["id"])
     {
         // libMoviesCounter -> library id = 1.
-        case 1 : UpdateStatus("XbmcMoviesEnd", $aData["result"]["movies"][0]["movieid"]);
-                 break;
+        case 1  : UpdateStatus("XbmcMoviesEnd", $aData["result"]["movies"][0]["movieid"]);
+                  break;
              
-        // libMovies -> library id = 2.                   
-        case 2 : ProcessMovie($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
-                 break;                    
-             
-        // libTVShowsCounter -> library id = 3.  
-        case 3 : UpdateStatus("XbmcTVShowsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
-                 break;
+        // libMovies Import -> library id = 2.                   
+        case 2  : ImportMovie($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
+                  break;
         
-        // libTVShows -> library id = 4.
-        case 4 : ProcessTVShow($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
-                 break;
-             
-        // libAlbumsCounter -> library id = 5.  
-        case 5 : UpdateStatus("XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
-                 break;
+        // libMovies Refresh -> library id = 3.     
+        case 3  : RefreshMovie($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
+                  break;
         
-        // libAlbums -> library id = 6.
-        case 6 : ProcessAlbum($aData["error"], $aData["poster"], $aData["result"]);
-                 break;
+        // libMovieSetsCounter -> library id = 4.    
+        case 4  : UpdateStatus("XbmcSetsEnd", $aData["result"]["sets"][0]["setid"]); 
+                  break;
+             
+        // libTVShowsCounter -> library id = 11.  
+        case 11 : UpdateStatus("XbmcTVShowsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
+                  break;
+        
+        // libTVShows Import -> library id = 12.
+        case 12 : ImportTVShow($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
+                  break;
+             
+        // libTVShows Refresh -> library id = 13.
+        case 13 : RefreshTVShow($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
+                  break;             
+             
+        // libAlbumsCounter -> library id = 21.  
+        case 21 : UpdateStatus("XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
+                  break;
+        
+        // libAlbums Import -> library id = 22.
+        case 22 : ImportAlbum($aData["error"], $aData["poster"], $aData["result"]);
+                  break;
+             
+        // libAlbums Refresh -> library id = 23.
+        case 23 : RefreshAlbum($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
+                  break;             
             
         /*
         case "Counter"       : ProcessCounter($aData["result"]);
@@ -185,37 +201,42 @@ function ProcessDataFromXbmc($aData)
         case "Movies"        : ProcessMovie($aData["poster"], $aData["fanart"], $aData["result"]);                             
                                break;
         */
-             
+        /*     
         case "MovieDetails"  : ProcessMovieDetails($aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);                         
                                break;            
+        */
         /*    
         case "TVShows"       : ProcessTVShow($aData["poster"], $aData["fanart"], $aData["result"]); 
                                break;
-        */                  
+        */
+        /*     
         case "TVShowDetails" : ProcessTVShowDetails($aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]); 
                                break;
+        */ 
         /*    
         case "Music"         : ProcessAlbum($aData["poster"], $aData["result"]); 
                                break;
-        */                   
+        */   
+        /*      
         case "MusicDetails"  : ProcessAlbumDetails($aData["poster"], $aData["result"], $aData["fargoid"]);
-                               break;                            
+                               break;   
+        */                         
     }
 }
 
 /*
- * Function:	ProcessMovie
+ * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 10, 2013
  *
- * Description: Process the movie. 
+ * Description: Import the movie. 
  *
  * In:  $aError, $poster, $fanart, $aResult
  * Out: -
  *
  */
-function ProcessMovie($aError, $poster, $fanart, $aResult)
+function ImportMovie($aError, $poster, $fanart, $aResult)
 {   
     if (empty($aError))
     {
@@ -242,48 +263,51 @@ function ProcessMovie($aError, $poster, $fanart, $aResult)
 }
 
 /*
- * Function:	ProcessMovieDetails
+ * Function:	RefreshMovie
  *
  * Created on Sep 08, 2013
- * Updated on Sep 23, 2013
+ * Updated on Oct 10, 2013
  *
- * Description: Process the movie details. 
+ * Description: Refresh the movie. 
  *
- * In:  $poster, $fanart, $aResult, $id
+ * In:  $aError, $poster, $fanart, $aResult, $fargoid
  * Out: -
  *
  */
-function ProcessMovieDetails($poster, $fanart, $aResult, $id)
-{   
-    $aMovie  = $aResult["moviedetails"];
-    $aGenres = $aMovie["genre"];   
-    $aMovie  = ConvertMovie($aMovie);
+function RefreshMovie($aError, $poster, $fanart, $aResult, $fargoid)
+{
+    if (empty($aError))
+    {
+        $aMovie  = $aResult["moviedetails"];
+        $aGenres = $aMovie["genre"];   
+        $aMovie  = ConvertMovie($aMovie);
     
-    DeleteFile("../".cMOVIESTHUMBS."/".$aMovie["xbmcid"].".jpg");
-    DeleteFile("../".cMOVIESFANART."/".$aMovie["xbmcid"].".jpg");
+        DeleteFile("../".cMOVIESTHUMBS."/".$aMovie["xbmcid"].".jpg");
+        DeleteFile("../".cMOVIESFANART."/".$aMovie["xbmcid"].".jpg");
     
-    UpdateMovie($id, $aMovie);
-    //InsertGenreToMedia($aGenres, "movies");
+        UpdateMovie($fargoid, $aMovie);
+        //InsertGenreToMedia($aGenres, "movies");
        
-    ResizeAndSaveImage($aMovie["xbmcid"], $fanart, "../".cMOVIESFANART, 562, 350);  //675, 420    
-    ResizeAndSaveImage($aMovie["xbmcid"], $poster, "../".cMOVIESTHUMBS, 125, 175);  //200, 280
+        ResizeAndSaveImage($aMovie["xbmcid"], $fanart, "../".cMOVIESFANART, 562, 350);  //675, 420    
+        ResizeAndSaveImage($aMovie["xbmcid"], $poster, "../".cMOVIESTHUMBS, 125, 175);  //200, 280
  
-    UpdateStatus("Ready", 1);
+        UpdateStatus("Ready", 1);
+    }
 }
 
 /*
- * Function:	ProcessTVShow
+ * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 10, 2013
  *
- * Description: Process the tv show. 
+ * Description: Import the tv show. 
  *
  * In:  $aError, $poster, $fanart, $aResult
  * Out: -
  *
  */
-function ProcessTVShow($aError, $poster, $fanart, $aResult)
+function ImportTVShow($aError, $poster, $fanart, $aResult)
 {   
     if (empty($aError))
     {
@@ -306,48 +330,51 @@ function ProcessTVShow($aError, $poster, $fanart, $aResult)
 }
 
 /*
- * Function:	ProcessTVShowDetails
+ * Function:	RefreshTVShow
  *
  * Created on Sep 09, 2013
- * Updated on Sep 23, 2013
+ * Updated on Oct 10, 2013
  *
- * Description: Process the tv show. 
+ * Description: Refresh the tv show. 
  *
- * In:  $poster, $fanart, $aResult
+ * In:  $aError, $poster, $fanart, $aResult
  * Out: -
  *
  */
-function ProcessTVShowDetails($poster, $fanart, $aResult, $id)
+function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
 {   
-    $aTVShow = $aResult["tvshowdetails"];
-    $aGenres = $aTVShow["genre"]; 
-    $aTVShow = ConvertTVShow($aTVShow);
+    if (empty($aError))
+    {
+        $aTVShow = $aResult["tvshowdetails"];
+        $aGenres = $aTVShow["genre"]; 
+        $aTVShow = ConvertTVShow($aTVShow);
     
-    DeleteFile("../".cTVSHOWSTHUMBS."/".$aTVShow["xbmcid"].".jpg");
-    DeleteFile("../".cTVSHOWSFANART."/".$aTVShow["xbmcid"].".jpg");
+        DeleteFile("../".cTVSHOWSTHUMBS."/".$aTVShow["xbmcid"].".jpg");
+        DeleteFile("../".cTVSHOWSFANART."/".$aTVShow["xbmcid"].".jpg");
     
-    UpdateTVShow($id, $aTVShow);
-    //InsertGenreToMedia($aGenres, "tvshows"); 
+        UpdateTVShow($id, $aTVShow);
+        //InsertGenreToMedia($aGenres, "tvshows"); 
     
-    ResizeAndSaveImage($aTVShow["xbmcid"], $fanart, "../".cTVSHOWSFANART, 562, 350);
-    ResizeAndSaveImage($aTVShow["xbmcid"], $poster, "../".cTVSHOWSTHUMBS, 125, 175);
+        ResizeAndSaveImage($aTVShow["xbmcid"], $fanart, "../".cTVSHOWSFANART, 562, 350);
+        ResizeAndSaveImage($aTVShow["xbmcid"], $poster, "../".cTVSHOWSTHUMBS, 125, 175);
     
-    UpdateStatus("Ready", 1);
+        UpdateStatus("Ready", 1);
+    }        
 }
 
 /*
- * Function:	ProcessAlbum
+ * Function:	ImportAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 10, 2013
  *
- * Description: Process the music album. 
+ * Description: Import the music album. 
  *
  * In:  $aError, $poster, $aResult
  * Out: -
  *
  */
-function ProcessAlbum($aError, $poster, $aResult)
+function ImportAlbum($aError, $poster, $aResult)
 {   
     if (empty($aError))
     {
@@ -370,33 +397,36 @@ function ProcessAlbum($aError, $poster, $aResult)
 }
 
 /*
- * Function:	ProcessAlbumDetails
+ * Function:	RefreshAlbum
  *
  * Created on Sep 09, 2013
- * Updated on Sep 23, 2013
+ * Updated on Oct 10, 2013
  *
- * Description: Process the music album details. 
+ * Description: Refresh the music album details. 
  *
- * In:  $poster, $aResult, $id
+ * In:  $aError, $poster, $aResult, $id
  * Out: -
  *
  */
-function ProcessAlbumDetails($poster, $aResult, $id)
-{   
-    $aAlbum = $aResult["albumdetails"];
-    $aGenres = $aAlbum["genre"]; 
-    $aAlbum = ConvertAlbum($aAlbum);
+function RefreshAlbum($aError, $poster, $aResult, $id)
+{ 
+    if (empty($aError))
+    {    
+        $aAlbum = $aResult["albumdetails"];
+        $aGenres = $aAlbum["genre"]; 
+        $aAlbum = ConvertAlbum($aAlbum);
     
-    DeleteFile("../".cALBUMSTHUMBS."/".$aAlbum["xbmcid"].".jpg");
-    DeleteFile("../".cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
+        DeleteFile("../".cALBUMSTHUMBS."/".$aAlbum["xbmcid"].".jpg");
+        DeleteFile("../".cALBUMSCOVERS."/".$aAlbum["xbmcid"].".jpg");
       
-    UpdateAlbum($id, $aAlbum);
-    //InsertGenreToMedia($aGenres, "music");
+        UpdateAlbum($id, $aAlbum);
+        //InsertGenreToMedia($aGenres, "music");
     
-    ResizeAndSaveImage($aAlbum["xbmcid"], $poster, "../".cALBUMSCOVERS, 300, 300);
-    ResizeAndSaveImage($aAlbum["xbmcid"], $poster, "../".cALBUMSTHUMBS, 125, 125);
+        ResizeAndSaveImage($aAlbum["xbmcid"], $poster, "../".cALBUMSCOVERS, 300, 300);
+        ResizeAndSaveImage($aAlbum["xbmcid"], $poster, "../".cALBUMSTHUMBS, 125, 125);
     
-    UpdateStatus("Ready", 1);
+        UpdateStatus("Ready", 1);
+    }
 }
 
 /*
