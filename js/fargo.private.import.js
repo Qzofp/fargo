@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Oct 11, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -71,18 +71,17 @@ function SetImportPopupHandler(media)
  * Function:	SetStartRefreshHandler
  *
  * Created on Sep 14, 2013
- * Updated on Sep 16, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Set the refresh handler, show the refresh popup box and start the refresh.
  * 
- * In:	id, xbmcid
+ * In:	media, id, xbmcid
  * Out:	title
  *
  */
-function SetStartRefreshHandler(id, xbmcid)
+function SetStartRefreshHandler(media, id, xbmcid)
 {
-    var media;
-    media = InitImportAndShowPopup();
+    InitImportAndShowPopup();
     
     // Reset status, get xbmc connection (url) and port.
     $.ajax({
@@ -258,33 +257,27 @@ function ShowRefreshFinished(media)
  * Function:	SetStartImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Oct 11, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
- * In:	-
+ * In:	media, counter
  * Out:	-
  *
  */
-function SetStartImportHandler()
-{
-    var media = InitImportAndShowPopup();
-    var def;
-    
-    switch (media)
+function SetStartImportHandler(media, counter)
+{    
+    switch (media + "_" + counter)
     {
-        case "movies"  : def = StartImportHandler("movies"); // First import the movie sets.
+        case "movies_1"  : // First import the movies.
+                          InitImportAndShowPopup();
+                          StartImportHandler("movies"); 
+                          break;
                          
-                         /*def.done(function(value) {
-                            alert(value);
-                         });*/
-                         
-                         $.when(def).done(function(value) {
-                            alert(value);
-                            alert("Now import movies");
-                         });
-                         
-                         break;
+        case "movies_2"  : // Second continue with Movie sets. 
+                          alert("sets");
+                          StartImportHandler("sets"); 
+                          break;
                         
         case "tvshows" : 
                          break;
@@ -298,7 +291,7 @@ function SetStartImportHandler()
  * Function:	StartImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Oct 11, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Start the import handler.
  * 
@@ -309,7 +302,6 @@ function SetStartImportHandler()
 function StartImportHandler(media)
 {  
     //var media = InitImportAndShowPopup();
-    var defer;
   
     // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
@@ -341,9 +333,10 @@ function StartImportHandler(media)
                         if (end > 0 && end >= start) 
                         {
                             LogEvent("Information", "Import " + ConvertMedia(media) + " started.");
-                            defer = StartImport(json, media, start, end, delta);
+                            StartImport(json, media, start, end, delta);
                         }
                         else if (end >= 0) {
+                            SetStartImportHandler(media, 2);
                             ShowNoNewMedia(media);
                         }
                         else {
@@ -358,8 +351,6 @@ function StartImportHandler(media)
             }, 1000); // End timer  
         } // End Success.        
     }); // End Ajax;
-    
-    return defer;
 }
 
 /*
@@ -428,17 +419,17 @@ function SetRetryImportHandler(media, start, delta)
  * Function:	InitImportAndShowPopup
  *
  * Created on Aug 18, 2013
- * Updated on Sep 14, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Initialize import values and show popup.
  * 
  * In:	-
- * Out:	media
+ * Out:	-
  *
  */
 function InitImportAndShowPopup()
 {
-    var media = GetState("media"); // Get state media.
+    //var media = GetState("media"); // Get state media.
     global_cancel = false;
     global_ready  = false;
     
@@ -453,8 +444,6 @@ function InitImportAndShowPopup()
     $(".retry").toggleClass("retry cancel");  
     
     $(".cancel").html("Cancel");    
-    
-    return media;
 }
 
 /*
@@ -576,7 +565,7 @@ function SetImportCancelHandler()
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Oct 11, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -589,7 +578,6 @@ function StartImport(xbmc, media, start, end, delta)
     var timeout  = 0;
     var busy     = true;
     var $ready   = $("#ready");
-    var deferred = $.Deferred(); 
     
     // Import media process.
     $("#action_box .message").html(cSTATUS.ONLINE);  
@@ -601,12 +589,9 @@ function StartImport(xbmc, media, start, end, delta)
         if (global_cancel || start > end   || timeout > xbmc.timeout/1000) 
         {            
             if (start > end) {
-                deferred.resolve(true);
-            }
-            else {
-                deferred.resolve(false);
-            }            
-            return deferred.promise(); // End Import.
+                SetStartImportHandler(media, 2)
+            }          
+            return; // End Import.
         }
 
         // Check if iframe from ImportMedia finished loading.

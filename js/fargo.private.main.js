@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -91,7 +91,7 @@ function LoadFargoMedia(media)
     // Cancel or finish import. 
     $(".button").on("click", ".cancel", SetCloseHandler);    
     
-    // Manage (Show, Refresh, Hide and Remove) click events.
+    // Manage (Show, Refresh, Import, Hide and Remove) click events.
     $("#modes").on("click", SetButtonsHandler);
     
     // Title, Genres or Years click events.
@@ -192,7 +192,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Oct 06, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Perform action
  * 
@@ -203,11 +203,13 @@ function ChangeSubControlBar(media)
 function SetActionHandler()
 {    
     var $popup = $(".popup:visible");
+    var media = GetState("media");
+    
     global_cancel = false;
     
     switch($popup.find(".title").text().split(" ")[0])
     {
-        case "Refresh"   : SetStartRefreshHandler($popup.find(".id").text(), $popup.find(".xbmcid").text());
+        case "Refresh"   : SetStartRefreshHandler(media, $popup.find(".id").text(), $popup.find(".xbmcid").text());
                            //alert("Refresh Something! " + $popup.find(".id").text());                           
                            break;
                            
@@ -218,7 +220,7 @@ function SetActionHandler()
         case "Cleaning"  : SetCleanDatabaseHandler();
                            break;
                            
-        case "Import"    : SetStartImportHandler(); //alert("Import Something!"); 
+        case "Import"    : SetStartImportHandler(media, 1); //alert("Import Something!"); 
                            break;
                                               
     }    
