@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 14, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -813,7 +813,7 @@ function SetMainKeyHandler(key, event)
  * Function:	ConvertMedia
  *
  * Created on May 10, 2013
- * Updated on May 20, 2013
+ * Updated on Oct 14, 2013
  *
  * Description: Convert the media string to a more readable string.
  * 
@@ -828,6 +828,9 @@ function ConvertMedia(media)
     {
         case 'movies' : media = "Movies";
                         break;
+                        
+        case 'sets'   : media = "Movie Sets";
+                        break;                        
                         
         case 'tvshows': media = "TV Shows";
                         break;

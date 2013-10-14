@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Aug 24, 2013
+ * Updated on Oct 14, 2013
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -90,6 +90,31 @@ function ConvertMovie($aXbmc)
     $aMovie["fanart"] = EncodeLink($aXbmc["art"], "fanart");
     $aMovie["poster"] = EncodeLink($aXbmc["art"], "poster");
     $aMovie["thumb"]  = EncodeLink($aXbmc, "thumbnail");   
+    
+    return $aMovie;
+}
+
+/*
+ * Function:	ConvertMovieSet
+ *
+ * Created on Oct 13, 2013
+ * Updated on Oct 14, 2013
+ *
+ * Description: Convert xbmc movie set items. For instance to readably URL's.
+ *
+ * In:  $aXbmc
+ * Out: $aMovie
+ *
+ */
+function ConvertMovieSet($aXbmc)
+{  
+    $aMovie[0] = $aXbmc["setid"];
+    $aMovie[1] = $aXbmc["label"];       // title
+    $aMovie[2] = $aXbmc["playcount"];
+    
+    $aMovie[3] = EncodeLink($aXbmc["art"], "fanart");
+    $aMovie[4] = EncodeLink($aXbmc["art"], "poster");
+    $aMovie[5] = EncodeLink($aXbmc, "thumbnail");   
     
     return $aMovie;
 }

@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -523,7 +523,7 @@ function GetXbmcMediaLimits(media)
  * Out:	counter
  *
  */
-function GetXbmcCounter(media) 
+/*function GetXbmcCounter(media) 
 {
     $.ajax({
         url: 'jsonxbmc.php?action=counter&media=' + media,
@@ -539,7 +539,7 @@ function GetXbmcCounter(media)
             }
         } // End Success.        
     }); // End Ajax;
-}
+}*/
 
 /*
  * Function:	DisplayMessage

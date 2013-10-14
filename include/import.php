@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Oct 11, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -77,7 +77,7 @@ function CheckImportKey()
  * Function:	ReceiveDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Receive data from XBMC. 
  *
@@ -99,15 +99,7 @@ function ReceiveDataFromXbmc()
     if (isset($_POST["error"]) && !empty($_POST["error"]))
     {
         $aData["error"] = $_POST["error"];
-    } 
-    
-    /*
-    $aData["action"] = null;
-    if (isset($_POST["action"]) && !empty($_POST["action"]))
-    {
-        $aData["action"] = $_POST["action"];
-    } 
-    */   
+    }  
     
     $aData["poster"] = null;
     if (isset($_POST["poster"]) && !empty($_POST["poster"]))
@@ -140,7 +132,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Oct 11, 2013
+ * Updated on Oct 13, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -168,6 +160,10 @@ function ProcessDataFromXbmc($aData)
         // libMovieSetsCounter -> library id = 4.    
         case 4  : UpdateStatus("XbmcSetsEnd", $aData["result"]["sets"][0]["setid"]); 
                   break;
+              
+        // libMovieSets Import -> library id = 6.                   
+        case 5  : ImportMovieSet($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
+                  break;        
              
         // libTVShowsCounter -> library id = 11.  
         case 11 : UpdateStatus("XbmcTVShowsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
@@ -191,36 +187,7 @@ function ProcessDataFromXbmc($aData)
              
         // libAlbums Refresh -> library id = 23.
         case 23 : RefreshAlbum($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
-                  break;             
-            
-        /*
-        case "Counter"       : ProcessCounter($aData["result"]);
-                               break;
-        */
-        /*     
-        case "Movies"        : ProcessMovie($aData["poster"], $aData["fanart"], $aData["result"]);                             
-                               break;
-        */
-        /*     
-        case "MovieDetails"  : ProcessMovieDetails($aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);                         
-                               break;            
-        */
-        /*    
-        case "TVShows"       : ProcessTVShow($aData["poster"], $aData["fanart"], $aData["result"]); 
-                               break;
-        */
-        /*     
-        case "TVShowDetails" : ProcessTVShowDetails($aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]); 
-                               break;
-        */ 
-        /*    
-        case "Music"         : ProcessAlbum($aData["poster"], $aData["result"]); 
-                               break;
-        */   
-        /*      
-        case "MusicDetails"  : ProcessAlbumDetails($aData["poster"], $aData["result"], $aData["fargoid"]);
-                               break;   
-        */                         
+                  break;                       
     }
 }
 
@@ -261,6 +228,36 @@ function ImportMovie($aError, $poster, $fanart, $aResult)
        IncrementStatus("XbmcMoviesStart", 1); 
     }
 }
+
+/*
+ * Function:	ImportMovieSet
+ *
+ * Created on Oct 13, 2013
+ * Updated on Oct 13, 2013
+ *
+ * Description: Import the movie set. 
+ *
+ * In:  $aError, $poster, $fanart, $aResult
+ * Out: -
+ *
+ */
+function ImportMovieSet($aError, $poster, $fanart, $aResult)
+{   
+    if (empty($aError))
+    {
+        $aMovie  = ConvertMovieSet($aResult["setdetails"]);
+ 
+        ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280      
+        InsertMovieSet($aMovie);
+
+        ResizeAndSaveImage($aMovie[0], $fanart, "../".cSETSFANART, 562, 350); //675, 420 
+        IncrementStatus("XbmcSetsStart", 1); 
+    }
+    else if ($aError["code"] == -32602) { // Movie not found, continue with the next one.
+       IncrementStatus("XbmcSetsStart", 1); 
+    }
+}
+
 
 /*
  * Function:	RefreshMovie

@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Sep 22, 2013
+ * Updated on Oct 14, 2013
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -138,6 +138,30 @@ function MovieToItems($aMovie)
     $aItems[34] = null; //$aMovie["tag"];        
       
     return $aItems;
+}
+
+/*
+ * Function:	InsertMovieSet
+ *
+ * Created on Oct 14, 2013
+ * Updated on Oct 14, 2013
+ *
+ * Description: Insert movie set in the database.
+ *
+ * In:  $aMovie
+ * Out:	Movie in database table "sets".
+ *
+ */
+function InsertMovieSet($aMovie)
+{   
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aMovie);
+    
+    $sql = "INSERT INTO sets(setid, title, playcount, fanart, poster, thumb) ".
+           "VALUES ($aItems[0], '$aItems[1]', $aItems[2], '$aItems[3]', '$aItems[4]', '$aItems[5]')";
+
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);    
 }
 
 /*
