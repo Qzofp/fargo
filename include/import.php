@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Oct 13, 2013
+ * Updated on Oct 18, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -195,7 +195,7 @@ function ProcessDataFromXbmc($aData)
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Oct 10, 2013
+ * Updated on Oct 17, 2013
  *
  * Description: Import the movie. 
  *
@@ -222,7 +222,8 @@ function ImportMovie($aError, $poster, $fanart, $aResult)
         ResizeAndSaveImage($aMovie["xbmcid"], $fanart, "../".cMOVIESFANART, 562, 350); //675, 420 
     
         //UpdateStatus("XbmcMoviesStart", $aMovie["xbmcid"] + 1);
-        IncrementStatus("XbmcMoviesStart", 1); 
+        IncrementStatus("XbmcMoviesStart", 1);
+        IncrementStatus("ImportCounter", 1); 
     }
     else if ($aError["code"] == -32602) { // Movie not found, continue with the next one.
        IncrementStatus("XbmcMoviesStart", 1); 
@@ -233,7 +234,7 @@ function ImportMovie($aError, $poster, $fanart, $aResult)
  * Function:	ImportMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Oct 13, 2013
+ * Updated on Oct 17, 2013
  *
  * Description: Import the movie set. 
  *
@@ -252,6 +253,7 @@ function ImportMovieSet($aError, $poster, $fanart, $aResult)
 
         ResizeAndSaveImage($aMovie[0], $fanart, "../".cSETSFANART, 562, 350); //675, 420 
         IncrementStatus("XbmcSetsStart", 1); 
+        IncrementStatus("ImportCounter", 1);
     }
     else if ($aError["code"] == -32602) { // Movie not found, continue with the next one.
        IncrementStatus("XbmcSetsStart", 1); 
@@ -363,7 +365,7 @@ function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
  * Function:	ImportAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Oct 10, 2013
+ * Updated on Oct 18, 2013
  *
  * Description: Import the music album. 
  *
@@ -387,6 +389,7 @@ function ImportAlbum($aError, $poster, $aResult)
         ResizeAndSaveImage($aAlbum["xbmcid"], $poster, "../".cALBUMSCOVERS, 300, 300);
     
         IncrementStatus("XbmcMusicStart", 1);
+        IncrementStatus("ImportCounter", 1); 
     }
     else if ($aError["code"] == -32602) { // Album not found, continue with the next one.
        IncrementStatus("XbmcMusicStart", 1); 

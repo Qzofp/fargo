@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Oct 14, 2013
+ * Updated on Oct 18, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -813,7 +813,7 @@ function SetMainKeyHandler(key, event)
  * Function:	ConvertMedia
  *
  * Created on May 10, 2013
- * Updated on Oct 14, 2013
+ * Updated on Oct 18, 2013
  *
  * Description: Convert the media string to a more readable string.
  * 
@@ -851,7 +851,7 @@ function ConvertMedia(media)
  * Function:	ConvertMediaToSingular
  *
  * Created on Sep 07, 2013
- * Updated on Sep 07, 2013
+ * Updated on Oct 17, 2013
  *
  * Description: Convert the media string to a singular string.
  * 
@@ -864,13 +864,16 @@ function ConvertMediaToSingular(media)
 {
     switch (media)
     {
-        case 'movies' : media = "movie";
+        case 'movies' : media = "Movie";
                         break;
                         
-        case 'tvshows': media = "TV show";
+        case 'sets'   : media = "Movie Set";
+                        break;                        
+                        
+        case 'tvshows': media = "TV Show";
                         break;
                         
-        case 'music'  : media = "album";
+        case 'music'  : media = "Album";
                         break;
         
         default       : break;

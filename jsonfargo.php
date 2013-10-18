@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 17, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -64,8 +64,9 @@ switch($action)
                  
     case "reset"   : if($login)
                      {
-                        $media = GetPageValue('media'); 
-                        $aJson["status"]     = ResetStatus($media);
+                        $media   = GetPageValue('media');
+                        $counter = GetPageValue('counter');
+                        $aJson["status"]     = ResetStatus($media, $counter);
                         $aJson["connection"] = GetSetting("XBMCconnection");
                         $aJson["port"]       = GetSetting("XBMCport");
                         $aJson["timeout"]    = GetSetting("Timeout");
@@ -81,6 +82,7 @@ switch($action)
                         $media = GetPageValue('media');
                         $aJson['xbmc']['start'] = GetStatus("Xbmc".$media."Start");
                         $aJson['xbmc']['end']   = GetStatus("Xbmc".$media."End");
+                        $aJson['import']        = GetStatus("ImportCounter");
                      }
                      else {
                         $aJson = LogEvent("Warning", "Unauthorized counter action call!");
@@ -185,18 +187,22 @@ if (!empty($aJson)) {
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Sep 14, 2013
+ * Updated on Oct 17, 2013
  *
  * Description: Reset the status. 
  *
- * In:  $media
+ * In:  $media, $counter
  * Out: $status
  *
  */
-function ResetStatus($media)
+function ResetStatus($media, $counter)
 {
     UpdateStatus("Xbmc".$media."End", -1);
     UpdateStatus("RefreshReady", true);
+    
+    if ($counter) {
+        UpdateStatus("ImportCounter", 0);
+    }
     
     $status = "reset";    
     return $status;
@@ -206,7 +212,7 @@ function ResetStatus($media)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Aug 19, 2013
+ * Updated on Oct 16, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -219,13 +225,16 @@ function GetMediaStatus($media, $id)
     $aJson = null;   
     switch ($media)    
     {   
-        case "movies"   : $aJson = GetImportStatus($media, $id, cMOVIESTHUMBS);
+        case "movies"   : $aJson = GetImportStatus($media, "xbmcid", $id, cMOVIESTHUMBS);
                           break;
+                      
+        case "sets"     : $aJson = GetImportStatus($media, "setid", $id, cSETSTHUMBS);
+                          break;                      
         
-        case "music"    : $aJson = GetImportStatus($media, $id, cALBUMSTHUMBS);
+        case "music"    : $aJson = GetImportStatus($media, "xbmcid", $id, cALBUMSTHUMBS);
                           break;
     
-        case "tvshows"  : $aJson = GetImportStatus($media, $id, cTVSHOWSTHUMBS);
+        case "tvshows"  : $aJson = GetImportStatus($media, "xbmcid", $id, cTVSHOWSTHUMBS);
                           break;
     }    
     return $aJson;
@@ -368,26 +377,26 @@ function GetYears($filter, $media, $login)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 16, 2013
  *
  * Description: Reports the status of the import process.
  *
- * In:  $media, $thumbs
+ * In:  $media, $nameid, $id, $thumbs
  * Out: $aJson
  *
  */
-function GetImportStatus($media, $id, $thumbs)
+function GetImportStatus($media, $nameid, $id, $thumbs)
 {
-    $aJson['xbmcid']  = 0;
+    $aJson['id']  = 0;
     $aJson['refresh'] = 0;
     $aJson['title']   = "empty";
     $aJson['thumbs']  = $thumbs;
   
     $db = OpenDatabase();
 
-    $sql = "SELECT xbmcid, refresh, title ".
+    $sql = "SELECT $nameid, refresh, title ".
            "FROM $media ".
-           "WHERE xbmcid = $id";
+           "WHERE $nameid = $id";
         
     $stmt = $db->prepare($sql);
     if($stmt)
@@ -403,7 +412,7 @@ function GetImportStatus($media, $id, $thumbs)
                 $stmt->bind_result($xbmcid, $refresh, $title);
                 while($stmt->fetch())
                 {                
-                    $aJson['xbmcid']  = $xbmcid;
+                    $aJson['id']      = $xbmcid;
                     $aJson['refresh'] = $refresh;
                     $aJson['title']   = ShortenString($title, 50);
                 }                  

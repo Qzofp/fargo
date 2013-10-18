@@ -220,9 +220,8 @@ function SetActionHandler()
         case "Cleaning"  : SetCleanDatabaseHandler();
                            break;
                            
-        case "Import"    : SetStartImportHandler(media, 1); //alert("Import Something!"); 
-                           break;
-                                              
+        case "Import"    : SetStartImportHandler(media, 1, true); //alert("Import Something!"); 
+                           break;                                       
     }    
 }
 
