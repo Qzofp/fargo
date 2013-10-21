@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Oct 14, 2013
+ * Updated on Oct 20, 2013
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -176,6 +176,32 @@ function ConvertTVShow($aXbmc)
     //$aTVShow["tag"]      = $aXbmc["tag"];   
     
     return $aTVShow;
+}
+
+/*
+ * Function:	ConvertTVShowSeason
+ *
+ * Created on Oct 20, 2013
+ * Updated on Oct 20, 2013
+ *
+ * Description: Convert xbmc TV Show Season items. For instance to readably URL's.
+ *
+ * In:  $aXbmc
+ * Out: $aSeason
+ *
+ */
+function ConvertTVShowSeason($aXbmc)
+{
+    $aSeason[0] = $aXbmc["tvshowid"];
+    $aSeason[1] = $aXbmc["label"]; // title
+    $aSeason[2] = $aXbmc["showtitle"];    
+    $aSeason[3] = EncodeLink($aXbmc, "thumbnail");
+    $aSeason[4] = $aXbmc["playcount"];
+    $aSeason[5] = $aXbmc["season"];    
+    $aSeason[6] = $aXbmc["episode"];
+    $aSeason[7] = $aXbmc["watchedepisodes"];  
+    
+    return $aSeason;
 }
 
 /*
@@ -387,4 +413,3 @@ function CreateSortTitle($title)
     
     return $sorttitle;
 }
-?>

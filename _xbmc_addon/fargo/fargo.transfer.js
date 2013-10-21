@@ -6,7 +6,7 @@
  * File:    fargo.transfer.js
  *
  * Created on Jul 13, 2013
- * Updated on Oct 18, 2013
+ * Updated on Oct 20, 2013
  *
  * Description: Fargo Transfer jQuery and Javascript functions page.
  *
@@ -56,7 +56,7 @@ function Transfer()
  * Function:	TransferMediaCounter
  *
  * Created on Jul 22, 2013
- * Updated on Oct 18, 2013
+ * Updated on Oct 19, 2013
  *
  * Description: Transfers media counter (e.g. total number of movies) from XBMC to Fargo.
  * 
@@ -68,25 +68,29 @@ function TransferMediaCounter(key, media, id)
 {
     switch (media)
     {
-        case "movies"  : // libMoviesCounter -> library id = 1.
-                         RequestCounter("VideoLibrary.GetMovies", 1, key);           
-                         break;
+        case "movies"    : // libMoviesCounter -> library id = 1.
+                           RequestCounter("VideoLibrary.GetMovies", 1, key);           
+                           break;
 
-        case "sets"     : // libMovieSetsCounter -> library id = 4.
-                         RequestCounter("VideoLibrary.GetMovieSets", 4, key);         
-                         break;        
+        case "sets"       : // libMovieSetsCounter -> library id = 4.
+                           RequestCounter("VideoLibrary.GetMovieSets", 4, key);         
+                           break;        
             
-        case "tvshows" : // libTVShowsCounter -> library id = 11.
-                         RequestCounter("VideoLibrary.GetTVShows", 11, key);  
-                         break;
+        case "tvshows"   : // libTVShowsCounter -> library id = 11.
+                           RequestCounter("VideoLibrary.GetTVShows", 11, key);
+                           break;
                          
-        case "seasons" : // libSeasonsCounter -> library id = 14.
-                         RequestSeasonCounter(id, 14, key);
-                         break;                        
+        case "tvseasons" : // libTVShowsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
+                           RequestCounter("VideoLibrary.GetTVShows", 14, key);
+                           break;                         
+                         
+        case "seasons" :   // libSeasonsCounter -> library id = 15.
+                           RequestSeasonCounter(id, 15, key);
+                           break;                        
         
-        case "music"   : // libAlbumsCounter -> library id = 21.
-                         RequestCounter("AudioLibrary.GetAlbums", 21, key);
-                         break;
+        case "music"   :   // libAlbumsCounter -> library id = 21.
+                           RequestCounter("AudioLibrary.GetAlbums", 21, key);
+                           break;
     }
 }
 
@@ -449,7 +453,7 @@ function TransferTVShow(key, xbmcid, fargoid)
  * Function:	TransferTVShowSeason
  *
  * Created on Oct 18, 2013
- * Updated on Oct 18, 2013
+ * Updated on Oct 20, 2013
  *
  * Description: Transfer TV Show Season from XBMC to Fargo.
  * 
@@ -461,20 +465,21 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
 {
     var a, b, a_chk, b_chk;
     var id, poster, fanart;
-    var end     = Number(start) + 1; 
+    var error = {code : -32602};
+    var end = Number(start) + 1; 
     
     if (fargoid < 0) {
-        id = 15; // Import TV Show Season.
+        id = 16; // Import TV Show Season.
     }
     else {
-        id = 16; // Refresh TV Show Season.
+        id = 17; // Refresh TV Show Season.
     }
     
     // libTVShowSeasons -> library id = 15 or 16.
     var request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", "params":\n\
                    {"tvshowid":'+ tvshowid +',"limits": {"start": '+ start +', "end": ' + end + '},\n\
-                   "properties": ["episode","watchedepisodes","season","showtitle","playcount",\n\
-                   "thumbnail"] }, "id": '+ id +'}';   
+                   "properties": ["episode","watchedepisodes","season","tvshowid","showtitle","playcount",\n\
+                   "thumbnail"] }, "id": '+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -486,7 +491,7 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
         success: function(json) 
         {            
             json.key = key; 
-            if (json.result && json.result.seasons)
+            if (json.result && json.result.seasons && json.result.limits.total > 0)
             {
                 poster = CreateImageUrl(json.result.seasons[0].thumbnail);
                 fanart = CreateImageUrl(json.result.seasons[0].fanart);
@@ -514,9 +519,11 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
       
                 }); // End when.         
             }
-            /*else if (json.error.code == -32602) { // TV Show not found.
+            else  // TV Show Season not found.
+            {   
+                json.error = error;
                 TransferData(json);
-            }*/
+            }
         }, // End success.
         error: function(xhr, textStatus, errorThrown ) {
             if (textStatus == 'timeout') 

@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Oct 18, 2013
+ * Updated on Oct 21, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -132,7 +132,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Oct 13, 2013
+ * Updated on Oct 20, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -177,6 +177,18 @@ function ProcessDataFromXbmc($aData)
         case 13 : RefreshTVShow($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
                   break;             
              
+        // libTVShowsSeasonsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
+        case 14 : UpdateStatus("XbmcTVShowsSeasonsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
+                  break;           
+              
+        // libSeasonsCounter -> library id = 15.
+        case 15 : UpdateStatus("XbmcSeasonsEnd", $aData["result"]["limits"]["total"]);
+                  break;   
+              
+        // libTVShowSeasons Import -> library id = 16.
+        case 16 : ImportTVShowSeason($aData["error"], $aData["poster"], $aData["result"]);
+                  break;               
+              
         // libAlbumsCounter -> library id = 21.  
         case 21 : UpdateStatus("XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
                   break;
@@ -246,7 +258,7 @@ function ImportMovieSet($aError, $poster, $fanart, $aResult)
 {   
     if (empty($aError))
     {
-        $aMovie  = ConvertMovieSet($aResult["setdetails"]);
+        $aMovie = ConvertMovieSet($aResult["setdetails"]);
  
         ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280      
         InsertMovieSet($aMovie);
@@ -298,7 +310,7 @@ function RefreshMovie($aError, $poster, $fanart, $aResult, $fargoid)
  * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Oct 10, 2013
+ * Updated on Oct 20, 2013
  *
  * Description: Import the tv show. 
  *
@@ -322,10 +334,44 @@ function ImportTVShow($aError, $poster, $fanart, $aResult)
         ResizeAndSaveImage($aTVShow["xbmcid"], $fanart, "../".cTVSHOWSFANART, 562, 350);
     
         IncrementStatus("XbmcTVShowsStart", 1);
+        IncrementStatus("ImportCounter", 1);
     }
     else if ($aError["code"] == -32602) { // TVShow not found, continue with the next one.
        IncrementStatus("XbmcTVShowsStart", 1); 
     }    
+}
+
+/*
+ * Function:	ImportTVShowSeason
+ *
+ * Created on Oct 20, 2013
+ * Updated on Oct 21, 2013
+ *
+ * Description: Import the tv show season. 
+ *
+ * In:  $poster, $aResult
+ * Out: -
+ *
+ */
+function ImportTVShowSeason($aError, $poster, $aResult)
+{   
+    if (empty($aError))
+    {    
+        $aSeason = ConvertTVShowSeason($aResult["seasons"][0]);
+        //ResizeAndSaveImage($aSeason[0]."_".$aResult["limits"]["end"], $poster, "../".cSEASONSTHUMBS, 125, 175);
+        ResizeAndSaveImage($aSeason[0]."_".$aSeason[5], $poster, "../".cSEASONSTHUMBS, 125, 175);
+
+        InsertTVShowSeason($aSeason);    
+        IncrementStatus("XbmcSeasonsStart", 1);
+        
+        if ($aResult["limits"]["end"] >= $aResult["limits"]["total"]) {
+            IncrementStatus("XbmcTVShowsSeasonsStart", 1);
+            IncrementStatus("ImportCounter", 1);
+        }
+    }
+    else {
+        IncrementStatus("XbmcTVShowsSeasonsStart", 1);
+    }
 }
 
 /*
@@ -468,5 +514,3 @@ function ResizeAndSaveImage($id, $image, $path, $w, $h)
         ResizeJpegImage($image, $w, $h, $path."/".$id.".jpg");
     }    
 }
-
-?>

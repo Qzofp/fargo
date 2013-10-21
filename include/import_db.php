@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Oct 14, 2013
+ * Updated on Oct 20, 2013
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -289,6 +289,30 @@ function TVShowToItems($aTVShow)
 }    
 
 /*
+ * Function:	InsertMovieSet
+ *
+ * Created on Oct 20, 2013
+ * Updated on Oct 20, 2013
+ *
+ * Description: Insert tv show season in the database.
+ *
+ * In:  $aSeason
+ * Out:	Season in database table "seasons".
+ *
+ */
+function InsertTVShowSeason($aSeason)
+{   
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aSeason);
+    
+    $sql = "INSERT INTO seasons(tvshowid, title, showtitle, thumb, playcount, season, episode, watchedepisodes) ".
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', $aItems[4], $aItems[5], $aItems[6], $aItems[7])";
+
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);    
+}
+
+/*
  * Function:	InsertAlbum
  *
  * Created on Apr 20, 2013
@@ -470,4 +494,3 @@ function InsertGenreToMedia($aGenres, $media)
         }
     }
 }
-?>
