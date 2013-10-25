@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Oct 13, 2013
+ * Updated on Oct 25, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -273,7 +273,7 @@ function ShowPopupBox(type, title)
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Oct 06, 2013
+ * Updated on Oct 25, 2013
  *
  * Description: Close import or other popup window.
  * 
@@ -286,7 +286,7 @@ function SetCloseHandler()
     var $popup = $(".popup:visible");
     
     if ($popup.find(".no").text() == "Cancel") {
-        global_cancel = true;
+        gTRIGGER.CANCEL = true;
     }
     
     switch($popup.attr('id'))
@@ -489,7 +489,7 @@ function GetFargoCounter(media)
  * Function:	GetXbmcMediaLimits
  *
  * Created on Jul 22, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 25, 2013
  *
  * Description: Get the XBMC media limits (start and end values).
  *
@@ -505,8 +505,8 @@ function GetXbmcMediaLimits(media)
         dataType: 'json',
         success: function(json) 
         {           
-            global_xbmc_start = Number(json.xbmc.start);
-            global_xbmc_end   = Number(json.xbmc.end);
+            gTRIGGER.START = Number(json.xbmc.start);
+            gTRIGGER.END   = Number(json.xbmc.end);
         } // End Success.        
     }); // End Ajax;
 }

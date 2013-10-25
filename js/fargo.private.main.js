@@ -6,37 +6,13 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Oct 13, 2013
+ * Updated on Oct 25, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
  */
 
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
-
-// Global variables?!? jQuery sucks or I don't get it!!!
-var global_media = "";
-var global_page  = 1;
-var global_sort  = "";
-
-var global_lastpage = 1; //last page
-
-var global_ready  = false;
-var global_cancel = false;
-
-// Xbmc media limits.
-var global_xbmc_start;
-var global_xbmc_end;
-
-//var global_status_counter;
-
-// Fargo globals.
-var global_setting_fargo;
-var global_list_fargo;
-
-// Ajax requests.
-//var global_status_request;
-//var global_import_request;
 
 /*
  * Function:	LoadFargoMedia
@@ -192,7 +168,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Oct 13, 2013
+ * Updated on Oct 25, 2013
  *
  * Description: Perform action
  * 
@@ -205,7 +181,7 @@ function SetActionHandler()
     var $popup = $(".popup:visible");
     var media = GetState("media");
     
-    global_cancel = false;
+    gTRIGGER.CANCEL = false;
     
     switch($popup.find(".title").text().split(" ")[0])
     {
@@ -329,7 +305,7 @@ function SetCleanDatabaseHandler()
  * Function:	DisplayCleaningMessage
  *
  * Created on Jun 15, 2013
- * Updated on Oct 06, 2013
+ * Updated on Oct 25, 2013
  *
  * Description: Display cleaning message.
  *
@@ -345,7 +321,7 @@ function DisplayCleaningMessage(str1, str2, prg, btn, end)
     $(".message").html(str1);
     var timer = setInterval(function()
     {
-        if (!global_cancel)
+        if (!gTRIGGER.CANCEL)
         {
             percent = Math.round(i/end * 100);
             prg.progressbar({

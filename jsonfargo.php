@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Oct 21, 2013
+ * Updated on Oct 23, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -222,7 +222,7 @@ function ResetStatus($media, $counter)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Oct 21, 2013
+ * Updated on Oct 23, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -244,8 +244,14 @@ function GetMediaStatus($media, $id)
         case "tvshows"  : $aJson = GetImportStatus($media, "xbmcid", $id, cTVSHOWSTHUMBS);
                           break;
                       
-        case "seasons"  : //$aJson = GetImportStatus($media, "id", $id, cSEASONSTHUMBS);
-                          $aJson = GetSeasonsImportStatus($media, cSEASONSTHUMBS);
+        case "tvshowsseasons" : //$aJson = GetImportStatus("tvshows", "xbmcid", $id, "");
+                                $aJson['id'] = -1;
+                                if (GetStatus("XbmcSeasonsStart") == GetStatus("XbmcSeasonsEnd")) {
+                                    $aJson['id'] = 1;
+                                }
+                                break;
+                      
+        case "seasons"  : $aJson = GetSeasonsImportStatus($media, cSEASONSTHUMBS);
                           break;                      
                       
         case "music"    : $aJson = GetImportStatus($media, "xbmcid", $id, cALBUMSTHUMBS);

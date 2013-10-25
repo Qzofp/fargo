@@ -6,25 +6,13 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Sep 02, 2013
+ * Updated on Oct 23, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
  */
 
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
-
-// Global variables?!? jQuery sucks or I don't get it!!!
-var global_media = "";
-var global_page  = 1;
-var global_sort  = "";
-
-var global_lastpage = 1; //last page
-//var global_column   = 0;
-
-// Fargo globals.
-var global_setting_fargo;
-var global_list_fargo;
 
 /*
  * Function:	LoadFargoMedia

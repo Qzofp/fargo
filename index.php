@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Oct 06, 2013
+ * Updated on Oct 23, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -24,6 +24,7 @@ if(!isset($_SESSION['LOGIN']))
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js", 
+                         "js/fargo.public.constants.js",
                          "js/fargo.common.js", 
                          "js/fargo.public.media.js",         
                          "js/fargo.system.js", 
@@ -42,12 +43,14 @@ else
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js",
+                         "js/fargo.private.constants.js",
                          "js/fargo.common.js",       
                          "js/fargo.public.media.js",         
                          "js/fargo.system.js", 
                          "js/fargo.private.main.js", 
                          "js/fargo.private.media.js",         
-                         "js/fargo.private.import.js");
+                         "js/fargo.private.import.js",
+                         "js/fargo.private.refresh.js");
      
     $li_modes = "<li id=\"modes\">Manage</li>\n";
     $li_login  = "<li id=\"logout\">Logout</li>\n";

@@ -6,7 +6,7 @@
  * File:    fargo.transfer.js
  *
  * Created on Jul 13, 2013
- * Updated on Oct 20, 2013
+ * Updated on Oct 23, 2013
  *
  * Description: Fargo Transfer jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	Transfer
  *
  * Created on Jul 13, 2013
- * Updated on Oct 18, 2013
+ * Updated on Oct 23, 2013
  *
  * Description: Transfers data from XBMC to Fargo.
  * 
@@ -33,7 +33,7 @@ function Transfer()
     switch(aRequest.action)
     {
         case "counter" : TransferMediaCounter(aRequest.key, aRequest.media, aRequest.tvshowid);
-                         break
+                         break;
 
         case "movies"  : TransferMovie(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
                          break;
