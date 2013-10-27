@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Oct 23, 2013
+ * Updated on Oct 27, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -222,7 +222,7 @@ function ResetStatus($media, $counter)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Oct 23, 2013
+ * Updated on Oct 27, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -235,14 +235,14 @@ function GetMediaStatus($media, $id)
     $aJson = null;   
     switch ($media)    
     {   
-        case "movies"   : $aJson = GetImportStatus($media, "xbmcid", $id, cMOVIESTHUMBS);
-                          break;
+        case "movies"         : $aJson = GetImportStatus($media, "xbmcid", $id, cMOVIESTHUMBS);
+                                break;
                       
-        case "sets"     : $aJson = GetImportStatus($media, "setid", $id, cSETSTHUMBS);
-                          break;                      
+        case "sets"           : $aJson = GetImportStatus($media, "setid", $id, cSETSTHUMBS);
+                                break;                      
     
-        case "tvshows"  : $aJson = GetImportStatus($media, "xbmcid", $id, cTVSHOWSTHUMBS);
-                          break;
+        case "tvshows"        : $aJson = GetImportStatus($media, "xbmcid", $id, cTVSHOWSTHUMBS);
+                                break;
                       
         case "tvshowsseasons" : //$aJson = GetImportStatus("tvshows", "xbmcid", $id, "");
                                 $aJson['id'] = -1;
@@ -251,11 +251,14 @@ function GetMediaStatus($media, $id)
                                 }
                                 break;
                       
-        case "seasons"  : $aJson = GetSeasonsImportStatus($media, cSEASONSTHUMBS);
-                          break;                      
+        case "seasons"        : $aJson = GetSeasonsImportStatus(cSEASONSTHUMBS);
+                                break;
                       
-        case "music"    : $aJson = GetImportStatus($media, "xbmcid", $id, cALBUMSTHUMBS);
-                          break;                      
+        case "episodes"       : $aJson = GetEpisodesImportStatus(cEPISODESTHUMBS);
+                                break;                      
+                      
+        case "music"          : $aJson = GetImportStatus($media, "xbmcid", $id, cALBUMSTHUMBS);
+                                break;                      
     }    
     return $aJson;
 }
@@ -462,11 +465,11 @@ function GetImportStatus($media, $nameid, $id, $thumbs)
  *
  * Description: Reports the seasons status of the import process.
  *
- * In:  $media,  $thumbs
+ * In:  $thumbs
  * Out: $aJson
  *
  */
-function GetSeasonsImportStatus($media, $thumbs)
+function GetSeasonsImportStatus($thumbs)
 {
     $aJson['id']  = 0;
     $aJson['refresh'] = 0;
@@ -476,7 +479,7 @@ function GetSeasonsImportStatus($media, $thumbs)
     $db = OpenDatabase();
 
     $sql = "SELECT id, refresh, tvshowid, showtitle, title, season ".
-           "FROM $media ".
+           "FROM seasons ".
            "ORDER BY id DESC LIMIT 1";
         
     $stmt = $db->prepare($sql);
@@ -498,6 +501,67 @@ function GetSeasonsImportStatus($media, $thumbs)
                     $aJson['tvshowid'] = $tvshowid;
                     $aJson['title']    = ShortenString($showtitle, 40)." - ".ShortenString($title, 20);
                     $aJson['season']   = $season;
+                }                  
+            }
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
+
+    CloseDatabase($db);
+
+    return $aJson;
+}
+
+/*
+ * Function:	GetEpisodesImportStatus
+ *
+ * Created on Oct 27, 2013
+ * Updated on Oct 27, 2013
+ *
+ * Description: Reports the episode status of the import process.
+ *
+ * In:  $thumbs
+ * Out: $aJson
+ *
+ */
+function GetEpisodesImportStatus($thumbs)
+{
+    $aJson['id']  = 0;
+    $aJson['refresh'] = 0;
+    $aJson['title']   = "empty";
+    $aJson['thumbs']  = $thumbs;
+  
+    $db = OpenDatabase();
+
+    $sql = "SELECT episodeid, refresh, showtitle, title ".
+           "FROM episodes ".
+           "ORDER BY id DESC LIMIT 1";
+        
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            // Get number of rows.
+            $stmt->store_result();
+            $rows = $stmt->num_rows;
+
+            if ($rows != 0)
+            {              
+                $stmt->bind_result($episodeid, $refresh, $showtitle, $title);
+                while($stmt->fetch())
+                {                
+                    $aJson['id']      = $episodeid;
+                    $aJson['refresh'] = $refresh;
+                    $aJson['title']   = ShortenString($showtitle, 20)." - ".ShortenString($title, 40);
                 }                  
             }
         }

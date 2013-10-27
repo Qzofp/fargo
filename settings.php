@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Oct 20, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Fargo's settings page.
  *
@@ -28,6 +28,8 @@ define("cTVSHOWSTHUMBS", "images/tvshows/thumbs");
 define("cTVSHOWSFANART", "images/tvshows/fanart");
 define("cSEASONSTHUMBS", "images/seasons/thumbs");
 //define("cSEASONSFANART", "images/seasons/fanart");
+define("cEPISODESTHUMBS", "images/episodes/thumbs");
+//define("cEPISODESSFANART", "images/episodes/fanart");
 define("cALBUMSTHUMBS", "images/music/thumbs");
 define("cALBUMSCOVERS", "images/music/covers");
 

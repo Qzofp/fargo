@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Oct 19, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -813,7 +813,7 @@ function SetMainKeyHandler(key, event)
  * Function:	ConvertMedia
  *
  * Created on May 10, 2013
- * Updated on Oct 19, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Convert the media string to a more readable string.
  * 
@@ -826,23 +826,26 @@ function ConvertMedia(media)
 {
     switch (media)
     {
-        case 'movies' : media = "Movies";
-                        break;
+        case 'movies'  : media = "Movies";
+                         break;
                         
-        case 'sets'   : media = "Movie Sets";
-                        break;                        
+        case 'sets'    : media = "Movie Sets";
+                         break;                        
                         
-        case 'tvshows': media = "TV Shows";
-                        break;
+        case 'tvshows' : media = "TV Shows";
+                         break;
                         
-        case 'seasons': media = "Seasons";
-                        break;                        
+        case 'seasons' : media = "Seasons";
+                         break;   
+                    
+        case 'episodes': media = "Episodes";
+                         break;                     
                         
-        case 'music'  : media = "Music";
-                        break;
+        case 'music'   : media = "Music";
+                         break;
                         
-        case 'system' : media = "System";
-                        break;
+        case 'system'  : media = "System";
+                         break;
         
         default       : break;
     }
@@ -854,7 +857,7 @@ function ConvertMedia(media)
  * Function:	ConvertMediaToSingular
  *
  * Created on Sep 07, 2013
- * Updated on Oct 19, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Convert the media string to a singular string.
  * 
@@ -867,22 +870,23 @@ function ConvertMediaToSingular(media)
 {
     switch (media)
     {
-        case 'movies' : media = "Movie";
-                        break;
+        case 'movies'  : media = "Movie";
+                         break;
                         
-        case 'sets'   : media = "Movie Set";
-                        break;                        
+        case 'sets'    : media = "Movie Set";
+                         break;                        
                         
-        case 'tvshows': media = "TV Show";
-                        break;
+        case 'tvshows' : media = "TV Show";
+                         break;
                         
-        case 'seasons': media = "Season";
-                        break;                        
+        case 'seasons' : media = "Season";
+                         break;    
+                    
+        case 'episodes': media = "Episode";
+                         break;                         
                         
-        case 'music'  : media = "Album";
-                        break;
-        
-        default       : break;
+        case 'music'   : media = "Album";
+                         break;
     }
     
     return media;

@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Oct 21, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -132,7 +132,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Oct 20, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -175,9 +175,9 @@ function ProcessDataFromXbmc($aData)
              
         // libTVShows Refresh -> library id = 13.
         case 13 : RefreshTVShow($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
-                  break;             
+                  break;
              
-        // libTVShowsSeasonsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
+        // libTVShowSeasonsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
         case 14 : UpdateStatus("XbmcTVShowsSeasonsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
                   break;           
               
@@ -187,18 +187,26 @@ function ProcessDataFromXbmc($aData)
               
         // libTVShowSeasons Import -> library id = 16.
         case 16 : ImportTVShowSeason($aData["error"], $aData["poster"], $aData["result"]);
-                  break;               
+                  break;  
               
-        // libAlbumsCounter -> library id = 21.  
-        case 21 : UpdateStatus("XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
+        // libTVShowEpisodesCounter -> library id = 31.  
+        case 31 : UpdateStatus("XbmcEpisodesEnd", $aData["result"]["episodes"][0]["episodeid"]);   
+                  break;
+              
+        // libTVShowEpisode Import -> library id = 32.
+        case 32 : ImportTVShowEpisode($aData["error"], $aData["poster"], $aData["result"]);
+                  break;     
+                            
+        // libAlbumsCounter -> library id = 41.  
+        case 41 : UpdateStatus("XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
                   break;
         
-        // libAlbums Import -> library id = 22.
-        case 22 : ImportAlbum($aData["error"], $aData["poster"], $aData["result"]);
+        // libAlbums Import -> library id = 42.
+        case 42 : ImportAlbum($aData["error"], $aData["poster"], $aData["result"]);
                   break;
              
-        // libAlbums Refresh -> library id = 23.
-        case 23 : RefreshAlbum($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
+        // libAlbums Refresh -> library id = 43.
+        case 43 : RefreshAlbum($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
                   break;                       
     }
 }
@@ -345,7 +353,7 @@ function ImportTVShow($aError, $poster, $fanart, $aResult)
  * Function:	ImportTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Oct 21, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Import the tv show season. 
  *
@@ -363,15 +371,44 @@ function ImportTVShowSeason($aError, $poster, $aResult)
 
         InsertTVShowSeason($aSeason);    
         IncrementStatus("XbmcSeasonsStart", 1);
-        
+        IncrementStatus("ImportCounter", 1);
         if ($aResult["limits"]["end"] >= $aResult["limits"]["total"]) {
-            IncrementStatus("XbmcTVShowsSeasonsStart", 1);
-            IncrementStatus("ImportCounter", 1);
+            IncrementStatus("XbmcTVShowsSeasonsStart", 1);           
         }
     }
     else {
         IncrementStatus("XbmcTVShowsSeasonsStart", 1);
     }
+}
+
+/*
+ * Function:	ImportTVShowEpisode
+ *
+ * Created on Oct 26, 2013
+ * Updated on Oct 26, 2013
+ *
+ * Description: Import the TV Show Episode. 
+ *
+ * In:  $aError, $poster, $aResult
+ * Out: -
+ *
+ */
+function ImportTVShowEpisode($aError, $poster, $aResult)
+{   
+    if (empty($aError))
+    {
+        $aEpisode = ConvertTVShowEpisode($aResult["episodedetails"]);
+     
+        //SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS."/".$aEpisode[1]);
+        SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);
+        InsertTVShowEpisode($aEpisode);
+    
+        IncrementStatus("XbmcEpisodesStart", 1);
+        IncrementStatus("ImportCounter", 1);
+    }
+    else if ($aError["code"] == -32602) { // TVShow not found, continue with the next one.
+       IncrementStatus("XbmcEpisodesStart", 1); 
+    }    
 }
 
 /*
@@ -487,14 +524,14 @@ function RefreshAlbum($aError, $poster, $aResult, $id)
  * Out: Saved image.
  *
  */
-/*function SaveImage($id, $image, $path)
+function SaveImage($id, $image, $path)
 {
     if ($image) 
     {
         $image = explode('base64,',$image); 
         file_put_contents($path.'/'.$id.'.jpg', base64_decode($image[1]));
     }    
-}*/
+}
 
 /*
  * Function:	ResizeAndSaveImage

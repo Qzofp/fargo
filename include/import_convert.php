@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Oct 20, 2013
+ * Updated on Oct 27, 2013
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -202,6 +202,46 @@ function ConvertTVShowSeason($aXbmc)
     $aSeason[7] = $aXbmc["watchedepisodes"];  
     
     return $aSeason;
+}
+
+/*
+ * Function:	ConvertTVShowEpisode
+ *
+ * Created on Oct 26, 2013
+ * Updated on Oct 27, 2013
+ *
+ * Description: Convert xbmc TV Show Episode items. For instance to readably URL's.
+ *
+ * In:  $aXbmc
+ * Out: $aSeason
+ *
+ */
+function ConvertTVShowEpisode($aXbmc)
+{
+    $aEpisode[0]  = $aXbmc["episodeid"];
+    $aEpisode[1]  = $aXbmc["tvshowid"]; 
+    $aEpisode[2]  = $aXbmc["label"]; // title    
+    $aEpisode[3]  = EncodeLink($aXbmc, "thumbnail");
+    $aEpisode[4]  = $aXbmc["originaltitle"];
+    $aEpisode[5]  = $aXbmc["rating"];
+    $aEpisode[6]  = ConvertWriter($aXbmc["writer"]);
+    $aEpisode[7]  = implode("|", $aXbmc["director"]);
+    $aEpisode[8]  = !empty($aXbmc["cast"])?ConvertCast($aXbmc["cast"]):null;
+    $aEpisode[9]  = $aXbmc["plot"];
+    $aEpisode[10] = $aXbmc["playcount"];
+    $aEpisode[11] = $aXbmc["episode"];
+    $aEpisode[12] = !empty($aXbmc["firstaired"])?$aXbmc["firstaired"]:"0000-00-00";
+    $aEpisode[13] = !empty($aXbmc["lastplayed"])?$aXbmc["lastplayed"]:"0000-00-00 00:00:00";
+    $aEpisode[14] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00";
+    $aEpisode[15] = !empty($aXbmc["votes"])?$aXbmc["votes"]:0;  
+    $aEpisode[16] = $aXbmc["file"];
+    $aEpisode[17] = $aXbmc["showtitle"];
+    $aEpisode[18] = $aXbmc["season"];
+    $aEpisode[19] = !empty($aXbmc["streamdetails"]["audio"])?ConvertAudio($aXbmc["streamdetails"]["audio"]):null; 
+    $aEpisode[20] = !empty($aXbmc["streamdetails"]["video"])?ConvertVideo($aXbmc["streamdetails"]["video"]):null;
+    $aEpisode[21] = $aXbmc["runtime"];
+    
+    return $aEpisode;
 }
 
 /*

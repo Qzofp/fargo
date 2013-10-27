@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Oct 20, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -202,7 +202,7 @@ function InsertTVShow($aTVShow)
  * Function:	UpdateTVShow
  *
  * Created on Sep 22, 2013
- * Updated on Sep 22, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Update TV Show in the database.
  *
@@ -214,15 +214,6 @@ function UpdateTVShow($id, $aTVShow)
 {    
     $db = OpenDatabase();
     $aItems = AddEscapeStrings($db, TVShowToItems($aTVShow));
-    
-    /*$sql = "INSERT INTO tvshows(xbmcid, title, genre, `year`, rating, plot, studio, mpaa, `cast`,".
-           " playcount, episode, imdbnr, premiered, votes, lastplayed, fanart, poster, thumb, `file`,".
-           " originaltitle, sorttitle, episodeguide, season, watchedepisodes, dateadded, tag) ". 
-           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]', '$aItems[7]',".
-           " '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', '$aItems[13]', '$aItems[14]', '$aItems[15]',".
-           " '$aItems[16]', '$aItems[17]', '$aItems[18]', '$aItems[19]', '$aItems[20]', '$aItems[21]', $aItems[22], $aItems[23],". 
-           " '$aItems[24]', '$aItems[25]')";
-    */
     
     $sql = "UPDATE tvshows ".
            "SET xbmcid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', genre = '$aItems[2]', `year` = $aItems[3],".
@@ -289,12 +280,12 @@ function TVShowToItems($aTVShow)
 }    
 
 /*
- * Function:	InsertMovieSet
+ * Function:	InsertTVShowSeason
  *
  * Created on Oct 20, 2013
  * Updated on Oct 20, 2013
  *
- * Description: Insert tv show season in the database.
+ * Description: Insert TV Show Season in the database.
  *
  * In:  $aSeason
  * Out:	Season in database table "seasons".
@@ -308,6 +299,37 @@ function InsertTVShowSeason($aSeason)
     $sql = "INSERT INTO seasons(tvshowid, title, showtitle, thumb, playcount, season, episode, watchedepisodes) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', $aItems[4], $aItems[5], $aItems[6], $aItems[7])";
 
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);    
+}
+
+/*
+ * Function:	InsertTVShowEpisode
+ *
+ * Created on Oct 26, 2013
+ * Updated on Oct 26, 2013
+ *
+ * Description: Insert TV Show Season in the database.
+ *
+ * In:  $aSeason
+ * Out:	Season in database table "seasons".
+ *
+ */
+function InsertTVShowEpisode($aEpisode)
+{   
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aEpisode);
+    
+    $sql = "INSERT INTO episodes(episodeid, tvshowid, title, thumb, originaltitle, rating, writer, director, `cast`,".
+           " plot, playcount, episode, firstaired, lastplayed, dateadded, votes, `file`, showtitle, season, audio,".
+           " video, runtime) ".
+           "VALUES ($aItems[0], $aItems[1], '$aItems[2]', '$aItems[3]', '$aItems[4]', $aItems[5], '$aItems[6]', '$aItems[7]',".
+           " '$aItems[8]', '$aItems[9]', $aItems[10], $aItems[11], '$aItems[12]', '$aItems[13]', '$aItems[14]', $aItems[15],".
+           " '$aItems[16]', '$aItems[17]', $aItems[18], '$aItems[19]', '$aItems[20]', $aItems[21])";
+
+    //debug
+    //echo $sql;
+    
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);    
 }

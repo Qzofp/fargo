@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 27, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -18,7 +18,7 @@
  * Function:	SetStartImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Oct 23, 2013
+ * Updated on Oct 27, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -56,14 +56,16 @@ function SetStartImportHandler(media, selector, found, delay)
                            }, delay); 
                            break;
                            
-        case "tvshows_3" : // Third import the TV show episodes.
+        case "tvshows_3" : // Third import the TV show episodes.                           
                            setTimeout(function() {
-                               alert ("Start Episodes Import!");
-                               //SetTVSeasonsImportHandler(media, selector, "episodes");
-                           }, delay); 
+                               $("#action_thumb").css("margin-left", "-125px");
+                               $("#action_thumb").width(220);
+                               $("#action_thumb img").width(220);
+                               StartImportHandler(media, selector, "episodes");
+                           }, delay);
                            break;
                        
-        case "tvshows_4"   : // Fourth import TV Shows end.
+        case "tvshows_4" : // Fourth import TV Shows end.
                            ShowFinished(found);
                            break;      
                          
@@ -84,7 +86,7 @@ function SetStartImportHandler(media, selector, found, delay)
  * Function:	StartImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Start the import handler.
  * 
@@ -101,7 +103,7 @@ function StartImportHandler(media, selector, type)
         dataType: 'json',
         success: function(json)
         {
-            var start, end;
+            var delta, start, end;
             var timer, i = 0;
             
             // Check if XBMC is online and transfer XBMC media counter (total).
@@ -114,14 +116,14 @@ function StartImportHandler(media, selector, type)
                 if ($("#ready").text() == "true")
                 {
                     if (selector > 1) {
-                        ResetImportBox(type);
+                        ResetImportBox();
                     }
                     
                     // Returns global_start and global_end;
                     GetXbmcMediaLimits(type);
                     start = gTRIGGER.START;
                     end   = gTRIGGER.END;
-                    //delta = end - start + 1;
+                    delta = end - start + 1;
                     
                     if (end > 0 || i > 3)
                     {
@@ -131,7 +133,7 @@ function StartImportHandler(media, selector, type)
                                 $("#action_box .message").html(cSTATUS.ONLINE);
                             }
                             LogEvent("Information", "Import " + ConvertMedia(type) + " started.");
-                            StartImport(json, media, type, start, end, selector);
+                            StartImport(json, media, type, delta, start, end, selector);
                         }
                         else if (end >= 0) 
                         {
@@ -161,15 +163,15 @@ function StartImportHandler(media, selector, type)
  * Function:	SetRetryImportHandler
  *
  * Created on Sep 30, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Set the import handler and retry the import.
  * 
- * In:	media, type, start, selector
+ * In:	media, type, delta, start, selector
  * Out:	-
  *
  */
-function SetRetryImportHandler(media, type, start, selector)
+function SetRetryImportHandler(media, type, delta, start, selector)
 {   
     // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
@@ -202,7 +204,7 @@ function SetRetryImportHandler(media, type, start, selector)
                         if (end > 0 && end > start) 
                         {
                             LogEvent("Information", "Restart import from XBMC (Retry).");
-                            StartImport(json, media, type, start, end, selector);                            
+                            StartImport(json, media, type, delta, start, end, selector);                            
                         }
                         else if (end >= 0) 
                         {
@@ -229,21 +231,19 @@ function SetRetryImportHandler(media, type, start, selector)
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
- * In:	xbmc, media, type, start, end, selector
+ * In:	xbmc, media, type, delta, start, end, selector
  * Out:	-
  *
  */
-function StartImport(xbmc, media, type, start, end, selector)
+function StartImport(xbmc, media, type, delta, start, end, selector)
 {
     var timeout  = 0;
     var busy     = false;
     var $ready   = $("#ready");
-    
-    var delta = end - start + 1;
     
     var $prg = $("#action_box .progress");
     var $img = $("#action_thumb img");
@@ -262,14 +262,13 @@ function StartImport(xbmc, media, type, start, end, selector)
         {            
             if (start > end) 
             {
-                $prg.progressbar({value : 100});
-                
                 SetStartImportHandler(media, ++selector, true, 3000);
-                setTimeout(function() {
+                setTimeout(function() 
+                {
+                    $prg.progressbar({value : 100});
                     LogImportCounter(type, true);
-                }, 2000);
-            }
-            
+                }, 1000);
+            }      
             return; // End Import.
         }
 
@@ -318,7 +317,7 @@ function StartImport(xbmc, media, type, start, end, selector)
  * Function:	ShowStatus
  *
  * Created on Aug 19, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Show the import status.
  *
@@ -340,14 +339,15 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg1, msg2
                 var percent = start - (end - delta);
                 percent = Math.round(percent/delta * 100);
                 
+                // Don't show the last step.
                 if (start != end) 
                 {
                     $prg.progressbar({
                         value : percent       
                     });
+                    
+                    $msg.html(msg1);
                 }
-                
-                $msg.html(msg1);
                       
                 // Preload image.
                 var img = new Image();
@@ -374,7 +374,7 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg1, msg2
  * Function:	SetTVSeasonImportHandler
  *
  * Created on Oct 19, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Start the seasons import handler.
  * 
@@ -403,29 +403,23 @@ function SetTVSeasonsImportHandler(media, selector, type)
                 // Check if iframe from ImportCounter finished loading.
                 if ($("#ready").text() == "true")
                 {
-                    ResetImportBox(type);
+                    ResetImportBox();
                     
                     // Returns global_start and global_end;
                     GetXbmcMediaLimits(media + type);
                     start = gTRIGGER.START;
                     end   = gTRIGGER.END;
-                    delta = end - start;
+                    delta = end - start + 1;
                     
                     if (end > 0 || i > 3)
                     {
                         if (end > 0 && end >= start) 
                         {
-                            /*if (selector == 1) {
-                                $("#action_box .message").html(cSTATUS.ONLINE);
-                            }*/
                             LogEvent("Information", "Import " + ConvertMedia(type) + " started.");
                             StartTVSeasonsImportWrapper(json, start, end, delta);
                         }
                         else if (end >= 0) 
                         {
-                            /*if (selector == 1) {
-                                $("#action_box .message").html(cSTATUS.ONLINE);
-                            }*/
                             LogEvent("Information", "No new " + ConvertMedia(type) + " found.");
                             ShowNoNewMedia(type, function(){
                                 SetStartImportHandler(media, ++selector, false, 0); // Start next import (episodes).    
@@ -449,7 +443,7 @@ function SetTVSeasonsImportHandler(media, selector, type)
  * Function:	StartTVSeasonsImportWrapper
  *
  * Created on Oct 19, 2013
- * Updated on Oct 24, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -480,9 +474,11 @@ function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
             {
                 //alert("Import Seasons Finished!");
                 SetStartImportHandler("tvshows", 3, true, 3000);
-                setTimeout(function()                 {
+                setTimeout(function() 
+                {
+                    $prg.progressbar({value : 100});
                     LogImportCounter("seasons", true);
-                }, 2000);
+                }, 1000);
             }
             
             return; // End Import.
@@ -519,7 +515,7 @@ function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
  * Function:	ShowTVShowSeasonsStatus
  *
  * Created on Oct 21, 2013
- * Updated on Oct 23, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Show the import TV Show Seasons status.
  *
@@ -531,7 +527,6 @@ function ShowTVShowSeasonsStatus(start, end, delta, $prg, $msg, msg1, msg2)
 {   
     $.ajax({
         url: 'jsonfargo.php?action=status&media=tvshowsseasons&mode=import' + '&id=' + start, // tvshowid
-        //async: false, // async can return (start) value.
         dataType: 'json',
         success: function(json) 
         {     
@@ -541,11 +536,15 @@ function ShowTVShowSeasonsStatus(start, end, delta, $prg, $msg, msg1, msg2)
             {
                 var percent = start - (end - delta);
                 percent = Math.round(percent/delta * 100);
-                $prg.progressbar({
-                    value : percent       
-                });             
                 
-                $msg.html(msg2);                
+                if (start != end)
+                {    
+                    $prg.progressbar({
+                        value : percent      
+                    });             
+                
+                    $msg.html(msg2);
+                }    
             }  
             else {
                 $msg.html(msg1); 
@@ -588,7 +587,7 @@ function StartSeasonsImportHandler(tvshowid)
                 if ($("#ready").text() == "true")
                 {
                     /*if (selector > 1) {
-                        ResetImportBox(type);
+                        ResetImportBox();
                     }*/
                     
                     // Returns global_start and global_end;
@@ -940,17 +939,17 @@ function InitImportBox()
  * Function:	ResetImportBox
  *
  * Created on Oct 17, 2013
- * Updated on Oct 17, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Reset the import box values.
  * 
- * In:	media
+ * In:	-
  * Out:	-
  *
  */
-function ResetImportBox(media)
+function ResetImportBox()
 {
-    var msg = cSTATUS.START.replace("[dummy]", ConvertMedia(media));
+    var msg = cSTATUS.WAIT; //.replace("[dummy]", ConvertMedia(media));
     
     $("#action_box .message").html(msg);   
     $("#action_box .progress").progressbar({
@@ -1009,7 +1008,7 @@ function ShowOffline()
  * Function:	ShowFinished
  *
  * Created on Aug 19, 2013
- * Updated on Oct 17, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Show import finished message and add to log event.
  * 
@@ -1023,11 +1022,11 @@ function ShowFinished(found)
     
     if (found) 
     {
-        setTimeout(function() 
-        {
+       setTimeout(function() 
+       {
             $("#action_box .message").html(msg); 
             $(".cancel").html("Finish");
-        }, 2000);        
+       }, 1000);      
     }
     else {
         $(".cancel").html("Finish");

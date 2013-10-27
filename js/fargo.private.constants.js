@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Oct 24, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -64,7 +64,8 @@ var cSTATUS = {
     ONLINE:   "XBMC is online.",
     OFFLINE:  "XBMC is offline!",  
     CONNECT:  "Connecting...",
-    START:    "Starting with [dummy] import.",
+//    START:    "Starting with [dummy] import.",
+    WAIT:     "Please wait...",
     RETRY:    "Retry import...",
     SEARCH:   "Searching for new [dummy]...",
     PROCESS:  "Processing [dummy]...", 
