@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Oct 26, 2013
+ * Updated on Oct 28, 2013
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -48,6 +48,8 @@ var gSTATE = {
 var gTRIGGER = {
     START: 0,
     STARTTV: 0,
+    SLACK: 0,
+//    TEMP: -1,
     END: 0,
     READY: false,
     CANCEL: false
@@ -63,16 +65,19 @@ var cIMPORT = {
 var cSTATUS = {
     ONLINE:   "XBMC is online.",
     OFFLINE:  "XBMC is offline!",  
-    CONNECT:  "Connecting...",
+    CONNECT:  "Connecting... ",
 //    START:    "Starting with [dummy] import.",
     WAIT:     "Please wait...",
     RETRY:    "Retry import...",
+    FINISH:   "Import of [dummy] finished.",
     SEARCH:   "Searching for new [dummy]...",
     PROCESS:  "Processing [dummy]...", 
     IMPORT:   "Importing [dummy]...",
-    REFRESH:  "Refreshing...",
+    REFRESH:  "Refreshing... ",
     READY:    "[dummy] is ready.",
-    NOTFOUND: "No new [dummy] found."
+    NOTFOUND: "No new [dummy] found.",
+    SLACK:    "Slack detected...",
+    SKIP:     "Skipping empty record "
 };
 
 

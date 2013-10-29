@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 27, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -94,7 +94,7 @@ function LoadFargoMedia(media)
  * Function:	ChangeProperty
  *
  * Created on May 27, 2013
- * Updated on Jun 15, 2013
+ * Updated on Oct 27, 2013
  *
  * Description: Get option and update property value.
  *
@@ -108,7 +108,6 @@ function ChangeProperty(number, value)
     
     $.ajax({
         url: 'jsonfargo.php?action=property&option=' + option + '&number=' + number + '&value=' + value,
-        //async: false,
         dataType: 'json',
         success: function(json) 
         {    
@@ -249,7 +248,7 @@ function SetRemoveHandler(id, xbmcid)
  * Function:	SetCleanDatabaseHandler
  *
  * Created on Jun 10, 2013
- * Updated on Sep 09, 2013
+ * Updated on Oct 27, 2013
  *
  * Description: Clean a database table (Library or Event Log).
  * 
@@ -271,7 +270,7 @@ function SetCleanDatabaseHandler()
     number = $(".property .on").closest("tr").index();
     
     $clean = $("#action_box .progress");
-    finish = 3 + Math.floor(Math.random() * 3);
+    finish = 5 + Math.floor(Math.random() * 5);
 
     // Reset and show progress bar.
     $clean.progressbar({value : 0});

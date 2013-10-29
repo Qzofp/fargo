@@ -6,7 +6,7 @@
  * File:    fargo.transfer.js
  *
  * Created on Jul 13, 2013
- * Updated on Oct 23, 2013
+ * Updated on Oct 27, 2013
  *
  * Description: Fargo Transfer jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	Transfer
  *
  * Created on Jul 13, 2013
- * Updated on Oct 23, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Transfers data from XBMC to Fargo.
  * 
@@ -32,23 +32,26 @@ function Transfer()
     
     switch(aRequest.action)
     {
-        case "counter" : TransferMediaCounter(aRequest.key, aRequest.media, aRequest.tvshowid);
-                         break;
+        case "counter"  : TransferMediaCounter(aRequest.key, aRequest.media, aRequest.tvshowid);
+                          break;
 
-        case "movies"  : TransferMovie(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
-                         break;
+        case "movies"   : TransferMovie(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
+                          break;
             
-        case "sets"    : TransferMovieSet(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
-                         break;  
+        case "sets"     : TransferMovieSet(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
+                          break;  
             
-        case "tvshows" : TransferTVShow(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
-                         break;
+        case "tvshows"  : TransferTVShow(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
+                          break;
                          
-        case "seasons" : TransferTVShowSeason(aRequest.key, aRequest.xbmcid, aRequest.fargoid, aRequest.tvshowid);
-                         break;
+        case "seasons"  : TransferTVShowSeason(aRequest.key, aRequest.xbmcid, aRequest.fargoid, aRequest.tvshowid);
+                          break;
+                         
+        case "episodes" : TransferTVShowEpisode(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
+                          break;                         
         
-        case "music"   : TransferAlbum(aRequest.key, aRequest.xbmcid, aRequest.fargoid); 
-                         break;            
+        case "music"    : TransferAlbum(aRequest.key, aRequest.xbmcid, aRequest.fargoid); 
+                          break;            
     }
 }
 
@@ -56,7 +59,7 @@ function Transfer()
  * Function:	TransferMediaCounter
  *
  * Created on Jul 22, 2013
- * Updated on Oct 19, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Transfers media counter (e.g. total number of movies) from XBMC to Fargo.
  * 
@@ -72,7 +75,7 @@ function TransferMediaCounter(key, media, id)
                            RequestCounter("VideoLibrary.GetMovies", 1, key);           
                            break;
 
-        case "sets"       : // libMovieSetsCounter -> library id = 4.
+        case "sets"      : // libMovieSetsCounter -> library id = 4.
                            RequestCounter("VideoLibrary.GetMovieSets", 4, key);         
                            break;        
             
@@ -84,12 +87,16 @@ function TransferMediaCounter(key, media, id)
                            RequestCounter("VideoLibrary.GetTVShows", 14, key);
                            break;                         
                          
-        case "seasons" :   // libSeasonsCounter -> library id = 15.
+        case "seasons"   : // libTVShowSeasonsCounter -> library id = 15.
                            RequestSeasonCounter(id, 15, key);
-                           break;                        
+                           break;
+                       
+        case "episodes" : // libTVShowEpisodesCounter -> library id = 31.
+                           RequestCounter("VideoLibrary.GetEpisodes", 31, key);
+                           break;                         
         
         case "music"   :   // libAlbumsCounter -> library id = 21.
-                           RequestCounter("AudioLibrary.GetAlbums", 21, key);
+                           RequestCounter("AudioLibrary.GetAlbums", 41, key);
                            break;
     }
 }
@@ -98,7 +105,7 @@ function TransferMediaCounter(key, media, id)
  * Function:	RequestCounter
  *
  * Created on Oct 06, 2013
- * Updated on Oct 07, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: JSON Request XBMC media counter and the media highest id.
  * 
@@ -108,8 +115,8 @@ function TransferMediaCounter(key, media, id)
  */
 function RequestCounter(library, id, key)
 {
-    var counter_req = '{"jsonrpc": "2.0", "method": "' + library + '", \n\
-                        "params": { "limits": { "start" : 0, "end": 1 }}, "id": "' + id + '"}';
+    var counter_req = '{"jsonrpc":"2.0","method":"' + library + '",\n\
+                        "params":{"limits":{"start":0,"end":1}},"id":"' + id + '"}';
     
     // Get media total (counter) from XBMC.
     $.getJSON("../jsonrpc?request=" + counter_req, function(json)
@@ -117,8 +124,8 @@ function RequestCounter(library, id, key)
         var start = Number(json.result.limits.total) - 1;
         var end   = Number(json.result.limits.total);
         
-        var max_req = '{"jsonrpc": "2.0", "method": "' + library + '",\n\
-                        "params": { "limits": { "start" : ' + start + ', "end": ' + end + ' }}, "id": "' + id + '"}';
+        var max_req = '{"jsonrpc":"2.0","method":"' + library + '",\n\
+                        "params":{"limits":{"start":' + start + ',"end":' + end + '}},"id":"' + id + '"}';
         
         // Get highest id (maxid) from XBMC.
         $.getJSON("../jsonrpc?request=" + max_req, function(data)
@@ -135,7 +142,7 @@ function RequestCounter(library, id, key)
  * Function:	RequestSeasonCounter
  *
  * Created on Oct 18, 2013
- * Updated on Oct 18, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: JSON Request XBMC season counter.
  * 
@@ -145,9 +152,9 @@ function RequestCounter(library, id, key)
  */
 function RequestSeasonCounter(tvshowid, id, key)
 {
-    var request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", \n\
-                    "params": { "tvshowid":'+ tvshowid +', "limits": { "start" : 0, "end": 1 }},\n\
-                    "id": "' + id + '"}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons",\n\
+                    "params":{"tvshowid":'+ tvshowid +',"limits":{"start":0,"end":1}},\n\
+                    "id":"' + id + '"}';
     
     // Get season total (counter) from XBMC.
     $.getJSON("../jsonrpc?request=" + request, function(json)
@@ -163,7 +170,7 @@ function RequestSeasonCounter(tvshowid, id, key)
  * Function:	TransferMovie
  *
  * Created on Oct 07, 2013
- * Updated on Oct 15, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Transfer movie from XBMC to Fargo.
  * 
@@ -184,12 +191,12 @@ function TransferMovie(key, xbmcid, fargoid)
     }
 
     // libMovies -> library id = 2 or 3.
-    var request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieDetails", "params":\n\
-                   {"movieid": ' + xbmcid + ', \n\
-                   "properties": ["title","genre","year","rating","director","trailer","tagline","plot",\n\
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetMovieDetails","params":\n\
+                   {"movieid":' + xbmcid + ',\n\
+                   "properties":["title","genre","year","rating","director","trailer","tagline","plot",\n\
                    "plotoutline","originaltitle","lastplayed","playcount","writer","studio","mpaa","cast",\n\
                    "country","imdbnumber","runtime","set","showlink","streamdetails","top250","votes","fanart",\n\
-                   "thumbnail","file","sorttitle","resume","setid","dateadded","tag","art"]}, "id": '+ id +'}';     
+                   "thumbnail","file","sorttitle","resume","setid","dateadded","tag","art"]},"id":'+ id +'}';     
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -261,7 +268,7 @@ function TransferMovie(key, xbmcid, fargoid)
  * Function:	TransferMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Oct 13, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Transfer movie set from XBMC to Fargo.
  * 
@@ -282,9 +289,9 @@ function TransferMovieSet(key, xbmcid, fargoid)
     }
 
     // libMovieSets -> library id = 5 or 6.
-    var request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieSetDetails", "params":\n\
-                   {"setid": ' + xbmcid + ', \n\
-                   "properties": ["title","playcount","art","thumbnail"]}, "id": '+ id +'}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetMovieSetDetails","params":\n\
+                   {"setid":' + xbmcid + ',\n\
+                   "properties":["title","playcount","art","thumbnail"]},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -356,7 +363,7 @@ function TransferMovieSet(key, xbmcid, fargoid)
  * Function:	TransferTVShow
  *
  * Created on Oct 07, 2013
- * Updated on Oct 15, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Transfer TV Show from XBMC to Fargo.
  * 
@@ -377,12 +384,12 @@ function TransferTVShow(key, xbmcid, fargoid)
     }
     
     // libTVShows -> library id = 12 or 13.
-    var request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShowDetails", "params":\n\
-                    {"tvshowid": ' + xbmcid + ', \n\
-                    "properties": ["title", "genre", "year", "rating", "plot", "studio", "mpaa", "cast", "playcount",\n\
-                    "episode", "imdbnumber", "premiered", "votes", "lastplayed", "fanart", "thumbnail", "file",\n\
-                    "originaltitle", "sorttitle", "episodeguide", "season", "watchedepisodes", "dateadded",\n\
-                    "tag", "art"] }, "id": '+ id +'}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":\n\
+                    {"tvshowid":' + xbmcid + ',\n\
+                    "properties":["title","genre","year","rating","plot","studio","mpaa","cast","playcount",\n\
+                    "episode","imdbnumber","premiered","votes","lastplayed","fanart","thumbnail","file",\n\
+                    "originaltitle","sorttitle","episodeguide","season","watchedepisodes","dateadded",\n\
+                    "tag","art"]},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -453,7 +460,7 @@ function TransferTVShow(key, xbmcid, fargoid)
  * Function:	TransferTVShowSeason
  *
  * Created on Oct 18, 2013
- * Updated on Oct 20, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Transfer TV Show Season from XBMC to Fargo.
  * 
@@ -476,10 +483,10 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
     }
     
     // libTVShowSeasons -> library id = 15 or 16.
-    var request = '{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", "params":\n\
-                   {"tvshowid":'+ tvshowid +',"limits": {"start": '+ start +', "end": ' + end + '},\n\
-                   "properties": ["episode","watchedepisodes","season","tvshowid","showtitle","playcount",\n\
-                   "thumbnail"] }, "id": '+ id +'}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons","params":\n\
+                   {"tvshowid":'+ tvshowid +',"limits":{"start":'+ start +',"end":' + end + '},\n\
+                   "properties":["episode","watchedepisodes","season","tvshowid","showtitle","playcount",\n\
+                   "thumbnail"]},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -549,10 +556,107 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
 }
 
 /*
+ * Function:	TransferTVShowEpisode
+ *
+ * Created on Oct 26, 2013
+ * Updated on Oct 27, 2013
+ *
+ * Description: Transfer TV Show Episode from XBMC to Fargo.
+ * 
+ * In:	key, xbmcid, fargoid
+ * Out:	Transfered TV Show Episode.
+ *
+ */
+function TransferTVShowEpisode(key, xbmcid, fargoid)
+{
+    var a, b, a_chk, b_chk;
+    var id, poster, fanart;
+    
+    if (fargoid < 0) {
+        id = 32; // Import TV Show Episode.
+    }
+    else {
+        id = 33; // Refresh TV Show Episode.
+    }
+    
+    // libTVShows -> library id = 32 or 33.
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetEpisodeDetails","params":\n\
+                    {"episodeid":' + xbmcid + ',\n\
+                    "properties":["tvshowid","title","rating","plot","cast","playcount",\n\
+                    "episode","firstaired","votes","lastplayed","fanart","thumbnail","file",\n\
+                    "originaltitle","showtitle","season","streamdetails","runtime","dateadded",\n\
+                    "writer","director","art"]},"id":'+ id +'}';
+    
+    $.ajax({
+        url: '../jsonrpc?request=' + request,
+        type: 'get',
+        dataType: 'json',
+        timeout: 1000,
+        tryCount: 0,
+        retryLimit: 3,
+        success: function(json) 
+        {            
+            json.key = key; 
+            if (json.result && json.result.episodedetails)
+            {
+                poster = CreateImageUrl(json.result.episodedetails.thumbnail);
+                fanart = ""; //CreateImageUrl(json.result.episodedetails.fanart);
+        
+                // Show title.
+                $("#info").text(json.result.episodedetails.label);
+        
+                // Draw image on canvas and wait until it's doen.
+                a = DrawImageOnCanvas("poster", poster);
+                b = DrawImageOnCanvas("fanart", fanart);
+
+                // Check if image loaded successfully.
+                a.done( function(a_check) { a_chk = a_check; });
+                b.done( function(b_check) { b_chk = b_check; });
+        
+                // Wait until DrawImageOnCanvas functions are ready.
+                $.when(a, b).done(function()
+                {    
+                    json.fargoid = fargoid;
+                    json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7); 
+                    //json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                
+                    // Transfer the data to Fargo.
+                    TransferData(json);
+      
+                }); // End when.         
+            }
+            else if (json.error.code == -32602) { // TV Show not found.
+                TransferData(json);
+            }
+        }, // End success.
+        error: function(xhr, textStatus, errorThrown ) {
+            if (textStatus == 'timeout') 
+            {
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) 
+                {
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+                console.log('We have tried ' + this.retryLimit + ' times and it is still not working. We give in. Sorry.');
+                return;
+            }
+            if (xhr.status == 500) {
+                console.log('Oops! There seems to be a server problem, please try again later.');
+            } 
+            else {
+                console.log('Oops! There was a problem, sorry.');
+            }
+        } // End error.
+    }); // End Ajax.    
+}
+
+/*
  * Function:	TransferAlbum
  *
  * Created on Jul 13, 2013
- * Updated on Oct 15, 2013
+ * Updated on Oct 26, 2013
  *
  * Description: Transfer music album from XBMC to Fargo.
  * 
@@ -566,18 +670,18 @@ function TransferAlbum(key, xbmcid, fargoid)
     var id, poster, fanart;
     
     if (fargoid < 0) {
-        id = 22; // Import album.
+        id = 42; // Import album.
     }
     else {
-        id = 23; // Refresh album.
+        id = 43; // Refresh album.
     }    
     
-    // libAlbums -> library id = 22 or 23.
-    var request = '{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbumDetails", "params":\n\
-                    {"albumid": ' + xbmcid + ', \n\
-                    "properties": ["title", "description", "artist", "genre", "theme", "mood", "style","type",\n\
-                    "albumlabel", "rating", "year", "musicbrainzalbumid", "musicbrainzalbumartistid", "fanart",\n\
-                    "thumbnail","playcount", "genreid", "artistid", "displayartist"] }, "id": '+ id +'}';
+    // libAlbums -> library id = 42 or 43.
+    var request = '{"jsonrpc":"2.0","method":"AudioLibrary.GetAlbumDetails","params":\n\
+                    {"albumid":' + xbmcid + ',\n\
+                    "properties":["title","description","artist","genre","theme","mood","style","type",\n\
+                    "albumlabel","rating","year","musicbrainzalbumid","musicbrainzalbumartistid","fanart",\n\
+                    "thumbnail","playcount","genreid","artistid","displayartist"]},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -592,7 +696,7 @@ function TransferAlbum(key, xbmcid, fargoid)
             if (json.result && json.result.albumdetails)
             {
                 poster = CreateImageUrl(json.result.albumdetails.thumbnail);
-                fanart = CreateImageUrl(json.result.albumdetails.fanart);
+                fanart = ""; //CreateImageUrl(json.result.albumdetails.fanart);
         
                 // Show title.
                 $("#info").text(json.result.albumdetails.label);
@@ -610,7 +714,7 @@ function TransferAlbum(key, xbmcid, fargoid)
                 { 
                     json.fargoid = fargoid;
                     json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
-                    json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                    //json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
                 
                     // Transfer the data with Ajax.
                     TransferData(json);

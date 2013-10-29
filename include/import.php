@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Oct 26, 2013
+ * Updated on Oct 28, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -215,7 +215,7 @@ function ProcessDataFromXbmc($aData)
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Oct 17, 2013
+ * Updated on Oct 28, 2013
  *
  * Description: Import the movie. 
  *
@@ -242,11 +242,14 @@ function ImportMovie($aError, $poster, $fanart, $aResult)
         ResizeAndSaveImage($aMovie["xbmcid"], $fanart, "../".cMOVIESFANART, 562, 350); //675, 420 
     
         //UpdateStatus("XbmcMoviesStart", $aMovie["xbmcid"] + 1);
+        UpdateStatus("XbmcSlack", 0);
         IncrementStatus("XbmcMoviesStart", 1);
         IncrementStatus("ImportCounter", 1); 
     }
-    else if ($aError["code"] == -32602) { // Movie not found, continue with the next one.
-       IncrementStatus("XbmcMoviesStart", 1); 
+    else if ($aError["code"] == -32602) // Movie not found, continue with the next one.
+    { 
+        UpdateStatus("XbmcSlack", 1);
+        IncrementStatus("XbmcMoviesStart", 1); 
     }
 }
 
@@ -254,7 +257,7 @@ function ImportMovie($aError, $poster, $fanart, $aResult)
  * Function:	ImportMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Oct 17, 2013
+ * Updated on Oct 28, 2013
  *
  * Description: Import the movie set. 
  *
@@ -272,10 +275,14 @@ function ImportMovieSet($aError, $poster, $fanart, $aResult)
         InsertMovieSet($aMovie);
 
         ResizeAndSaveImage($aMovie[0], $fanart, "../".cSETSFANART, 562, 350); //675, 420 
+        
+        UpdateStatus("XbmcSlack", 0);
         IncrementStatus("XbmcSetsStart", 1); 
         IncrementStatus("ImportCounter", 1);
     }
-    else if ($aError["code"] == -32602) { // Movie not found, continue with the next one.
+    else if ($aError["code"] == -32602) // Movie not found, continue with the next one.
+    { 
+       UpdateStatus("XbmcSlack", 1);
        IncrementStatus("XbmcSetsStart", 1); 
     }
 }
@@ -318,7 +325,7 @@ function RefreshMovie($aError, $poster, $fanart, $aResult, $fargoid)
  * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Oct 20, 2013
+ * Updated on Oct 28, 2013
  *
  * Description: Import the tv show. 
  *
@@ -341,10 +348,13 @@ function ImportTVShow($aError, $poster, $fanart, $aResult)
     
         ResizeAndSaveImage($aTVShow["xbmcid"], $fanart, "../".cTVSHOWSFANART, 562, 350);
     
+        UpdateStatus("XbmcSlack", 0);
         IncrementStatus("XbmcTVShowsStart", 1);
         IncrementStatus("ImportCounter", 1);
     }
-    else if ($aError["code"] == -32602) { // TVShow not found, continue with the next one.
+    else if ($aError["code"] == -32602) // TVShow not found, continue with the next one.
+    { 
+       UpdateStatus("XbmcSlack", 1);
        IncrementStatus("XbmcTVShowsStart", 1); 
     }    
 }
@@ -385,7 +395,7 @@ function ImportTVShowSeason($aError, $poster, $aResult)
  * Function:	ImportTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Oct 26, 2013
+ * Updated on Oct 28, 2013
  *
  * Description: Import the TV Show Episode. 
  *
@@ -403,10 +413,13 @@ function ImportTVShowEpisode($aError, $poster, $aResult)
         SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);
         InsertTVShowEpisode($aEpisode);
     
+        UpdateStatus("XbmcSlack", 0);
         IncrementStatus("XbmcEpisodesStart", 1);
         IncrementStatus("ImportCounter", 1);
     }
-    else if ($aError["code"] == -32602) { // TVShow not found, continue with the next one.
+    else if ($aError["code"] == -32602) // TVShow not found, continue with the next one.
+    { 
+       UpdateStatus("XbmcSlack", 1);
        IncrementStatus("XbmcEpisodesStart", 1); 
     }    
 }
@@ -448,7 +461,7 @@ function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
  * Function:	ImportAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Oct 18, 2013
+ * Updated on Oct 28, 2013
  *
  * Description: Import the music album. 
  *
@@ -471,10 +484,13 @@ function ImportAlbum($aError, $poster, $aResult)
     
         ResizeAndSaveImage($aAlbum["xbmcid"], $poster, "../".cALBUMSCOVERS, 300, 300);
     
+        UpdateStatus("XbmcSlack", 0);
         IncrementStatus("XbmcMusicStart", 1);
         IncrementStatus("ImportCounter", 1); 
     }
-    else if ($aError["code"] == -32602) { // Album not found, continue with the next one.
+    else if ($aError["code"] == -32602) // Album not found, continue with the next one.
+        { 
+       UpdateStatus("XbmcSlack", 1);
        IncrementStatus("XbmcMusicStart", 1); 
     }     
 }
