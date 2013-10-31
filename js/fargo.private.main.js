@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Oct 27, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Oct 05, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -29,16 +29,15 @@
 function LoadFargoMedia(media)
 {      
     var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
-    global_media = media;
+    gSTATE.MEDIA = media;
     
     SetState("title", "Latest");
     SetState("mode", "Information");
 
-    ChangeControlBar(global_media);
-    ChangeSubControlBar(global_media);
-        
-    //GetFargoValues(media, global_sort);
-    ShowMediaTable(media, global_page, global_sort);
+    ChangeControlBar(gSTATE.MEDIA);
+    ChangeSubControlBar(gSTATE.MEDIA);
+
+    ShowMediaTable(media, gSTATE.PAGE, gSTATE.SORT);
     
     // The media info click events
     $("#display_content").on("click", "td", SetInfoHandlerWithActions);
@@ -197,14 +196,14 @@ function SetActionHandler()
                            
         case "Import"    : SetStartImportHandler(media, 1, true); //alert("Import Something!"); 
                            break;                                       
-    }    
+    }
 }
 
 /*
  * Function:	SetRemoveHandler
  *
  * Created on Oct 05, 2013
- * Updated on Oct 05, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Remove media from Frago handler.
  * 
@@ -221,7 +220,7 @@ function SetRemoveHandler(id, xbmcid)
     media   = GetState("media");
     
     // Turn progress on.
-    $(".progress_off").toggleClass("progress_off progress");
+    //$(".progress_off").toggleClass("progress_off progress");
 
     // Reset and show progress bar.
     $remove = $("#action_box .progress");
@@ -248,7 +247,7 @@ function SetRemoveHandler(id, xbmcid)
  * Function:	SetCleanDatabaseHandler
  *
  * Created on Jun 10, 2013
- * Updated on Oct 27, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Clean a database table (Library or Event Log).
  * 
@@ -262,7 +261,7 @@ function SetCleanDatabaseHandler()
     var $clean;
     
     // Turn progress on.
-    $(".progress_off").toggleClass("progress_off progress");
+    //$(".progress_off").toggleClass("progress_off progress");
     
     // Get option.
     option = $('#display_system_left .dim').text();
@@ -383,7 +382,7 @@ function SetPopupKeyHandler(key)
  */
 function SetLogoutHandler()
 {    
-    // get username.
+    // Get username.
     var user = $("#header_txt span").text();
     
     LogEvent("Information", "User " + user + " has succesfully logged out.");   

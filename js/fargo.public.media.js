@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Oct 26, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -375,7 +375,7 @@ function SetShowUrlHandler()
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on Jun 30, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -389,8 +389,8 @@ function SetMediaHandler(event)
    SetState("page", media);
 
    // Initialize parameters.
-   global_page = 1;
-   global_sort = "";
+   gSTATE.PAGE = 1;
+   gSTATE.SORT = "";
    SetState("title", "Latest");
    SetState("genre", "");
    SetState("year", "");
@@ -400,14 +400,13 @@ function SetMediaHandler(event)
    $('#display_system_right').html("");   
    $('#display_content').show();
    
-   global_media = ChangeControlBar(media);
+   gSTATE.MEDIA = ChangeControlBar(media);
    ChangeSubControlBar(media);
     
    $("#display_left").show();
    $("#display_right").show();
    
-   //GetFargoValues(global_media, global_sort);
-   ShowMediaTable(global_media, global_page, global_sort);
+   ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);
 }
 
 /*
@@ -446,7 +445,7 @@ function SetTitleHandler()
  * Function:	SetButtonsHandler
  *
  * Created on Jun 27, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Show the buttons (Title, Genres or Years) popup.
  * 
@@ -474,9 +473,9 @@ function SetButtonsHandler()
     }
     else
     {
-        // Returns global_list_fargo.
+        // Returns gSTATE.LIST
         GetFargoSortList($this.text(), media);
-        aList = global_list_fargo;
+        aList = gSTATE.LIST;
         buttons = '<button type=\"button\" class=\"choice\">- Show All -</button>';
     }
     
@@ -529,7 +528,7 @@ function SetButtonsHandler()
  * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Show the genre.
  * 
@@ -582,13 +581,13 @@ function SetShowButtonHandler()
     if (choice != "Manage") 
     {    
         // Reset page and sort globals;
-        global_page = 1;
-        global_sort = "";
+        gSTATE.PAGE = 1;
+        gSTATE.SORT = "";
         $("#sort").css("visibility", "hidden");   
     }
     
     // Show media table.
-    ShowMediaTable(global_media, global_page, global_sort);  
+    ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);  
 }
 
 /*
@@ -662,7 +661,7 @@ function ChangeControlBar(media)
  * Function:	SetPageHandler
  *
  * Created on Apr 13, 2013
- * Updated on Apr 13, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Set the page and show the media table.
  * 
@@ -673,30 +672,28 @@ function ChangeControlBar(media)
 function SetPageHandler(event)
 {
     var action = event.data.action;
-    var offset = global_lastpage;
+    var offset = gSTATE.LAST;
     
-    //alert(action);
+    gSTATE.PAGE = (action == "n") ? gSTATE.PAGE + 1 : gSTATE.PAGE - 1;
     
-    global_page = (action == "n") ? global_page + 1 : global_page - 1;
-    
-    //Check for min.
-    if (global_page == 0) {
-        global_page = offset;
+    // Check for min.
+    if (gSTATE.PAGE == 0) {
+        gSTATE.PAGE = offset;
     }  
                 
-    //Check for max.
-    else if (global_page==offset+1) {
-        global_page = 1;
+    // Check for max.
+    else if (gSTATE.PAGE == offset+1) {
+        gSTATE.PAGE = 1;
     } 
         
-    ShowMediaTable(global_media, global_page, global_sort);
+    ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);
 } 
 
 /*
  * Function:	SetArrowHandler
  *
  * Created on Apr 13, 2013
- * Updated on Apr 13, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Set the page and show the media table.
  * 
@@ -706,18 +703,18 @@ function SetPageHandler(event)
  */
 function SetArrowHandler(action)
 {
-    var offset = global_lastpage;
+    var offset = gSTATE.LAST;
     
-    global_page = (action == "n") ? global_page + 1 : global_page - 1;
+    gSTATE.PAGE = (action == "n") ? gSTATE.PAGE + 1 : gSTATE.PAGE - 1;
     
-    //Check for min.
-    if (global_page == 0) {
-        global_page = offset;
+    // Check for min.
+    if (gSTATE.PAGE == 0) {
+        gSTATE.PAGE = offset;
     }  
                 
-    //Check for max.
-    else if (global_page==offset+1) {
-        global_page = 1;
+    // Check for max.
+    else if (gSTATE.PAGE == offset+1) {
+        gSTATE.PAGE = 1;
     } 
 }
 
@@ -761,7 +758,7 @@ function SetKeyHandler(event)
  * Function:	SetMainKeyHandler
  *
  * Created on Apr 28, 2013
- * Updated on Apr 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Set the key from the keyboard and show the media table.
  * 
@@ -776,37 +773,34 @@ function SetMainKeyHandler(key, event)
     // key between aA and zZ.
     if (key >= 65 && key <= 90) 
     {
-        global_page = 1; 
-        global_sort = String.fromCharCode(event.which).toUpperCase();
+        gSTATE.PAGE = 1; 
+        gSTATE.SORT = String.fromCharCode(event.which).toUpperCase();
     }
     // key between 0 and 9.
     else if (key >= 48 && key <= 57)
     {
-        global_page = 1; 
-        global_sort = String.fromCharCode(event.which);
+        gSTATE.PAGE = 1; 
+        gSTATE.SORT = String.fromCharCode(event.which);
     }   
     else if (key != 37 && key != 39)
     {
-        global_page = 1; 
-        global_sort = "";       
+        gSTATE.PAGE = 1; 
+        gSTATE.SORT = "";       
     }
     
     // The previous and next with the left and right arrow keys.
-    if (key == 37)
-    {
+    if (key == 37) {
         SetArrowHandler("p");
     }
-    else if (key == 39)
-    {
+    else if (key == 39) {
         SetArrowHandler("n");
     }        
     
-    if (global_sort == "") {
+    if (gSTATE.SORT == "") {
         $("#sort").css("visibility", "hidden");
     }
     
-    //GetFargoValues(global_media, global_sort);
-    ShowMediaTable(global_media, global_page, global_sort);    
+    ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);    
 }
 
 /*
@@ -896,7 +890,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Shows the media table.
  *
@@ -924,9 +918,9 @@ function ShowMediaTable(media, page, sort)
         dataType: 'json',
         success: function(json)
         {
-            // Return global lastpage.
-            global_lastpage = json.params.lastpage;
-            ShowNextPrevButtons(global_lastpage);
+            // Return gSTATE.LAST.
+            gSTATE.LAST = json.params.lastpage;
+            ShowNextPrevButtons(gSTATE.LAST);
             
             var i = 0, j = 0;
             var img, html = [];

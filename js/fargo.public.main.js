@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Oct 23, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Sep 02, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -29,15 +29,14 @@
 function LoadFargoMedia(media)
 {    
     var aOptions = ['Statistics', 'Credits', 'About'];
-    global_media = media;
+    gSTATE.MEDIA= media;
     
     SetState("title", "Latest");
     
-    ChangeControlBar(global_media);
-    ChangeSubControlBar(global_media);
- 
-    //GetFargoValues(media, global_sort);
-    ShowMediaTable(media, global_page, global_sort);
+    ChangeControlBar(gSTATE.MEDIA);
+    ChangeSubControlBar(gSTATE.MEDIA);
+
+    ShowMediaTable(media, gSTATE.PAGE, gSTATE.SORT);
 
     // The media info click events
     $("#display_content").on("click", "td", SetInfoHandler);

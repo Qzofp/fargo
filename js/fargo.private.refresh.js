@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,7 +18,7 @@
  * Function:	SetStartRefreshHandler
  *
  * Created on Sep 14, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Set the refresh handler, show the refresh popup box and start the refresh.
  * 
@@ -49,7 +49,7 @@ function SetStartRefreshHandler(media, id, xbmcid)
                 // Check if iframe from ImportCounter finished loading.
                 if ($("#ready").text() == "true")
                 {
-                    // Returns global_total_fargo and global_total_xbmc;
+                    // Returns gTRIGGER.END;
                     GetXbmcMediaLimits(media);
                     online = gTRIGGER.END; // If value > 0 then XBMC is online.
                     
@@ -116,12 +116,12 @@ function StartRefresh(xbmc, media, id, xbmcid)
         }
         else
         {
-            // Show status and returns global_ready.
+            // Show status and returns gTRIGGER.READY.
             ShowRefreshStatus(media, xbmcid, percent);
             percent = 100 - 100/factor;
             
             // Wait until thumb is ready.
-            if (global_ready) {
+            if (gTRIGGER.READY) {
                 delay += 2;
                 factor *= 2;
             }
@@ -136,7 +136,7 @@ function StartRefresh(xbmc, media, id, xbmcid)
  * Function:	ShowRefreshStatus
  *
  * Created on Sep 14, 2013
- * Updated on Sep 23, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Show the refresh status.
  *
@@ -151,9 +151,9 @@ function ShowRefreshStatus(media, id, percent)
         dataType: 'json',
         success: function(json) 
         {     
-            global_ready = Number(json.ready);
+            gTRIGGER.READY = Number(json.ready);
             
-            $("#action_box .message").html(cSTATUS.REFRESH);      
+            $("#action_box .message").html(cSTATUS.REFRESH);   
                       
             // Preload image.
             var img = new Image();

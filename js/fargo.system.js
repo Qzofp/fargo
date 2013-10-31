@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Sep 08, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Sep 07, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Show the system page with minimum options.
  * 
@@ -36,11 +36,11 @@ function SetSystemHandler(event)
    var last = $option.last().text();
    SetState("page", media);
    
-   global_page = 1;
-   global_sort = "";
+   gSTATE.PAGE = 1;
+   gSTATE.SORT = "";
    SetState("genre", "");
    
-   global_media = ChangeControlBar(media);
+   gSTATE.MEDIA = ChangeControlBar(media);
    ChangeSubControlBar(media);
    
    $("#header_mode").hide();
@@ -577,7 +577,7 @@ function ActivateProperty()
  * Function:	CleanPopupBox
  *
  * Created on Jun 09, 2013
- * Updated on Sep 08, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Show clean library popup box
  *
@@ -599,10 +599,11 @@ function CleanPopupBox(msg)
     SetState("page", "popup");
     */
     
+
     $("#action_box .message").text("Do you want to clean the " + msg + "?");
     $("#action_wrapper").hide();
-    
-    
+    $("#action_title").height(5);
+        
     ShowPopupBox("#action_box", "Cleaning database");
     SetState("page", "popup");
 }

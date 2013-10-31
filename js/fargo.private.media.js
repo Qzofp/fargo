@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.3
  *
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Sep 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -245,7 +245,7 @@ function RemoveMediaFromFargo(media, id, xbmcid)
  * Function:	ClearActionBox
  *
  * Created on Sep 08, 2013
- * Updated on Sep 14, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Clear the action box. Set back to initial values.
  *
@@ -270,14 +270,13 @@ function ClearActionBox()
         $("#action_wrapper").removeAttr("style");
         $thumb.removeAttr("style");
         $thumb.children("img").removeAttr("style").attr("src", "");
-        
-        $("#action_title").html("&nbsp;");
+        $("#action_title").height(30).html("&nbsp;");
         
         // Remove progressbar.
         if($action.find(".ui-progressbar").length != 0) {   
             $action.find(".progress").progressbar( "destroy" );
         }        
-        $(".progress").toggleClass("progress progress_off");
+        //$(".progress").toggleClass("progress progress_off");
         
         // Reset buttons.
         $(".yes").show();

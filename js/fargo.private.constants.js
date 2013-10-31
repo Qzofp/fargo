@@ -6,20 +6,20 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
  */
 
 // Global variables?!? jQuery sucks or I don't get it!!!
-var global_media = "";
-var global_page  = 1;
-var global_sort  = "";
+//var global_media = ""; // Obsolete.
+//var global_page  = 1; // Obsolete.
+//var global_sort  = ""; // Obsolete.
 
-var global_lastpage = 1;
+//var global_lastpage = 1; // Obsolete.
 
-var global_ready = false;
+//var global_ready = false;  // Obsolete.
 //var global_cancel = false; // 0bsolete. 
 
 // Xbmc media limits.
@@ -29,8 +29,8 @@ var global_ready = false;
 //var global_status_counter;
 
 // Fargo globals.
-var global_setting_fargo;
-var global_list_fargo;
+//var global_setting_fargo; // Obsolete.
+//var global_list_fargo; // Obsolete.
 
 // Ajax requests.
 //var global_status_request;
@@ -40,8 +40,10 @@ var global_list_fargo;
 var gSTATE = {
     MEDIA: "",
     PAGE: 1,
-    LAST: 1,
-    SORT: ""
+    LAST: 1, // Last page.
+    SORT: "",
+    LIST: "",
+    SETTING: ""    
 };
 
 // Trigger globals.
@@ -49,7 +51,6 @@ var gTRIGGER = {
     START: 0,
     STARTTV: 0,
     SLACK: 0,
-//    TEMP: -1,
     END: 0,
     READY: false,
     CANCEL: false

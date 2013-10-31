@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Oct 06, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -384,6 +384,7 @@ border-radius:5px;
 }
 
 #action_title{
+height:30px;
 font-weight:bold;
 font-size:0.9em;
 text-shadow:2px 2px 2px #000;
@@ -398,6 +399,7 @@ border-radius:5px;
 background:#454647;
 }
 
+// Obsolete ?
 #action_box .progress_off{
 height:20px;
 }

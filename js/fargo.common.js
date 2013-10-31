@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -199,7 +199,7 @@ function isDecimal(n){
  * Function:	HashPassword
  *
  * Created on Jun 09, 2013
- * Updated on Jun 22, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Hash password.
  * 
@@ -213,8 +213,8 @@ function HashPassword(string)
     
     if ($.trim(string).length)
     {    
-        GetFargoSetting("Hash"); //Returns global_setting_fargo
-        password = CryptoJS.MD5(CryptoJS.MD5(string) + global_setting_fargo);
+        GetFargoSetting("Hash"); //Returns gSTATE.SETTING
+        password = CryptoJS.MD5(CryptoJS.MD5(string) + gSTATE.SETTING);
     }
     
     return password;
@@ -273,7 +273,7 @@ function ShowPopupBox(type, title)
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Close import or other popup window.
  * 
@@ -303,7 +303,7 @@ function SetCloseHandler()
                                                  break;  
                                              
                                 case "Remove"  : //alert("Finish Remove");
-                                                 ShowMediaTable(global_media, global_page, global_sort);
+                                                 ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);
                                                  break;
                              }
                              ClearActionBox();
@@ -374,12 +374,12 @@ function SetMaskHandler()
  * Function:	GetFargoSortList
  *
  * Created on Jun 27, 2013
- * Updated on Oct 05, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Get sort list from one of the Fargo databases.
  * 
  * In:	type, media
- * Out:	global_list_fargo
+ * Out:	gSTATE.LIST
  *
  */
 function GetFargoSortList(type, media)
@@ -400,7 +400,7 @@ function GetFargoSortList(type, media)
         dataType: 'json',
         success: function(json) 
         {
-            global_list_fargo = json.list;
+            gSTATE.LIST = json.list;
         } // End succes.
     }); // End Ajax.
 }
@@ -409,12 +409,12 @@ function GetFargoSortList(type, media)
  * Function:	GetFargoSetting
  *
  * Created on Jun 08, 2013
- * Updated on Jun 08, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Get value from the Fargo settings database.
  * 
  * In:	name
- * Out:	global_setting_fargo
+ * Out:	gSTATE.SETTING
  *
  */
 function GetFargoSetting(name)
@@ -426,7 +426,7 @@ function GetFargoSetting(name)
         dataType: 'json',
         success: function(json) 
         {
-            global_setting_fargo = json.value;
+            gSTATE.SETTING = json.value;
         } // End succes.
   }); // End Ajax.
 }
@@ -469,7 +469,7 @@ function LogEvent(type, event)
  * Out:	counter
  *
  */
-function GetFargoCounter(media) 
+/*function GetFargoCounter(media) 
 {
     $.ajax({
         url: 'jsonfargo.php?action=counter&media=' + media,
@@ -483,7 +483,7 @@ function GetFargoCounter(media)
             //alert(global_total_fargo);
         } // End Success.        
     }); // End Ajax;
-}
+}*/
 
 /*
  * Function:	GetXbmcMediaLimits

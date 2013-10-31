@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -94,14 +94,16 @@ switch($action)
                         $media = GetPageValue('media');
                         $mode  = GetPageValue('mode');
                         $id    = GetPageValue('id');
-                        $aJson = GetMediaStatus($media, $id);
-                     
+                        
                         if ($mode == "import" ) 
                         {
+                            $aJson = GetMediaStatus($media, -1);
                             $aJson['start'] = GetStatus("Xbmc".$media."Start");
                             $aJson['slack'] = GetStatus("XbmcSlack");
                         }
-                        else {
+                        else 
+                        {
+                            $aJson = GetMediaStatus($media, $id);
                             $aJson['ready'] = GetStatus("RefreshReady");
                         }
                      }
@@ -224,7 +226,7 @@ function ResetStatus($media, $counter)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Oct 27, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -232,22 +234,21 @@ function ResetStatus($media, $counter)
  * Out: $aJson
  *
  */
-function GetMediaStatus($media, $id) // id is obsolete.
+function GetMediaStatus($media, $id)
 {
     $aJson = null;   
     switch ($media)    
     {   
-        case "movies"         : $aJson = GetImportStatus($media, "xbmcid", $id, cMOVIESTHUMBS);
+        case "movies"         : $aJson = GetImportRefreshStatus($media, $id, "xbmcid", cMOVIESTHUMBS);
                                 break;
                       
-        case "sets"           : $aJson = GetImportStatus($media, "setid", $id, cSETSTHUMBS);
+        case "sets"           : $aJson = GetImportRefreshStatus($media, $id, "setid", cSETSTHUMBS);
                                 break;                      
     
-        case "tvshows"        : $aJson = GetImportStatus($media, "xbmcid", $id, cTVSHOWSTHUMBS);
+        case "tvshows"        : $aJson = GetImportRefreshStatus($media, $id, "xbmcid", cTVSHOWSTHUMBS);
                                 break;
                       
-        case "tvshowsseasons" : //$aJson = GetImportStatus("tvshows", "xbmcid", $id, "");
-                                $aJson['id'] = -1;
+        case "tvshowsseasons" : $aJson['id'] = -1;
                                 if (GetStatus("XbmcSeasonsStart") == GetStatus("XbmcSeasonsEnd")) {
                                     $aJson['id'] = 1;
                                 }
@@ -259,7 +260,7 @@ function GetMediaStatus($media, $id) // id is obsolete.
         case "episodes"       : $aJson = GetEpisodesImportStatus(cEPISODESTHUMBS);
                                 break;                      
                       
-        case "music"          : $aJson = GetImportStatus($media, "xbmcid", $id, cALBUMSTHUMBS);
+        case "music"          : $aJson = GetImportRefreshStatus($media, $id, "xbmcid", cALBUMSTHUMBS);
                                 break;                      
     }    
     return $aJson;
@@ -399,18 +400,18 @@ function GetYears($filter, $media, $login)
 ////////////////////////////////////////    Database Functions    /////////////////////////////////////////
 
 /*
- * Function:	GetImportStatus
+ * Function:	GetImportRefreshStatus
  *
  * Created on May 18, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
- * Description: Reports the status of the import process.
+ * Description: Reports the status of the import or refresh process.
  *
- * In:  $media, $nameid, $id, $thumbs
+ * In:  $media, $id, $nameid, $thumbs
  * Out: $aJson
  *
  */
-function GetImportStatus($media, $nameid, $id, $thumbs) // id is obsolete.
+function GetImportRefreshStatus($media, $id, $nameid, $thumbs)
 {
     $aJson['id']  = 0;
     $aJson['refresh'] = 0;
@@ -419,11 +420,17 @@ function GetImportStatus($media, $nameid, $id, $thumbs) // id is obsolete.
   
     $db = OpenDatabase();
 
-    $sql = "SELECT $nameid, refresh, title ".
-           "FROM $media ".
-           "ORDER BY id DESC LIMIT 1";
-           //"WHERE $nameid = $id";
-        
+    if ($id < 0) { // Import.
+        $sql = "SELECT $nameid, refresh, title ".
+               "FROM $media ".
+               "ORDER BY id DESC LIMIT 1";
+    }
+    else { // Refresh.
+        $sql = "SELECT $nameid, refresh, title ".
+               "FROM $media ".
+               "WHERE $nameid = $id";   
+    }
+     
     $stmt = $db->prepare($sql);
     if($stmt)
     {

@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -18,7 +18,7 @@
  * Function:	SetStartImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Set the import handler, show the import popup box and start import.
  * 
@@ -37,8 +37,6 @@ function SetStartImportHandler(media, selector, found, delay)
                          
         case "movies_2"  : // Second continue with movie sets.
                            setTimeout(function() {
-                               //$("#action_thumb img").removeAttr("src").attr("src", "");
-                               //$("#action_title").text("");
                                StartImportHandler(media, selector, "sets");
                            }, delay);
                            break;
@@ -54,19 +52,12 @@ function SetStartImportHandler(media, selector, found, delay)
                            
         case "tvshows_2" : // Second import the TV show seasons.
                            setTimeout(function() {
-                               //$("#action_thumb img").removeAttr("src").attr("src", "");
-                               //$("#action_title").text("</br></br>");
                                SetTVSeasonsImportHandler(media, selector, "seasons");
                            }, delay); 
                            break;
                            
         case "tvshows_3" : // Third import the TV show episodes.                           
                            setTimeout(function() {
-                           /*    $("#action_thumb").css("margin-left", "-125px");
-                               $("#action_thumb").width(220);
-                               $("#action_thumb img").width(220);
-                               $("#action_thumb img").removeAttr("src").attr("src", "");
-                               $("#action_title").text("</br></br>");*/
                                StartImportHandler(media, selector, "episodes");
                            }, delay);
                            break;
@@ -92,7 +83,7 @@ function SetStartImportHandler(media, selector, found, delay)
  * Function:	StartImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Oct 26, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Start the import handler.
  * 
@@ -125,7 +116,7 @@ function StartImportHandler(media, selector, type)
                         ResetImportBox(type);
                     }
                     
-                    // Returns global_start and global_end;
+                    // Returns gTRIGGER.START and gTRIGGER.END.
                     GetXbmcMediaLimits(type);
                     start = gTRIGGER.START;
                     end   = gTRIGGER.END;
@@ -200,7 +191,7 @@ function SetRetryImportHandler(media, type, delta, start, selector)
                 // Check if iframe from ImportCounter finished loading.
                 if ($("#ready").text() == "true")
                 {
-                    // Returns global_start and global_end;
+                    // Returns gTRIGGER.START and gTRIGGER.END.
                     GetXbmcMediaLimits(type);
                     start = gTRIGGER.START;
                     end   = gTRIGGER.END;
@@ -237,7 +228,7 @@ function SetRetryImportHandler(media, type, delta, start, selector)
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -255,12 +246,8 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
     var $img = $("#action_thumb img");
     var $tit = $("#action_title");
     var $msg = $("#action_box .message");
-    var msg1 = cSTATUS.IMPORT.replace("[dummy]", ConvertMediaToSingular(type));
-    var msg2 = cSTATUS.PROCESS.replace("[dummy]", ConvertMediaToSingular(type));
- 
-    // Import media process.
-    //ImportMedia(xbmc, type, -1, start, -1);
-    //start += 1;
+    var msg  = cSTATUS.IMPORT.replace("[dummy]", ConvertMediaToSingular(type));
+    //var msg2 = cSTATUS.PROCESS.replace("[dummy]", ConvertMediaToSingular(type));
     
     (function setImportTimer() 
     {
@@ -290,7 +277,7 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
             }
         }
         
-        setTimeout(setImportTimer, 1200); // 500    
+        setTimeout(setImportTimer, 1000); // 1200   
     }()); // End setImportTimer.   
         
     // Check status.
@@ -299,15 +286,15 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
         if (gTRIGGER.CANCEL || gTRIGGER.START > end  || timeout > xbmc.timeout/1000)
         {
             if (timeout > xbmc.timeout/1000) {
-                SetRetryImportHandler(media, type, start, delta, selector);
+                SetRetryImportHandler(media, type, delta, start, selector);
             }
             
             clearInterval(status); // End Status check.
         }
         else
         {
-            // Show status and returns global_xbmc_start.
-            ShowStatus(delta, start-1, end, type, $prg, $img, $tit, $msg, msg1, msg2);
+            // Show status and returns gTRIGGER.START.
+            ShowStatus(delta, start-1, end, type, $prg, $img, $tit, $msg, msg);
             if (gTRIGGER.START == start) {
                 busy = false; // Resume import.
             }
@@ -316,25 +303,25 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
                 timeout++;
             }
         }        
-    }, 1200); // 800
+    }, 1000); // 1200
 }
 
 /*
  * Function:	ShowStatus
  *
  * Created on Aug 19, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Show the import status.
  *
- * In:	delta, start, end, media, $prg, $img, $tit, $msg, msg1, msg2
+ * In:	delta, start, end, media, $prg, $img, $tit, $msg, msg
  * Out:	Status
  *
  */
-function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg1, msg2)
+function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg)
 {   
     $.ajax({
-        url: 'jsonfargo.php?action=status&media=' + media + '&mode=import' + '&id=' + start,
+        url: 'jsonfargo.php?action=status&media=' + media + '&mode=import',
         dataType: 'json',
         success: function(json) 
         {     
@@ -353,7 +340,7 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg1, msg2
                         value : percent       
                     });
                     
-                    $msg.html(msg1);
+                    $msg.html(msg);
                 }
                       
                 // Preload image.
@@ -372,12 +359,8 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg1, msg2
             {
                 $msg.html(cSTATUS.SLACK);
                 $img.removeAttr("src").attr("src", "");
-                json.start--;
-                if (media == "episodes" || media == "seasons") {
-                   json.start += "</br>&nbsp;"; 
-                }
-                
-                $tit.html(cSTATUS.SKIP + json.start);
+                //json.start--;
+                $tit.html(cSTATUS.SKIP + --json.start);
             }
             
         } // End succes.    
@@ -421,7 +404,7 @@ function SetTVSeasonsImportHandler(media, selector, type)
                 {
                     ResetImportBox();
                     
-                    // Returns global_start and global_end;
+                    // Returns gTRIGGER.START and gTRIGGER.END.
                     GetXbmcMediaLimits(media + type);
                     start = gTRIGGER.START;
                     end   = gTRIGGER.END;
@@ -459,7 +442,7 @@ function SetTVSeasonsImportHandler(media, selector, type)
  * Function:	StartTVSeasonsImportWrapper
  *
  * Created on Oct 19, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -505,7 +488,7 @@ function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
             start += 1;
         }
         
-        setTimeout(setImportTimer, 1600);   
+        setTimeout(setImportTimer, 1500);   
     }()); // End setImportTimer.      
     
     // Check TV Show Seasons status.
@@ -524,14 +507,14 @@ function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
             // Returns gTRIGGER.STARTTV
             ShowTVShowSeasonsStatus(start, end, delta, $prg, $msg, msg1, msg2);
         }        
-    }, 1600);  
+    }, 1500);  
 }
 
 /*
  * Function:	ShowTVShowSeasonsStatus
  *
  * Created on Oct 21, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Show the import TV Show Seasons status.
  *
@@ -542,7 +525,7 @@ function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
 function ShowTVShowSeasonsStatus(start, end, delta, $prg, $msg, msg1, msg2)
 {   
     $.ajax({
-        url: 'jsonfargo.php?action=status&media=tvshowsseasons&mode=import' + '&id=' + start, // tvshowid
+        url: 'jsonfargo.php?action=status&media=tvshowsseasons&mode=import',
         dataType: 'json',
         success: function(json) 
         {     
@@ -573,7 +556,7 @@ function ShowTVShowSeasonsStatus(start, end, delta, $prg, $msg, msg1, msg2)
  * Function:	StartSeasonsImportHandler
  *
  * Created on Oct 19, 2013
- * Updated on Oct 25, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -601,16 +584,11 @@ function StartSeasonsImportHandler(tvshowid)
             {
                 // Check if iframe from ImportCounter finished loading.
                 if ($("#ready").text() == "true")
-                {
-                    /*if (selector > 1) {
-                        ResetImportBox();
-                    }*/
-                    
-                    // Returns global_start and global_end;
+                {   
+                    // Returns gTRIGGER.START and gTRIGGER.END.
                     GetXbmcMediaLimits("seasons");
                     start = gTRIGGER.START;
                     end   = gTRIGGER.END;
-                    //delta = end - start;
                     
                     if (end >= 0 || i > 3)
                     {
@@ -629,7 +607,7 @@ function StartSeasonsImportHandler(tvshowid)
                 }
                 i++;
                 
-            }, 500); // End timer // 1000
+            }, 500); // End timer
         } // End Success.  
     }); // End Ajax;
 }
@@ -690,15 +668,15 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
         {
             if (timeout > 2 * xbmc.timeout/1000) {
                 //SetRetryImportHandler(media, type, start, delta, selector);
-                //alert("Retry Season");
-                console.log("Retry?!? " + xbmc.timeout);
+                alert("Retry Season");
+                //console.log("Retry?!? " + xbmc.timeout);
             }    
             clearInterval(status);
         }
         else
         {
-            // Show status and returns global_xbmc_start.
-            ShowSeasonsStatus(start, $img, $tit);
+            // Show status and returns gTRIGGER.START.
+            ShowSeasonsStatus($img, $tit);
             if (gTRIGGER.START == start) {
                 busy = false; // Resume import.
             }
@@ -714,33 +692,25 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
  * Function:	ShowSeasonsStatus
  *
  * Created on Oct 20, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Show the import seasons status.
  *
- * In:	start, $img, $tit
+ * In:	$img, $tit
  * Out:	Status
  *
  */
-function ShowSeasonsStatus(start, $img, $tit)
+function ShowSeasonsStatus($img, $tit)
 {   
     $.ajax({
-        url: 'jsonfargo.php?action=status&media=seasons&mode=import' + '&id=' + start,
+        url: 'jsonfargo.php?action=status&media=seasons&mode=import',
         dataType: 'json',
         success: function(json) 
         {     
             gTRIGGER.START = json.start;
             
             if (json.id > 0)
-            {
-                /*var percent = start - (end - delta);
-                percent = Math.round(percent/delta * 100);
-                $prg.progressbar({
-                    value : percent       
-                });             
-                
-                $msg.html(msg1);*/
-                      
+            {                    
                 // Preload image.
                 var img = new Image();
                 img.src = json.thumbs + '/'+ json.tvshowid + '_'+ json.season +'.jpg';
@@ -752,10 +722,7 @@ function ShowSeasonsStatus(start, $img, $tit)
                 });
                     
                 $tit.html(json.title);
-            }  
-            /*else {
-                $msg.html(msg2); 
-            } */             
+            }           
         } // End succes.    
     }); // End Ajax. 
 }
@@ -924,7 +891,7 @@ function IframeReady()
  * Function:	InitImportBox
  *
  * Created on Aug 18, 2013
- * Updated on Oct 23, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Initialize import box values.
  * 
@@ -936,13 +903,13 @@ function InitImportBox()
 {
     //var media = GetState("media"); // Get state media.
     gTRIGGER.CANCEL = false;
-    global_ready    = false;
+    gTRIGGER.READY  = false;
     
     // Initialize status popup box.
     $("#action_box .message").html(cSTATUS.CONNECT);
     
     // Turn progress on.
-    $(".progress_off").toggleClass("progress_off progress");
+    //$(".progress_off").toggleClass("progress_off progress");
     
     $(".yes").hide();
     $(".no").toggleClass("no cancel");
@@ -955,7 +922,7 @@ function InitImportBox()
  * Function:	ResetImportBox
  *
  * Created on Oct 17, 2013
- * Updated on Oct 28, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Reset the import box values.
  * 
@@ -967,20 +934,17 @@ function ResetImportBox(type)
 {
     var msg = cSTATUS.WAIT;
     
-    //gTRIGGER.SLACK = 0;
-    //gTRIGGER.TEMP  = -1;
-    
     if (type == "episodes") 
     {
         $("#action_thumb").css("margin-left", "-125px");
         $("#action_thumb").width(220);
         $("#action_thumb img").width(220);
-        $("#action_title").html("&nbsp;</br>&nbsp;");
     }
-    else {
+    /*else {
         $("#action_title").html("&nbsp;");
-    }
+    }*/
     
+    $("#action_title").html("&nbsp;");
     $("#action_thumb img").removeAttr("src").attr("src", "");
     $("#action_box .message").html(msg);   
     $("#action_box .progress").progressbar({
@@ -1039,7 +1003,7 @@ function ShowOffline()
  * Function:	ShowFinished
  *
  * Created on Aug 19, 2013
- * Updated on Oct 26, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Show import finished message and add to log event.
  * 
@@ -1057,7 +1021,7 @@ function ShowFinished(found)
        {
             $("#action_box .message").html(msg); 
             $(".cancel").html("Finish");
-       }, 1000);      
+       }, 3000); // 1000      
     }
     else {
         $(".cancel").html("Finish");
@@ -1102,8 +1066,8 @@ function SetImportCancelHandler()
     gTRIGGER.CANCEL = true;
     //gTRIGGER.SLACK  = 0;
     //gTRIGGER.TEMP   = -1;
-    global_total_fargo = 0;
-    global_total_xbmc  = 0;    
+    //global_total_fargo = 0;
+    //global_total_xbmc  = 0;    
 
     $("#action_box .progress").progressbar({
         value : 0       
@@ -1122,7 +1086,7 @@ function SetImportCancelHandler()
  * Function:	DisplayStatusMessage
  *
  * Created on May 17, 2013
- * Updated on Oct 24, 2013
+ * Updated on Oct 31, 2013
  *
  * Description: Display status message.
  *
@@ -1152,7 +1116,6 @@ function DisplayStatusMessage(str1, str2, end, callback)
             {
                 clearInterval(timer);
                 $("#action_box .message").html(str2);
-                //$(".cancel").html(cIMPORT.FINISH);
                 
 		if (callback && typeof(callback) === "function") {  
                     callback();
