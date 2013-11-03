@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Oct 26, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Fargo's settings page.
  *
@@ -30,8 +30,8 @@ define("cSEASONSTHUMBS", "images/seasons/thumbs");
 //define("cSEASONSFANART", "images/seasons/fanart");
 define("cEPISODESTHUMBS", "images/episodes/thumbs");
 //define("cEPISODESSFANART", "images/episodes/fanart");
-define("cALBUMSTHUMBS", "images/music/thumbs");
-define("cALBUMSCOVERS", "images/music/covers");
+define("cALBUMSTHUMBS", "images/albums/thumbs");
+define("cALBUMSCOVERS", "images/albums/covers");
 
 // URL settings.
 define("cIMDB", "http://www.imdb.com/title/");

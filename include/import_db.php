@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Oct 26, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -21,7 +21,7 @@
  * Function:	InsertMovie
  *
  * Created on Mar 09, 2013
- * Updated on Sep 15, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Insert movie in the database.
  *
@@ -32,17 +32,15 @@
 function InsertMovie($aMovie)
 {   
     $db = OpenDatabase();
-    $aItems = AddEscapeStrings($db, MovieToItems($aMovie));
+    $aItems = AddEscapeStrings($db, $aMovie);
     
     $sql = "INSERT INTO movies(xbmcid, title, genre, `year`, rating, director, trailer, tagline, plot,".
            " plotoutline, originaltitle, lastplayed, playcount, writer, studio, mpaa, `cast`, country,".
-           " imdbnr, runtime, fanart, poster, thumb, `set`, showlink, audio, video, top250, votes,". 
-           " `file`, sorttitle, setid, dateadded, tag) ".
+           " imdbnr, runtime, `set`, audio, video, votes, `file`, sorttitle, setid, dateadded) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]', '$aItems[7]',".
            " '$aItems[8]', '$aItems[9]', '$aItems[10]', '$aItems[11]', $aItems[12], '$aItems[13]', '$aItems[14]', '$aItems[15]',".
-           " '$aItems[16]', '$aItems[17]', '$aItems[18]', $aItems[19], '$aItems[20]', '$aItems[21]', '$aItems[22]', '$aItems[23]',". 
-           " '$aItems[24]', '$aItems[25]', '$aItems[26]', $aItems[27], $aItems[28], '$aItems[29]', '$aItems[30]', $aItems[32],".
-           " '$aItems[33]', '$aItems[34]')";
+           " '$aItems[16]', '$aItems[17]', '$aItems[18]', $aItems[19], '$aItems[20]', '$aItems[21]', '$aItems[22]',". 
+           " $aItems[23], '$aItems[24]', '$aItems[25]', $aItems[26], '$aItems[27]')";
 
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);    
@@ -52,7 +50,7 @@ function InsertMovie($aMovie)
  * Function:	UpdateMovie
  *
  * Created on Sep 15, 2013
- * Updated on Sep 22, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Update movie in the database.
  *
@@ -63,16 +61,17 @@ function InsertMovie($aMovie)
 function UpdateMovie($id, $aMovie)
 {   
     $db = OpenDatabase();
-    $aItems = AddEscapeStrings($db, MovieToItems($aMovie));
+    $aItems = AddEscapeStrings($db, $aMovie);
     
     $sql = "UPDATE movies ".
-           "SET xbmcid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', genre = '$aItems[2]', `year` = $aItems[3], rating = $aItems[4], director = '$aItems[5]',". 
-           " trailer = '$aItems[6]', tagline = '$aItems[7]', plot = '$aItems[8]', plotoutline = '$aItems[9]', originaltitle = '$aItems[10]',".
-           " lastplayed = '$aItems[11]', playcount = $aItems[12], writer = '$aItems[13]', studio = '$aItems[14]', mpaa = '$aItems[15]',".
-           " `cast` = '$aItems[16]', country = '$aItems[17]', imdbnr = '$aItems[18]', runtime = $aItems[19], fanart = '$aItems[20]',".
-           " poster = '$aItems[21]', thumb = '$aItems[22]', `set` = '$aItems[23]', showlink = '$aItems[24]', audio = '$aItems[25]',". 
-           " video = '$aItems[26]', top250 = $aItems[27], votes = $aItems[28], `file` = '$aItems[29]', sorttitle = '$aItems[30]',".
-           " setid = $aItems[32], dateadded = '$aItems[33]', tag = '$aItems[34]' ".
+           "SET xbmcid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', genre = '$aItems[2]',".
+           " `year` = $aItems[3], rating = $aItems[4], director = '$aItems[5]', trailer = '$aItems[6]',".
+           " tagline = '$aItems[7]', plot = '$aItems[8]', plotoutline = '$aItems[9]', originaltitle = '$aItems[10]',".
+           " lastplayed = '$aItems[11]', playcount = $aItems[12], writer = '$aItems[13]', studio = '$aItems[14]',".
+           " mpaa = '$aItems[15]', `cast` = '$aItems[16]', country = '$aItems[17]', imdbnr = '$aItems[18]',".
+           " runtime = $aItems[19], `set` = '$aItems[20]', audio = '$aItems[21]', video = '$aItems[22]',".
+           " votes = $aItems[23], `file` = '$aItems[24]', sorttitle = '$aItems[25]',".
+           " setid = $aItems[26], dateadded = '$aItems[27]'".
            "WHERE id = $id"; 
     
     ExecuteQueryWithEscapeStrings($db, $sql);
@@ -91,7 +90,7 @@ function UpdateMovie($id, $aMovie)
  * Out:	$aItems
  *
  */
-function MovieToItems($aMovie)
+/*function MovieToItems($aMovie)
 {
     $aItems[0] = $aMovie["xbmcid"];
     $aItems[1] = $aMovie["title"]; 
@@ -138,13 +137,13 @@ function MovieToItems($aMovie)
     $aItems[34] = null; //$aMovie["tag"];        
       
     return $aItems;
-}
+}*/
 
 /*
  * Function:	InsertMovieSet
  *
  * Created on Oct 14, 2013
- * Updated on Oct 14, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Insert movie set in the database.
  *
@@ -157,8 +156,8 @@ function InsertMovieSet($aMovie)
     $db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aMovie);
     
-    $sql = "INSERT INTO sets(setid, title, playcount, fanart, poster, thumb) ".
-           "VALUES ($aItems[0], '$aItems[1]', $aItems[2], '$aItems[3]', '$aItems[4]', '$aItems[5]')";
+    $sql = "INSERT INTO sets(setid, title, playcount) ".
+           "VALUES ($aItems[0], '$aItems[1]', $aItems[2])";
 
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);    
@@ -168,7 +167,7 @@ function InsertMovieSet($aMovie)
  * Function:	InsertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Spe 22, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Insert TV Show in the database.
  *
@@ -178,22 +177,23 @@ function InsertMovieSet($aMovie)
  */
 function InsertTVShow($aTVShow)
 {
-    //debug
     //echo "<pre>";
-    //print_r($aTVShow);
-    //echo "</pre></br>";    
-
+    //echo print_r($aTVShow);
+    //echo "</pre>";
+    
     $db = OpenDatabase();
-    $aItems = AddEscapeStrings($db, TVShowToItems($aTVShow));
+    $aItems = AddEscapeStrings($db, $aTVShow);
     
     $sql = "INSERT INTO tvshows(xbmcid, title, genre, `year`, rating, plot, studio, mpaa, `cast`,".
-           " playcount, episode, imdbnr, premiered, votes, lastplayed, fanart, poster, thumb, `file`,".
-           " originaltitle, sorttitle, episodeguide, season, watchedepisodes, dateadded, tag) ". 
-           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]', '$aItems[7]',".
-           " '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', '$aItems[13]', '$aItems[14]', '$aItems[15]',".
-           " '$aItems[16]', '$aItems[17]', '$aItems[18]', '$aItems[19]', '$aItems[20]', '$aItems[21]', $aItems[22], $aItems[23],". 
-           " '$aItems[24]', '$aItems[25]')";
+           " playcount, episode, imdbnr, premiered, votes, lastplayed, `file`,".
+           " originaltitle, sorttitle, season, watchedepisodes, dateadded) ". 
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]',".
+           " '$aItems[7]', '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', $aItems[13],".
+           " '$aItems[14]', '$aItems[15]', '$aItems[16]', '$aItems[17]', $aItems[18],".
+           " $aItems[19], '$aItems[20]')";
  
+    echo $sql;
+    
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);   
 }
@@ -202,7 +202,7 @@ function InsertTVShow($aTVShow)
  * Function:	UpdateTVShow
  *
  * Created on Sep 22, 2013
- * Updated on Oct 26, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Update TV Show in the database.
  *
@@ -213,16 +213,15 @@ function InsertTVShow($aTVShow)
 function UpdateTVShow($id, $aTVShow)
 {    
     $db = OpenDatabase();
-    $aItems = AddEscapeStrings($db, TVShowToItems($aTVShow));
+    $aItems = AddEscapeStrings($db, $aTVShow);
     
     $sql = "UPDATE tvshows ".
-           "SET xbmcid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', genre = '$aItems[2]', `year` = $aItems[3],".
-           " rating = $aItems[4], plot = '$aItems[5]', studio = '$aItems[6]', mpaa = '$aItems[7]', `cast` = '$aItems[8]',".
-           " playcount = $aItems[9], episode = $aItems[10], imdbnr = '$aItems[11]', premiered = '$aItems[12]',".
-           " votes = '$aItems[13]', lastplayed = '$aItems[14]', fanart = '$aItems[15]', poster = '$aItems[16]',".
-           " thumb = '$aItems[17]', `file` = '$aItems[18]', originaltitle = '$aItems[19]', sorttitle = '$aItems[20]',".
-           " episodeguide = '$aItems[21]', season = $aItems[22], watchedepisodes = $aItems[23], dateadded = '$aItems[24]',".
-           " tag = '$aItems[25]'".
+           "SET xbmcid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', genre = '$aItems[2]',".
+           " `year` = $aItems[3], rating = $aItems[4], plot = '$aItems[5]', studio = '$aItems[6]',".
+           " mpaa = '$aItems[7]', `cast` = '$aItems[8]', playcount = $aItems[9], episode = $aItems[10],".
+           " imdbnr = '$aItems[11]', premiered = '$aItems[12]', votes = $aItems[13], lastplayed = '$aItems[14]',".
+           " `file` = '$aItems[15]', originaltitle = '$aItems[16]', sorttitle = '$aItems[17]',".
+           " season = $aItems[18], watchedepisodes = $aItems[19], dateadded = '$aItems[20]' ".
            "WHERE id = $id";
       
     ExecuteQueryWithEscapeStrings($db, $sql);
@@ -241,7 +240,7 @@ function UpdateTVShow($id, $aTVShow)
  * Out:	$aItems
  *
  */
-function TVShowToItems($aTVShow)
+/*function TVShowToItems($aTVShow)
 {
     $aItems[0] = $aTVShow["xbmcid"];
     $aItems[1] = $aTVShow["title"];
@@ -277,13 +276,13 @@ function TVShowToItems($aTVShow)
     $aItems[25] = null; //$aTVShow["tag"]      = $aXbmc["tag"];
     
     return $aItems;    
-}    
+}*/    
 
 /*
  * Function:	InsertTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Oct 20, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Insert TV Show Season in the database.
  *
@@ -296,8 +295,8 @@ function InsertTVShowSeason($aSeason)
     $db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aSeason);
     
-    $sql = "INSERT INTO seasons(tvshowid, title, showtitle, thumb, playcount, season, episode, watchedepisodes) ".
-           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', $aItems[4], $aItems[5], $aItems[6], $aItems[7])";
+    $sql = "INSERT INTO seasons(tvshowid, title, showtitle, playcount, season, episode, watchedepisodes) ".
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], $aItems[5], $aItems[6])";
 
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);    
@@ -307,7 +306,7 @@ function InsertTVShowSeason($aSeason)
  * Function:	InsertTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Oct 26, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Insert TV Show Season in the database.
  *
@@ -320,15 +319,12 @@ function InsertTVShowEpisode($aEpisode)
     $db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aEpisode);
     
-    $sql = "INSERT INTO episodes(episodeid, tvshowid, title, thumb, originaltitle, rating, writer, director, `cast`,".
+    $sql = "INSERT INTO episodes(episodeid, tvshowid, title, originaltitle, rating, writer, director, `cast`,".
            " plot, playcount, episode, firstaired, lastplayed, dateadded, votes, `file`, showtitle, season, audio,".
            " video, runtime) ".
-           "VALUES ($aItems[0], $aItems[1], '$aItems[2]', '$aItems[3]', '$aItems[4]', $aItems[5], '$aItems[6]', '$aItems[7]',".
-           " '$aItems[8]', '$aItems[9]', $aItems[10], $aItems[11], '$aItems[12]', '$aItems[13]', '$aItems[14]', $aItems[15],".
-           " '$aItems[16]', '$aItems[17]', $aItems[18], '$aItems[19]', '$aItems[20]', $aItems[21])";
-
-    //debug
-    //echo $sql;
+           "VALUES ($aItems[0], $aItems[1], '$aItems[2]', '$aItems[3]', $aItems[4], '$aItems[5]', '$aItems[6]',".
+           " '$aItems[7]', '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', '$aItems[13]',".
+           " $aItems[14], '$aItems[15]', '$aItems[16]', $aItems[17], '$aItems[18]', '$aItems[19]', $aItems[20])";
     
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);    
@@ -338,7 +334,7 @@ function InsertTVShowEpisode($aEpisode)
  * Function:	InsertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Jun 25, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Insert music album in the database.
  *
@@ -349,14 +345,13 @@ function InsertTVShowEpisode($aEpisode)
 function InsertAlbum($aAlbum)
 {
     $db = OpenDatabase();
-    $aItems = AddEscapeStrings($db, AlbumToItems($aAlbum));      
+    $aItems = AddEscapeStrings($db, $aAlbum);      
     
-    $sql = "INSERT INTO music(xbmcid, title, description, artist, genre, theme, mood, style, type, albumlabel,".
-           " rating, `year`, mbalbumid, mbalbumartistid, fanart, cover, playcount, displayartist, sorttitle,".
-           " genreid, artistid) ".
-           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', '$aItems[4]', '$aItems[5]', '$aItems[6]', '$aItems[7]',".
-           " '$aItems[8]', '$aItems[9]', $aItems[10], $aItems[11], '$aItems[12]', '$aItems[13]', '$aItems[14]', '$aItems[15]',".
-           " $aItems[16], '$aItems[17]', '$aItems[18]', '$aItems[19]', '$aItems[20]')";
+    $sql = "INSERT INTO music(xbmcid, title, description, artist, genre, theme, mood, style, `type`, albumlabel,".
+           " rating, `year`, mbalbumid, mbalbumartistid, playcount, displayartist, sorttitle) ".
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', '$aItems[4]', '$aItems[5]', '$aItems[6]',".
+           " '$aItems[7]', '$aItems[8]', '$aItems[9]', $aItems[10], $aItems[11], '$aItems[12]', '$aItems[13]',".
+           " $aItems[14], '$aItems[15]', '$aItems[16]')";
       
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);  
@@ -366,7 +361,7 @@ function InsertAlbum($aAlbum)
  * Function:	UpdateAlbum
  *
  * Created on Sep 22, 2013
- * Updated on Sep 22, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Update music album in the database.
  *
@@ -377,23 +372,15 @@ function InsertAlbum($aAlbum)
 function UpdateAlbum($id, $aAlbum)
 {
     $db = OpenDatabase();
-    $aItems = AddEscapeStrings($db, AlbumToItems($aAlbum));      
-    
-    /*$sql = "INSERT INTO music(xbmcid, title, description, artist, genre, theme, mood, style, type, albumlabel,".
-           " rating, `year`, mbalbumid, mbalbumartistid, fanart, cover, playcount, displayartist, sorttitle,".
-           " genreid, artistid) ".
-           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', '$aItems[4]', '$aItems[5]', '$aItems[6]', '$aItems[7]',".
-           " '$aItems[8]', '$aItems[9]', $aItems[10], $aItems[11], '$aItems[12]', '$aItems[13]', '$aItems[14]', '$aItems[15]',".
-           " $aItems[16], '$aItems[17]', '$aItems[18]', '$aItems[19]', '$aItems[20]')";
-    */
+    $aItems = AddEscapeStrings($db, $aAlbum); 
     
     $sql = "UPDATE music ".
-           "SET xbmcid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', description = '$aItems[2]', artist = '$aItems[3]',".
-           " genre = '$aItems[4]', theme = '$aItems[5]', mood = '$aItems[6]', style = '$aItems[7]', type = '$aItems[8]',".
-           " albumlabel = '$aItems[9]', rating = $aItems[10], `year` = $aItems[11], mbalbumid = '$aItems[12]',".
-           " mbalbumartistid = '$aItems[13]', fanart = '$aItems[14]', cover = '$aItems[15]', playcount = $aItems[16],".
-           " displayartist = '$aItems[17]', sorttitle = '$aItems[18]', genreid = '$aItems[19]', artistid = '$aItems[20]'".
-           "WHERE id = $id";        
+           "SET xbmcid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', description = '$aItems[2]',".
+           " artist = '$aItems[3]', genre = '$aItems[4]', theme = '$aItems[5]', mood = '$aItems[6]',".
+           " style = '$aItems[7]', type = '$aItems[8]', albumlabel = '$aItems[9]', rating = $aItems[10],".
+           " `year` = $aItems[11], mbalbumid = '$aItems[12]', mbalbumartistid = '$aItems[13]',".
+           " playcount = $aItems[14], displayartist = '$aItems[15]', sorttitle = '$aItems[16]' ".
+           "WHERE id = $id";   
             
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);  
@@ -411,7 +398,7 @@ function UpdateAlbum($id, $aAlbum)
  * Out:	$aItems
  *
  */
-function AlbumToItems($aAlbum)
+/*function AlbumToItems($aAlbum)
 {
     $aItems[0] = $aAlbum["xbmcid"];
     $aItems[1] = $aAlbum["title"];
@@ -441,7 +428,7 @@ function AlbumToItems($aAlbum)
     $aItems[20] = null; //$aAlbum["artistid"];
     
     return $aItems; 
-}
+}*/
 
 /*
  * Function:	InsertGenres

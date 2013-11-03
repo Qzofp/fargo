@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -791,7 +791,7 @@ color:dodgerblue;
 #state_xbmc,
 #state_row,
 #state_property{
-display:none;
+/*display:none;*/
 
 /* debug */
 position:absolute;

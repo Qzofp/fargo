@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Oct 27, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -19,7 +19,7 @@
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Jul 21, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -29,67 +29,48 @@
  */
 function ConvertMovie($aXbmc)
 {  
-    $aMovie["xbmcid"] = $aXbmc["movieid"];
-    $aMovie["title"]  = $aXbmc["label"];
-    $aMovie["genre"]  = ConvertGenre($aXbmc["genre"], "movies");
-    $aMovie["year"]   = $aXbmc["year"];
+    $aMovie[0]  = $aXbmc["movieid"];
+    $aMovie[1]  = $aXbmc["label"]; // title
+    $aMovie[2]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"], "movies"):null;
+    $aMovie[3]  = !empty($aXbmc["year"])?$aXbmc["year"]:0;
     
-    $aMovie["rating"]   = $aXbmc["rating"];
-    $aMovie["director"] = implode("|", $aXbmc["director"]);  
-    $aMovie["trailer"]  = $aXbmc["trailer"];
-    $aMovie["tagline"]  = $aXbmc["tagline"]; 
+    $aMovie[4]  = !empty($aXbmc["rating"])?$aXbmc["rating"]:0;
+    $aMovie[5]  = !empty($aXbmc["director"])?implode("|", $aXbmc["director"]):null;  
+    $aMovie[6]  = !empty($aXbmc["trailer"])?$aXbmc["trailer"]:null;
+    $aMovie[7]  = !empty($aXbmc["tagline"])?$aXbmc["tagline"]:null; 
     
-    $aMovie["plot"]          = $aXbmc["plot"];
-    $aMovie["plotoutline"]   = $aXbmc["plotoutline"];    
-    $aMovie["originaltitle"] = $aXbmc["originaltitle"];
-    $aMovie["lastplayed"]    = $aXbmc["lastplayed"];
+    $aMovie[8]  = !empty($aXbmc["plot"])?$aXbmc["plot"]:null;
+    $aMovie[9]  = !empty($aXbmc["plotoutline"])?$aXbmc["plotoutline"]:null;    
+    $aMovie[10] = !empty($aXbmc["originaltitle"])?$aXbmc["originaltitle"]:null;
+    $aMovie[11] = !empty($aXbmc["lastplayed"])?$aXbmc["lastplayed"]:"0000-00-00 00:00:00";
     
-    $aMovie["playcount"] = $aXbmc["playcount"];
-    $aMovie["writer"]    = ConvertWriter($aXbmc["writer"]);
-    $aMovie["studio"]    = implode("|", $aXbmc["studio"]);
-    $aMovie["mpaa"]      = $aXbmc["mpaa"];
+    $aMovie[12] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
+    $aMovie[13] = !empty($aXbmc["writer"])?ConvertWriter($aXbmc["writer"]):null;
+    $aMovie[14] = !empty($aXbmc["studio"])?implode("|", $aXbmc["studio"]):null;
+    $aMovie[15] = !empty($aXbmc["mpaa"])?$aXbmc["mpaa"]:null;
     
-    if (!empty($aXbmc["cast"])) {
-        $aMovie["cast"] = ConvertCast($aXbmc["cast"]);
-    }
-    else {
-        $aMovie["cast"] = null; 
-    }
+    $aMovie[16] = !empty($aXbmc["cast"])?ConvertCast($aXbmc["cast"]):null;
+    $aMovie[17] = !empty($aXbmc["country"])?implode("|", $aXbmc["country"]):null;
+    $aMovie[18] = !empty($aXbmc["imdbnumber"])?$aXbmc["imdbnumber"]:null;
+    $aMovie[19] = !empty($aXbmc["runtime"])?$aXbmc["runtime"]:0;   
     
-    $aMovie["country"] = implode("|", $aXbmc["country"]);
-    $aMovie["imdbnr"]  = $aXbmc["imdbnumber"];
-    $aMovie["runtime"] = $aXbmc["runtime"];   
+    $aMovie[20] = !empty($aXbmc["set"])?$aXbmc["set"]:null;
+    $aMovie[21] = !empty($aXbmc["streamdetails"]["audio"])?ConvertAudio($aXbmc["streamdetails"]["audio"]):null; 
+    $aMovie[22] = !empty($aXbmc["streamdetails"]["video"])?ConvertVideo($aXbmc["streamdetails"]["video"]):null;
+    $aMovie[23] = !empty($aXbmc["votes"])?$aXbmc["votes"]:0;
     
-    $aMovie["set"]   = $aXbmc["set"];
-    //$aMovie["showlink"]      = $aXbmc["showlink"];
+    $aMovie[24] = !empty($aXbmc["file"])?$aXbmc["file"]:null;      
+    $aMovie[25] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
+    $aMovie[26] = !empty($aXbmc["setid"])?$aXbmc["setid"]:0;    
+    $aMovie[27] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00";    
     
-    if (!empty($aXbmc["streamdetails"]["audio"])) {
-        $aMovie["audio"] = ConvertAudio($aXbmc["streamdetails"]["audio"]);   
-    }
-    else{
-        $aMovie["audio"] = null;
-    }
-    
-    if (!empty($aXbmc["streamdetails"]["video"])) {
-        $aMovie["video"] = ConvertVideo($aXbmc["streamdetails"]["video"]);
-    }
-    else {
-        $aMovie["video"] = null;
-    }
-    
-    $aMovie["top250"]    = $aXbmc["top250"];    
-    $aMovie["votes"]     = $aXbmc["votes"];
-    $aMovie["file"]      = $aXbmc["file"];      
-    $aMovie["sorttitle"] = CreateSortTitle($aXbmc["label"]);
-
-    //$aMovie["resume"]    = $aXbmc["resume"];    
-    $aMovie["setid"]     = $aXbmc["setid"];
-    $aMovie["dateadded"] = $aXbmc["dateadded"];      
-    //$aMovie["tag"]       = $aXbmc["tag"];
-
-    $aMovie["fanart"] = EncodeLink($aXbmc["art"], "fanart");
-    $aMovie["poster"] = EncodeLink($aXbmc["art"], "poster");
-    $aMovie["thumb"]  = EncodeLink($aXbmc, "thumbnail");   
+    //$aMovie[23] = !empty($aXbmc["top250"])?$aXbmc["top250"]:null;  
+    //$aMovie["showlink"] = $aXbmc["showlink"];
+    //$aMovie["resume"] = $aXbmc["resume"];  
+    //$aMovie["tag"]    = $aXbmc["tag"];
+    //$aMovie["fanart"] = EncodeLink($aXbmc["art"], "fanart");
+    //$aMovie["poster"] = EncodeLink($aXbmc["art"], "poster");
+    //$aMovie["thumb"]  = EncodeLink($aXbmc, "thumbnail");   
     
     return $aMovie;
 }
@@ -98,7 +79,7 @@ function ConvertMovie($aXbmc)
  * Function:	ConvertMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Oct 14, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Convert xbmc movie set items. For instance to readably URL's.
  *
@@ -109,12 +90,12 @@ function ConvertMovie($aXbmc)
 function ConvertMovieSet($aXbmc)
 {  
     $aMovie[0] = $aXbmc["setid"];
-    $aMovie[1] = $aXbmc["label"];       // title
-    $aMovie[2] = $aXbmc["playcount"];
+    $aMovie[1] = $aXbmc["label"]; // title
+    $aMovie[2] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
     
-    $aMovie[3] = EncodeLink($aXbmc["art"], "fanart");
+    /*$aMovie[3] = EncodeLink($aXbmc["art"], "fanart");
     $aMovie[4] = EncodeLink($aXbmc["art"], "poster");
-    $aMovie[5] = EncodeLink($aXbmc, "thumbnail");   
+    $aMovie[5] = EncodeLink($aXbmc, "thumbnail");*/   
     
     return $aMovie;
 }
@@ -123,7 +104,7 @@ function ConvertMovieSet($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Aug 24, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -133,47 +114,45 @@ function ConvertMovieSet($aXbmc)
  */
 function ConvertTVShow($aXbmc)
 {     
-    $year = explode("-", $aXbmc["premiered"]);
-    
-    $aTVShow["xbmcid"] = $aXbmc["tvshowid"];
-    $aTVShow["title"]  = $aXbmc["label"];
-    $aTVShow["genre"]  = ConvertGenre($aXbmc["genre"], "tvshows");
-    $aTVShow["year"]   = $year[0];
-    
-    $aTVShow["rating"] = $aXbmc["rating"];
-    $aTVShow["plot"]   = $aXbmc["plot"];
-    $aTVShow["studio"] = implode("|", $aXbmc["studio"]);
-    $aTVShow["mpaa"]   = $aXbmc["mpaa"];    
-
-    //$aTVShow["cast"]      = ConvertCast($aXbmc["cast"]);  
-    if (!empty($aXbmc["cast"])) {
-        $aTVShow["cast"] = ConvertCast($aXbmc["cast"]);
+    if (!empty($aXbmc["premiered"])) {
+        $aYear = explode("-", $aXbmc["premiered"]);
     }
     else {
-        $aTVShow["cast"] = null; 
-    }    
+        $aYear[0] = 0;
+    }
     
-    $aTVShow["playcount"] = $aXbmc["playcount"];
-    $aTVShow["episode"]   = $aXbmc["episode"];  
-    $aTVShow["imdbnr" ]   = $aXbmc["imdbnumber"];
+    $aTVShow[0]  = $aXbmc["tvshowid"];
+    $aTVShow[1]  = $aXbmc["label"]; // title
+    $aTVShow[2]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"], "tvshows"):null;
+    $aTVShow[3]  = $aYear[0];
     
-    $aTVShow["premiered"]  = $aXbmc["premiered"];
-    $aTVShow["votes"]      = $aXbmc["votes"];
-    $aTVShow["lastplayed"] = $aXbmc["lastplayed"];  
-    $aTVShow["fanart"]     = EncodeLink($aXbmc["art"], "fanart");
-        
-    $aTVShow["poster"]        = EncodeLink($aXbmc["art"], "poster");
-    $aTVShow["thumb"]         = EncodeLink($aXbmc, "thumbnail");
-    $aTVShow["file"]          = $aXbmc["file"];
-    $aTVShow["originaltitle"] = $aXbmc["originaltitle"];   
-    
-    $aTVShow["sorttitle"]       = CreateSortTitle($aXbmc["label"]);
-    $aTVShow["episodeguide"]    = $aXbmc["episodeguide"];
-    $aTVShow["season"]          = $aXbmc["season"];
-    $aTVShow["watchedepisodes"] = $aXbmc["watchedepisodes"];        
+    $aTVShow[4]  = !empty($aXbmc["rating"])?$aXbmc["rating"]:0;
+    $aTVShow[5]  = !empty($aXbmc["plot"])?$aXbmc["plot"]:null;
+    $aTVShow[6]  = !empty($aXbmc["studio"])?implode("|", $aXbmc["studio"]):null;
+    $aTVShow[7]  = !empty($aXbmc["mpaa"])?$aXbmc["mpaa"]:null;    
 
-    $aTVShow["dateadded"] = $aXbmc["dateadded"]; 
-    //$aTVShow["tag"]      = $aXbmc["tag"];   
+    $aTVShow[8]  = !empty($aXbmc["cast"])?ConvertCast($aXbmc["cast"]):null;
+    $aTVShow[9]  = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
+    $aTVShow[10] = !empty($aXbmc["episode"])?$aXbmc["episode"]:0;  
+    $aTVShow[11] = !empty($aXbmc["imdbnumber"])?$aXbmc["imdbnumber"]:null;
+    
+    $aTVShow[12] = !empty($aXbmc["premiered"])?$aXbmc["premiered"]:"0000-00-00";
+    $aTVShow[13] = !empty($aXbmc["votes"])?$aXbmc["votes"]:0;
+    $aTVShow[14] = !empty($aXbmc["lastplayed"])?$aXbmc["lastplayed"]:"0000-00-00 00:00:00";  
+    $aTVShow[15] = !empty($aXbmc["file"])?$aXbmc["file"]:null;
+    
+    $aTVShow[16] = !empty($aXbmc["originaltitle"])?$aXbmc["originaltitle"]:null;       
+    $aTVShow[17] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
+    $aTVShow[18] = !empty($aXbmc["season"])?$aXbmc["season"]:-1;
+    $aTVShow[19] = !empty($aXbmc["watchedepisodes"])?$aXbmc["watchedepisodes"]:0; 
+    
+    $aTVShow[20] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00"; 
+    
+    //$aTVShow[18] = !empty($aXbmc["episodeguide"])?$aXbmc["episodeguide"]:null;
+    //$aTVShow["fanart"]  = EncodeLink($aXbmc["art"], "fanart");    
+    //$aTVShow["poster"]  = EncodeLink($aXbmc["art"], "poster");
+    //$aTVShow["thumb"]   = EncodeLink($aXbmc, "thumbnail");
+    //$aTVShow["tag"]     = $aXbmc["tag"];   
     
     return $aTVShow;
 }
@@ -182,7 +161,7 @@ function ConvertTVShow($aXbmc)
  * Function:	ConvertTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Oct 20, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Convert xbmc TV Show Season items. For instance to readably URL's.
  *
@@ -194,12 +173,13 @@ function ConvertTVShowSeason($aXbmc)
 {
     $aSeason[0] = $aXbmc["tvshowid"];
     $aSeason[1] = $aXbmc["label"]; // title
-    $aSeason[2] = $aXbmc["showtitle"];    
-    $aSeason[3] = EncodeLink($aXbmc, "thumbnail");
-    $aSeason[4] = $aXbmc["playcount"];
-    $aSeason[5] = $aXbmc["season"];    
-    $aSeason[6] = $aXbmc["episode"];
-    $aSeason[7] = $aXbmc["watchedepisodes"];  
+    $aSeason[2] = !empty($aXbmc["showtitle"])?$aXbmc["showtitle"]:null;    
+    $aSeason[3] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
+    $aSeason[4] = !empty($aXbmc["season"])?$aXbmc["season"]:0;
+    $aSeason[5] = !empty($aXbmc["episode"])?$aXbmc["episode"]:0;
+    $aSeason[6] = !empty($aXbmc["watchedepisodes"])?$aXbmc["watchedepisodes"]:0; 
+    
+    //$aSeason[3] = EncodeLink($aXbmc, "thumbnail");
     
     return $aSeason;
 }
@@ -208,7 +188,7 @@ function ConvertTVShowSeason($aXbmc)
  * Function:	ConvertTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Oct 27, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Convert xbmc TV Show Episode items. For instance to readably URL's.
  *
@@ -220,26 +200,32 @@ function ConvertTVShowEpisode($aXbmc)
 {
     $aEpisode[0]  = $aXbmc["episodeid"];
     $aEpisode[1]  = $aXbmc["tvshowid"]; 
-    $aEpisode[2]  = $aXbmc["label"]; // title    
-    $aEpisode[3]  = EncodeLink($aXbmc, "thumbnail");
-    $aEpisode[4]  = $aXbmc["originaltitle"];
-    $aEpisode[5]  = $aXbmc["rating"];
-    $aEpisode[6]  = ConvertWriter($aXbmc["writer"]);
-    $aEpisode[7]  = implode("|", $aXbmc["director"]);
-    $aEpisode[8]  = !empty($aXbmc["cast"])?ConvertCast($aXbmc["cast"]):null;
-    $aEpisode[9]  = $aXbmc["plot"];
-    $aEpisode[10] = $aXbmc["playcount"];
-    $aEpisode[11] = $aXbmc["episode"];
-    $aEpisode[12] = !empty($aXbmc["firstaired"])?$aXbmc["firstaired"]:"0000-00-00";
-    $aEpisode[13] = !empty($aXbmc["lastplayed"])?$aXbmc["lastplayed"]:"0000-00-00 00:00:00";
-    $aEpisode[14] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00";
-    $aEpisode[15] = !empty($aXbmc["votes"])?$aXbmc["votes"]:0;  
-    $aEpisode[16] = $aXbmc["file"];
-    $aEpisode[17] = $aXbmc["showtitle"];
-    $aEpisode[18] = $aXbmc["season"];
-    $aEpisode[19] = !empty($aXbmc["streamdetails"]["audio"])?ConvertAudio($aXbmc["streamdetails"]["audio"]):null; 
-    $aEpisode[20] = !empty($aXbmc["streamdetails"]["video"])?ConvertVideo($aXbmc["streamdetails"]["video"]):null;
-    $aEpisode[21] = $aXbmc["runtime"];
+    $aEpisode[2]  = $aXbmc["label"]; // title
+    $aEpisode[3]  = !empty($aXbmc["originaltitle"])?$aXbmc["originaltitle"]:null;
+    
+    $aEpisode[4]  = !empty($aXbmc["rating"])?$aXbmc["rating"]:0;
+    $aEpisode[5]  = !empty($aXbmc["writer"])?ConvertWriter($aXbmc["writer"]):null;
+    $aEpisode[6]  = !empty($aXbmc["director"])?implode("|", $aXbmc["director"]):null;
+    $aEpisode[7]  = !empty($aXbmc["cast"])?ConvertCast($aXbmc["cast"]):null;
+    
+    $aEpisode[8]  = !empty($aXbmc["plot"])?$aXbmc["plot"]:null;
+    $aEpisode[9]  = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:null;
+    $aEpisode[10] = !empty($aXbmc["episode"])?$aXbmc["episode"]:0;
+    $aEpisode[11] = !empty($aXbmc["firstaired"])?$aXbmc["firstaired"]:"0000-00-00";
+    
+    $aEpisode[12] = !empty($aXbmc["lastplayed"])?$aXbmc["lastplayed"]:"0000-00-00 00:00:00";
+    $aEpisode[13] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00";
+    $aEpisode[14] = !empty($aXbmc["votes"])?$aXbmc["votes"]:0;  
+    $aEpisode[15] = !empty($aXbmc["file"])?$aXbmc["file"]:null;
+    
+    $aEpisode[16] = !empty($aXbmc["showtitle"])?$aXbmc["showtitle"]:null;
+    $aEpisode[17] = !empty($aXbmc["season"])?$aXbmc["season"]:-1;
+    $aEpisode[18] = !empty($aXbmc["streamdetails"]["audio"])?ConvertAudio($aXbmc["streamdetails"]["audio"]):null; 
+    $aEpisode[19] = !empty($aXbmc["streamdetails"]["video"])?ConvertVideo($aXbmc["streamdetails"]["video"]):null;
+    
+    $aEpisode[20] = $aXbmc["runtime"];
+    
+    //$aEpisode[3]  = EncodeLink($aXbmc, "thumbnail");
     
     return $aEpisode;
 }
@@ -248,7 +234,7 @@ function ConvertTVShowEpisode($aXbmc)
  * Function:	ConvertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Aug 24, 2013
+ * Updated on Nov 02, 2013
  *
  * Description: Convert XBMC album items. For instance to readably URL's.
  *
@@ -258,31 +244,31 @@ function ConvertTVShowEpisode($aXbmc)
  */
 function ConvertAlbum($aXbmc)
 {
-    $aAlbum["xbmcid"]      = $aXbmc["albumid"];
-    $aAlbum["title"]       = $aXbmc["label"];
-    $aAlbum["description"] = $aXbmc["description"];    
-    $aAlbum["artist"]      = implode("|", $aXbmc["artist"]);
+    $aAlbum[0]  = $aXbmc["albumid"];
+    $aAlbum[1]  = $aXbmc["label"];
+    $aAlbum[2]  = !empty($aXbmc["description"])?$aXbmc["description"]:null;    
+    $aAlbum[3]  = !empty($aXbmc["artist"])?implode("|", $aXbmc["artist"]):null;
 
-    $aAlbum["genre"] = ConvertGenre($aXbmc["genre"], "music");
-    $aAlbum["theme"] = implode("|", $aXbmc["theme"]);
-    $aAlbum["mood"]  = implode("|", $aXbmc["mood"]);
-    $aAlbum["style"] = implode("|", $aXbmc["style"]);
+    $aAlbum[4]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"], "music"):null;
+    $aAlbum[5]  = !empty($aXbmc["theme"])?implode("|", $aXbmc["theme"]):null;
+    $aAlbum[6]  = !empty($aXbmc["mood"])?implode("|", $aXbmc["mood"]):null;
+    $aAlbum[7]  = !empty($aXbmc["style"])?implode("|", $aXbmc["style"]):null;
     
-    $aAlbum["type"]       = $aXbmc["type"];    
-    $aAlbum["albumlabel"] = $aXbmc["albumlabel"];
-    $aAlbum["rating"]     = $aXbmc["rating"];
-    $aAlbum["year"]       = $aXbmc["year"];
+    $aAlbum[8]  = !empty($aXbmc["type"])?$aXbmc["type"]:null;    
+    $aAlbum[9]  = !empty($aXbmc["albumlabel"])?$aXbmc["albumlabel"]:null;
+    $aAlbum[10] = !empty($aXbmc["rating"])?$aXbmc["rating"]:0;
+    $aAlbum[11] = !empty($aXbmc["year"])?$aXbmc["year"]:0;
     
-    $aAlbum["mbalbumid"]       = $aXbmc["musicbrainzalbumid"];    
-    $aAlbum["mbalbumartistid"] = $aXbmc["musicbrainzalbumartistid"];
-    $aAlbum["fanart"]          = $aXbmc["fanart"];
-    $aAlbum["cover"]           = EncodeLink($aXbmc, "thumbnail");
+    $aAlbum[12] = !empty($aXbmc["musicbrainzalbumid"])?$aXbmc["musicbrainzalbumid"]:null;    
+    $aAlbum[13] = !empty($aXbmc["musicbrainzalbumartistid"])?$aXbmc["musicbrainzalbumartistid"]:null;
+    $aAlbum[14] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
+    $aAlbum[15] = !empty($aXbmc["displayartist"])?$aXbmc["displayartist"]:null; 
     
-    $aAlbum["playcount"]     = $aXbmc["playcount"];
-    $aAlbum["displayartist"] = $aXbmc["displayartist"]; 
-    $aAlbum["sorttitle"]     = CreateSortTitle($aXbmc["label"]);
-    //$aAlbum["genreid"]       = $aXbmc["genreid"];
+    $aAlbum[16] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
     
+    //$aAlbum["fanart"]          = $aXbmc["fanart"];
+    //$aAlbum["cover"]           = EncodeLink($aXbmc, "thumbnail");
+    //$aAlbum["genreid"]       = $aXbmc["genreid"];    
     //$aAlbum["artistid"]      = $aXbmc["artistid"];
     
     return $aAlbum;
