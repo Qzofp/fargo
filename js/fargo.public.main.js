@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -29,7 +29,7 @@
 function LoadFargoMedia(media)
 {    
     var aOptions = ['Statistics', 'Credits', 'About'];
-    gSTATE.MEDIA= media;
+    gSTATE.MEDIA = media;
     
     SetState("title", "Latest");
     
@@ -54,7 +54,11 @@ function LoadFargoMedia(media)
     // Properties event.
     $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);
     
-    // Title, Genres or Years click events.
+    // Media type events (titles, sets, series, episodes, albums).
+    $("#type").on("click", SetButtonsTypeHandler);
+    $(".button").on("click", ".selection", SetShowButtonTypeHandler);
+    
+    // Sort (title), Genres or Years click events.
     $("#title").on("click", SetButtonsHandler);
     $("#genres").on("click", SetButtonsHandler);
     $("#years").on("click", SetButtonsHandler);
@@ -81,12 +85,12 @@ function LoadFargoMedia(media)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Jun 30, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
  * In:	media
- * Out:	-
+ * Out:	type
  *
  */
 function ChangeSubControlBar(media)
@@ -98,19 +102,22 @@ function ChangeSubControlBar(media)
         switch(media)
         {
             case "movies"  : $("#login").hide();
-                             $("#title, #genres, #years").show();
+                             $("#type, #title, #genres, #years").show();
+                             $("#type").text(cBUT.TITLES);
                              break;
 
             case "tvshows" : $("#login").hide();
-                             $("#title, #genres, #years").show();
+                             $("#type, #title, #genres, #years").show();
+                             $("#type").text(cBUT.SERIES);
                              break;
 
             case "music"   : $("#login").hide();
-                             $("#title, #genres, #years").show();
+                             $("#type, #title, #genres, #years").show();
+                             $("#type").text(cBUT.ALBUMS);
                              break;
                            
             case "system" : $("#login").show();
-                            $("#title, #genres, #years").hide();
+                            $("#type, #title, #genres, #years").hide();
                             break;               
         }
         

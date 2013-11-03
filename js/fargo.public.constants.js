@@ -6,7 +6,7 @@
  * File:    fargo.public.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Fargo's jQuery and Javascript public contants and globals.
  *
@@ -14,12 +14,29 @@
 
 // State globals.
 var gSTATE = {
-    MEDIA: "",
+    MEDIA: "movies",
+    //TYPE: "titles", // Media type.
     PAGE: 1,
     LAST: 1,  // Last page.
     SORT: "",
     LIST: "",
     SETTING: ""
+};
+
+// Button text constants.
+var cBUT = {
+    TITLES: "Titles",
+    SETS: "Sets",
+    SERIES: "Series",
+    EPISODES: "Episodes",
+    ALBUMS: "Albums"
+};
+
+// Text constants.
+var cTXT = {
+    MOVIE: "Movie",
+    TVSHOW: "TV Show",
+    MUSIC: "Music"
 };
 
 /* For future use....

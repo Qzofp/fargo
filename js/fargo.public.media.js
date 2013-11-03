@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetInfoHandler
  *
  * Created on Jul 05, 2013
- * Updated on Sep 22, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -29,7 +29,6 @@
 function SetInfoHandler()
 {   
     var media = GetState("media");
-    //var id = $(this).children(":first-child").text();
     var id = $(this).attr("class").match(/[0-9]+/);
     
     ShowMediaInfo(media, id);
@@ -445,7 +444,7 @@ function SetTitleHandler()
  * Function:	SetButtonsHandler
  *
  * Created on Jun 27, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Show the buttons (Title, Genres or Years) popup.
  * 
@@ -465,7 +464,7 @@ function SetButtonsHandler()
     
     SetState("choice", $this.text());
 
-    if ($this.text() == "Title"){
+    if ($this.text() == "Sort"){ // By title
         aList = ["Latest", "Oldest", "Ascending", "Descending"];  
     }
     else if ($this.text() == "Manage") {
@@ -519,6 +518,9 @@ function SetButtonsHandler()
             $($btns).children().last().css({"margin-bottom":"20px"});
         }
    
+        // Change button box position.
+        //$("#buttons_box").css('top', '15%');
+   
         ShowPopupBox("#buttons_box", $this.text());
         SetState("page", "popup");
     }
@@ -528,12 +530,12 @@ function SetButtonsHandler()
  * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 03, 2013
  *
- * Description: Show the genre.
+ * Description: Show the sort, genre, years or manage action.
  * 
  * In:	-
- * Out:	Genre.
+ * Out:	-
  *
  */
 function SetShowButtonHandler()
@@ -544,7 +546,7 @@ function SetShowButtonHandler()
     
     switch (choice)
     {
-        case "Title"  : state = "title";
+        case "Sort"   : state = "title";
                         break;
                        
         case "Genres" : state = "genre";
@@ -591,6 +593,94 @@ function SetShowButtonHandler()
 }
 
 /*
+ * Function:	SetButtonsTypeHandler
+ *
+ * Created on Nov 03, 2013
+ * Updated on Nov 03, 2013
+ *
+ * Description: Show the media type buttons (Titles, Sets, Series, Episodes, Albums) popup.
+ * 
+ * In:	-
+ * Out:	Buttons popup.
+ *
+ */
+function SetButtonsTypeHandler()
+{
+    var buttons = "";
+    var title, aList;
+    var $btns = $("#buttons_box .button");
+    var media = $("#control_bar").find(".on").attr('id');
+    
+    switch (media) 
+    {
+        case "movies"  : aList = [cBUT.TITLES, cBUT.SETS];
+                         title = cTXT.MOVIE;
+                         break;
+                        
+        case "tvshows" : aList = [cBUT.SERIES, cBUT.EPISODES]; 
+                         title = cTXT.TVSHOW;
+                         break; 
+        
+        case "music"   : aList = [cBUT.ALBUMS]; 
+                         title = cTXT.MUSIC;
+                         break;
+    }
+    
+    // Reset old buttons.
+    $($btns).text("");
+
+    // Show buttons
+    $.each(aList, function(i, value) 
+    {
+        if (value != "") {
+            buttons += '<button type=\"button\" class=\"selection\">' + value + '</button>';
+        }       
+    });
+    $($btns).append(buttons);
+    
+    // Change button box position.
+    //$("#buttons_box").css('top', '25%');
+    
+    ShowPopupBox("#buttons_box", title);
+}
+
+/*
+ * Function:	SetShowButtonTypeHandler
+ *
+ * Created on Nov 03, 2013
+ * Updated on Nov 03, 2013
+ *
+ * Description: Show the media type.
+ * 
+ * In:	-
+ * Out:	Type.
+ *
+ */
+function SetShowButtonTypeHandler()
+{
+    var $this = $(this);
+    var media = $("#control_bar").find(".on").attr('id');
+    
+    // Reset page and sort globals;
+    gSTATE.PAGE = 1;
+    gSTATE.SORT = "";
+    $("#sort").css("visibility", "hidden");  
+    
+    // Show media table.
+    ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);
+    
+    ChangeSubControlBar("");
+    setTimeout(function() {
+        $("#type").text($this.text());
+    }, 500);
+    
+    ClearButtonsBox();
+    
+    // Remove popup.
+    SetMaskHandler();
+}
+
+/*
  * Function:	ClearButtonBox
  *
  * Created on Sep 01, 2013
@@ -625,7 +715,7 @@ function ClearButtonsBox()
  * Function:	ChangeControlBar
  *
  * Created on Apr 08, 2013
- * Updated on May 09, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Change the media on the control bar from Movies, TV Shows, Music or to System.
  *
@@ -635,7 +725,7 @@ function ClearButtonsBox()
  */
 function ChangeControlBar(media)
 {   
-    var aMedia = ['movies','tvshows','music','system'];
+    var id, aMedia = ['movies','tvshows','music','system'];
  
     $("#sort").css("visibility", "hidden");
     

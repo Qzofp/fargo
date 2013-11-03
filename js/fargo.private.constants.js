@@ -6,44 +6,37 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
  */
 
-// Global variables?!? jQuery sucks or I don't get it!!!
-//var global_media = ""; // Obsolete.
-//var global_page  = 1; // Obsolete.
-//var global_sort  = ""; // Obsolete.
-
-//var global_lastpage = 1; // Obsolete.
-
-//var global_ready = false;  // Obsolete.
-//var global_cancel = false; // 0bsolete. 
-
-// Xbmc media limits.
-//var global_xbmc_start; // 0bsolete. 
-//var global_xbmc_end;   // 0bsolete. 
-
-//var global_status_counter;
-
-// Fargo globals.
-//var global_setting_fargo; // Obsolete.
-//var global_list_fargo; // Obsolete.
-
-// Ajax requests.
-//var global_status_request;
-//var global_import_request;
-
 // State globals.
 var gSTATE = {
-    MEDIA: "",
+    MEDIA: "movies",
+    //TYPE: "titles", // Media type. 
     PAGE: 1,
     LAST: 1, // Last page.
     SORT: "",
     LIST: "",
     SETTING: ""    
+};
+
+// Button text constants.
+var cBUT = {
+    TITLES: "Titles",
+    SETS: "Sets",
+    SERIES: "Series",
+    EPISODES: "Episodes",
+    ALBUMS: "Albums"
+};
+
+// Text constants.
+var cTXT = {
+    MOVIE: "Movie",
+    TVSHOW: "TV Show",
+    MUSIC: "Music"
 };
 
 // Trigger globals.
