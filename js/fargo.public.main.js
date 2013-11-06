@@ -36,7 +36,8 @@ function LoadFargoMedia(media)
     ChangeControlBar(gSTATE.MEDIA);
     ChangeSubControlBar(gSTATE.MEDIA);
 
-    ShowMediaTable(media, gSTATE.PAGE, gSTATE.SORT);
+    //ShowMediaTable(media, gSTATE.PAGE, gSTATE.SORT);
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
 
     // The media info click events
     $("#display_content").on("click", "td", SetInfoHandler);

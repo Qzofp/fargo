@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 06, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -110,8 +110,22 @@ switch($action)
                      else {
                         $aJson = LogEvent("Warning", "Unauthorized status action call!");
                      }                        
-                     break;                 
-        
+                     break;     
+    
+    case "media"   : $type  = GetPageValue('type');
+                     $page  = GetPageValue('page');
+                     $title = GetPageValue('title'); // Sort by title.
+                     $genre = GetPageValue('genre');
+                     $year  = GetPageValue('year');
+                     $sort  = GetPageValue('sort');
+                     $aJson = GetMedia($type, $page, $title, unescape($genre), $year, $sort, $login);
+                     
+                     //$sql   = CreateQuery($type, $title, unescape($genre), $year, $sort, $login);
+                     //$aJson = GetMedia($type, $page, $sql);
+                      
+                     break;               
+                     
+    /*    
     case "movies"  : $page  = GetPageValue('page');
                      $title = GetPageValue('title');
                      $genre = GetPageValue('genre');
@@ -138,7 +152,7 @@ switch($action)
                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort, $login);
                     $aJson = GetMedia($action, $page, $sql);
                     break;   
-    
+    */
     case "option" : $name  = GetPageValue('name');
                     $aJson = GetSystemOptionProperties($name, $login); 
                     break;
@@ -595,18 +609,28 @@ function GetEpisodesImportStatus($thumbs)
  * Function:	CreateQuery
  *
  * Created on Apr 08, 2013
- * Updated on Sep 23, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Create the sql query for the media table. 
  *
- * In:  $media, $title, $genre, $year, $sort, $login
+ * In:  $type, $title, $genre, $year, $sort, $login
  * Out: $sql
  *
  */
-function CreateQuery($media, $title, $genre, $year, $sort, $login)
+function CreateQuery($type, $title, $genre, $year, $sort, $login)
 {
+    switch ($type)
+    {
+        case "Titles" : $table  = "movies";
+                        $xbmcid = "xbmcid";
+                        break;
+                    
+        case "sets"   : $table  = "sets";
+                        $xbmcid = "";
+    }
+    
     $sql = "SELECT id, xbmcid, hide, refresh, title ".
-           "FROM $media ";
+           "FROM $table ";
     
     $stm = "WHERE";
     
@@ -617,7 +641,7 @@ function CreateQuery($media, $title, $genre, $year, $sort, $login)
     
     if ($year) 
     {
-        $sql .= "$stm  `year` = $year ";
+        $sql .= "$stm `year` = $year ";
         $stm = "AND";
     }
     
@@ -1155,21 +1179,38 @@ function ConverToMovieUrl($id, $guide="")
 /*
  * Function:	GetMedia
  *
- * Created on Apr 03, 2013
- * Updated on Sep 23, 2013
+ * Created on Nov 06, 2013
+ * Updated on Nov 06, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
- * In:  $media, $sql
+ * In:  $type, $page, $title, $genre, $year, $sort, $login
  * Out: $aJson
  *
  */
-function GetMedia($media, $page, $sql)
+function GetMedia($type, $page, $title, $genre, $year, $sort, $login)
 {
     $aJson   = null;
     $aParams = null;
     $aMedia  = null;
     
+    switch ($type)
+    {
+        case "Titles" : $table  = "movies";
+                        $xbmcid = "xbmcid";
+                        $aParams['thumbs'] = cMOVIESTHUMBS;
+                        $sql = "";
+                        
+                        break;
+                    
+        case "Sets"   : $table  = "sets";
+                        $xbmcid = "xbmcid";
+                        $aParams['thumbs'] = cSETSTHUMBS;
+                        break;
+    }    
+    
+    $sql = CreateQuery();
+
     // Get total number of media items.
     $total = CountRowsWithQuery($sql);    
 
@@ -1180,6 +1221,52 @@ function GetMedia($media, $page, $sql)
     // Add limit.
     $sql .=  " LIMIT $start , $end";
     
+    $aMedia = GetMedia($media, $page, $sql);
+    
+    $aParams['lastpage'] = ceil($total / (cMediaRow * cMediaColumn));
+    $aParams['row']      = cMediaRow;
+    $aParams['column']   = cMediaColumn;
+    
+    // Fill Json.
+    $aJson['params'] = $aParams;
+    $aJson['media']  = $aMedia;
+    
+    return $aJson;
+}        
+
+
+/*
+ * Function:	GetCommonMedia
+ *
+ * Created on Apr 03, 2013
+ * Updated on Sep 23, 2013
+ *
+ * Description: Get a page of media from Fargo and return it as Json data. 
+ *
+ * In:  $media, $sql
+ * Out: $aJson
+ *
+ */
+function GetCommonMedia($sql)
+{
+   // $aJson   = null;
+   // $aParams = null;
+    
+    $aMedia  = null;
+
+    /*  
+    // Get total number of media items.
+    $total = CountRowsWithQuery($sql);    
+
+    // Number of movies for 1 page
+    $end   = cMediaRow * cMediaColumn;
+    $start = ($page - 1) * $end;
+    
+    // Add limit.
+    $sql .=  " LIMIT $start , $end";
+    
+   * 
+   */
     // debug
     //echo $sql;
     
@@ -1229,7 +1316,8 @@ function GetMedia($media, $page, $sql)
     } 
 
     CloseDatabase($db);  
-    
+  
+    /*
     // Get Json parameters.
     switch($media)
     {
@@ -1249,8 +1337,9 @@ function GetMedia($media, $page, $sql)
      // Fill Json.
     $aJson['params']   = $aParams;
     $aJson['media']    = $aMedia;
+    */
     
-    return $aJson;
+    return $aMedia;
 }
 
 /*

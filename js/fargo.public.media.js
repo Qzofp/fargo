@@ -980,20 +980,22 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 03, 2013
  *
  * Description: Shows the media table.
  *
- * In:	media, page, column, sort
+ * In:	page, sort
  * Out:	Media Table
  *
  */
-function ShowMediaTable(media, page, sort)
+function ShowMediaTable(page, sort)
 {   
     var title = GetState("title");
     var genre = GetState("genre");
     var year  = GetState("year");
     var mode  = GetState("mode");
+    var media = $("#control_bar").find(".on").attr('id');
+    var type  = $("#type").text();
     
     var $header = $("#header_mode");
     
@@ -1002,8 +1004,8 @@ function ShowMediaTable(media, page, sort)
     
     $.ajax
     ({
-        url: 'jsonfargo.php?action=' + media + '&page=' + page + '&title=' + title + '&genre=' + escape(genre) 
-                                     + '&year=' + year + '&sort=' + sort,
+        url: 'jsonfargo.php?action=media' + '&type=' + type + '&page=' + page + '&title=' + title + '&genre=' + escape(genre) 
+                                          + '&year=' + year + '&sort=' + sort,
         async: false,
         dataType: 'json',
         success: function(json)
