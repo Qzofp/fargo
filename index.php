@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 08, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -72,6 +72,18 @@ $media = GetPageValue('media');
 if (!isset($media)) {
     $media = "movies";
 }
+
+/*switch ($media) 
+{
+    case "movies"  : $type = "titles";
+                     break;
+                
+    case "tvshows" : $type = "series";
+                     break;
+                
+    case "music"   : $type = "albums";
+                     break;               
+}*/
 
 PageHeader($title, $aCss, $aJavascript);
 
@@ -156,11 +168,12 @@ ShowHiddenButtonsBox();
 ShowHiddenInfoBox();
 
 // Page States.
-echo "   <div id=\"state_media\">movies</div>\n";
+echo "   <div id=\"state_media\">movies</div>\n";  // movies, tvshows, music, system.
+echo "   <div id=\"state_type\">titles</div>\n"; // media types: movies titles, sets, series, episodes, albums.
 echo "   <div id=\"state_page\">movies</div>\n"; // movies, tvshows, music, system or popup.
 echo "   <div id=\"state_choice\"></div>\n"; // manage, title, genre or year.
 echo "   <div id=\"state_mode\"></div>\n";
-echo "   <div id=\"state_title\"></div>\n"; // sort
+echo "   <div id=\"state_title\"></div>\n"; // sort by title.
 echo "   <div id=\"state_genre\"></div>\n";
 echo "   <div id=\"state_year\"></div>\n";
 echo $system_states;

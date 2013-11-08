@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 07, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -374,7 +374,7 @@ function SetShowUrlHandler()
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 08, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -384,7 +384,8 @@ function SetShowUrlHandler()
  */
 function SetMediaHandler(event)
 {            
-   var media  = event.data.media;
+   var media = event.data.media;
+   //var type;
    SetState("page", media);
 
    // Initialize parameters.
@@ -399,13 +400,13 @@ function SetMediaHandler(event)
    $('#display_system_right').html("");   
    $('#display_content').show();
    
-   gSTATE.MEDIA = ChangeControlBar(media);
+   ChangeControlBar(media);
    ChangeSubControlBar(media);
     
    $("#display_left").show();
    $("#display_right").show();
    
-   ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);
+   ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
 }
 
 /*
@@ -530,7 +531,7 @@ function SetButtonsHandler()
  * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 08, 2013
  *
  * Description: Show the sort, genre, years or manage action.
  * 
@@ -589,14 +590,14 @@ function SetShowButtonHandler()
     }
     
     // Show media table.
-    ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);  
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);  
 }
 
 /*
  * Function:	SetButtonsTypeHandler
  *
  * Created on Nov 03, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 08, 2013
  *
  * Description: Show the media type buttons (Titles, Sets, Series, Episodes, Albums) popup.
  * 
@@ -609,7 +610,8 @@ function SetButtonsTypeHandler()
     var buttons = "";
     var title, aList;
     var $btns = $("#buttons_box .button");
-    var media = $("#control_bar").find(".on").attr('id');
+    var media = GetState("media");
+    //var media = $("#control_bar").find(".on").attr('id');
     
     switch (media) 
     {
@@ -648,7 +650,7 @@ function SetButtonsTypeHandler()
  * Function:	SetShowButtonTypeHandler
  *
  * Created on Nov 03, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 08, 2013
  *
  * Description: Show the media type.
  * 
@@ -659,7 +661,26 @@ function SetButtonsTypeHandler()
 function SetShowButtonTypeHandler()
 {
     var $this = $(this);
-    var media = $("#control_bar").find(".on").attr('id');
+    var $control = $("#control_sub");
+    //var media = $("#control_bar").find(".on").attr('id');
+    
+    switch($this.text())
+    {
+        case cBUT.TITLES   : SetState("type", "titles");
+                             break;
+                           
+        case cBUT.SETS     : SetState("type", "sets");
+                             break;
+                       
+        case cBUT.SERIES   : SetState("type", "series");
+                             break;
+                           
+        case cBUT.EPISODES : SetState("type", "episodes");
+                             break;                           
+                       
+        case cBUT.ALBUMS   : SetState("type", "albums");
+                             break;                             
+    }
     
     // Reset page and sort globals;
     gSTATE.PAGE = 1;
@@ -667,12 +688,18 @@ function SetShowButtonTypeHandler()
     $("#sort").css("visibility", "hidden");  
     
     // Show media table.
-    ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
     
-    ChangeSubControlBar("");
+    // Change sub control bar.
+    $control.stop().slideUp("slow", function() {
+        $("#type").text($this.text());
+        $control.slideDown("slow");
+     }); 
+    
+    /*ChangeSubControlBar("");
     setTimeout(function() {
         $("#type").text($this.text());
-    }, 500);
+    }, 500);*/
     
     ClearButtonsBox();
     
@@ -715,12 +742,12 @@ function ClearButtonsBox()
  * Function:	ChangeControlBar
  *
  * Created on Apr 08, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 08, 2013
  *
  * Description: Change the media on the control bar from Movies, TV Shows, Music or to System.
  *
  * In:	media
- * Out:	media
+ * Out:	-
  *
  */
 function ChangeControlBar(media)
@@ -744,14 +771,14 @@ function ChangeControlBar(media)
         }
     });
    
-    return media;
+    //return media;
 }
 
 /*
  * Function:	SetPageHandler
  *
  * Created on Apr 13, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 07, 2013
  *
  * Description: Set the page and show the media table.
  * 
@@ -776,7 +803,7 @@ function SetPageHandler(event)
         gSTATE.PAGE = 1;
     } 
         
-    ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
 } 
 
 /*
@@ -848,7 +875,7 @@ function SetKeyHandler(event)
  * Function:	SetMainKeyHandler
  *
  * Created on Apr 28, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 08, 2013
  *
  * Description: Set the key from the keyboard and show the media table.
  * 
@@ -890,7 +917,7 @@ function SetMainKeyHandler(key, event)
         $("#sort").css("visibility", "hidden");
     }
     
-    ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);    
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);    
 }
 
 /*
@@ -980,7 +1007,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 08, 2013
  *
  * Description: Shows the media table.
  *
@@ -990,12 +1017,15 @@ function ConvertMediaToSingular(media)
  */
 function ShowMediaTable(page, sort)
 {   
+    var media = GetState("media");
+    var type  = GetState("type");
     var title = GetState("title");
     var genre = GetState("genre");
     var year  = GetState("year");
     var mode  = GetState("mode");
-    var media = $("#control_bar").find(".on").attr('id');
-    var type  = $("#type").text();
+    
+    //var media = $("#control_bar").find(".on").attr('id');
+    //var type  = $("#type").text();
     
     var $header = $("#header_mode");
     
@@ -1040,8 +1070,16 @@ function ShowMediaTable(page, sort)
                     }
                     
                     img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
-                    html[i++] = '<td class="i' + value.id + hide + '"><img src="' + img + '"/></br>' + value.title + '</td>';
-                    j++;
+                    html[i]  = '<td class="i' + value.id + hide + '"><img src="' + img + '"/>';
+                    
+                    // Add number of items to sets or episodes.
+                    if (value.items > 0) {
+                        html[i] += '<h2>' + value.items + '</h2>';
+                    }
+                    
+                    html[i] += '</br>' + value.title + '</td>';
+                    
+                    i++; j++;
                 });
 
                 html[i++] = '</table>';

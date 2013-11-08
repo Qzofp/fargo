@@ -6,7 +6,7 @@
  * File:    fargo.public.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 08, 2013
  *
  * Description: Fargo's jQuery and Javascript public contants and globals.
  *
@@ -14,7 +14,7 @@
 
 // State globals.
 var gSTATE = {
-    MEDIA: "movies",
+    //MEDIA: "movies", // Obsolete?
     //TYPE: "titles", // Media type.
     PAGE: 1,
     LAST: 1,  // Last page.
