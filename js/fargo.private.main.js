@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -29,18 +29,19 @@
 function LoadFargoMedia(media)
 {      
     var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
-    gSTATE.MEDIA = media;
+    //gSTATE.MEDIA = media;
     
-    SetState("title", "Latest");
+    //SetState("title", "latest");
+    SetState("title", "name_asc");
     SetState("mode", "Information");
 
-    ChangeControlBar(gSTATE.MEDIA);
-    ChangeSubControlBar(gSTATE.MEDIA);
+    ChangeControlBar(media);
+    ChangeSubControlBar(media);
 
-    ShowMediaTable(media, gSTATE.PAGE, gSTATE.SORT);
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
     
-    // The media info click events
-    $("#display_content").on("click", "td", SetInfoHandlerWithActions);
+    // The media info or zoom in click events.
+    $("#display_content").on("click", "td", SetInfoZoomHandlerWithActions);
     $(".button").on("click", ".url", SetShowUrlHandler);
 
     // The media click events.
@@ -129,7 +130,7 @@ function ChangeProperty(number, value)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -139,9 +140,50 @@ function ChangeProperty(number, value)
  */
 function ChangeSubControlBar(media)
 {   
+    var type = "";
     var $control = $("#control_sub");
     
-    $control.stop().slideUp("slow", function()
+    switch(media)
+    {
+        case "movies"  : type = "titles";
+                         $control.stop().slideUp("slow", function() {
+                            $("#logout").hide();
+                            $("#modes, #type, #title, #genres, #years").show();
+                            $("#type").text(cBUT.TITLES);
+                            $control.slideDown("slow");
+                         });
+                         break;
+
+        case "tvshows" : type = "tvtitles";
+                         $control.stop().slideUp("slow", function() {
+                            $("#logout").hide();
+                            $("#modes, #type, #title, #genres, #years").show();
+                            $("#type").text(cBUT.TITLES);
+                            $control.slideDown("slow");
+                         });                            
+                         break;
+
+        case "music"   : type = "albums";
+                         $control.stop().slideUp("slow", function() {
+                            $("#logout").hide();
+                            $("#modes, #type, #title, #genres, #years").show();
+                            $("#type").text(cBUT.ALBUMS);
+                            $control.slideDown("slow");
+                         }); 
+                         break;
+                           
+        case "system" : $control.stop().slideUp("slow", function() {
+                            $("#logout").show();
+                            $("#modes, #type, #title, #genres, #years").hide(); 
+                            $control.slideDown("slow");
+                        });                        
+                        break;
+    }    
+    
+    SetState("type", type);    
+    
+    
+/*    $control.stop().slideUp("slow", function()
     {
         switch(media)
         {
@@ -166,7 +208,7 @@ function ChangeSubControlBar(media)
         }
         
         $control.slideDown("slow");
-    });
+    }); */
 }
 
 /*

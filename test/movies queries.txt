@@ -33,4 +33,42 @@ WHERE setid NOT IN (
 ORDER BY title
 LIMIT 30,15
 
+-- Sets query
+SELECT DISTINCT s.id, s.setid, mc.id, mc.year, mc.set, mc.genre
+FROM (
+  SELECT setid, MIN(`year`) AS minyear
+  FROM movies
+  GROUP BY setid
+) ma
+JOIN sets s
+    ON s.setid = ma.setid
+INNER JOIN movies mb
+    ON ma.setid = mb.setid    
+INNER JOIN movies mc
+    ON ma.setid = mc.setid
+    AND ma.minyear = mc.year
 
+SELECT DISTINCT s.id, s.setid, s.hide, s.refresh, mc.set AS title, mc.year, mc.genre
+FROM (
+  SELECT setid, MIN(`year`) AS minyear
+  FROM movies
+  GROUP BY setid
+) ma
+JOIN sets s
+    ON s.setid = ma.setid
+INNER JOIN movies mb
+    ON ma.setid = mb.setid    
+INNER JOIN movies mc
+    ON ma.setid = mc.setid
+    AND ma.minyear = mc.year
+WHERE s.hide = 0 AND mc.year = 2010
+ORDER BY mc.set
+
+SELECT DISTINCT s.tvshowid, t.title, t.hide, t.refresh, s.seasons
+FROM (
+  SELECT tvshowid, MAX(season) AS seasons
+  FROM seasons
+  GROUP BY tvshowid
+) s
+JOIN tvshows t
+    ON s.tvshowid = t.xbmcid

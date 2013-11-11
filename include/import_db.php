@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 11, 2013
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -143,7 +143,7 @@ function UpdateMovie($id, $aMovie)
  * Function:	InsertMovieSet
  *
  * Created on Oct 14, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 09, 2013
  *
  * Description: Insert movie set in the database.
  *
@@ -156,8 +156,8 @@ function InsertMovieSet($aMovie)
     $db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aMovie);
     
-    $sql = "INSERT INTO sets(setid, title, playcount) ".
-           "VALUES ($aItems[0], '$aItems[1]', $aItems[2])";
+    $sql = "INSERT INTO sets(setid, title, sorttitle, playcount) ".
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3])";
 
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);    
@@ -167,7 +167,7 @@ function InsertMovieSet($aMovie)
  * Function:	InsertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 11, 2013
  *
  * Description: Insert TV Show in the database.
  *
@@ -186,13 +186,11 @@ function InsertTVShow($aTVShow)
     
     $sql = "INSERT INTO tvshows(xbmcid, title, genre, `year`, rating, plot, studio, mpaa, `cast`,".
            " playcount, episode, imdbnr, premiered, votes, lastplayed, `file`,".
-           " originaltitle, sorttitle, season, watchedepisodes, dateadded) ". 
+           " originaltitle, sorttitle, season, episodeguide, watchedepisodes, dateadded) ". 
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]',".
            " '$aItems[7]', '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', $aItems[13],".
            " '$aItems[14]', '$aItems[15]', '$aItems[16]', '$aItems[17]', $aItems[18],".
-           " $aItems[19], '$aItems[20]')";
- 
-    echo $sql;
+           " '$aItems[19]', $aItems[20], '$aItems[21]')";
     
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);   
@@ -220,8 +218,8 @@ function UpdateTVShow($id, $aTVShow)
            " `year` = $aItems[3], rating = $aItems[4], plot = '$aItems[5]', studio = '$aItems[6]',".
            " mpaa = '$aItems[7]', `cast` = '$aItems[8]', playcount = $aItems[9], episode = $aItems[10],".
            " imdbnr = '$aItems[11]', premiered = '$aItems[12]', votes = $aItems[13], lastplayed = '$aItems[14]',".
-           " `file` = '$aItems[15]', originaltitle = '$aItems[16]', sorttitle = '$aItems[17]',".
-           " season = $aItems[18], watchedepisodes = $aItems[19], dateadded = '$aItems[20]' ".
+           " `file` = '$aItems[15]', originaltitle = '$aItems[16]', sorttitle = '$aItems[17]', season = $aItems[18],".
+           " episodeguide = '$aItems[19]', watchedepisodes = $aItems[20], dateadded = '$aItems[21]' ".
            "WHERE id = $id";
       
     ExecuteQueryWithEscapeStrings($db, $sql);

@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 11, 2013
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -79,7 +79,7 @@ function ConvertMovie($aXbmc)
  * Function:	ConvertMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 09, 2013
  *
  * Description: Convert xbmc movie set items. For instance to readably URL's.
  *
@@ -91,7 +91,8 @@ function ConvertMovieSet($aXbmc)
 {  
     $aMovie[0] = $aXbmc["setid"];
     $aMovie[1] = $aXbmc["label"]; // title
-    $aMovie[2] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
+    $aMovie[2] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;    
+    $aMovie[3] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
     
     /*$aMovie[3] = EncodeLink($aXbmc["art"], "fanart");
     $aMovie[4] = EncodeLink($aXbmc["art"], "poster");
@@ -104,7 +105,7 @@ function ConvertMovieSet($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 11, 2013
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -144,11 +145,12 @@ function ConvertTVShow($aXbmc)
     $aTVShow[16] = !empty($aXbmc["originaltitle"])?$aXbmc["originaltitle"]:null;       
     $aTVShow[17] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
     $aTVShow[18] = !empty($aXbmc["season"])?$aXbmc["season"]:-1;
-    $aTVShow[19] = !empty($aXbmc["watchedepisodes"])?$aXbmc["watchedepisodes"]:0; 
+    $aTVShow[19] = !empty($aXbmc["episodeguide"])?$aXbmc["episodeguide"]:null;
     
-    $aTVShow[20] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00"; 
+    $aTVShow[20] = !empty($aXbmc["watchedepisodes"])?$aXbmc["watchedepisodes"]:0; 
+    $aTVShow[21] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00"; 
     
-    //$aTVShow[18] = !empty($aXbmc["episodeguide"])?$aXbmc["episodeguide"]:null;
+    //
     //$aTVShow["fanart"]  = EncodeLink($aXbmc["art"], "fanart");    
     //$aTVShow["poster"]  = EncodeLink($aXbmc["art"], "poster");
     //$aTVShow["thumb"]   = EncodeLink($aXbmc, "thumbnail");

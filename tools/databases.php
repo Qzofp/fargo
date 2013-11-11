@@ -312,7 +312,7 @@ function CountRows($table)
  * Function:	GetLastItemFromTable
  *
  * Created on Jun 26, 2013
- * Updated on Jun 26, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Get last added item from a database table.
  *
@@ -325,7 +325,7 @@ function CountRows($table)
 function GetItemFromDatabase($item, $sql)
 {
     $db = OpenDatabase();
-    $item = 0;
+    //$item = 0;
 
     $stmt = $db->prepare($sql);
     if($stmt)

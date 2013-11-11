@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -77,10 +77,10 @@ function ChangeMediaTableHoverColor(color_text, color_border)
 }
 
 /*
- * Function:	SetMediaHandlerWithActions
+ * Function:	SetInfoZoomHandlerWithActions
  *
  * Created on Aug 31, 2013
- * Updated on Sep 30, 2013
+ * Updated on Nov 09, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -88,10 +88,11 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Out:	Media Info
  *
  */
-function SetInfoHandlerWithActions()
+function SetInfoZoomHandlerWithActions()
 {   
     var mode  = GetState("mode");
-    var media = GetState("media"); 
+    var media = GetState("media");
+    var type  = GetState("type");
     var id = $(this).attr("class").match(/[0-9]+/);
 
     switch(mode)
@@ -108,7 +109,7 @@ function SetInfoHandlerWithActions()
                            ShowModePopup(mode, media, id);
                            break;
         
-        default          : ShowMediaInfo(media, id); //Mode is Normal.
+        default          : ShowInfoZoomMedia(media, type, id); //Mode is Normal.
                            break;
     }    
 }

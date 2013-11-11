@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov 11, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -43,6 +43,7 @@ else
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js",
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js",
+                         "js/fargo.public.constants.js",
                          "js/fargo.private.constants.js",
                          "js/fargo.common.js",       
                          "js/fargo.public.media.js",         
@@ -73,18 +74,6 @@ if (!isset($media)) {
     $media = "movies";
 }
 
-/*switch ($media) 
-{
-    case "movies"  : $type = "titles";
-                     break;
-                
-    case "tvshows" : $type = "series";
-                     break;
-                
-    case "music"   : $type = "albums";
-                     break;               
-}*/
-
 PageHeader($title, $aCss, $aJavascript);
 
 // Header section. 
@@ -98,6 +87,7 @@ echo "   </div>\n";
 
 echo "   <div id=\"header_center\">\n";
 echo "    <div id=\"header_info\"></div>\n";
+echo "    <div id=\"header_sort\"></div>\n";
 echo "   </div>\n";
 
 // Display section.
@@ -170,6 +160,7 @@ ShowHiddenInfoBox();
 // Page States.
 echo "   <div id=\"state_media\">movies</div>\n";  // movies, tvshows, music, system.
 echo "   <div id=\"state_type\">titles</div>\n"; // media types: movies titles, sets, series, episodes, albums.
+echo "   <div id=\"state_level\"></div>\n"; // Movie sets, seasons, episodes level (sets id, tvshows id).
 echo "   <div id=\"state_page\">movies</div>\n"; // movies, tvshows, music, system or popup.
 echo "   <div id=\"state_choice\"></div>\n"; // manage, title, genre or year.
 echo "   <div id=\"state_mode\"></div>\n";

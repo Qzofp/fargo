@@ -6,38 +6,11 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 11, 2013
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
  */
-
-// State globals.
-var gSTATE = {
-    MEDIA: "movies",
-    //TYPE: "titles", // Media type. 
-    PAGE: 1,
-    LAST: 1, // Last page.
-    SORT: "",
-    LIST: "",
-    SETTING: ""    
-};
-
-// Button text constants.
-var cBUT = {
-    TITLES: "Titles",
-    SETS: "Sets",
-    SERIES: "Series",
-    EPISODES: "Episodes",
-    ALBUMS: "Albums"
-};
-
-// Text constants.
-var cTXT = {
-    MOVIE: "Movie",
-    TVSHOW: "TV Show",
-    MUSIC: "Music"
-};
 
 // Trigger globals.
 var gTRIGGER = {

@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov , 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -30,7 +30,8 @@ function LoadFargoMedia(media)
 {    
     var aOptions = ['Statistics', 'Credits', 'About'];
     
-    SetState("title", "Latest");
+    //SetState("title", "latest");
+    SetState("title", "name_asc");
     
     ChangeControlBar(media);
     ChangeSubControlBar(media);
@@ -38,8 +39,8 @@ function LoadFargoMedia(media)
     //ShowMediaTable(media, gSTATE.PAGE, gSTATE.SORT);
     ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
 
-    // The media info click events
-    $("#display_content").on("click", "td", SetInfoHandler);
+    // The media info or zoom in click events.
+    $("#display_content").on("click", "td", SetInfoZoomHandler);
     $(".button").on("click", ".url", SetShowUrlHandler);
 
     // The media click events.
@@ -85,7 +86,7 @@ function LoadFargoMedia(media)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -109,11 +110,11 @@ function ChangeSubControlBar(media)
                          });
                          break;
 
-        case "tvshows" : type = "series";
+        case "tvshows" : type = "tvtitles";
                          $control.stop().slideUp("slow", function() {
                             $("#login").hide();
                             $("#type, #title, #genres, #years").show();
-                            $("#type").text(cBUT.SERIES);
+                            $("#type").text(cBUT.TITLES);
                             $control.slideDown("slow");
                          });                            
                          break;

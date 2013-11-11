@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Nov 07, 2013
+ * Updated on Nov 11, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -15,23 +15,46 @@
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
 
 /*
- * Function:	SetInfoHandler
+ * Function:	SetInfoZoomHandler
  *
  * Created on Jul 05, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 09, 2013
  *
- * Description: Set and show the media info.
+ * Description: Set and show the media info or zoom in on movie sets, episodes.
  * 
  * In:	-
  * Out:	Media Info
  *
  */
-function SetInfoHandler()
+function SetInfoZoomHandler()
 {   
     var media = GetState("media");
+    var type  = GetState("type");
     var id = $(this).attr("class").match(/[0-9]+/);
     
-    ShowMediaInfo(media, id);
+    ShowInfoZoomMedia(media, type, id);
+}
+
+/*
+ * Function:	SetInfoZoomHandler
+ *
+ * Created on Nov 09, 2013
+ * Updated on Nov 10, 2013
+ *
+ * Description: Show the media info or zoom in on movie sets, episodes media.
+ * 
+ * In:	-
+ * Out:	Media Info
+ *
+ */
+function ShowInfoZoomMedia(media, type, id)
+{
+    if (type != "sets" && type != "series") {
+        ShowMediaInfo(media, id);
+    }
+    else {
+        ShowMediaZoomIn(type, id);
+    }    
 }
 
 /*
@@ -59,6 +82,62 @@ function ShowMediaInfo(media, id)
         case "music"   : ShowAlbumInfo(id);
                          break;        
     } 
+}
+
+/*
+ * Function:	ShowMediaZoomIn
+ *
+ * Created on Nov 09, 2013
+ * Updated on Nov 11, 2013
+ *
+ * Description: Show the media zoom in for movie sets, seasons, episodes.
+ * 
+ * In:	media, id
+ * Out:	Media Info
+ *
+ */
+function ShowMediaZoomIn(type, id)
+{
+   var back, level = "";
+   var $control = $("#control_sub");
+   
+   if (gSTATE.SORT) {
+       $("#sort").css("visibility", "hidden");
+   }
+   
+    // Reset page and sort globals;
+   gTEMP.PAGE  = gSTATE.PAGE;
+   gTEMP.SORT  = gSTATE.SORT;
+   gTEMP.TITLE = GetState("title");
+   gSTATE.PAGE = 1;
+   gSTATE.SORT = "";
+   
+   switch (type)
+   {
+       case "sets"    : level = 2;
+                        back = cBUT.BACK + cBUT.SETS;
+                        break;
+                          
+       case "series"  : back = cBUT.BACK + cBUT.SERIES;
+                        level = 2;
+                        break;
+                          
+       case "series2" : level = 3;
+                        break;
+   }
+   
+   SetState("type", type + level);
+   SetState("title", "year_asc");
+   SetState("level", id);
+    
+   ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
+   
+   // Change sub control bar.
+   $control.stop().slideUp("slow", function() {
+       $("#genres, #years").hide();
+       $("#type").text(back);
+       $control.slideDown("slow");
+    });    
 }
 
 /*
@@ -374,7 +453,7 @@ function SetShowUrlHandler()
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -391,7 +470,8 @@ function SetMediaHandler(event)
    // Initialize parameters.
    gSTATE.PAGE = 1;
    gSTATE.SORT = "";
-   SetState("title", "Latest");
+   //SetState("title", "latest");
+   SetState("title", "name_asc");
    SetState("genre", "");
    SetState("year", "");
    
@@ -445,7 +525,7 @@ function SetTitleHandler()
  * Function:	SetButtonsHandler
  *
  * Created on Jun 27, 2013
- * Updated on Nov 03, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Show the buttons (Title, Genres or Years) popup.
  * 
@@ -466,7 +546,7 @@ function SetButtonsHandler()
     SetState("choice", $this.text());
 
     if ($this.text() == "Sort"){ // By title
-        aList = ["Latest", "Oldest", "Ascending", "Descending"];  
+        aList = [cSORT.NAME, cSORT.YEAR, cSORT.ASC, cSORT.DESC, cSORT.NEW, cSORT.OLD];
     }
     else if ($this.text() == "Manage") {
         aList = ["Information", "Hide/Show", "Import", "Refresh", "Remove"]; 
@@ -531,7 +611,7 @@ function SetButtonsHandler()
  * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Show the sort, genre, years or manage action.
  * 
@@ -565,8 +645,51 @@ function SetShowButtonHandler()
     // Remove popup.
     SetMaskHandler();
     
+    switch($this.text())
+    {                         
+        case cSORT.NAME     : SetState(state, "name_asc");
+                              break;
+                          
+        case cSORT.YEAR     : SetState(state, "year_asc");
+                              break;
+                              
+        case cSORT.ASC      : if (GetState(state).split("_")[0] == "name") {
+                                 SetState(state, "name_asc");
+                              }
+                              else if (GetState(state).split("_")[0] == "year") {
+                                 SetState(state, "year_asc");
+                              }
+                              break;
+                              
+        case cSORT.DESC     : if (GetState(state).split("_")[0] == "name") {
+                                 SetState(state, "name_desc");
+                              }
+                              else if (GetState(state).split("_")[0] == "year") {
+                                 SetState(state, "year_desc");
+                              }
+                              break;
+                          
+        case cSORT.NEW      : SetState(state, "latest");
+                              break;
+                              
+        case cSORT.OLD      : SetState(state, "oldest");
+                              break;                         
+                          
+        case "- Show All -" : SetState(state, "");
+                              break;
+                              
+        case "Import"       : media = GetState("media");  
+                              setTimeout(function(){
+                                SetImportPopupHandler(media);
+                              }, 500);                      
+                              break;
+                              
+        default :             SetState(state, $this.text());
+                              break;
+    }
+    
     // Show all genres or years.
-    if ($this.text() == "- Show All -") {
+    /*if ($this.text() == "- Show All -") {
         SetState(state, "");
     }
     else {
@@ -579,7 +702,8 @@ function SetShowButtonHandler()
         setTimeout(function(){
             SetImportPopupHandler(media);
         }, 500);
-    }
+    } 
+    */
    
     if (choice != "Manage") 
     {    
@@ -597,7 +721,88 @@ function SetShowButtonHandler()
  * Function:	SetButtonsTypeHandler
  *
  * Created on Nov 03, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov 09, 2013
+ *
+ * Description: Set the buttons type handler and perform the right action.
+ * 
+ * In:	-
+ * Out:	-
+ *
+ */
+function SetButtonsTypeHandler()
+{
+    var type  = GetState("type");   
+    switch (type)
+    {
+        case "sets2"     : //alert("back to sets");
+                           BackToMedia("sets");
+                           break;
+                       
+        case "episodes2" : alert("back to tvshows");
+                           break;
+                       
+        case "episodes3" : alert("back to seasons");
+                           break; 
+                       
+        default : ShowButtonsTypePopup();            
+    }
+}
+
+/*
+ * Function:	BackToMedia
+ *
+ * Created on Nov 09, 2013
+ * Updated on Nov 11, 2013
+ *
+ * Description: Go back to media, one level up. E.g. from set movies to sets.
+ * 
+ * In:	-
+ * Out:	-
+ *
+ */
+function BackToMedia(type)
+{
+    var back;
+    var $control = $("#control_sub");
+    SetState("type", type);
+    SetState("level", "");    
+    
+    switch (type)
+    {
+        case "sets"      : back = cBUT.SETS;
+                           break;
+                          
+        case "episodes"  : 
+                           break;
+                          
+        case "episodes2" : 
+                           break;
+    }
+   
+    // Reset page and sort globals;
+    gSTATE.PAGE = gTEMP.PAGE;
+    gSTATE.SORT = gTEMP.SORT;
+    SetState("title", gTEMP.TITLE);
+   
+    if (gSTATE.SORT) {
+       $("#sort").css("visibility", "visible");
+    }   
+   
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
+   
+    // Change sub control bar.
+    $control.stop().slideUp("slow", function() {
+        $("#genres, #years").show();
+        $("#type").text(back);
+        $control.slideDown("slow");
+    });     
+}
+
+/*
+ * Function:	ShowButtonsTypePopup
+ *
+ * Created on Nov 09, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Show the media type buttons (Titles, Sets, Series, Episodes, Albums) popup.
  * 
@@ -605,21 +810,20 @@ function SetShowButtonHandler()
  * Out:	Buttons popup.
  *
  */
-function SetButtonsTypeHandler()
+function ShowButtonsTypePopup()
 {
     var buttons = "";
     var title, aList;
     var $btns = $("#buttons_box .button");
     var media = GetState("media");
-    //var media = $("#control_bar").find(".on").attr('id');
-    
+ 
     switch (media) 
     {
         case "movies"  : aList = [cBUT.TITLES, cBUT.SETS];
                          title = cTXT.MOVIE;
                          break;
                         
-        case "tvshows" : aList = [cBUT.SERIES, cBUT.EPISODES]; 
+        case "tvshows" : aList = [cBUT.TITLES, cBUT.SERIES]; 
                          title = cTXT.TVSHOW;
                          break; 
         
@@ -640,17 +844,14 @@ function SetButtonsTypeHandler()
     });
     $($btns).append(buttons);
     
-    // Change button box position.
-    //$("#buttons_box").css('top', '25%');
-    
-    ShowPopupBox("#buttons_box", title);
-}
+    ShowPopupBox("#buttons_box", title);    
+}    
 
 /*
  * Function:	SetShowButtonTypeHandler
  *
  * Created on Nov 03, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Show the media type.
  * 
@@ -666,7 +867,12 @@ function SetShowButtonTypeHandler()
     
     switch($this.text())
     {
-        case cBUT.TITLES   : SetState("type", "titles");
+        case cBUT.TITLES   : if ($("#buttons_box .title").text() == cTXT.MOVIE) {
+                                SetState("type", "titles");
+                             }
+                             else {
+                                 SetState("type", "tvtitles");
+                             }
                              break;
                            
         case cBUT.SETS     : SetState("type", "sets");
@@ -675,9 +881,9 @@ function SetShowButtonTypeHandler()
         case cBUT.SERIES   : SetState("type", "series");
                              break;
                            
-        case cBUT.EPISODES : SetState("type", "episodes");
+        /*case cBUT.EPISODES : SetState("type", "episodes");
                              break;                           
-                       
+        */               
         case cBUT.ALBUMS   : SetState("type", "albums");
                              break;                             
     }
@@ -1007,7 +1213,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov 11, 2013
  *
  * Description: Shows the media table.
  *
@@ -1020,22 +1226,17 @@ function ShowMediaTable(page, sort)
     var media = GetState("media");
     var type  = GetState("type");
     var title = GetState("title");
+    var level = GetState("level");
     var genre = GetState("genre");
     var year  = GetState("year");
-    var mode  = GetState("mode");
+    var mode  = GetState("mode");   
     
-    //var media = $("#control_bar").find(".on").attr('id');
-    //var type  = $("#type").text();
-    
-    var $header = $("#header_mode");
-    
-    $header.show();
-    ShowInfoHeader(title, genre, year);
-    
+    $("#header_mode").show();
+
     $.ajax
     ({
         url: 'jsonfargo.php?action=media' + '&type=' + type + '&page=' + page + '&title=' + title + '&genre=' + escape(genre) 
-                                          + '&year=' + year + '&sort=' + sort,
+                                          + '&year=' + year + '&sort=' + sort + '&level=' + level,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -1047,6 +1248,8 @@ function ShowMediaTable(page, sort)
             var i = 0, j = 0;
             var img, html = [];
             var hide;
+            
+            ShowInfoHeader(json.params.header, title, genre, year);
             
             if (json.media[0].id > 0)
             {
@@ -1070,13 +1273,13 @@ function ShowMediaTable(page, sort)
                     }
                     
                     img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
-                    html[i]  = '<td class="i' + value.id + hide + '"><img src="' + img + '"/>';
+                    html[i]  = '<td class="i' + value.id + hide + '">';
                     
-                    // Add number of items to sets or episodes.
                     if (value.items > 0) {
-                        html[i] += '<h2>' + value.items + '</h2>';
+                        html[i] += '<div class="items">' + value.items + '</div>';
                     }
                     
+                    html[i] += '<img src="' + img + '"/>';
                     html[i] += '</br>' + value.title + '</td>';
                     
                     i++; j++;
@@ -1107,27 +1310,60 @@ function ShowMediaTable(page, sort)
  * Function:	ShowInfoHeader
  *
  * Created on Jul 01, 2013
- * Updated on Jul 01, 2013
+ * Updated on Nov 10, 2013
  *
  * Description: Shows to info header.
  *
- * In:	lastpage
+ * In:	title, sort, genre, year
  * Out:	Info header.
  *
  */
-function ShowInfoHeader(title, genre, year)
-{
-    var info = title;
+function ShowInfoHeader(title, sort, genre, year)
+{    
+    var info1 = "&nbsp;";
+    var info2 = "&nbsp;";
+        
+    if (title) {
+        info1 = title;
+    }
  
     if (genre) {
-        info += " / " + genre;
+        info1 = genre;
+    }  
+        
+    if (year) 
+    {
+        if (genre) {
+            info1 += " / " + year;   
+        }
+        else {
+            info1 = year;
+        } 
     }
     
-    if (year) {
-        info += " / " + year;
+    switch (sort) 
+    {
+        case "name_asc"  : info2 = cSORT.NAME + " " + cSORT.ASC;
+                           break;
+
+        case "name_desc" : info2 = cSORT.NAME + " " + cSORT.DESC;
+                           break;   
+                       
+        case "year_asc"  : info2 = cSORT.YEAR + " " + cSORT.ASC;
+                           break;
+
+        case "year_desc" : info2 = cSORT.YEAR + " " + cSORT.DESC;
+                           break;
+                       
+        case "latest"    : info2 = cSORT.NEW;
+                           break;
+                           
+        case "oldest"    : info2 = cSORT.OLD;
+                           break;                         
     }
         
-    $("#header_info").text(info).show();
+    $("#header_info").html(info1).show();
+    $("#header_sort").html(info2).show();
 }
 
 /*

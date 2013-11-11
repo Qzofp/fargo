@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Nov 08, 2013
+ * Updated on Nov 11, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -75,7 +75,7 @@ min-height:5%;
 
 #header_center{
 margin:0 120px 0 120px;
-min-height:5%;    
+min-height:4%;    
 }
 
 #header_mode{
@@ -100,6 +100,15 @@ text-shadow:2px 2px 2px #000;
 text-align:center;
 color:lightgray;
 }
+
+#header_sort{
+padding:2px 0 0 0;
+font-size:1.2em;
+text-shadow:2px 2px 2px #000;
+text-align:center;
+color:lightgray;
+}
+
 /* End Header part */
 
 /* Begin Popup part*/
@@ -513,7 +522,7 @@ width:100px;
 height:140px;
 }
 
-#display_content .movies h2,
+/*#display_content .movies h2,
 #display_content .tvshows h2{
 position:relative;
 top:-80px;
@@ -522,7 +531,7 @@ font-size:2em;
 border-radius:3px;
 border:1px solid grey;
 background-color:rgba(125,125,125,0.3);
-}
+}*/
 
 #display_content .music img{
 width:100px;
@@ -547,16 +556,17 @@ cursor:pointer;
 border:2px solid dodgerblue;
 }
 
-#display_content td:hover h2{
+/*#display_content td:hover h2{
 border:1px solid dodgerblue;
-}    
+}*/    
 
 #display_content img{
 border:1px solid grey;
 border-radius:5px;
 }
 
-#display_content .info{
+#display_content .info,
+#display_content .items{
 display:none;    
 }
 
@@ -797,6 +807,7 @@ color:dodgerblue;
 /* Page states */
 #state_media,
 #state_type,
+#state_level,
 #state_page,
 #state_choice,
 #state_mode,
@@ -817,15 +828,16 @@ color:#fff;
 /* begin debug */
 #state_media{top:50px;}
 #state_type{top:72px;}
-#state_page{top:96px;}
-#state_choice{top:118px;}
-#state_mode{top:142px;}
-#state_title{top:165px;}
-#state_genre{top:189px;}
-#state_year{top:211px;}
-#state_xbmc{top:235px;}
-#state_row{top:258px;}
-#state_property{top:281px;}
+#state_level{top:96px;}
+#state_page{top:118px;}
+#state_choice{top:142px;}
+#state_mode{top:165px;}
+#state_title{top:189px;}
+#state_genre{top:211px;}
+#state_year{top:235px;}
+#state_xbmc{top:258px;}
+#state_row{top:281px;}
+#state_property{top:302px;}
 /* end debug */
 
 #footer{
