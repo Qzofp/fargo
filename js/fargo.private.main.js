@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 12, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 12, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -70,9 +70,9 @@ function LoadFargoMedia(media)
     // Manage (Show, Refresh, Import, Hide and Remove) click events.
     $("#modes").on("click", SetButtonsHandler);
     
-    // Media type events (titles, sets, series, episodes, albums).
+    // Media type events (titles, sets, series, albums).
     $("#type").on("click", SetButtonsTypeHandler);
-    $(".button").on("click", ".selection", SetShowButtonTypeHandler);    
+    //$(".button").on("click", ".selection", SetShowButtonTypeHandler);    
     
     // Sort (title), Genres or Years click events.   
     $("#title").on("click", SetButtonsHandler);
@@ -130,7 +130,7 @@ function ChangeProperty(number, value)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 12, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -149,7 +149,7 @@ function ChangeSubControlBar(media)
                          $control.stop().slideUp("slow", function() {
                             $("#logout").hide();
                             $("#modes, #type, #title, #genres, #years").show();
-                            $("#type").text(cBUT.TITLES);
+                            $("#type").text(cBUT.SETS);
                             $control.slideDown("slow");
                          });
                          break;
@@ -158,7 +158,7 @@ function ChangeSubControlBar(media)
                          $control.stop().slideUp("slow", function() {
                             $("#logout").hide();
                             $("#modes, #type, #title, #genres, #years").show();
-                            $("#type").text(cBUT.TITLES);
+                            $("#type").text(cBUT.SERIES);
                             $control.slideDown("slow");
                          });                            
                          break;

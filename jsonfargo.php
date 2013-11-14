@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 14, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -114,46 +114,14 @@ switch($action)
     
     case "media"   : $type  = GetPageValue('type');
                      $page  = GetPageValue('page');
-                     $title = GetPageValue('title'); // Sort by title.
-                     $level = GetPageValue('level'); // Set id or TVShow id.
+                     $title = GetPageValue('title'); // Sort by title, year, etc.
+                     $level = GetPageValue('level'); // Set id or TV Show id.
                      $genre = GetPageValue('genre');
                      $year  = GetPageValue('year');
                      $sort  = GetPageValue('sort');
-                     $aJson = GetMedia($type, $page, $title, $level, unescape($genre), $year, $sort, $login);
-                     
-                     //$sql   = CreateQuery($type, $title, unescape($genre), $year, $sort, $login);
-                     //$aJson = GetMedia($type, $page, $sql);
-                      
+                     $aJson = GetMedia($type, $page, $title, $level, unescape($genre), $year, $sort, $login);                     
                      break;               
                      
-    /*    
-    case "movies"  : $page  = GetPageValue('page');
-                     $title = GetPageValue('title');
-                     $genre = GetPageValue('genre');
-                     $year  = GetPageValue('year');
-                     $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort, $login);
-                     $aJson = GetMedia($action, $page, $sql);
-                     break;
-                
-    case "tvshows" : $page  = GetPageValue('page');
-                     $title = GetPageValue('title');
-                     $genre = GetPageValue('genre');
-                     $year  = GetPageValue('year');
-                     $sort  = GetPageValue('sort');
-                     $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort, $login);
-                     $aJson = GetMedia($action, $page, $sql);
-                     break;    
-                 
-    case "music"  : $page  = GetPageValue('page');
-                    $title = GetPageValue('title');
-                    $genre = GetPageValue('genre');
-                    $year  = GetPageValue('year');
-                    $sort  = GetPageValue('sort');
-                    $sql   = CreateQuery($action, $title, unescape($genre), $year, $sort, $login);
-                    $aJson = GetMedia($action, $page, $sql);
-                    break;   
-    */
     case "option" : $name  = GetPageValue('name');
                     $aJson = GetSystemOptionProperties($name, $login); 
                     break;
@@ -610,7 +578,7 @@ function GetEpisodesImportStatus($thumbs)
  * Function:	CreateMediaQuery
  *
  * Created on Apr 08, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Create the sql query for the media table. 
  *
@@ -620,7 +588,7 @@ function GetEpisodesImportStatus($thumbs)
  */
 function CreateMediaQuery($table, $title, $genre, $year, $sort, $login)
 {   
-    $sql = "SELECT id, xbmcid, hide, refresh, title, NULL AS items ".
+    $sql = "SELECT id, xbmcid, hide, refresh, title ".
            "FROM $table ";
     
     $sql .= CreateQuerySelection("WHERE", $sort, $year, $genre, $login);
@@ -636,7 +604,7 @@ function CreateMediaQuery($table, $title, $genre, $year, $sort, $login)
  * Function:	CreateSetsQuery
  *
  * Created on Nov 08, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Create the sql query for the media sets table. 
  *
@@ -646,7 +614,7 @@ function CreateMediaQuery($table, $title, $genre, $year, $sort, $login)
  */
 function CreateSetsQuery($title, $genre, $year, $sort, $login)
 {    
-    $sql = "SELECT DISTINCT s.setid AS id, s.setid, s.hide, s.refresh, mc.set AS title, NULL AS items ".
+    $sql = "SELECT DISTINCT s.setid AS id, s.setid, s.hide, s.refresh, mc.set AS title ".
            "FROM (SELECT setid, MIN(`year`) AS minyear FROM movies GROUP BY setid) ma ".
            "JOIN sets s ON s.setid = ma.setid ".
            "INNER JOIN movies mb ON ma.setid = mb.setid ".
@@ -705,7 +673,7 @@ function CreateSetsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateMoviesSetQuery
  *
  * Created on Nov 08, 2013
- * Updated on Nov 09, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Create the sql query for the media movies set table. 
  *
@@ -715,7 +683,7 @@ function CreateSetsQuery($title, $genre, $year, $sort, $login)
  */
 function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
 {
-    $sql = "SELECT id, xbmcid, hide, refresh, title, NULL AS items ".
+    $sql = "SELECT id, xbmcid, hide, refresh, title ".
            "FROM movies ".
            "WHERE setid = $id ";
     
@@ -729,9 +697,9 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
  * Function:	CreateSeriesQuery
  *
  * Created on Apr 08, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 14, 2013
  *
- * Description: Create the sql query for the media episodes table. 
+ * Description: Create the sql query for the media TV shows table. 
  *
  * In:  $title, $genre, $year, $sort, $login
  * Out: $sql
@@ -739,8 +707,8 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
  */
 function CreateSeriesQuery($title, $genre, $year, $sort, $login)
 {   
-    $sql = "SELECT DISTINCT s.tvshowid, t.xbmcid, t.hide, t.refresh, t.title, s.seasons ".
-           "FROM (SELECT tvshowid, COUNT(season) AS seasons FROM seasons GROUP BY tvshowid) s ".
+    $sql = "SELECT DISTINCT  CONCAT(s.tvshowid, '_', s.seasons) AS id, CONCAT(t.xbmcid, '_', s.season) AS xbmcid, t.hide, t.refresh, t.title ".
+           "FROM (SELECT tvshowid, COUNT(season) AS seasons, season FROM seasons GROUP BY tvshowid) s ".
            "JOIN tvshows t ON s.tvshowid = t.xbmcid ";
     
     $stm = "WHERE";
@@ -788,6 +756,60 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
     }    
     //debug
     //echo $sql;
+    
+    return $sql;
+}
+
+/*
+ * Function:	CreateSeasonsQuery
+ *
+ * Created on Nov 12, 2013
+ * Updated on Nov 13, 2013
+ *
+ * Description: Create the sql query for the media seasons table. 
+ *
+ * In:  $login
+ * Out: $sql
+ *
+ */
+function CreateSeasonsQuery($id, $login)
+{
+    $sql = "SELECT CONCAT(tvshowid, '_', season) AS id, CONCAT(tvshowid, '_', season) AS xbmcid, hide, refresh, title ".
+           "FROM seasons WHERE tvshowid = $id ";
+    
+    // Hide media items if not login.
+    if(!$login) {
+        $sql .= "AND hide = 0 ";
+    }
+    
+    $sql .= "ORDER BY season";
+    
+    return $sql;
+}
+
+/*
+ * Function:	 CreateEpisodesQuery
+ *
+ * Created on Nov 12, 2013
+ * Updated on Nov 14, 2013
+ *
+ * Description: Create the sql query for the media seasons table. 
+ *
+ * In:  $id, $season, $login
+ * Out: $sql
+ *
+ */
+function CreateEpisodesQuery($id, $season, $login)
+{
+    $sql = "SELECT id, episodeid, hide, refresh, title ".
+           "FROM episodes WHERE tvshowid = $id AND season = $season ";
+    
+    // Hide media items if not login.
+    if(!$login) {
+        $sql .= "AND hide = 0 ";
+    }
+    
+    $sql .= "ORDER BY episode";
     
     return $sql;
 }
@@ -1375,7 +1397,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 14, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -1390,56 +1412,89 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
     $aMedia  = null;
     $header  = "";
     $rows    = 0;
+    $max     = 0; 
     
     switch ($type)
     {
         case "titles"  : $aParams['thumbs'] = cMOVIESTHUMBS;
+                         $aParams['column'] = cMediaColumn;
                          $header = "Movie Titles";
                          $sql    = CreateMediaQuery("movies", $title, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($sql);
-                         $aMedia = QueryMedia($sql, $page);
+                         $max    = cMediaRow * cMediaColumn;                             
+                         $aMedia = QueryMedia($sql, $page, $max);
                          break;
                     
         case "sets"    : $aParams['thumbs'] = cSETSTHUMBS;
+                         $aParams['column'] = cMediaColumn;
                          $header = "Movie Sets";
                          $sql    = CreateSetsQuery($title, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($sql);
-                         $aMedia = QueryMedia($sql, $page);
+                         $max    = cMediaRow * cMediaColumn; 
+                         $aMedia = QueryMedia($sql, $page, $max);
                          break;
                      
         case "sets2"   : $aParams['thumbs'] = cMOVIESTHUMBS; // The set movies.
+                         $aParams['column'] = cMediaColumn;
                          $header = GetItemFromDatabase("title", "SELECT title FROM `sets` WHERE setid = $level");
                          $sql    = CreateMoviesSetQuery($title, $level, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($sql);
-                         $aMedia = QueryMedia($sql, $page);
+                         $max    = cMediaRow * cMediaColumn; 
+                         $aMedia = QueryMedia($sql, $page, $max);
                          break;                     
                     
         case "tvtitles": $aParams['thumbs'] = cTVSHOWSTHUMBS;
+                         $aParams['column'] = cMediaColumn;
                          $header = "TV Show Titles";
                          $sql    = CreateMediaQuery("tvshows", $title, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($sql);
-                         $aMedia = QueryMedia($sql, $page);
+                         $max    = cMediaRow * cMediaColumn; 
+                         $aMedia = QueryMedia($sql, $page, $max);
                          break;
 
-        case "series"   : $aParams['thumbs'] = cTVSHOWSTHUMBS;
+        case "series"   : $aParams['thumbs'] = cSEASONSTHUMBS; // cTVSHOWSTHUMBS;
+                          $aParams['column'] = cMediaColumn;
                           $header = "TV Show Series";
                           $sql    = CreateSeriesQuery($title, $genre, $year, $sort, $login);
                           $rows   = CountRowsWithQuery($sql);
-                          $aMedia = QueryMedia($sql, $page);
-                          break;  
+                          $max    = cMediaRow * cMediaColumn; 
+                          $aMedia = QueryMedia($sql, $page, $max);
+                          break;
+                      
+        case "series2"  : $aParams['thumbs'] = cSEASONSTHUMBS;
+                          $aParams['column'] = cMediaColumn;
+                          $aItems = explode("_", $level);
+                          $header = GetItemFromDatabase("showtitle", "SELECT showtitle FROM seasons WHERE tvshowid = $aItems[0] LIMIT 0, 1");
+                          $sql    = CreateSeasonsQuery($aItems[0], $login);
+                          $rows   = CountRowsWithQuery($sql);
+                          $max    = cMediaRow * cMediaColumn; 
+                          $aMedia = QueryMedia($sql, $page, $max);
+                          break;
+                      
+        case "series3"  : $aParams['thumbs'] = cEPISODESTHUMBS;
+                          $aParams['column'] = cMediaEpisodeColumn;
+                          $aItems = explode("_", $level);
+                          $header = GetItemFromDatabase("showtitle", "SELECT showtitle FROM seasons WHERE tvshowid = $aItems[0] LIMIT 0, 1");
+                          $sql    = CreateEpisodesQuery($aItems[0], $aItems[1], $login);
+                          $rows   = CountRowsWithQuery($sql);
+                          $max    = cMediaRow * cMediaEpisodeColumn; 
+                          $aMedia = QueryMedia($sql, $page, $max);
+                          break;                      
                       
         case "albums"   : $aParams['thumbs'] = cALBUMSTHUMBS;
+                          $aParams['column'] = cMediaColumn;
                           $header = "Music Albums";
                           $sql    = CreateMediaQuery("music", $title, $genre, $year, $sort, $login);
                           $rows   = CountRowsWithQuery($sql);
-                          $aMedia = QueryMedia($sql, $page);
+                          $max    = cMediaRow * cMediaColumn; 
+                          $aMedia = QueryMedia($sql, $page, $max);
                           break;             
     }    
        
     // Fill parameters.
-    $aParams['lastpage'] = ceil($rows / (cMediaRow * cMediaColumn));
+    $aParams['lastpage'] = ceil($rows/$max);
     $aParams['row']      = cMediaRow;
-    $aParams['column']   = cMediaColumn;
+    //$aParams['column']   = cMediaColumn;
     $aParams['header']   = $header; // Header title for sets and series.
     
     // Fill Json.
@@ -1454,20 +1509,20 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
  * Function:	QueryMedia
  *
  * Created on Apr 03, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
- * In:  $sql, $page
+ * In:  $sql, $page, end
  * Out: $aJson
  *
  */
-function QueryMedia($sql, $page)
+function QueryMedia($sql, $page, $end)
 {   
     $aMedia  = null; 
 
     // Number of movies for 1 page
-    $end   = cMediaRow * cMediaColumn;
+    //$end   = cMediaRow * cMediaColumn;
     $start = ($page - 1) * $end;
     
     // Add limit.
@@ -1487,7 +1542,7 @@ function QueryMedia($sql, $page)
             {              
                 $i = 0;
                 
-                $stmt->bind_result($id, $xbmcid, $hide, $refresh, $title, $items);
+                $stmt->bind_result($id, $xbmcid, $hide, $refresh, $title);
                 while($stmt->fetch())
                 {                
                     
@@ -1496,7 +1551,6 @@ function QueryMedia($sql, $page)
                     $aMedia[$i]['hide']    = $hide;  
                     $aMedia[$i]['refresh'] = $refresh; 
                     $aMedia[$i]['title']   = ShortenString($title, 22);
-                    $aMedia[$i]['items']   = $items;
                     
                     $i++;
                 }                  
@@ -1507,8 +1561,7 @@ function QueryMedia($sql, $page)
                     $aMedia[0]['xbmcid']  = 0; 
                     $aMedia[0]['hide']    = -1;  
                     $aMedia[0]['refresh'] = -1;    
-                    $aMedia[0]['title']   = 'empty';
-                    $aMedia[0]['items']   = 0;                
+                    $aMedia[0]['title']   = 'empty';               
             }
         }
         else

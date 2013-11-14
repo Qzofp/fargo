@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetInfoZoomHandler
  *
  * Created on Jul 05, 2013
- * Updated on Nov 09, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Set and show the media info or zoom in on movie sets, episodes.
  * 
@@ -30,7 +30,11 @@ function SetInfoZoomHandler()
 {   
     var media = GetState("media");
     var type  = GetState("type");
-    var id = $(this).attr("class").match(/[0-9]+/);
+    var id    = $(this).attr("class").match(/\d+(_\d+)?/g);
+    
+    //if (type == "series") {
+    //    id = id + "_" + $(this).find(".items").text();
+    //}
     
     ShowInfoZoomMedia(media, type, id);
 }
@@ -39,7 +43,7 @@ function SetInfoZoomHandler()
  * Function:	SetInfoZoomHandler
  *
  * Created on Nov 09, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Show the media info or zoom in on movie sets, episodes media.
  * 
@@ -49,7 +53,7 @@ function SetInfoZoomHandler()
  */
 function ShowInfoZoomMedia(media, type, id)
 {
-    if (type != "sets" && type != "series") {
+    if (type != "sets" && type != "series" && type != "series2") {
         ShowMediaInfo(media, id);
     }
     else {
@@ -88,7 +92,7 @@ function ShowMediaInfo(media, id)
  * Function:	ShowMediaZoomIn
  *
  * Created on Nov 09, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Show the media zoom in for movie sets, seasons, episodes.
  * 
@@ -98,46 +102,60 @@ function ShowMediaInfo(media, id)
  */
 function ShowMediaZoomIn(type, id)
 {
-   var back, level = "";
    var $control = $("#control_sub");
    
    if (gSTATE.SORT) {
        $("#sort").css("visibility", "hidden");
    }
    
-    // Reset page and sort globals;
-   gTEMP.PAGE  = gSTATE.PAGE;
-   gTEMP.SORT  = gSTATE.SORT;
-   gTEMP.TITLE = GetState("title");
-   gSTATE.PAGE = 1;
-   gSTATE.SORT = "";
-   
    switch (type)
    {
-       case "sets"    : level = 2;
-                        back = cBUT.BACK + cBUT.SETS;
+       case "sets"    : type = "sets2";
+                        gTEMP.TITLE = GetState("title");
+                        gTEMP.PAGE  = gSTATE.PAGE;
+                        gTEMP.SORT  = gSTATE.SORT;
+                        SetState("title", "year_asc");
+                        $control.stop().slideUp("slow", function() {
+                            $("#genres, #years").hide();
+                            $("#type").text(cBUT.BACK + cBUT.SETS);
+                            $control.slideDown("slow");
+                        });
                         break;
                           
-       case "series"  : back = cBUT.BACK + cBUT.SERIES;
-                        level = 2;
+       case "series"  : type = "series2";
+                        gTEMP.TITLE = GetState("title");
+                        gTEMP.PAGE  = gSTATE.PAGE;
+                        gTEMP.SORT  = gSTATE.SORT;
+                        gTEMP.LEVEL = id;
+                        SetState("title", "season");                        
+                        $control.stop().slideUp("slow", function() {
+                            $("#title, #genres, #years").hide();
+                            $("#type").text(cBUT.BACK + cBUT.SERIES);
+                            $control.slideDown("slow");
+                        });                      
                         break;
                           
-       case "series2" : level = 3;
+       case "series2" : type = "series3";
+                        gTEMP.TITLE2 = GetState("title");
+                        gTEMP.PAGE2  = gSTATE.PAGE;
+                        gTEMP.SORT2  = gSTATE.SORT;
+                        SetState("title", "episode");
+                        $control.stop().slideUp("slow", function() {
+                            $("#title, #genres, #years").hide();
+                            $("#type").text(cBUT.BACK + cBUT.SEASONS);
+                            $control.slideDown("slow");
+                        });                          
                         break;
    }
    
-   SetState("type", type + level);
-   SetState("title", "year_asc");
+   // Reset page and sort globals;
+   gSTATE.PAGE = 1;
+   gSTATE.SORT = "";
+    
+   SetState("type", type);
    SetState("level", id);
     
-   ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
-   
-   // Change sub control bar.
-   $control.stop().slideUp("slow", function() {
-       $("#genres, #years").hide();
-       $("#type").text(back);
-       $control.slideDown("slow");
-    });    
+   ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);    
 }
 
 /*
@@ -453,7 +471,7 @@ function SetShowUrlHandler()
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Set the media and show the media table.
  * 
@@ -466,6 +484,7 @@ function SetMediaHandler(event)
    var media = event.data.media;
    //var type;
    SetState("page", media);
+   SetState("level", "");
 
    // Initialize parameters.
    gSTATE.PAGE = 1;
@@ -721,7 +740,7 @@ function SetShowButtonHandler()
  * Function:	SetButtonsTypeHandler
  *
  * Created on Nov 03, 2013
- * Updated on Nov 09, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Set the buttons type handler and perform the right action.
  * 
@@ -731,20 +750,48 @@ function SetShowButtonHandler()
  */
 function SetButtonsTypeHandler()
 {
-    var type  = GetState("type");   
-    switch (type)
+    switch ($(this).text())
     {
-        case "sets2"     : //alert("back to sets");
-                           BackToMedia("sets");
+        case cBUT.TITLES : if (GetState("media") == "movies") 
+                           {
+                                SetState("type", "titles");
+                                ShowMediaTypePage(cBUT.SETS);
+                           }
+                           else {
+                                SetState("type", "tvtitles");
+                                ShowMediaTypePage(cBUT.SERIES);
+                           }
+                           break;
+        
+        case cBUT.SETS   : SetState("type", "sets");
+                           ShowMediaTypePage(cBUT.TITLES);
+                           break;
+        
+        case cBUT.BACK + 
+             cBUT.SETS   : BackToMedia("sets");
                            break;
                        
-        case "episodes2" : alert("back to tvshows");
+        case "tvtitles"  : SetState("type", "tvtitles");
+                           ShowMediaTypePage();
+                           break;   
+                       
+        case cBUT.SERIES : SetState("type", "series");
+                           ShowMediaTypePage(cBUT.TITLES);
+                           break;                         
+                       
+        case cBUT.BACK +
+             cBUT.SERIES : //SetState("type", "series");
+                           BackToMedia("series");
                            break;
                        
-        case "episodes3" : alert("back to seasons");
-                           break; 
-                       
-        default : ShowButtonsTypePopup();            
+        case cBUT.BACK +
+             cBUT.SEASONS: //SetState("type", "series2");
+                           BackToMedia("series2");
+                           break;    
+                           
+        case "albums"    : SetState("type", "albums");
+                           ShowMediaTypePage();
+                           break;                             
     }
 }
 
@@ -752,7 +799,7 @@ function SetButtonsTypeHandler()
  * Function:	BackToMedia
  *
  * Created on Nov 09, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Go back to media, one level up. E.g. from set movies to sets.
  * 
@@ -762,40 +809,91 @@ function SetButtonsTypeHandler()
  */
 function BackToMedia(type)
 {
-    var back;
     var $control = $("#control_sub");
     SetState("type", type);
     SetState("level", "");    
     
     switch (type)
     {
-        case "sets"      : back = cBUT.SETS;
-                           break;
+        case "sets"    : gSTATE.PAGE = gTEMP.PAGE;
+                         gSTATE.SORT = gTEMP.SORT;   
+                         SetState("title", gTEMP.TITLE);
+                         $control.stop().slideUp("slow", function() {
+                            $("#title, #genres, #years").show();
+                            $("#type").text(cBUT.TITLES);
+                            $control.slideDown("slow");
+                         }); 
+                         break;
                           
-        case "episodes"  : 
-                           break;
+        case "series"  : gSTATE.PAGE = gTEMP.PAGE;
+                         gSTATE.SORT = gTEMP.SORT;
+                         SetState("title", gTEMP.TITLE);
+                         $control.stop().slideUp("slow", function() {
+                            $("#title, #genres, #years").show();
+                            $("#type").text(cBUT.TITLES);
+                            $control.slideDown("slow");
+                         });                         
+                         break;
                           
-        case "episodes2" : 
-                           break;
+        case "series2" : gSTATE.PAGE = gTEMP.PAGE2;
+                         gSTATE.SORT = gTEMP.SORT2;
+                         SetState("title", gTEMP.TITLE2);
+                         SetState("level", gTEMP.LEVEL);
+                         $control.stop().slideUp("slow", function() {
+                            $("#type").text(cBUT.BACK + cBUT.SERIES);
+                            $control.slideDown("slow");
+                         });             
+                         break;
     }
-   
-    // Reset page and sort globals;
-    gSTATE.PAGE = gTEMP.PAGE;
-    gSTATE.SORT = gTEMP.SORT;
-    SetState("title", gTEMP.TITLE);
    
     if (gSTATE.SORT) {
        $("#sort").css("visibility", "visible");
-    }   
+    }
    
     ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
    
     // Change sub control bar.
-    $control.stop().slideUp("slow", function() {
-        $("#genres, #years").show();
+    /*$control.stop().slideUp("slow", function() {
+        $("#title, #genres, #years").show();
         $("#type").text(back);
         $control.slideDown("slow");
-    });     
+    });*/     
+}
+
+/*
+ * Function:	ShowTypeMediaPage
+ *
+ * Created on Nov 12, 2013
+ * Updated on Nov 12, 2013
+ *
+ * Description: Show the media type.
+ * 
+ * In:	type
+ * Out:	-
+ *
+ */
+function ShowMediaTypePage(type)
+{
+    var $control = $("#control_sub");
+        
+    // Reset page and sort globals;
+    gSTATE.PAGE = 1;
+    gSTATE.SORT = "";
+    $("#sort").css("visibility", "hidden");  
+    
+    // Show media table.
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
+    
+    // Change sub control bar.
+    $control.stop().slideUp("slow", function() {
+        $("#type").text(type);
+        $control.slideDown("slow");
+     }); 
+        
+    //ClearButtonsBox();
+    
+    // Remove popup.
+    //SetMaskHandler();
 }
 
 /*
@@ -810,7 +908,7 @@ function BackToMedia(type)
  * Out:	Buttons popup.
  *
  */
-function ShowButtonsTypePopup()
+/*function ShowButtonsTypePopup()
 {
     var buttons = "";
     var title, aList;
@@ -845,7 +943,7 @@ function ShowButtonsTypePopup()
     $($btns).append(buttons);
     
     ShowPopupBox("#buttons_box", title);    
-}    
+}*/    
 
 /*
  * Function:	SetShowButtonTypeHandler
@@ -859,7 +957,7 @@ function ShowButtonsTypePopup()
  * Out:	Type.
  *
  */
-function SetShowButtonTypeHandler()
+/*function SetShowButtonTypeHandler()
 {
     var $this = $(this);
     var $control = $("#control_sub");
@@ -880,10 +978,7 @@ function SetShowButtonTypeHandler()
                        
         case cBUT.SERIES   : SetState("type", "series");
                              break;
-                           
-        /*case cBUT.EPISODES : SetState("type", "episodes");
-                             break;                           
-        */               
+                                        
         case cBUT.ALBUMS   : SetState("type", "albums");
                              break;                             
     }
@@ -901,17 +996,12 @@ function SetShowButtonTypeHandler()
         $("#type").text($this.text());
         $control.slideDown("slow");
      }); 
-    
-    /*ChangeSubControlBar("");
-    setTimeout(function() {
-        $("#type").text($this.text());
-    }, 500);*/
-    
+        
     ClearButtonsBox();
     
     // Remove popup.
     SetMaskHandler();
-}
+}*/
 
 /*
  * Function:	ClearButtonBox
@@ -1213,7 +1303,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Shows the media table.
  *
@@ -1251,7 +1341,7 @@ function ShowMediaTable(page, sort)
             
             ShowInfoHeader(json.params.header, title, genre, year);
             
-            if (json.media[0].id > 0)
+            if (json.media[0].id != 0)
             {
                 html[i++] = '<table class="' + media + '">';
      
@@ -1275,9 +1365,9 @@ function ShowMediaTable(page, sort)
                     img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
                     html[i]  = '<td class="i' + value.id + hide + '">';
                     
-                    if (value.items > 0) {
-                        html[i] += '<div class="items">' + value.items + '</div>';
-                    }
+                    //if (value.items > 0) {
+                    //    html[i] += '<div class="items">' + value.items + '</div>';
+                    //}
                     
                     html[i] += '<img src="' + img + '"/>';
                     html[i] += '</br>' + value.title + '</td>';
@@ -1310,7 +1400,7 @@ function ShowMediaTable(page, sort)
  * Function:	ShowInfoHeader
  *
  * Created on Jul 01, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 13, 2013
  *
  * Description: Shows to info header.
  *
@@ -1359,7 +1449,13 @@ function ShowInfoHeader(title, sort, genre, year)
                            break;
                            
         case "oldest"    : info2 = cSORT.OLD;
-                           break;                         
+                           break;
+                       
+        case "season"    : info2 = cSORT.SEASON; 
+                           break;
+                           
+        case "episode"   : info2 = cSORT.EPISODE; 
+                           break;                  
     }
         
     $("#header_info").html(info1).show();

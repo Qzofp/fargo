@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 14, 2013
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -190,7 +190,7 @@ function ConvertTVShowSeason($aXbmc)
  * Function:	ConvertTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 14, 2013
  *
  * Description: Convert xbmc TV Show Episode items. For instance to readably URL's.
  *
@@ -211,7 +211,7 @@ function ConvertTVShowEpisode($aXbmc)
     $aEpisode[7]  = !empty($aXbmc["cast"])?ConvertCast($aXbmc["cast"]):null;
     
     $aEpisode[8]  = !empty($aXbmc["plot"])?$aXbmc["plot"]:null;
-    $aEpisode[9]  = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:null;
+    $aEpisode[9]  = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
     $aEpisode[10] = !empty($aXbmc["episode"])?$aXbmc["episode"]:0;
     $aEpisode[11] = !empty($aXbmc["firstaired"])?$aXbmc["firstaired"]:"0000-00-00";
     
@@ -221,7 +221,7 @@ function ConvertTVShowEpisode($aXbmc)
     $aEpisode[15] = !empty($aXbmc["file"])?$aXbmc["file"]:null;
     
     $aEpisode[16] = !empty($aXbmc["showtitle"])?$aXbmc["showtitle"]:null;
-    $aEpisode[17] = !empty($aXbmc["season"])?$aXbmc["season"]:-1;
+    $aEpisode[17] = !empty($aXbmc["season"])?$aXbmc["season"]:0;
     $aEpisode[18] = !empty($aXbmc["streamdetails"]["audio"])?ConvertAudio($aXbmc["streamdetails"]["audio"]):null; 
     $aEpisode[19] = !empty($aXbmc["streamdetails"]["video"])?ConvertVideo($aXbmc["streamdetails"]["video"]):null;
     

@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Nov , 2013
+ * Updated on Nov 12, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 12, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -55,9 +55,9 @@ function LoadFargoMedia(media)
     // Properties event.
     $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);
     
-    // Media type events (titles, sets, series, episodes, albums).
+    // Media type events (titles, sets, series, albums).
     $("#type").on("click", SetButtonsTypeHandler);
-    $(".button").on("click", ".selection", SetShowButtonTypeHandler);
+    //$(".button").on("click", ".selection", SetShowButtonTypeHandler);
     
     // Sort (title), Genres or Years click events.
     $("#title").on("click", SetButtonsHandler);
@@ -86,7 +86,7 @@ function LoadFargoMedia(media)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 12, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -105,7 +105,7 @@ function ChangeSubControlBar(media)
                          $control.stop().slideUp("slow", function() {
                             $("#login").hide();
                             $("#type, #title, #genres, #years").show();
-                            $("#type").text(cBUT.TITLES);
+                            $("#type").text(cBUT.SETS);
                             $control.slideDown("slow");
                          });
                          break;
@@ -114,7 +114,7 @@ function ChangeSubControlBar(media)
                          $control.stop().slideUp("slow", function() {
                             $("#login").hide();
                             $("#type, #title, #genres, #years").show();
-                            $("#type").text(cBUT.TITLES);
+                            $("#type").text(cBUT.SERIES);
                             $control.slideDown("slow");
                          });                            
                          break;

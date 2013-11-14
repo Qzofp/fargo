@@ -6,7 +6,7 @@
  * File:    fargo.public.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 12, 2013
  *
  * Description: Fargo's jQuery and Javascript public contants and globals.
  *
@@ -14,11 +14,7 @@
 
 // State globals.
 var gSTATE = {
-    //MEDIA: "movies", // Obsolete?
-    //TYPE: "titles", // Media type.
     PAGE: 1,
-//    TEMPPAGE: 1, 
-//    TEMPSORT: "",
     LAST: 1,  // Last page.
     SORT: "",
     LIST: "",
@@ -27,8 +23,12 @@ var gSTATE = {
 
 var gTEMP = {
     PAGE: 1,
+    PAGE2: 1,
     SORT: "",
-    TITLE: ""
+    SORT2: "",
+    TITLE: "",
+    TITLE2: "",
+    LEVEL: ""
 };
 
 // Button text constants.
@@ -36,7 +36,8 @@ var cBUT = {
     TITLES: "Titles",
     SETS: "Sets",
     SERIES: "Series",
-//    EPISODES: "Episodes",
+    SEASONS: "Seasons",
+    EPISODES: "Episodes",
     ALBUMS: "Albums",
     BACK: "Return to "    
 };
@@ -47,7 +48,9 @@ var cSORT = {
     ASC: "Ascending",
     DESC: "Descending",
     NEW: "Latest Additions",
-    OLD: "Oldest Additions"
+    OLD: "Oldest Additions",
+    SEASON: "Season",
+    EPISODE: "Episode"
 };
 
 // Text constants.
