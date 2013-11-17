@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 16, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -373,7 +373,7 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg)
  * Function:	SetTVSeasonImportHandler
  *
  * Created on Oct 19, 2013
- * Updated on Oct 26, 2013
+ * Updated on Nov 16, 2013
  *
  * Description: Start the seasons import handler.
  * 
@@ -402,7 +402,7 @@ function SetTVSeasonsImportHandler(media, selector, type)
                 // Check if iframe from ImportCounter finished loading.
                 if ($("#ready").text() == "true")
                 {
-                    ResetImportBox();
+                    ResetImportBox(type);
                     
                     // Returns gTRIGGER.START and gTRIGGER.END.
                     GetXbmcMediaLimits(media + type);

@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Nov 14, 2013
+ * Updated on Nov 17, 2013
  *
  * Description: The main Json Fargo page.
  * 
@@ -791,7 +791,7 @@ function CreateSeasonsQuery($id, $login)
  * Function:	 CreateEpisodesQuery
  *
  * Created on Nov 12, 2013
- * Updated on Nov 14, 2013
+ * Updated on Nov 16, 2013
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -801,8 +801,12 @@ function CreateSeasonsQuery($id, $login)
  */
 function CreateEpisodesQuery($id, $season, $login)
 {
-    $sql = "SELECT id, episodeid, hide, refresh, title ".
-           "FROM episodes WHERE tvshowid = $id AND season = $season ";
+    $sql = "SELECT id, episodeid, hide, refresh, CONCAT(episode, '. ', title) ".
+           "FROM episodes WHERE tvshowid = $id ";
+    
+    if ($season > -1) {
+        $sql .= "AND season = $season ";
+    }
     
     // Hide media items if not login.
     if(!$login) {
@@ -899,7 +903,7 @@ function CreateQuerySortQrder($title)
  * Function:	GetMediaInfo
  *
  * Created on Jul 05, 2013
- * Updated on Jul 10, 2013
+ * Updated on Nov 17, 2013
  *
  * Description: Get the media info from Fargo and return it as Json data. 
  *
@@ -913,14 +917,17 @@ function GetMediaInfo($media, $id)
     
     switch($media)
     {
-        case "movies"  : $aJson = GetMovieInfo($id);
-                         break;
+        case "movies"   : $aJson = GetMovieInfo($id);
+                          break;
         
-        case "tvshows" : $aJson = GetTVShowInfo($id);
-                         break;
+        case "tvshows"  : $aJson = GetTVShowInfo($id);
+                          break;
+                     
+        case "episodes" : $aJson = GetTVShowEpisodeInfo($id);
+                          break;                     
         
-        case "music"   : $aJson = GetAlbumInfo($id);
-                         break;
+        case "music"    : $aJson = GetAlbumInfo($id);
+                          break;
     }
     
     return $aJson;
@@ -1072,6 +1079,77 @@ function GetTVShowInfo($id)
     // Fill parameters.
     $aParams['thumbs'] = cTVSHOWSTHUMBS;
     $aParams['fanart'] = cTVSHOWSFANART;
+    
+    // Fill Json.
+    $aJson['params']   = $aParams;
+    $aJson['media']    = $aMedia;
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetTVShowEpisodeInfo
+ *
+ * Created on Nov 17, 2013
+ * Updated on Nov 17, 2013
+ *
+ * Description: Get the TV show episode info from Fargo and return it as Json data. 
+ *
+ * In:  $id 
+ * Out: $aJson
+ *
+ */
+function GetTVShowEpisodeInfo($id)
+{
+    $aJson   = null;
+    $aMedia  = null;
+    $aParams = null;  
+    
+    $sql = "SELECT episodeid, title, showtitle, season, episode, firstaired, director, writer, YEAR(firstaired) AS `year`, ".
+                  "runtime, rating, audio, video, `file`, plot ".
+           "FROM episodes ".
+           "WHERE id = $id";
+    
+    $db = OpenDatabase();
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            $stmt->bind_result($episodeid, $title, $showtitle, $season, $episode, $firstaired, $director, $writer, $year, 
+                               $runtime, $rating, $audio, $video, $file, $plot);
+            $stmt->fetch();
+            
+            $aMedia["episodeid"]  = $episodeid;
+            $aMedia["title"]      = ShortenString($title, 50);
+            $aMedia["showtitle"]  = ShortenString($showtitle, 50);
+            $aMedia["season"]     = $season;
+            $aMedia["episode"]    = $episode;
+            $aMedia["firstaired"] = date( 'd/m/Y', strtotime($firstaired));
+            $aMedia["director"]   = str_replace("|", " / ", $director);
+            $aMedia["writer"]     = str_replace("|", " / ", $writer);                        
+            $aMedia["year"]       = $year;
+            $aMedia["runtime"]    = round($runtime/60)." Minutes";
+            $aMedia["rating"]     = $rating;
+            $aMedia["audio"]      = ConvertToAudioFlag($audio);
+            $aMedia["video"]      = ConvertToVideoFlag($video);
+            $aMedia["aspect"]     = ConvertToAspectFlag($video, $file);            
+            $aMedia["plot"]       = $plot;
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    }
+    CloseDatabase($db);      
+    
+    // Fill parameters.
+    $aParams['thumbs'] = cEPISODESTHUMBS;
     
     // Fill Json.
     $aJson['params']   = $aParams;
@@ -1397,7 +1475,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Nov 14, 2013
+ * Updated on Nov 16, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -1422,7 +1500,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                          $sql    = CreateMediaQuery("movies", $title, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($sql);
                          $max    = cMediaRow * cMediaColumn;                             
-                         $aMedia = QueryMedia($sql, $page, $max);
+                         $aMedia = QueryMedia($sql, $page, $max, 22);
                          break;
                     
         case "sets"    : $aParams['thumbs'] = cSETSTHUMBS;
@@ -1431,7 +1509,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                          $sql    = CreateSetsQuery($title, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($sql);
                          $max    = cMediaRow * cMediaColumn; 
-                         $aMedia = QueryMedia($sql, $page, $max);
+                         $aMedia = QueryMedia($sql, $page, $max, 22);
                          break;
                      
         case "sets2"   : $aParams['thumbs'] = cMOVIESTHUMBS; // The set movies.
@@ -1440,7 +1518,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                          $sql    = CreateMoviesSetQuery($title, $level, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($sql);
                          $max    = cMediaRow * cMediaColumn; 
-                         $aMedia = QueryMedia($sql, $page, $max);
+                         $aMedia = QueryMedia($sql, $page, $max, 22);
                          break;                     
                     
         case "tvtitles": $aParams['thumbs'] = cTVSHOWSTHUMBS;
@@ -1449,7 +1527,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                          $sql    = CreateMediaQuery("tvshows", $title, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($sql);
                          $max    = cMediaRow * cMediaColumn; 
-                         $aMedia = QueryMedia($sql, $page, $max);
+                         $aMedia = QueryMedia($sql, $page, $max, 22);
                          break;
 
         case "series"   : $aParams['thumbs'] = cSEASONSTHUMBS; // cTVSHOWSTHUMBS;
@@ -1458,7 +1536,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                           $sql    = CreateSeriesQuery($title, $genre, $year, $sort, $login);
                           $rows   = CountRowsWithQuery($sql);
                           $max    = cMediaRow * cMediaColumn; 
-                          $aMedia = QueryMedia($sql, $page, $max);
+                          $aMedia = QueryMedia($sql, $page, $max, 22);
                           break;
                       
         case "series2"  : $aParams['thumbs'] = cSEASONSTHUMBS;
@@ -1468,17 +1546,22 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                           $sql    = CreateSeasonsQuery($aItems[0], $login);
                           $rows   = CountRowsWithQuery($sql);
                           $max    = cMediaRow * cMediaColumn; 
-                          $aMedia = QueryMedia($sql, $page, $max);
+                          $aMedia = QueryMedia($sql, $page, $max, 22);
                           break;
                       
         case "series3"  : $aParams['thumbs'] = cEPISODESTHUMBS;
                           $aParams['column'] = cMediaEpisodeColumn;
                           $aItems = explode("_", $level);
-                          $header = GetItemFromDatabase("showtitle", "SELECT showtitle FROM seasons WHERE tvshowid = $aItems[0] LIMIT 0, 1");
+                          if ($aItems[1] > -1) {
+                            $header = GetItemFromDatabase("showtitle", "SELECT CONCAT(showtitle, ' - ', title) AS title FROM seasons WHERE tvshowid = $aItems[0] AND season = $aItems[1]");
+                          }
+                          else {
+                            $header = GetItemFromDatabase("showtitle", "SELECT showtitle AS title FROM seasons WHERE tvshowid = $aItems[0] LIMIT 0, 1");  
+                          }
                           $sql    = CreateEpisodesQuery($aItems[0], $aItems[1], $login);
                           $rows   = CountRowsWithQuery($sql);
                           $max    = cMediaRow * cMediaEpisodeColumn; 
-                          $aMedia = QueryMedia($sql, $page, $max);
+                          $aMedia = QueryMedia($sql, $page, $max, 38);
                           break;                      
                       
         case "albums"   : $aParams['thumbs'] = cALBUMSTHUMBS;
@@ -1487,7 +1570,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                           $sql    = CreateMediaQuery("music", $title, $genre, $year, $sort, $login);
                           $rows   = CountRowsWithQuery($sql);
                           $max    = cMediaRow * cMediaColumn; 
-                          $aMedia = QueryMedia($sql, $page, $max);
+                          $aMedia = QueryMedia($sql, $page, $max, 22);
                           break;             
     }    
        
@@ -1509,15 +1592,15 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
  * Function:	QueryMedia
  *
  * Created on Apr 03, 2013
- * Updated on Nov 13, 2013
+ * Updated on Nov 16, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
- * In:  $sql, $page, end
+ * In:  $sql, $page, $end, $length
  * Out: $aJson
  *
  */
-function QueryMedia($sql, $page, $end)
+function QueryMedia($sql, $page, $end, $length)
 {   
     $aMedia  = null; 
 
@@ -1550,7 +1633,7 @@ function QueryMedia($sql, $page, $end)
                     $aMedia[$i]['xbmcid']  = $xbmcid;  
                     $aMedia[$i]['hide']    = $hide;  
                     $aMedia[$i]['refresh'] = $refresh; 
-                    $aMedia[$i]['title']   = ShortenString($title, 22);
+                    $aMedia[$i]['title']   = ShortenString($title, $length);
                     
                     $i++;
                 }                  

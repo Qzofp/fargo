@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 16, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -377,7 +377,7 @@ height:156px;
 
 #action_thumb{
 width:100px;
-height:140px; 
+height:140px;
 left:50%;
 margin:10px 0 0 -65px;
 position:fixed;
@@ -522,17 +522,6 @@ width:100px;
 height:140px;
 }
 
-/*#display_content .movies h2,
-#display_content .tvshows h2{
-position:relative;
-top:-80px;
-margin:0 45px -47px;
-font-size:2em;
-border-radius:3px;
-border:1px solid grey;
-background-color:rgba(125,125,125,0.3);
-}*/
-
 #display_content .music img{
 width:100px;
 height:100px;
@@ -554,11 +543,7 @@ cursor:pointer;
 
 #display_content td:hover img{
 border:2px solid dodgerblue;
-}
-
-/*#display_content td:hover h2{
-border:1px solid dodgerblue;
-}*/    
+}  
 
 #display_content img{
 border:1px solid grey;

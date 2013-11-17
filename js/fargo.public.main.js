@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Nov 12, 2013
+ * Updated on Nov 16, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -86,7 +86,7 @@ function LoadFargoMedia(media)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Nov 12, 2013
+ * Updated on Nov 16, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -134,42 +134,9 @@ function ChangeSubControlBar(media)
                             $control.slideDown("slow");
                         });                        
                         break;
-              
-       /*default : $control.stop().slideUp("slow", function() {
-                      $control.slideDown("slow");
-                  });                        
-                  break; */
     }    
     
     SetState("type", type);
-    
-    //return type;
-    
-    /*$control.stop().slideUp("slow", function()
-    {
-        switch(media)
-        {
-            case "movies"  : $("#login").hide();
-                             $("#type, #title, #genres, #years").show();
-                             $("#type").text(cBUT.TITLES);
-                             break;
-
-            case "tvshows" : $("#login").hide();
-                             $("#type, #title, #genres, #years").show();
-                             $("#type").text(cBUT.SERIES);
-                             break;
-
-            case "music"   : $("#login").hide();
-                             $("#type, #title, #genres, #years").show();
-                             $("#type").text(cBUT.ALBUMS);
-                             break;
-                           
-            case "system" : $("#login").show();
-                            $("#type, #title, #genres, #years").hide();
-                            break;
-        }                    
-        $control.slideDown("slow");
-    }); */
 }
 
 /*
