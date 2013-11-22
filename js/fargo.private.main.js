@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Nov 12, 2013
+ * Updated on Nov 22, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -65,7 +65,7 @@ function LoadFargoMedia(media)
     $(".button").on("click", ".no", SetCloseHandler);
     
     // Cancel or finish import. 
-    $(".button").on("click", ".cancel", SetCloseHandler);    
+    $(".button").on("click", ".cancel", SetCloseHandler);
     
     // Manage (Show, Refresh, Import, Hide and Remove) click events.
     $("#modes").on("click", SetButtonsHandler);
@@ -98,7 +98,7 @@ function LoadFargoMedia(media)
  * Function:	ChangeProperty
  *
  * Created on May 27, 2013
- * Updated on Oct 27, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Get option and update property value.
  *
@@ -111,7 +111,7 @@ function ChangeProperty(number, value)
     var option = $('#display_system_left .dim').text();
     
     $.ajax({
-        url: 'jsonfargo.php?action=property&option=' + option + '&number=' + number + '&value=' + value,
+        url: 'jsonmanage.php?action=property&option=' + option + '&number=' + number + '&value=' + value,
         dataType: 'json',
         success: function(json) 
         {    
@@ -130,7 +130,7 @@ function ChangeProperty(number, value)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Nov 12, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -181,34 +181,6 @@ function ChangeSubControlBar(media)
     }    
     
     SetState("type", type);    
-    
-    
-/*    $control.stop().slideUp("slow", function()
-    {
-        switch(media)
-        {
-            case "movies"  : $("#logout").hide();
-                             $("#modes, #type, #title, #genres, #years").show();
-                             $("#type").text(cBUT.TITLES);
-                             break;
-
-            case "tvshows" : $("#logout").hide();
-                             $("#modes, #type, #title, #genres, #years").show();
-                             $("#type").text(cBUT.SERIES);
-                             break;
-
-            case "music"   : $("#logout").hide();
-                             $("#modes, #type, #title, #genres, #years").show();
-                             $("#type").text(cBUT.ALBUMS);
-                             break;
-                           
-            case "system" : $("#logout").show();
-                            $("#modes, #type, #title, #genres, #years").hide();                            
-                            break;                      
-        }
-        
-        $control.slideDown("slow");
-    }); */
 }
 
 /*
@@ -252,7 +224,7 @@ function SetActionHandler()
  * Function:	SetRemoveHandler
  *
  * Created on Oct 05, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 22, 2013
  *
  * Description: Remove media from Frago handler.
  * 
@@ -263,21 +235,19 @@ function SetActionHandler()
 function SetRemoveHandler(id, xbmcid)
 {
     var $remove, finish;
-    var media, name, title;
+    var media, type, name, title;
     
-    finish  = 3 + Math.floor(Math.random() * 3);
-    media   = GetState("media");
+    finish = 3 + Math.floor(Math.random() * 3);
+    media  = GetState("media");
+    type   = GetState("type");
     
-    // Turn progress on.
-    //$(".progress_off").toggleClass("progress_off progress");
-
     // Reset and show progress bar.
     $remove = $("#action_box .progress");
     $remove.progressbar({value : 0});
     $remove.show();  
     
     // Remove media from Fargo.
-    RemoveMediaFromFargo(media, id, xbmcid);
+    RemoveMediaFromFargo(type, id, xbmcid);
     
     media = ConvertMediaToSingular(media);
     name  = media.substr(0,1).toUpperCase() + media.substr(1); 
@@ -296,7 +266,7 @@ function SetRemoveHandler(id, xbmcid)
  * Function:	SetCleanDatabaseHandler
  *
  * Created on Jun 10, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Clean a database table (Library or Event Log).
  * 
@@ -309,9 +279,6 @@ function SetCleanDatabaseHandler()
     var option, number,finish;
     var $clean;
     
-    // Turn progress on.
-    //$(".progress_off").toggleClass("progress_off progress");
-    
     // Get option.
     option = $('#display_system_left .dim').text();
     // Get active row number.
@@ -323,8 +290,6 @@ function SetCleanDatabaseHandler()
     // Reset and show progress bar.
     $clean.progressbar({value : 0});
     $clean.show();
-    
-    //$("#clean_box .message").css({"margin-bottom":"20px"});
     
     // Truncate table and delete pictures (posters, fanart and thumbs).
     ChangeProperty(number, "");

@@ -7,15 +7,16 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Nov 17, 2013
+ * Updated on Nov 22, 2013
  *
- * Description: The main Json Fargo page.
+ * Description: The main Json Display page.
  * 
  * Note: This page contains functions that returns Json data for Jquery code.
  *
  */
 
 /////////////////////////////////////////////    Main Code    /////////////////////////////////////////////
+
 session_start();
 if(!isset($_SESSION['LOGIN'])) {
     $login = false;
@@ -38,7 +39,7 @@ switch($action)
                      $aJson = GetMediaInfo($media, $id);
                      break;
                  
-    case "hide"    : if($login)
+/*    case "hide"    : if($login)
                      {
                         $media = GetPageValue('media');
                         $id    = GetPageValue('id');
@@ -61,7 +62,7 @@ switch($action)
                         $aJson = LogEvent("Warning", "Unauthorized delete action call!");
                      }
                      break;                  
-                 
+               
     case "reset"   : if($login)
                      {
                         $media   = GetPageValue('media');
@@ -76,7 +77,7 @@ switch($action)
                         $aJson = LogEvent("Warning", "Unauthorized reset action call!");
                      }
                      break;
-    
+     
     case "counter" : if($login)
                      {
                         $media = GetPageValue('media');
@@ -111,7 +112,7 @@ switch($action)
                         $aJson = LogEvent("Warning", "Unauthorized status action call!");
                      }                        
                      break;     
-    
+*/    
     case "media"   : $type  = GetPageValue('type');
                      $page  = GetPageValue('page');
                      $title = GetPageValue('title'); // Sort by title, year, etc.
@@ -125,7 +126,7 @@ switch($action)
     case "option" : $name  = GetPageValue('name');
                     $aJson = GetSystemOptionProperties($name, $login); 
                     break;
-                
+/*                
     case "property":if($login)
                     {
                         $option = GetPageValue('option');
@@ -137,7 +138,7 @@ switch($action)
                         $aJson = LogEvent("Warning", "Unauthorized property action call!");
                     }                       
                     break;                
-                
+*/                
     case "setting": // Only used for login box.
                     $name  = GetPageValue('name');
                     $aJson = ProcessSetting($name);                   
@@ -148,7 +149,7 @@ switch($action)
                     $media  = GetPageValue('media');
                     $aJson  = GetSortList($type, $filter, $media, $login);
                     break;            
-                
+/*                
     case "log"    : if($login)
                     { 
                         $type  = GetPageValue('type');
@@ -159,7 +160,7 @@ switch($action)
                         $aJson = LogEvent("Warning", "Unauthorized log action call!");
                     }                    
                     break;
-    
+ */   
     case "test"   : break;                   
 }
 
@@ -168,742 +169,13 @@ if (!empty($aJson)) {
     echo json_encode($aJson);
 }
 
-//////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
-
-/*
- * Function:	ResetStatus
- *
- * Created on Jul 22, 2013
- * Updated on Oct 21, 2013
- *
- * Description: Reset the status. 
- *
- * In:  $media, $counter
- * Out: $status
- *
- */
-function ResetStatus($media, $counter)
-{       
-    if ($media == "seasons") 
-    {
-        $start = GetStatus("XbmcSeasonsStart");
-        $end   = GetStatus("XbmcSeasonsEnd");
-        
-        if ($start >= $end) {
-            UpdateStatus("XbmcSeasonsStart", 0);
-        }
-    }
-    
-    if ($counter == "true") {
-        UpdateStatus("ImportCounter", 0);
-    }
-    
-    UpdateStatus("Xbmc".$media."End", -1);
-    UpdateStatus("RefreshReady", true);    
-    
-    $status = "reset";    
-    return $status;
-}
-
-/*
- * Function:	GetMediaStatus
- *
- * Created on May 18, 2013
- * Updated on Oct 31, 2013
- *
- * Description: Reports the status of the import media process. 
- *
- * In:  $media, $id
- * Out: $aJson
- *
- */
-function GetMediaStatus($media, $id)
-{
-    $aJson = null;   
-    switch ($media)    
-    {   
-        case "movies"         : $aJson = GetImportRefreshStatus($media, $id, "xbmcid", cMOVIESTHUMBS);
-                                break;
-                      
-        case "sets"           : $aJson = GetImportRefreshStatus($media, $id, "setid", cSETSTHUMBS);
-                                break;                      
-    
-        case "tvshows"        : $aJson = GetImportRefreshStatus($media, $id, "xbmcid", cTVSHOWSTHUMBS);
-                                break;
-                      
-        case "tvshowsseasons" : $aJson['id'] = -1;
-                                if (GetStatus("XbmcSeasonsStart") == GetStatus("XbmcSeasonsEnd")) {
-                                    $aJson['id'] = 1;
-                                }
-                                break;
-                      
-        case "seasons"        : $aJson = GetSeasonsImportStatus(cSEASONSTHUMBS);
-                                break;
-                      
-        case "episodes"       : $aJson = GetEpisodesImportStatus(cEPISODESTHUMBS);
-                                break;                      
-                      
-        case "music"          : $aJson = GetImportRefreshStatus($media, $id, "xbmcid", cALBUMSTHUMBS);
-                                break;                      
-    }    
-    return $aJson;
-}
-
-/*
- * Function:	GetSortList
- *
- * Created on Jun 27, 2013
- * Updated on Sep 23, 2013
- *
- * Description: Get list of items for sorting purposes. 
- *
- * In:  $type, $filter, $media, $login
- * Out: $aJson
- *
- */
-function GetSortList($type, $filter, $media, $login)
-{
-    $aJson = null;
-    
-    switch(strtolower($type))
-    {
-        case "genres" : $aJson["list"] = GetGenres($filter, $media, $login);
-                        break;
-    
-        case "years"  : $aJson["list"] = GetYears($filter, $media, $login);
-                        break;
-    }
-    
-    return $aJson;
-}
-
-/*
- * Function:	GetGenres
- *
- * Created on Jun 27, 2013
- * Updated on Sep 23, 2013
- *
- * Description: Get genres from database table genres. 
- *
- * In:  $filter, $media, $login
- * Out: $aJson
- *
- */
-function GetGenres($filter, $media, $login)
-{
-    $stm = "";
-    if (!$login) {
-        $stm = " AND hide = 0 ";
-    }   
-    
-    $md = "music";
-    if ($media != "music") {
-        $md = rtrim($media, "s");
-    }
-    
-    if ($filter)
-    {   
-        $sql = "SELECT g.genre FROM genres g, genreto$md gtm, $media m ".
-               "WHERE g.id = gtm.genreid AND m.id = gtm.".$md."id ".
-               "AND m.`year` = $filter $stm".
-               "GROUP BY g.genre ".
-               "ORDER BY g.genre"; 
-    }    
-    else
-    {    
-        /*$sql = "SELECT genre FROM genres ".
-               "WHERE media = '$media' ".
-               "ORDER BY genre";
-        
-        */
-        
-        $sql = "SELECT g.genre FROM genres g, genreto$md gtm, $media m ".
-               "WHERE g.id = gtm.genreid AND m.id = gtm.".$md."id ".
-               "$stm".
-               "GROUP BY g.genre ".
-               "ORDER BY g.genre";         
-    }
-    
-    $aJson = GetItemsFromDatabase($sql);
-    
-    return $aJson;
-}
-
-/*
- * Function:	GetYears
- *
- * Created on Jun 30, 2013
- * Updated on Sep 23, 2013
- *
- * Description: Get years from database media table. 
- *
- * In:  $filter, $media, $login
- * Out: $aJson
- *
- */
-function GetYears($filter, $media, $login)
-{
-    $stm = "";
-    if (!$login) {
-        $stm = " AND hide = 0 ";
-    }   
-    
-    $md = "music";
-    if ($media != "music") {
-        $md = rtrim($media, "s");
-    }
-    
-    if ($filter)
-    {          
-        $sql = "SELECT m.year FROM $media m, genreto$md gtm, genres g ".
-               "WHERE m.id = gtm.".$md."id AND gtm.genreid = g.id ".
-               "AND g.genre = '$filter' $stm".
-               "GROUP BY m.`year` ".
-               "ORDER BY m.`year` DESC"; 
-    }
-    else 
-    {    
-        /*$sql = "SELECT YEAR FROM $media ".
-               "GROUP BY `year` ".
-               "ORDER BY `year` DESC";
-         */
-
-        $sql = "SELECT m.year FROM $media m, genreto$md gtm, genres g ".
-               "WHERE m.id = gtm.".$md."id AND gtm.genreid = g.id ".
-               "$stm".
-               "GROUP BY m.`year` ".
-               "ORDER BY m.`year` DESC";          
-    }
-    
-    $aJson = GetItemsFromDatabase($sql);
-    
-    return $aJson;
-}
-
-////////////////////////////////////////    Database Functions    /////////////////////////////////////////
-
-/*
- * Function:	GetImportRefreshStatus
- *
- * Created on May 18, 2013
- * Updated on Oct 31, 2013
- *
- * Description: Reports the status of the import or refresh process.
- *
- * In:  $media, $id, $nameid, $thumbs
- * Out: $aJson
- *
- */
-function GetImportRefreshStatus($media, $id, $nameid, $thumbs)
-{
-    $aJson['id']  = 0;
-    $aJson['refresh'] = 0;
-    $aJson['title']   = "empty";
-    $aJson['thumbs']  = $thumbs;
-  
-    $db = OpenDatabase();
-
-    if ($id < 0) { // Import.
-        $sql = "SELECT $nameid, refresh, title ".
-               "FROM $media ".
-               "ORDER BY id DESC LIMIT 1";
-    }
-    else { // Refresh.
-        $sql = "SELECT $nameid, refresh, title ".
-               "FROM $media ".
-               "WHERE $nameid = $id";   
-    }
-     
-    $stmt = $db->prepare($sql);
-    if($stmt)
-    {
-        if($stmt->execute())
-        {
-            // Get number of rows.
-            $stmt->store_result();
-            $rows = $stmt->num_rows;
-
-            if ($rows != 0)
-            {              
-                $stmt->bind_result($xbmcid, $refresh, $title);
-                while($stmt->fetch())
-                {                
-                    $aJson['id']      = $xbmcid;
-                    $aJson['refresh'] = $refresh;
-                    $aJson['title']   = ShortenString($title, 70);
-                }                  
-            }
-        }
-        else
-        {
-            die('Ececution query failed: '.mysqli_error($db));
-        }
-        $stmt->close();
-    }
-    else
-    {
-        die('Invalid query: '.mysqli_error($db));
-    } 
-
-    CloseDatabase($db);
-
-    return $aJson;
-}
-
-/*
- * Function:	GetSeasonsImportStatus
- *
- * Created on Oct 21, 2013
- * Updated on Oct 28, 2013
- *
- * Description: Reports the seasons status of the import process.
- *
- * In:  $thumbs
- * Out: $aJson
- *
- */
-function GetSeasonsImportStatus($thumbs)
-{
-    $aJson['id']  = 0;
-    $aJson['refresh'] = 0;
-    $aJson['title']   = "empty";
-    $aJson['thumbs']  = $thumbs;
-  
-    $db = OpenDatabase();
-
-    $sql = "SELECT id, refresh, tvshowid, showtitle, title, season ".
-           "FROM seasons ".
-           "ORDER BY id DESC LIMIT 1";
-        
-    $stmt = $db->prepare($sql);
-    if($stmt)
-    {
-        if($stmt->execute())
-        {
-            // Get number of rows.
-            $stmt->store_result();
-            $rows = $stmt->num_rows;
-
-            if ($rows != 0)
-            {              
-                $stmt->bind_result($id, $refresh, $tvshowid, $showtitle, $title, $season);
-                while($stmt->fetch())
-                {                
-                    $aJson['id']       = $id;
-                    $aJson['refresh']  = $refresh;
-                    $aJson['tvshowid'] = $tvshowid;
-                    $aJson['title']    = ShortenString($showtitle, 70)."</br>".ShortenString($title, 70);
-                    $aJson['season']   = $season;
-                }                  
-            }
-        }
-        else
-        {
-            die('Ececution query failed: '.mysqli_error($db));
-        }
-        $stmt->close();
-    }
-    else
-    {
-        die('Invalid query: '.mysqli_error($db));
-    } 
-
-    CloseDatabase($db);
-
-    return $aJson;
-}
-
-/*
- * Function:	GetEpisodesImportStatus
- *
- * Created on Oct 27, 2013
- * Updated on Oct 27, 2013
- *
- * Description: Reports the episode status of the import process.
- *
- * In:  $thumbs
- * Out: $aJson
- *
- */
-function GetEpisodesImportStatus($thumbs)
-{
-    $aJson['id']  = 0;
-    $aJson['refresh'] = 0;
-    $aJson['title']   = "empty";
-    $aJson['thumbs']  = $thumbs;
-  
-    $db = OpenDatabase();
-
-    $sql = "SELECT episodeid, refresh, showtitle, episode, title ".
-           "FROM episodes ".
-           "ORDER BY id DESC LIMIT 1";
-        
-    $stmt = $db->prepare($sql);
-    if($stmt)
-    {
-        if($stmt->execute())
-        {
-            // Get number of rows.
-            $stmt->store_result();
-            $rows = $stmt->num_rows;
-
-            if ($rows != 0)
-            {              
-                $stmt->bind_result($episodeid, $refresh, $showtitle, $episode, $title);
-                while($stmt->fetch())
-                {                
-                    $aJson['id']      = $episodeid;
-                    $aJson['refresh'] = $refresh;
-                    $aJson['title']   = ShortenString($showtitle, 70)."</br>$episode. ".ShortenString($title, 70);
-                }                  
-            }
-        }
-        else
-        {
-            die('Ececution query failed: '.mysqli_error($db));
-        }
-        $stmt->close();
-    }
-    else
-    {
-        die('Invalid query: '.mysqli_error($db));
-    } 
-
-    CloseDatabase($db);
-
-    return $aJson;
-}
-
-/*
- * Function:	CreateMediaQuery
- *
- * Created on Apr 08, 2013
- * Updated on Nov 13, 2013
- *
- * Description: Create the sql query for the media table. 
- *
- * In:  $table, $title, $genre, $year, $sort, $login
- * Out: $sql
- *
- */
-function CreateMediaQuery($table, $title, $genre, $year, $sort, $login)
-{   
-    $sql = "SELECT id, xbmcid, hide, refresh, title ".
-           "FROM $table ";
-    
-    $sql .= CreateQuerySelection("WHERE", $sort, $year, $genre, $login);
-    $sql .= CreateQuerySortQrder($title);
-    
-    //debug
-    //echo $sql;
-    
-    return $sql;
-}
-
-/*
- * Function:	CreateSetsQuery
- *
- * Created on Nov 08, 2013
- * Updated on Nov 13, 2013
- *
- * Description: Create the sql query for the media sets table. 
- *
- * In:  $title, $genre, $year, $sort, $login
- * Out: $sql
- *
- */
-function CreateSetsQuery($title, $genre, $year, $sort, $login)
-{    
-    $sql = "SELECT DISTINCT s.setid AS id, s.setid, s.hide, s.refresh, mc.set AS title ".
-           "FROM (SELECT setid, MIN(`year`) AS minyear FROM movies GROUP BY setid) ma ".
-           "JOIN sets s ON s.setid = ma.setid ".
-           "INNER JOIN movies mb ON ma.setid = mb.setid ".
-           "INNER JOIN movies mc ON ma.setid = mc.setid AND ma.minyear = mc.year ";
-    
-    $stm = "WHERE";
-    if (strlen($sort) == 1) {
-        $sql .= "$stm s.sorttitle LIKE '$sort%' ";
-        $stm = "AND";
-    }
-    
-    if ($year) 
-    {
-        $sql .= "$stm mc.year = $year ";
-        $stm = "AND";
-    }
-    
-    if ($genre) 
-    {
-        $sql .= "$stm mc.genre LIKE '%\"$genre\"%' ";
-        $stm = "AND";
-    }
-    
-    // Hide media items if not login.
-    if(!$login) {
-        $sql .= "$stm s.hide = 0 ";
-    }
-
-    switch ($title) 
-    {
-        case "latest"    : $sql .= "ORDER BY s.id DESC";
-                           break;
-        
-        case "oldest"    : $sql .= "ORDER BY s.id";
-                           break;
-        
-        case "name_asc"  : $sql .= "ORDER BY s.sorttitle";
-                           break;
-        
-        case "name_desc" : $sql .= "ORDER BY s.sorttitle DESC";
-                           break;
-                        
-        case "year_asc"  : $sql .= "ORDER BY mc.year, s.sorttitle";
-                           break;
-        
-        case "year_desc" : $sql .= "ORDER BY mc.year DESC, s.sorttitle DESC";
-                           break;                         
-    }    
-    //debug
-    //echo $sql;
-    
-    return $sql;
-}
-
-/*
- * Function:	CreateMoviesSetQuery
- *
- * Created on Nov 08, 2013
- * Updated on Nov 13, 2013
- *
- * Description: Create the sql query for the media movies set table. 
- *
- * In:  $title, $id, $genre, $year, $sort, $login
- * Out: $sql
- *
- */
-function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
-{
-    $sql = "SELECT id, xbmcid, hide, refresh, title ".
-           "FROM movies ".
-           "WHERE setid = $id ";
-    
-    $sql .= CreateQuerySelection("AND", $sort, $year, $genre, $login);
-    $sql .= CreateQuerySortQrder($title);  
-    
-    return $sql;
-}        
-
-/*
- * Function:	CreateSeriesQuery
- *
- * Created on Apr 08, 2013
- * Updated on Nov 14, 2013
- *
- * Description: Create the sql query for the media TV shows table. 
- *
- * In:  $title, $genre, $year, $sort, $login
- * Out: $sql
- *
- */
-function CreateSeriesQuery($title, $genre, $year, $sort, $login)
-{   
-    $sql = "SELECT DISTINCT  CONCAT(s.tvshowid, '_', s.seasons) AS id, CONCAT(t.xbmcid, '_', s.season) AS xbmcid, t.hide, t.refresh, t.title ".
-           "FROM (SELECT tvshowid, COUNT(season) AS seasons, season FROM seasons GROUP BY tvshowid) s ".
-           "JOIN tvshows t ON s.tvshowid = t.xbmcid ";
-    
-    $stm = "WHERE";
-    if (strlen($sort) == 1) {
-        $sql .= "$stm t.sorttitle LIKE '$sort%' ";
-        $stm = "AND";
-    }
-    
-    if ($year) 
-    {
-        $sql .= "$stm t.year = $year ";
-        $stm = "AND";
-    }
-    
-    if ($genre) 
-    {
-        $sql .= "$stm t.genre LIKE '%\"$genre\"%' ";
-        $stm = "AND";
-    }
-    
-    // Hide media items if not login.
-    if(!$login) {
-        $sql .= "$stm t.hide = 0 ";
-    }
-
-    switch ($title) 
-    {
-        case "latest"    : $sql .= "ORDER BY t.id DESC";
-                           break;
-        
-        case "oldest"    : $sql .= "ORDER BY t.id";
-                           break;
-        
-        case "name_asc"  : $sql .= "ORDER BY t.sorttitle";
-                           break;
-        
-        case "name_desc" : $sql .= "ORDER BY t.sorttitle DESC";
-                           break;
-                        
-        case "year_asc"  : $sql .= "ORDER BY t.year, t.sorttitle";
-                           break;
-        
-        case "year_desc" : $sql .= "ORDER BY t.year DESC, t.sorttitle DESC";
-                           break;                         
-    }    
-    //debug
-    //echo $sql;
-    
-    return $sql;
-}
-
-/*
- * Function:	CreateSeasonsQuery
- *
- * Created on Nov 12, 2013
- * Updated on Nov 13, 2013
- *
- * Description: Create the sql query for the media seasons table. 
- *
- * In:  $login
- * Out: $sql
- *
- */
-function CreateSeasonsQuery($id, $login)
-{
-    $sql = "SELECT CONCAT(tvshowid, '_', season) AS id, CONCAT(tvshowid, '_', season) AS xbmcid, hide, refresh, title ".
-           "FROM seasons WHERE tvshowid = $id ";
-    
-    // Hide media items if not login.
-    if(!$login) {
-        $sql .= "AND hide = 0 ";
-    }
-    
-    $sql .= "ORDER BY season";
-    
-    return $sql;
-}
-
-/*
- * Function:	 CreateEpisodesQuery
- *
- * Created on Nov 12, 2013
- * Updated on Nov 16, 2013
- *
- * Description: Create the sql query for the media seasons table. 
- *
- * In:  $id, $season, $login
- * Out: $sql
- *
- */
-function CreateEpisodesQuery($id, $season, $login)
-{
-    $sql = "SELECT id, episodeid, hide, refresh, CONCAT(episode, '. ', title) ".
-           "FROM episodes WHERE tvshowid = $id ";
-    
-    if ($season > -1) {
-        $sql .= "AND season = $season ";
-    }
-    
-    // Hide media items if not login.
-    if(!$login) {
-        $sql .= "AND hide = 0 ";
-    }
-    
-    $sql .= "ORDER BY episode";
-    
-    return $sql;
-}
-
-/*
- * Function:	CreateQuerySelection
- *
- * Created on Nov 08, 2013
- * Updated on Nov 08, 2013
- *
- * Description: Create the sql query selection for the media table. 
- *
- * In:  $stm, $sort, $year, $genre, $login
- * Out: $sql
- *
- */
-function CreateQuerySelection($stm, $sort, $year, $genre, $login)
-{
-    $sql = "";
-    
-    if (strlen($sort) == 1) {
-        $sql .= "$stm sorttitle LIKE '$sort%' ";
-        $stm = "AND";
-    }
-    
-    if ($year) 
-    {
-        $sql .= "$stm `year` = $year ";
-        $stm = "AND";
-    }
-    
-    if ($genre) 
-    {
-        $sql .= "$stm genre LIKE '%\"$genre\"%' ";
-        $stm = "AND";
-    }
-    
-    // Hide media items if not login.
-    if(!$login) {
-        $sql .= "$stm hide = 0 ";
-    }
-    
-    return $sql;
-}        
-
-/*
- * Function:	CreateQuerySortQorder
- *
- * Created on Nov 08, 2013
- * Updated on Nov 10, 2013
- *
- * Description: Create the sql query sort order for the media table. 
- *
- * In:  $title
- * Out: $sql
- *
- */
-function CreateQuerySortQrder($title)
-{
-    $sql = "";
-    
-    switch ($title) 
-    {
-        case "latest"    : $sql .= "ORDER BY id DESC";
-                           break;
-        
-        case "oldest"    : $sql .= "ORDER BY id";
-                           break;
-        
-        case "name_asc"  : $sql .= "ORDER BY sorttitle";
-                            break;
-        
-        case "name_desc" : $sql .= "ORDER BY sorttitle DESC";
-                            break;
-                        
-        case "year_asc"  : $sql .= "ORDER BY `year`, sorttitle";
-                            break;
-        
-        case "year_desc" : $sql .= "ORDER BY `year` DESC, sorttitle DESC";
-                            break;                        
-    }
-    
-    return $sql;
-}
+//////////////////////////////////////////    Info Functions    ///////////////////////////////////////////
 
 /*
  * Function:	GetMediaInfo
  *
  * Created on Jul 05, 2013
- * Updated on Nov 17, 2013
+ * Updated on Nov 22, 2013
  *
  * Description: Get the media info from Fargo and return it as Json data. 
  *
@@ -919,6 +191,12 @@ function GetMediaInfo($media, $id)
     {
         case "movies"   : $aJson = GetMovieInfo($id);
                           break;
+                      
+        case "titles"   : $aJson = GetPopupInfo("movies", "xbmc", $id, cMOVIESTHUMBS); // For Refresh and Delete Popups.
+                          break;
+                      
+        case "sets"     : $aJson = GetPopupInfo("sets", "set", $id, cSETSTHUMBS); // For Refresh and Delete Popups.
+                          break;                     
         
         case "tvshows"  : $aJson = GetTVShowInfo($id);
                           break;
@@ -1007,6 +285,63 @@ function GetMovieInfo($id)
     // Fill parameters.
     $aParams['thumbs'] = cMOVIESTHUMBS;
     $aParams['fanart'] = cMOVIESFANART;
+    
+    // Fill Json.
+    $aJson['params']   = $aParams;
+    $aJson['media']    = $aMedia;
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetPopupInfo
+ *
+ * Created on Nov 22, 2013
+ * Updated on Nov 22, 2013
+ *
+ * Description: Get the media info for the refresh or delete popups from Fargo and return it as Json data. 
+ *
+ * In:  $table, $xbmc, $id, $thumb 
+ * Out: $aJson
+ *
+ */
+function GetPopupInfo($table, $xbmc, $id, $thumb)
+{
+    $aJson   = null;
+    $aMedia  = null;
+    $aParams = null;
+    
+    $sql = "SELECT "."$xbmc"."id, refresh, title ".
+           "FROM $table ".
+           "WHERE id = $id";
+    
+    $db = OpenDatabase();
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            $stmt->bind_result($xbmcid, $refresh, $title);
+            $stmt->fetch();
+            
+            $aMedia["xbmcid"]   = $xbmcid;
+            $aMedia["refresh"]  = $refresh;
+            $aMedia["title"]    = ShortenString($title, 50);
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    }
+    CloseDatabase($db);      
+    
+    // Fill parameters.
+    $aParams['thumbs'] = $thumb;
     
     // Fill Json.
     $aJson['params']   = $aParams;
@@ -1471,11 +806,13 @@ function ConverToMovieUrl($id, $guide="")
     return $url;
 }
 
+//////////////////////////////////////////    Media Functions    //////////////////////////////////////////
+
 /*
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Nov 16, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -1514,7 +851,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                      
         case "sets2"   : $aParams['thumbs'] = cMOVIESTHUMBS; // The set movies.
                          $aParams['column'] = cMediaColumn;
-                         $header = GetItemFromDatabase("title", "SELECT title FROM `sets` WHERE setid = $level");
+                         $header = GetItemFromDatabase("title", "SELECT title FROM `sets` WHERE id = $level");
                          $sql    = CreateMoviesSetQuery($title, $level, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($sql);
                          $max    = cMediaRow * cMediaColumn; 
@@ -1585,8 +922,284 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
     $aJson['media']  = $aMedia;
     
     return $aJson;
+}
+
+/*
+ * Function:	CreateMediaQuery
+ *
+ * Created on Apr 08, 2013
+ * Updated on Nov 20, 2013
+ *
+ * Description: Create the sql query for the media table. 
+ *
+ * In:  $table, $title, $genre, $year, $sort, $login
+ * Out: $sql
+ *
+ */
+function CreateMediaQuery($table, $title, $genre, $year, $sort, $login)
+{   
+    $sql = "SELECT id, xbmcid, hide, refresh, title ".
+           "FROM $table ";
+    
+    $sql .= CreateQuerySelection("", "WHERE ", $sort, $year, $genre, $login);
+    $sql .= CreateQuerySortQrder("", $title);
+    
+    return $sql;
+}
+
+/*
+ * Function:	CreateSetsQuery
+ *
+ * Created on Nov 08, 2013
+ * Updated on Nov 20, 2013
+ *
+ * Description: Create the sql query for the media sets table. 
+ *
+ * In:  $title, $genre, $year, $sort, $login
+ * Out: $sql
+ *
+ */
+function CreateSetsQuery($title, $genre, $year, $sort, $login)
+{    
+    $sql = "SELECT DISTINCT s.id AS id, s.setid, s.hide, s.refresh, mc.set AS title ".
+           "FROM (SELECT setid, MIN(`year`) AS minyear FROM movies GROUP BY setid) ma ".
+           "JOIN sets s ON s.setid = ma.setid ".
+           "INNER JOIN movies mb ON ma.setid = mb.setid ".
+           "INNER JOIN movies mc ON ma.setid = mc.setid AND ma.minyear = mc.year ";
+    
+    $stm = "WHERE";
+    if (strlen($sort) == 1) {
+        $sql .= "$stm s.sorttitle LIKE '$sort%' ";
+        $stm = "AND";
+    }
+    
+    if ($year) 
+    {
+        $sql .= "$stm mc.year = $year ";
+        $stm = "AND";
+    }
+    
+    if ($genre) 
+    {
+        $sql .= "$stm mc.genre LIKE '%\"$genre\"%' ";
+        $stm = "AND";
+    }
+    
+    // Hide media items if not login.
+    if(!$login) {
+        $sql .= "$stm s.hide = 0 ";
+    }
+
+    switch ($title) 
+    {
+        case "latest"    : $sql .= "ORDER BY s.id DESC";
+                           break;
+        
+        case "oldest"    : $sql .= "ORDER BY s.id";
+                           break;
+        
+        case "name_asc"  : $sql .= "ORDER BY s.sorttitle";
+                           break;
+        
+        case "name_desc" : $sql .= "ORDER BY s.sorttitle DESC";
+                           break;
+                        
+        case "year_asc"  : $sql .= "ORDER BY mc.year, s.sorttitle";
+                           break;
+        
+        case "year_desc" : $sql .= "ORDER BY mc.year DESC, s.sorttitle DESC";
+                           break;                         
+    }
+    
+    return $sql;
+}
+
+/*
+ * Function:	CreateMoviesSetQuery
+ *
+ * Created on Nov 08, 2013
+ * Updated on Nov 21, 2013
+ *
+ * Description: Create the sql query for the media movies set table. 
+ *
+ * In:  $title, $id, $genre, $year, $sort, $login
+ * Out: $sql
+ *
+ */
+function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
+{   
+    $sql = "SELECT m.id, m.xbmcid, m.hide, m.refresh, m.title ".
+           "FROM sets s, movies m ".
+           "WHERE s.setid = m.setid AND s.id = $id ";
+    
+    $sql .= CreateQuerySelection("m.", "AND ", $sort, $year, $genre, $login);
+    $sql .= CreateQuerySortQrder("m.", $title);
+    
+    return $sql;
+}
+
+/*
+ * Function:	CreateSeriesQuery
+ *
+ * Created on Apr 08, 2013
+ * Updated on Nov 21, 2013
+ *
+ * Description: Create the sql query for the media TV shows table. 
+ *
+ * In:  $title, $genre, $year, $sort, $login
+ * Out: $sql
+ *
+ */
+function CreateSeriesQuery($title, $genre, $year, $sort, $login)
+{   
+    $sql = "SELECT DISTINCT  CONCAT(s.tvshowid, '_', s.seasons) AS id, CONCAT(t.xbmcid, '_', s.season) AS xbmcid, t.hide, t.refresh, t.title ".
+           "FROM (SELECT tvshowid, COUNT(season) AS seasons, season FROM seasons GROUP BY tvshowid) s ".
+           "JOIN tvshows t ON s.tvshowid = t.xbmcid ";
+    
+    $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
+    $sql .= CreateQuerySortQrder("t.", $title);
+        
+    return $sql;
+}
+
+/*
+ * Function:	CreateSeasonsQuery
+ *
+ * Created on Nov 12, 2013
+ * Updated on Nov 13, 2013
+ *
+ * Description: Create the sql query for the media seasons table. 
+ *
+ * In:  $login
+ * Out: $sql
+ *
+ */
+function CreateSeasonsQuery($id, $login)
+{
+    $sql = "SELECT CONCAT(tvshowid, '_', season) AS id, CONCAT(tvshowid, '_', season) AS xbmcid, hide, refresh, title ".
+           "FROM seasons WHERE tvshowid = $id ";
+    
+    // Hide media items if not login.
+    if(!$login) {
+        $sql .= "AND hide = 0 ";
+    }
+    
+    $sql .= "ORDER BY season";
+    
+    return $sql;
+}
+
+/*
+ * Function:	 CreateEpisodesQuery
+ *
+ * Created on Nov 12, 2013
+ * Updated on Nov 16, 2013
+ *
+ * Description: Create the sql query for the media seasons table. 
+ *
+ * In:  $id, $season, $login
+ * Out: $sql
+ *
+ */
+function CreateEpisodesQuery($id, $season, $login)
+{
+    $sql = "SELECT id, episodeid, hide, refresh, CONCAT(episode, '. ', title) ".
+           "FROM episodes WHERE tvshowid = $id ";
+    
+    if ($season > -1) {
+        $sql .= "AND season = $season ";
+    }
+    
+    // Hide media items if not login.
+    if(!$login) {
+        $sql .= "AND hide = 0 ";
+    }
+    
+    $sql .= "ORDER BY episode";
+    
+    return $sql;
+}
+
+/*
+ * Function:	CreateQuerySelection
+ *
+ * Created on Nov 08, 2013
+ * Updated on Nov 21, 2013
+ *
+ * Description: Create the sql query selection for the media table. 
+ *
+ * In:  $a, $stm, $sort, $year, $genre, $login
+ * Out: $sql
+ *
+ */
+function CreateQuerySelection($a, $stm, $sort, $year, $genre, $login)
+{
+    $sql = "";
+    
+    if (strlen($sort) == 1) {
+        $sql .= $stm . $a . "sorttitle LIKE '$sort%' ";
+        $stm = "AND ";
+    }
+    
+    if ($year) 
+    {
+        $sql .= $stm . $a . "year = $year ";
+        $stm = "AND ";
+    }
+    
+    if ($genre) 
+    {
+        $sql .= $stm . $a . "genre LIKE '%\"$genre\"%' ";
+        $stm = "AND ";
+    }
+    
+    // Hide media items if not login.
+    if(!$login) {
+        $sql .= $stm . $a . "hide = 0 ";
+    }
+    
+    return $sql;
 }        
 
+/*
+ * Function:	CreateQuerySortQorder
+ *
+ * Created on Nov 08, 2013
+ * Updated on Nov 21, 2013
+ *
+ * Description: Create the sql query sort order for the media table. 
+ *
+ * In:  $a, $title
+ * Out: $sql
+ *
+ */
+function CreateQuerySortQrder($a, $title)
+{
+    $sql = "";
+    
+    switch ($title) 
+    {
+        case "latest"    : $sql .= "ORDER BY ".$a."id DESC";
+                           break;
+        
+        case "oldest"    : $sql .= "ORDER BY ".$a."id";
+                           break;
+        
+        case "name_asc"  : $sql .= "ORDER BY ".$a."sorttitle";
+                            break;
+        
+        case "name_desc" : $sql .= "ORDER BY ".$a."sorttitle DESC";
+                            break;
+                        
+        case "year_asc"  : $sql .= "ORDER BY ".$a."year, ".$a."sorttitle";
+                            break;
+        
+        case "year_desc" : $sql .= "ORDER BY ".$a."year DESC, ".$a."sorttitle DESC";
+                            break;                        
+    }
+    
+    return $sql;
+}
 
 /*
  * Function:	QueryMedia
@@ -1663,108 +1276,7 @@ function QueryMedia($sql, $page, $end, $length)
     return $aMedia;
 }
 
-/*
- * Function:	QuerySets
- *
- * Created on Nov 08, 2013
- * Updated on Nov 08, 2013
- *
- * Description: Get a page of movie sets from Fargo and return it as Json data. 
- *
- * In:  $sql, $page
- * Out: $aJson
- *
- */
-/*function QuerySets($sql, $page)
-{   
-    $aMedia  = null; 
-
-    // Number of movies for 1 page
-    $end   = cMediaRow * cMediaColumn;
-    $start = ($page - 1) * $end;
-    
-    // Add limit.
-    $sql .=  " LIMIT $start , $end";
-    
-    $db = OpenDatabase();
-    $stmt = $db->prepare($sql);
-    if($stmt)
-    {
-        if($stmt->execute())
-        {
-            // Get number of rows.
-            $stmt->store_result();
-            $rows = $stmt->num_rows;
-
-            if ($rows != 0)
-            {              
-                $i = 0;
-                
-                $stmt->bind_result($id, $setid, $hide, $refresh, $title, $items);
-                while($stmt->fetch())
-                {                
-                    
-                    $aMedia[$i]['id']      = $id;                    
-                    $aMedia[$i]['xbmcid']  = $setid;  
-                    $aMedia[$i]['hide']    = $hide;  
-                    $aMedia[$i]['refresh'] = $refresh; 
-                    $aMedia[$i]['title']   = ShortenString($title, 22);
-                    $aMedia[$i]['items']   = $items;                  
-                    
-                    $i++;
-                }                  
-            }
-            else
-            {
-                    $aMedia[0]['id']      = 0;
-                    $aMedia[0]['xbmcid']  = 0;  
-                    $aMedia[0]['hide']    = -1;  
-                    $aMedia[0]['refresh'] = -1;                      
-                    $aMedia[0]['title']   = 'empty';
-                    $aMedia[0]['items']   = 0;  
-            }
-        }
-        else
-        {
-            die('Ececution query failed: '.mysqli_error($db));
-        }
-            $stmt->close();        
-    }
-    else
-    {
-        die('Invalid query: '.mysqli_error($db));
-    } 
-
-    CloseDatabase($db);  
-    
-    return $aMedia;
-}*/
-
-/*
- * Function:	ProcessSetting
- *
- * Created on Jun 09, 2013
- * Updated on Jul 15, 2013
- *
- * Description: Get value from settings database and process value if necessary. 
- *
- * In:  $name 
- * Out: $aJson
- *
- */
-function ProcessSetting($name)
-{
-    $aJson = null;
-    $value = GetSetting($name);
-    
-    if ($name == "Hash") {
-        $value = md5($value);
-    }
-    
-    $aJson["value"] = $value;
-    
-    return $aJson;
-}
+//////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
 
 /*
  * Function:	GetSystemOptionProperties
@@ -1888,6 +1400,434 @@ function GenerateEventRows()
 }
 
 /*
+ * Function:	ProcessSetting
+ *
+ * Created on Jun 09, 2013
+ * Updated on Jul 15, 2013
+ *
+ * Description: Get value from settings database and process value if necessary. 
+ *
+ * In:  $name 
+ * Out: $aJson
+ *
+ */
+function ProcessSetting($name)
+{
+    $aJson = null;
+    $value = GetSetting($name);
+    
+    if ($name == "Hash") {
+        $value = md5($value);
+    }
+    
+    $aJson["value"] = $value;
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetSortList
+ *
+ * Created on Jun 27, 2013
+ * Updated on Sep 23, 2013
+ *
+ * Description: Get list of items for sorting purposes. 
+ *
+ * In:  $type, $filter, $media, $login
+ * Out: $aJson
+ *
+ */
+function GetSortList($type, $filter, $media, $login)
+{
+    $aJson = null;
+    
+    switch(strtolower($type))
+    {
+        case "genres" : $aJson["list"] = GetGenres($filter, $media, $login);
+                        break;
+    
+        case "years"  : $aJson["list"] = GetYears($filter, $media, $login);
+                        break;
+    }
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetGenres
+ *
+ * Created on Jun 27, 2013
+ * Updated on Nov 21, 2013
+ *
+ * Description: Get genres from database table genres. 
+ *
+ * In:  $filter, $media, $login
+ * Out: $aJson
+ *
+ */
+function GetGenres($filter, $media, $login)
+{
+    $stm = "";
+    if (!$login) {
+        $stm = " AND hide = 0 ";
+    }   
+    
+    $md = "music";
+    if ($media != "music") {
+        $md = rtrim($media, "s");
+    }
+    
+    if ($filter)
+    {   
+        $sql = "SELECT g.genre FROM genres g, genreto$md gtm, $media m ".
+               "WHERE g.id = gtm.genreid AND m.id = gtm.".$md."id ".
+               "AND m.`year` = $filter $stm".
+               "GROUP BY g.genre ".
+               "ORDER BY g.genre"; 
+    }    
+    else
+    {            
+        $sql = "SELECT g.genre FROM genres g, genreto$md gtm, $media m ".
+               "WHERE g.id = gtm.genreid AND m.id = gtm.".$md."id ".
+               "$stm".
+               "GROUP BY g.genre ".
+               "ORDER BY g.genre";         
+    }
+    
+    $aJson = GetItemsFromDatabase($sql);
+    
+    return $aJson;
+}
+
+/*
+ * Function:	GetYears
+ *
+ * Created on Jun 30, 2013
+ * Updated on Nov 21, 2013
+ *
+ * Description: Get years from database media table. 
+ *
+ * In:  $filter, $media, $login
+ * Out: $aJson
+ *
+ */
+function GetYears($filter, $media, $login)
+{
+    $stm = "";
+    if (!$login) {
+        $stm = " AND hide = 0 ";
+    }   
+    
+    $md = "music";
+    if ($media != "music") {
+        $md = rtrim($media, "s");
+    }
+    
+    if ($filter)
+    {          
+        $sql = "SELECT m.year FROM $media m, genreto$md gtm, genres g ".
+               "WHERE m.id = gtm.".$md."id AND gtm.genreid = g.id ".
+               "AND g.genre = '$filter' $stm".
+               "GROUP BY m.`year` ".
+               "ORDER BY m.`year` DESC"; 
+    }
+    else 
+    {    
+        $sql = "SELECT m.year FROM $media m, genreto$md gtm, genres g ".
+               "WHERE m.id = gtm.".$md."id AND gtm.genreid = g.id ".
+               "$stm".
+               "GROUP BY m.`year` ".
+               "ORDER BY m.`year` DESC";          
+    }
+    
+    $aJson = GetItemsFromDatabase($sql);
+    
+    return $aJson;
+}
+
+
+
+
+
+
+/////////////////////////////////////////    Misc Functions  Old  /////////////////////////////////////////
+
+/*
+ * Function:	ResetStatus
+ *
+ * Created on Jul 22, 2013
+ * Updated on Oct 21, 2013
+ *
+ * Description: Reset the status. 
+ *
+ * In:  $media, $counter
+ * Out: $status
+ *
+ */
+/*function ResetStatus($media, $counter)
+{       
+    if ($media == "seasons") 
+    {
+        $start = GetStatus("XbmcSeasonsStart");
+        $end   = GetStatus("XbmcSeasonsEnd");
+        
+        if ($start >= $end) {
+            UpdateStatus("XbmcSeasonsStart", 0);
+        }
+    }
+    
+    if ($counter == "true") {
+        UpdateStatus("ImportCounter", 0);
+    }
+    
+    UpdateStatus("Xbmc".$media."End", -1);
+    UpdateStatus("RefreshReady", true);    
+    
+    $status = "reset";    
+    return $status;
+}*/
+
+/*
+ * Function:	GetMediaStatus
+ *
+ * Created on May 18, 2013
+ * Updated on Oct 31, 2013
+ *
+ * Description: Reports the status of the import media process. 
+ *
+ * In:  $media, $id
+ * Out: $aJson
+ *
+ */
+/*function GetMediaStatus($media, $id)
+{
+    $aJson = null;   
+    switch ($media)    
+    {   
+        case "movies"         : $aJson = GetImportRefreshStatus($media, $id, "xbmcid", cMOVIESTHUMBS);
+                                break;
+                      
+        case "sets"           : $aJson = GetImportRefreshStatus($media, $id, "setid", cSETSTHUMBS);
+                                break;                      
+    
+        case "tvshows"        : $aJson = GetImportRefreshStatus($media, $id, "xbmcid", cTVSHOWSTHUMBS);
+                                break;
+                      
+        case "tvshowsseasons" : $aJson['id'] = -1;
+                                if (GetStatus("XbmcSeasonsStart") == GetStatus("XbmcSeasonsEnd")) {
+                                    $aJson['id'] = 1;
+                                }
+                                break;
+                      
+        case "seasons"        : $aJson = GetSeasonsImportStatus(cSEASONSTHUMBS);
+                                break;
+                      
+        case "episodes"       : $aJson = GetEpisodesImportStatus(cEPISODESTHUMBS);
+                                break;                      
+                      
+        case "music"          : $aJson = GetImportRefreshStatus($media, $id, "xbmcid", cALBUMSTHUMBS);
+                                break;                      
+    }    
+    return $aJson;
+}*/
+
+
+
+////////////////////////////////////////    Database Functions    /////////////////////////////////////////
+
+/*
+ * Function:	GetImportRefreshStatus
+ *
+ * Created on May 18, 2013
+ * Updated on Oct 31, 2013
+ *
+ * Description: Reports the status of the import or refresh process.
+ *
+ * In:  $media, $id, $nameid, $thumbs
+ * Out: $aJson
+ *
+ */
+/*function GetImportRefreshStatus($media, $id, $nameid, $thumbs)
+{
+    $aJson['id']  = 0;
+    $aJson['refresh'] = 0;
+    $aJson['title']   = "empty";
+    $aJson['thumbs']  = $thumbs;
+  
+    $db = OpenDatabase();
+
+    if ($id < 0) { // Import.
+        $sql = "SELECT $nameid, refresh, title ".
+               "FROM $media ".
+               "ORDER BY id DESC LIMIT 1";
+    }
+    else { // Refresh.
+        $sql = "SELECT $nameid, refresh, title ".
+               "FROM $media ".
+               "WHERE $nameid = $id";   
+    }
+     
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            // Get number of rows.
+            $stmt->store_result();
+            $rows = $stmt->num_rows;
+
+            if ($rows != 0)
+            {              
+                $stmt->bind_result($xbmcid, $refresh, $title);
+                while($stmt->fetch())
+                {                
+                    $aJson['id']      = $xbmcid;
+                    $aJson['refresh'] = $refresh;
+                    $aJson['title']   = ShortenString($title, 70);
+                }                  
+            }
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
+
+    CloseDatabase($db);
+
+    return $aJson;
+}*/
+
+/*
+ * Function:	GetSeasonsImportStatus
+ *
+ * Created on Oct 21, 2013
+ * Updated on Oct 28, 2013
+ *
+ * Description: Reports the seasons status of the import process.
+ *
+ * In:  $thumbs
+ * Out: $aJson
+ *
+ */
+/*function GetSeasonsImportStatus($thumbs)
+{
+    $aJson['id']  = 0;
+    $aJson['refresh'] = 0;
+    $aJson['title']   = "empty";
+    $aJson['thumbs']  = $thumbs;
+  
+    $db = OpenDatabase();
+
+    $sql = "SELECT id, refresh, tvshowid, showtitle, title, season ".
+           "FROM seasons ".
+           "ORDER BY id DESC LIMIT 1";
+        
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            // Get number of rows.
+            $stmt->store_result();
+            $rows = $stmt->num_rows;
+
+            if ($rows != 0)
+            {              
+                $stmt->bind_result($id, $refresh, $tvshowid, $showtitle, $title, $season);
+                while($stmt->fetch())
+                {                
+                    $aJson['id']       = $id;
+                    $aJson['refresh']  = $refresh;
+                    $aJson['tvshowid'] = $tvshowid;
+                    $aJson['title']    = ShortenString($showtitle, 70)."</br>".ShortenString($title, 70);
+                    $aJson['season']   = $season;
+                }                  
+            }
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
+
+    CloseDatabase($db);
+
+    return $aJson;
+}*/
+
+/*
+ * Function:	GetEpisodesImportStatus
+ *
+ * Created on Oct 27, 2013
+ * Updated on Oct 27, 2013
+ *
+ * Description: Reports the episode status of the import process.
+ *
+ * In:  $thumbs
+ * Out: $aJson
+ *
+ */
+/*function GetEpisodesImportStatus($thumbs)
+{
+    $aJson['id']  = 0;
+    $aJson['refresh'] = 0;
+    $aJson['title']   = "empty";
+    $aJson['thumbs']  = $thumbs;
+  
+    $db = OpenDatabase();
+
+    $sql = "SELECT episodeid, refresh, showtitle, episode, title ".
+           "FROM episodes ".
+           "ORDER BY id DESC LIMIT 1";
+        
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            // Get number of rows.
+            $stmt->store_result();
+            $rows = $stmt->num_rows;
+
+            if ($rows != 0)
+            {              
+                $stmt->bind_result($episodeid, $refresh, $showtitle, $episode, $title);
+                while($stmt->fetch())
+                {                
+                    $aJson['id']      = $episodeid;
+                    $aJson['refresh'] = $refresh;
+                    $aJson['title']   = ShortenString($showtitle, 70)."</br>$episode. ".ShortenString($title, 70);
+                }                  
+            }
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    } 
+
+    CloseDatabase($db);
+
+    return $aJson;
+}*/
+
+/*
  * Function:	SetSystemProperty
  *
  * Created on May 27, 2013
@@ -1899,7 +1839,7 @@ function GenerateEventRows()
  * Out: $aJson
  *
  */
-function SetSystemProperty($option, $number, $value)
+/*function SetSystemProperty($option, $number, $value)
 {
     $aJson = null;
     
@@ -1917,7 +1857,7 @@ function SetSystemProperty($option, $number, $value)
     }
     
     return $aJson;
-}
+}*/
 
 /*
  * Function:	SetSettingProperty
@@ -1931,7 +1871,7 @@ function SetSystemProperty($option, $number, $value)
  * Out: $aJson
  *
  */
-function SetSettingProperty($number, $value)
+/*function SetSettingProperty($number, $value)
 {
     $aJson = null;
     $aJson['counter'] = 0;
@@ -1982,7 +1922,7 @@ function SetSettingProperty($number, $value)
  * Out: $aJson
  *
  */
-function CleanLibrary($number)
+/*function CleanLibrary($number)
 {
     $aJson = null;
     
@@ -2033,7 +1973,7 @@ function CleanLibrary($number)
     }
     
     return $aJson;
-}
+}*/
 
 /*
  * Function:	CleanLibrary
@@ -2047,13 +1987,13 @@ function CleanLibrary($number)
  * Out: Deleted Genres
  *
  */
-function DeleteGenres($media)
+/*function DeleteGenres($media)
 {
     $sql = "DELETE FROM genres ".
            "WHERE media = '$media'";
     
     ExecuteQuery($sql);
-}
+}*/
 
 /*
  * Function:	CleanEventLog
@@ -2067,7 +2007,7 @@ function DeleteGenres($media)
  * Out: $aJson
  *
  */
-function CleanEventLog()
+/*function CleanEventLog()
 {
     $aJson = null; 
     $aJson['name']    = "log";
@@ -2075,4 +2015,4 @@ function CleanEventLog()
     EmptyTable("log");
 
     return $aJson;
-}
+}*/

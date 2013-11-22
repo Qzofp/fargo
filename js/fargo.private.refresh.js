@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,7 +18,7 @@
  * Function:	SetStartRefreshHandler
  *
  * Created on Sep 14, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Set the refresh handler, show the refresh popup box and start the refresh.
  * 
@@ -32,7 +32,7 @@ function SetStartRefreshHandler(media, id, xbmcid)
     
     // Reset status, get xbmc connection (url) and port.
     $.ajax({
-        url: 'jsonfargo.php?action=reset&media=' + media + '&counter=' + false,
+        url: 'jsonmanage.php?action=reset&media=' + media + '&counter=' + false,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -136,7 +136,7 @@ function StartRefresh(xbmc, media, id, xbmcid)
  * Function:	ShowRefreshStatus
  *
  * Created on Sep 14, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Show the refresh status.
  *
@@ -147,7 +147,7 @@ function StartRefresh(xbmc, media, id, xbmcid)
 function ShowRefreshStatus(media, id, percent)
 {   
     $.ajax({
-        url: 'jsonfargo.php?action=status&media=' + media + '&mode=refresh' + '&id=' + id,
+        url: 'jsonmanage.php?action=status&media=' + media + '&mode=refresh' + '&id=' + id,
         dataType: 'json',
         success: function(json) 
         {     

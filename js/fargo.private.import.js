@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Nov 16, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -83,7 +83,7 @@ function SetStartImportHandler(media, selector, found, delay)
  * Function:	StartImportHandler
  *
  * Created on Jul 14, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Start the import handler.
  * 
@@ -95,7 +95,7 @@ function StartImportHandler(media, selector, type)
 {
     // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
-        url: 'jsonfargo.php?action=reset&media=' + type  + '&counter=' + true,
+        url: 'jsonmanage.php?action=reset&media=' + type  + '&counter=' + true,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -160,7 +160,7 @@ function StartImportHandler(media, selector, type)
  * Function:	SetRetryImportHandler
  *
  * Created on Sep 30, 2013
- * Updated on Oct 26, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Set the import handler and retry the import.
  * 
@@ -172,7 +172,7 @@ function SetRetryImportHandler(media, type, delta, start, selector)
 {   
     // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
-        url: 'jsonfargo.php?action=reset&media=' + type  + '&counter=' + false,
+        url: 'jsonmanage.php?action=reset&media=' + type  + '&counter=' + false,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -310,7 +310,7 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
  * Function:	ShowStatus
  *
  * Created on Aug 19, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Show the import status.
  *
@@ -321,7 +321,7 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
 function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg)
 {   
     $.ajax({
-        url: 'jsonfargo.php?action=status&media=' + media + '&mode=import',
+        url: 'jsonmanage.php?action=status&media=' + media + '&mode=import',
         dataType: 'json',
         success: function(json) 
         {     
@@ -373,7 +373,7 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg)
  * Function:	SetTVSeasonImportHandler
  *
  * Created on Oct 19, 2013
- * Updated on Nov 16, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Start the seasons import handler.
  * 
@@ -385,7 +385,7 @@ function SetTVSeasonsImportHandler(media, selector, type)
 { 
     // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
-        url: 'jsonfargo.php?action=reset&media=' + media + type + '&counter=' + true,
+        url: 'jsonmanage.php?action=reset&media=' + media + type + '&counter=' + true,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -514,7 +514,7 @@ function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
  * Function:	ShowTVShowSeasonsStatus
  *
  * Created on Oct 21, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Show the import TV Show Seasons status.
  *
@@ -525,7 +525,7 @@ function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
 function ShowTVShowSeasonsStatus(start, end, delta, $prg, $msg, msg1, msg2)
 {   
     $.ajax({
-        url: 'jsonfargo.php?action=status&media=tvshowsseasons&mode=import',
+        url: 'jsonmanage.php?action=status&media=tvshowsseasons&mode=import',
         dataType: 'json',
         success: function(json) 
         {     
@@ -556,7 +556,7 @@ function ShowTVShowSeasonsStatus(start, end, delta, $prg, $msg, msg1, msg2)
  * Function:	StartSeasonsImportHandler
  *
  * Created on Oct 19, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -568,7 +568,7 @@ function StartSeasonsImportHandler(tvshowid)
 {
     // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
-        url: 'jsonfargo.php?action=reset&media=seasons' + '&counter=' + false,
+        url: 'jsonmanage.php?action=reset&media=seasons' + '&counter=' + false,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -692,7 +692,7 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
  * Function:	ShowSeasonsStatus
  *
  * Created on Oct 20, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Show the import seasons status.
  *
@@ -703,7 +703,7 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
 function ShowSeasonsStatus($img, $tit)
 {   
     $.ajax({
-        url: 'jsonfargo.php?action=status&media=seasons&mode=import',
+        url: 'jsonmanage.php?action=status&media=seasons&mode=import',
         dataType: 'json',
         success: function(json) 
         {     
@@ -1133,7 +1133,7 @@ function DisplayStatusMessage(str1, str2, end, callback)
  * Function:	LogImportCounter
  *
  * Created on Oct 17, 2013
- * Updated on Oct 28, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Get and log import counter.
  *
@@ -1144,7 +1144,7 @@ function DisplayStatusMessage(str1, str2, end, callback)
 function LogImportCounter(media, finish)
 {
      $.ajax({
-        url: 'jsonfargo.php?action=counter&media=' + media,
+        url: 'jsonmanage.php?action=counter&media=' + media,
         async: false,
         dataType: 'json',
         success: function(json) 

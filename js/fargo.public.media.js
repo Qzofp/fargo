@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Nov 17, 2013
+ * Updated on Nov 22, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -720,7 +720,7 @@ function SetButtonsHandler()
  * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Nov 10, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Show the sort, genre, years or manage action.
  * 
@@ -796,24 +796,7 @@ function SetShowButtonHandler()
         default :             SetState(state, $this.text());
                               break;
     }
-    
-    // Show all genres or years.
-    /*if ($this.text() == "- Show All -") {
-        SetState(state, "");
-    }
-    else {
-        SetState(state, $this.text());
-    }
-    
-    if ($this.text() == "Import") 
-    {
-        media = GetState("media");  
-        setTimeout(function(){
-            SetImportPopupHandler(media);
-        }, 500);
-    } 
-    */
-   
+       
     if (choice != "Manage") 
     {    
         // Reset page and sort globals;
@@ -1242,7 +1225,7 @@ function ConvertMedia(media)
  * Function:	ConvertMediaToSingular
  *
  * Created on Sep 07, 2013
- * Updated on Oct 26, 2013
+ * Updated on Nov 22, 2013
  *
  * Description: Convert the media string to a singular string.
  * 
@@ -1257,9 +1240,12 @@ function ConvertMediaToSingular(media)
     {
         case 'movies'  : media = "Movie";
                          break;
-                        
+
+        case 'titles'  : media = "Movie";
+                         break;        
+        
         case 'sets'    : media = "Movie Set";
-                         break;                        
+                         break;
                         
         case 'tvshows' : media = "TV Show";
                          break;
@@ -1380,7 +1366,7 @@ function ShowMediaTable(page, sort)
  * Function:	ShowInfoHeader
  *
  * Created on Jul 01, 2013
- * Updated on Nov 17, 2013
+ * Updated on Nov 20, 2013
  *
  * Description: Shows to info header.
  *
@@ -1397,7 +1383,7 @@ function ShowInfoHeader(type, title, sort, genre, year)
         info1 = title;
     }
  
-    if (type != "sets2" && type != "series2"  && type != "series2b"  && type != "series3")
+    if (type != "sets2" && type != "series2" && type != "series3")
     {    
         if (genre) {
             info1 = genre;

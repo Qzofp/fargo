@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Nov 13, 2013
+ * Updated on Nov 22, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -80,7 +80,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Function:	SetInfoZoomHandlerWithActions
  *
  * Created on Aug 31, 2013
- * Updated on Nov 13, 2013
+ * Updated on Nov 22, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -94,11 +94,7 @@ function SetInfoZoomHandlerWithActions()
     var media = GetState("media");
     var type  = GetState("type");
     var id = $(this).attr("class").match(/\d+(_\d+)?/g);
-    
-    //if (type == "series") {
-    //    id = id + "_" + $(this).find(".items").text();
-    //}
-    
+        
     switch(mode)
     {
         case "Refresh"   : //alert ("Refresh");
@@ -106,11 +102,11 @@ function SetInfoZoomHandlerWithActions()
                            break;
                          
         case "Hide/Show" : //alert ("Hide and Show");
-                           HideOrShowMedia(media, id);
+                           HideOrShowMedia(type, id);
                            break;               
 
         case "Remove"    : //alert ("Delete");
-                           ShowModePopup(mode, media, id);
+                           ShowModePopup(mode, type, id);
                            break;
         
         default          : ShowInfoZoomMedia(media, type, id); //Mode is Normal.
@@ -202,7 +198,7 @@ function HideOrShowMedia(media, id)
  * Function:	HideOrShowMediaInFargo
  *
  * Created on Sep 23, 2013
- * Updated on Sep 23, 2013
+ * Updated on Nov 20, 2013
  *
  * Description: Hide or show media in Fargo. Update 
  * 
@@ -214,7 +210,7 @@ function HideOrShowMediaInFargo(media, id, value)
 {
     $.ajax
     ({
-        url: 'jsonfargo.php?action=hide&media=' + media + '&id=' + id + '&value=' + value,
+        url: 'jsonmanage.php?action=hide&media=' + media + '&id=' + id + '&value=' + value,
         async: false,
         dataType: 'json',
         success: function(json) {
@@ -226,7 +222,7 @@ function HideOrShowMediaInFargo(media, id, value)
  * Function:	RemoveMediaFromFargo
  *
  * Created on Oct 05, 2013
- * Updated on Oct 05, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Remove media from Frago.
  * 
@@ -238,7 +234,7 @@ function RemoveMediaFromFargo(media, id, xbmcid)
 {
     $.ajax
     ({
-        url: 'jsonfargo.php?action=delete&media=' + media + '&id=' + id + '&xbmcid=' + xbmcid,
+        url: 'jsonmanage.php?action=delete&media=' + media + '&id=' + id + '&xbmcid=' + xbmcid,
         async: false,
         dataType: 'json',
         success: function(json) {

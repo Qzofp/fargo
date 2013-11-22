@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -273,7 +273,7 @@ function ShowPopupBox(type, title)
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Close import or other popup window.
  * 
@@ -303,7 +303,7 @@ function SetCloseHandler()
                                                  break;  
                                              
                                 case "Remove"  : //alert("Finish Remove");
-                                                 ShowMediaTable(gSTATE.MEDIA, gSTATE.PAGE, gSTATE.SORT);
+                                                 ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
                                                  break;
                              }
                              ClearActionBox();
@@ -435,7 +435,7 @@ function GetFargoSetting(name)
  * Function:	LogEvent
  *
  * Created on May 10, 2013
- * Updated on May 10, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Log event to the database log table.
  * 
@@ -447,7 +447,7 @@ function LogEvent(type, event)
 {
     $.ajax
     ({
-        url: 'jsonfargo.php?action=log&type=' + type + '&event=' + event,
+        url: 'jsonmanage.php?action=log&type=' + type + '&event=' + event,
         async: false,
         dataType: 'json',
         success: function(json) 
@@ -458,38 +458,10 @@ function LogEvent(type, event)
 }
 
 /*
- * Function:	GetFargoCounter
- *
- * Created on May 12, 2013
- * Updated on May 15, 2013
- *
- * Description: Get the media counter from Fargo.
- *
- * In:	media
- * Out:	counter
- *
- */
-/*function GetFargoCounter(media) 
-{
-    $.ajax({
-        url: 'jsonfargo.php?action=counter&media=' + media,
-        async: false,
-        dataType: 'json',
-        success: function(json) 
-        {    
-            global_total_fargo = Number(json.counter);
-            
-            // debug
-            //alert(global_total_fargo);
-        } // End Success.        
-    }); // End Ajax;
-}*/
-
-/*
  * Function:	GetXbmcMediaLimits
  *
  * Created on Jul 22, 2013
- * Updated on Oct 25, 2013
+ * Updated on Nov 21, 2013
  *
  * Description: Get the XBMC media limits (start and end values).
  *
@@ -500,7 +472,7 @@ function LogEvent(type, event)
 function GetXbmcMediaLimits(media) 
 {
     $.ajax({
-        url: 'jsonfargo.php?action=counter&media=' + media,
+        url: 'jsonmanage.php?action=counter&media=' + media,
         async: false,
         dataType: 'json',
         success: function(json) 
@@ -510,36 +482,6 @@ function GetXbmcMediaLimits(media)
         } // End Success.        
     }); // End Ajax;
 }
-
-/*
- * Function:	GetXbmcCounter
- *
- * Created on May 15, 2013
- * Updated on May 18, 2013
- *
- * Description: Get the media counter from XBMC.
- *
- * In:	media
- * Out:	counter
- *
- */
-/*function GetXbmcCounter(media) 
-{
-    $.ajax({
-        url: 'jsonxbmc.php?action=counter&media=' + media,
-        async: false,
-        dataType: 'json',
-        success: function(json) 
-        {    
-            if (json.online == true) {
-                global_total_xbmc = json.counter;
-            }
-            else {
-                global_total_xbmc = -1;
-            }
-        } // End Success.        
-    }); // End Ajax;
-}*/
 
 /*
  * Function:	DisplayMessage
