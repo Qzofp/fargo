@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Oct 31, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: The main Fargo functions page.
  *
@@ -301,32 +301,6 @@ function IncrementStatus($name, $incr)
 }
 
 /*
- * Function:	HideOrShowMedia
- *
- * Created on Sep 23, 2013
- * Updated on Nov 22, 2013
- *
- * Description: Update hide media hide column.
- *
- * In:  $media, $id, $value
- * Out:	Update hide column
- * 
- */
-function HideOrShowMedia($table, $id, $value)
-{
-    $aJson = null;
-    
-    $sql = "UPDATE $table ".
-           "SET hide = $value ".
-           "WHERE id = $id";
-            
-    ExecuteQuery($sql);
-    
-    $aJson["ready"] = true;
-    return $aJson;
-}
-
-/*
  * Function:	CountMedia
  *
  * Created on Oct 06, 2013
@@ -370,92 +344,6 @@ function CountMedia($table, $login)
     CloseDatabase($db);
     
     return $rows;
-}
-
-/*
- * Function:	DeleteMediaQuery
- *
- * Created on Oct 05, 2013
- * Updated on Nov 22, 2013
- *
- * Description: Delete media from Fargo database.
- *
- * In:  $media, $id, $xbmcid
- * Out:	Deleted media
- * 
- */
-function DeleteMedia($media, $id, $xbmcid)
-{
-    $aJson = null;
-    
-    switch ($media)
-    {
-        case "movies"  : DeleteMediaQuery("movies", $id);
-                         DeleteMediaGenreQuery("movie", $id);
-                         DeleteFile(cMOVIESTHUMBS."/$xbmcid.jpg");
-                         DeleteFile(cMOVIESFANART."/$xbmcid.jpg");
-                         break;
-                     
-        case "sets"    : //DeleteMediaSetQuery($id);
-                         DeleteFile(cSETSTHUMBS."/$xbmcid.jpg");
-                         DeleteFile(cSETSFANART."/$xbmcid.jpg");
-                         break;
-                            
-        case "tvshows" : DeleteMediaQuery("tvshows", $id);
-                         DeleteMediaGenre("tvshow", $id);
-                         DeleteFile(cTVSHOWSTHUMBS."/$xbmcid.jpg");
-                         DeleteFile(cTVSHOWSFANART."/$xbmcid.jpg");
-                         break;
-                            
-        case "music"   : DeleteMediaQuery("music", $id);
-                         DeleteMediaGenre("music", $id);
-                         DeleteFile(cALBUMSTHUMBS."/$xbmcid.jpg");
-                         DeleteFile(cALBUMSCOVERS."/$xbmcid.jpg");
-                         break;                             
-    }
-       
-    $aJson["ready"] = true;
-    return $aJson;    
-}
-
-/*
- * Function:	DeleteMediaQuery
- *
- * Created on Nov 22, 2013
- * Updated on Nov 22, 2013
- *
- * Description: Delete media from the Fargo database.
- *
- * In:  $table, $id
- * Out:	Deleted media
- * 
- */
-function DeleteMediaQuery($table, $id)
-{
-    $sql = "DELETE FROM $table ".
-           "WHERE id = $id";
-    
-    ExecuteQuery($sql);
-}
-
-/*
- * Function:	DeleteMediaGenreQuery
- *
- * Created on Nov 22, 2013
- * Updated on Nov 22, 2013
- *
- * Description: Delete media genre from Fargo database.
- *
- * In:  $name, $id
- * Out:	Deleted media genre
- * 
- */
-function DeleteMediaGenreQuery($name, $id)
-{
-    $sql = "DELETE FROM genreto$name ".
-           "WHERE ".$name."id = $id";
-    
-    ExecuteQuery($sql);
 }
 
 /*

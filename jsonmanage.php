@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Nov 22, 2013
+ * Updated on Nov 25, 2013
  *
  * Description: The main Json Manage page.
  * 
@@ -143,7 +143,7 @@ if (!empty($aJson)) {
  * Function:	HideOrShowMediaInFargo
  *
  * Created on Nov 20, 2013
- * Updated on Nov 22, 2013
+ * Updated on Nov 25, 2013
  *
  * Description: Hide or show media.
  *
@@ -153,17 +153,63 @@ if (!empty($aJson)) {
  */
 function HideOrShowMediaInFargo($media, $id, $value)
 {
+    $aJson = null;
+    
     switch ($media)
     {
-        case "titles" : $aJson = HideOrShowMedia("movies", $id, $value);
-                        break;
+        case "titles"   : $aJson = HideOrShowMedia("movies", $id, $value);
+                          break;
         
-        case "sets"   : $aJson = HideOrShowMedia("sets", $id, $value);
-                        break;
+        case "sets"     : $aJson = HideOrShowMedia("sets", $id, $value);
+                          break;
+                      
+        case "movieset" : $aJson = HideOrShowMedia("movies", $id, $value);
+                          break;                      
                     
-                    
+        case "tvtitles" : $aJson = HideOrShowMedia("tvshows", $id, $value);
+                          break;
+                      
+        case "series"   : $aItems = explode("_", $id);
+                          $aJson = HideOrShowMedia("tvshows", $aItems[0], $value);
+                          break;                      
+
+        case "seasons"  : $aItems = explode("_", $id);
+                          $aJson = HideOrShowMedia("seasons", $aItems[0], $value);
+                          break;
+                      
+        case "episodes" : $aJson = HideOrShowMedia("episodes", $id, $value);
+                          break;
+                      
+        case "albums"   : $aJson = HideOrShowMedia("music", $id, $value);
+                          break;                      
     }
     
+    return $aJson;
+}
+
+/*
+ * Function:	HideOrShowMedia
+ *
+ * Created on Sep 23, 2013
+ * Updated on Nov 22, 2013
+ *
+ * Description: Update hide media hide column.
+ *
+ * In:  $media, $id, $value
+ * Out:	Update hide column
+ * 
+ */
+function HideOrShowMedia($table, $id, $value)
+{
+    $aJson = null;
+    
+    $sql = "UPDATE $table ".
+           "SET hide = $value ".
+           "WHERE id = $id";
+            
+    ExecuteQuery($sql);
+    
+    $aJson["ready"] = true;
     return $aJson;
 }
 
@@ -171,7 +217,7 @@ function HideOrShowMediaInFargo($media, $id, $value)
  * Function:	RemoveMediaFromFargo
  *
  * Created on Nov 22, 2013
- * Updated on Nov 22, 2013
+ * Updated on Nov 25, 2013
  *
  * Description: Delete media from Fargo database.
  *
@@ -183,16 +229,111 @@ function RemoveMediaFromFargo($media, $id, $xbmcid)
 {   
     switch ($media)
     {
-        case "titles" : $aJson = DeleteMedia("movies", $id, $xbmcid);
-                        break;
+        case "titles"   : $aJson = DeleteMedia("movies", $id, $xbmcid);
+                          break;
         
-        case "sets"   : $aJson = DeleteMedia("sets", $id, $xbmcid);
-                        break;
+        case "sets"     : $aJson = DeleteMedia("sets", $id, $xbmcid);
+                          break;
                     
+        case "movieset" : $aJson = DeleteMedia("movies", $id, $xbmcid);
+                          break;
+                      
+        case "tvtitles" : //$aJson = DeleteMedia("tvshows", $id, $xbmcid); // TV Show + Seasons + Episodes.
+                          break;
+                      
+        case "episodes" : $aJson = DeleteMedia("episodes", $id, $xbmcid);
+                          break;
                     
     }
     
     return $aJson;   
+}
+
+/*
+ * Function:	DeleteMediaQuery
+ *
+ * Created on Oct 05, 2013
+ * Updated on Nov 23, 2013
+ *
+ * Description: Delete media from Fargo database.
+ *
+ * In:  $media, $id, $xbmcid
+ * Out:	Deleted media
+ * 
+ */
+function DeleteMedia($media, $id, $xbmcid)
+{
+    $aJson = null;
+    
+    switch ($media)
+    {
+        case "movies"  : DeleteMediaQuery("movies", $id);
+                         DeleteMediaGenreQuery("movie", $id);
+                         DeleteFile(cMOVIESTHUMBS."/$xbmcid.jpg");
+                         DeleteFile(cMOVIESFANART."/$xbmcid.jpg");
+                         break;
+                     
+        case "sets"    : // Won't delete the movies in the set. Maybe in the future releases.
+                         DeleteMediaQuery("sets", $id);
+                         DeleteFile(cSETSTHUMBS."/$xbmcid.jpg");
+                         DeleteFile(cSETSFANART."/$xbmcid.jpg");
+                         break;
+                            
+        case "tvshows" : DeleteMediaQuery("tvshows", $id);
+                         DeleteMediaGenre("tvshow", $id);
+                         DeleteFile(cTVSHOWSTHUMBS."/$xbmcid.jpg");
+                         DeleteFile(cTVSHOWSFANART."/$xbmcid.jpg");
+                         break;
+                            
+        case "music"   : DeleteMediaQuery("music", $id);
+                         DeleteMediaGenre("music", $id);
+                         DeleteFile(cALBUMSTHUMBS."/$xbmcid.jpg");
+                         DeleteFile(cALBUMSCOVERS."/$xbmcid.jpg");
+                         break;                             
+    }
+       
+    $aJson["ready"] = true;
+    return $aJson;    
+}
+
+/*
+ * Function:	DeleteMediaQuery
+ *
+ * Created on Nov 22, 2013
+ * Updated on Nov 22, 2013
+ *
+ * Description: Delete media from the Fargo database.
+ *
+ * In:  $table, $id
+ * Out:	Deleted media
+ * 
+ */
+function DeleteMediaQuery($table, $id)
+{
+    $sql = "DELETE FROM $table ".
+           "WHERE id = $id";
+    
+    ExecuteQuery($sql);
+}
+
+/*
+ * Function:	DeleteMediaGenreQuery
+ *
+ * Created on Nov 22, 2013
+ * Updated on Nov 22, 2013
+ *
+ * Description: Delete media genre from Fargo database.
+ *
+ * In:  $name, $id
+ * Out:	Deleted media genre
+ * 
+ */
+function DeleteMediaGenreQuery($name, $id)
+{
+    $sql = "DELETE FROM genreto$name ".
+           "WHERE ".$name."id = $id";
+    
+    ExecuteQuery($sql);
 }
 
 /*
@@ -222,10 +363,12 @@ function ResetStatus($media, $counter)
     if ($counter == "true") {
         UpdateStatus("ImportCounter", 0);
     }
+    else {
+      UpdateStatus("RefreshReady", 0);
+    }
     
     UpdateStatus("Xbmc".$media."End", -1);
-    UpdateStatus("RefreshReady", true);    
-    
+        
     $status = "reset";    
     return $status;
 }

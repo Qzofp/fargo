@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -79,67 +79,6 @@ function UpdateMovie($id, $aMovie)
 }
 
 /*
- * Function:	MovieToItems
- *
- * Created on Sep 15, 2013
- * Updated on Sep 15, 2013
- *
- * Description: Put movie info in items.
- *
- * In:  $aMovie
- * Out:	$aItems
- *
- */
-/*function MovieToItems($aMovie)
-{
-    $aItems[0] = $aMovie["xbmcid"];
-    $aItems[1] = $aMovie["title"]; 
-    $aItems[2] = $aMovie["genre"];
-    $aItems[3] = $aMovie["year"];
-    
-    $aItems[4] = $aMovie["rating"];
-    $aItems[5] = $aMovie["director"];    
-    $aItems[6] = $aMovie["trailer"];
-    $aItems[7] = $aMovie["tagline"]; 
-    
-    $aItems[8]  = $aMovie["plot"];
-    $aItems[9]  = $aMovie["plotoutline"];    
-    $aItems[10] = $aMovie["originaltitle"];
-    $aItems[11] = $aMovie["lastplayed"];
-    
-    $aItems[12] = $aMovie["playcount"];
-    $aItems[13] = $aMovie["writer"];    
-    $aItems[14] = $aMovie["studio"];
-    $aItems[15] = $aMovie["mpaa"];
-    
-    $aItems[16] = $aMovie["cast"];
-    $aItems[17] = $aMovie["country"];   
-    $aItems[18] = $aMovie["imdbnr"];
-    $aItems[19] = $aMovie["runtime"];
-    
-    $aItems[20] = $aMovie["fanart"];
-    $aItems[21] = $aMovie["poster"];
-    $aItems[22] = $aMovie["thumb"];    
-    $aItems[23] = $aMovie["set"];
-    
-    $aItems[24] = null; //$aMovie["showlink"];      
-    $aItems[25] = $aMovie["audio"];
-    $aItems[26] = $aMovie["video"];    
-    $aItems[27] = $aMovie["top250"];    
-    
-    $aItems[28] = $aMovie["votes"];
-    $aItems[29] = $aMovie["file"];      
-    $aItems[30] = $aMovie["sorttitle"];   
-    $aItems[31] = null; //$aMovie["resume"];    
-    
-    $aItems[32] = $aMovie["setid"];
-    $aItems[33] = $aMovie["dateadded"];      
-    $aItems[34] = null; //$aMovie["tag"];        
-      
-    return $aItems;
-}*/
-
-/*
  * Function:	InsertMovieSet
  *
  * Created on Oct 14, 2013
@@ -164,10 +103,36 @@ function InsertMovieSet($aMovie)
 }
 
 /*
+ * Function:	InsertMovieSet
+ *
+ * Created on Nov 23, 2013
+ * Updated on Nov 23, 2013
+ *
+ * Description: Update movie set in the database.
+ *
+ * In:  $id, $aMovie
+ * Out:	Movie Set in database table "sets".
+ *
+ */
+function UpdateMovieSet($id, $aMovie)
+{   
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aMovie);
+        
+    $sql = "UPDATE sets ".
+           "SET setid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', sorttitle = '$aItems[2]',".
+           " playcount = $aItems[3] ".
+           "WHERE id = $id";
+
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);    
+}
+
+/*
  * Function:	InsertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Nov 11, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Insert TV Show in the database.
  *
@@ -176,11 +141,7 @@ function InsertMovieSet($aMovie)
  *
  */
 function InsertTVShow($aTVShow)
-{
-    //echo "<pre>";
-    //echo print_r($aTVShow);
-    //echo "</pre>";
-    
+{   
     $db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aTVShow);
     
@@ -225,56 +186,6 @@ function UpdateTVShow($id, $aTVShow)
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);   
 }
-
-/*
- * Function:	TVShowToItems
- *
- * Created on Sep 22, 2013
- * Updated on Sep 22, 2013
- *
- * Description: Put TV show info in items.
- *
- * In:  $aMovie
- * Out:	$aItems
- *
- */
-/*function TVShowToItems($aTVShow)
-{
-    $aItems[0] = $aTVShow["xbmcid"];
-    $aItems[1] = $aTVShow["title"];
-    $aItems[2] = $aTVShow["genre"];
-    $aItems[3] = $aTVShow["year"]; 
-      
-    $aItems[4] = $aTVShow["rating"];
-    $aItems[5] = $aTVShow["plot"];
-    $aItems[6] = $aTVShow["studio"];
-    $aItems[7] = $aTVShow["mpaa"];    
-
-    $aItems[8]  = $aTVShow["cast"];
-    $aItems[9]  = $aTVShow["playcount"];
-    $aItems[10] = $aTVShow["episode"];  
-    $aItems[11] = $aTVShow["imdbnr" ];
-    
-    $aItems[12] = $aTVShow["premiered"];
-    $aItems[13] = $aTVShow["votes"];
-    $aItems[14] = $aTVShow["lastplayed"];  
-    $aItems[15] = $aTVShow["fanart"];
-        
-    $aItems[16] = $aTVShow["poster"];
-    $aItems[17] = $aTVShow["thumb"];
-    $aItems[18] = $aTVShow["file"];
-    $aItems[19] = $aTVShow["originaltitle"];   
-    
-    $aItems[20] = $aTVShow["sorttitle"];
-    $aItems[21] = $aTVShow["episodeguide"];
-    $aItems[22] = $aTVShow["season"];
-    $aItems[23] = $aTVShow["watchedepisodes"];        
-
-    $aItems[24] = $aTVShow["dateadded"]; 
-    $aItems[25] = null; //$aTVShow["tag"]      = $aXbmc["tag"];
-    
-    return $aItems;    
-}*/    
 
 /*
  * Function:	InsertTVShowSeason
@@ -383,50 +294,6 @@ function UpdateAlbum($id, $aAlbum)
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);  
 }
-
-/*
- * Function:	AlbumToItems
- *
- * Created on Sep 22, 2013
- * Updated on Sep 22, 2013
- *
- * Description: Put album info in items.
- *
- * In:  $aMovie
- * Out:	$aItems
- *
- */
-/*function AlbumToItems($aAlbum)
-{
-    $aItems[0] = $aAlbum["xbmcid"];
-    $aItems[1] = $aAlbum["title"];
-    $aItems[2] = $aAlbum["description"];    
-    $aItems[3] = $aAlbum["artist"];
-
-    $aItems[4] = $aAlbum["genre"];
-    $aItems[5] = $aAlbum["theme"];
-    $aItems[6] = $aAlbum["mood"];
-    $aItems[7] = $aAlbum["style"];
-    
-    $aItems[8]  = $aAlbum["type"];    
-    $aItems[9]  = $aAlbum["albumlabel"];
-    $aItems[10] = $aAlbum["rating"];
-    $aItems[11] = $aAlbum["year"];
-    
-    $aItems[12] = $aAlbum["mbalbumid"];        
-    $aItems[13] = $aAlbum["mbalbumartistid"];
-    $aItems[14] = $aAlbum["fanart"];
-    $aItems[15] = $aAlbum["cover"];
-    
-    $aItems[16] = $aAlbum["playcount"];
-    $aItems[17] = $aAlbum["displayartist"];  
-    $aItems[18] = $aAlbum["sorttitle"];  
-    $aItems[19] = null; //$aAlbum["genreid"];
-    
-    $aItems[20] = null; //$aAlbum["artistid"];
-    
-    return $aItems; 
-}*/
 
 /*
  * Function:	InsertGenres

@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Nov 22, 2013
+ * Updated on Nov 24, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -80,7 +80,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Function:	SetInfoZoomHandlerWithActions
  *
  * Created on Aug 31, 2013
- * Updated on Nov 22, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Set and show the media info.
  * 
@@ -98,7 +98,7 @@ function SetInfoZoomHandlerWithActions()
     switch(mode)
     {
         case "Refresh"   : //alert ("Refresh");
-                           ShowModePopup(mode, media, id);
+                           ShowModePopup(mode, type, id);
                            break;
                          
         case "Hide/Show" : //alert ("Hide and Show");
@@ -118,7 +118,7 @@ function SetInfoZoomHandlerWithActions()
  * Function:	ShowModePopup
  *
  * Created on Sep 07, 2013
- * Updated on Sep 30, 2013
+ * Updated on Nov 25, 2013
  *
  * Description: Show the action popup with the yes/no buttons.
  * 
@@ -127,10 +127,10 @@ function SetInfoZoomHandlerWithActions()
  *
  */
 function ShowModePopup(mode, media, id)
-{
+{    
     $.ajax
     ({
-        url: 'jsonfargo.php?action=info&media=' + media + '&id=' + id,
+        url: 'jsonfargo.php?action=popup&media=' + media + '&id=' + id,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -145,15 +145,22 @@ function ShowModePopup(mode, media, id)
             })
             .attr('src', json.params.thumbs + '/' + json.media.xbmcid + '.jpg' + '?v=' + json.media.refresh);
     
-            $("#action_title").text(json.media.title);
+            $("#action_title").html(json.media.title);
 
-            if (media == "music") 
+            if (media == "albums") 
             {
                 $("#action_wrapper").height(116);
                 $("#action_thumb").height(100);
                 $("#action_thumb img").height(100);
             }
-            else 
+            else if (media == "episodes") 
+            {
+                $("#action_wrapper").height(156);
+                $("#action_thumb").css("margin-left", "-125px");
+                $("#action_thumb").height(140).width(220);
+                $("#action_thumb img").height(140).width(220);
+            }
+            else
             {
                 $("#action_wrapper").height(156);
                 $("#action_thumb").height(140);
@@ -162,7 +169,7 @@ function ShowModePopup(mode, media, id)
             
             // Show popup.
             media = ConvertMediaToSingular(media);
-            ShowPopupBox("#action_box", mode + " " + media.substr(0,1).toUpperCase() + media.substr(1));
+            ShowPopupBox("#action_box", mode + " " + media);
             SetState("page", "popup");    
         } // End succes.
     }); // End Ajax.       
@@ -198,7 +205,7 @@ function HideOrShowMedia(media, id)
  * Function:	HideOrShowMediaInFargo
  *
  * Created on Sep 23, 2013
- * Updated on Nov 20, 2013
+ * Updated on Nov 24, 2013
  *
  * Description: Hide or show media in Fargo. Update 
  * 
@@ -207,7 +214,7 @@ function HideOrShowMedia(media, id)
  *
  */
 function HideOrShowMediaInFargo(media, id, value)
-{
+{    
     $.ajax
     ({
         url: 'jsonmanage.php?action=hide&media=' + media + '&id=' + id + '&value=' + value,
@@ -222,7 +229,7 @@ function HideOrShowMediaInFargo(media, id, value)
  * Function:	RemoveMediaFromFargo
  *
  * Created on Oct 05, 2013
- * Updated on Nov 21, 2013
+ * Updated on Nov 24, 2013
  *
  * Description: Remove media from Frago.
  * 
@@ -231,7 +238,7 @@ function HideOrShowMediaInFargo(media, id, value)
  *
  */
 function RemoveMediaFromFargo(media, id, xbmcid)
-{
+{    
     $.ajax
     ({
         url: 'jsonmanage.php?action=delete&media=' + media + '&id=' + id + '&xbmcid=' + xbmcid,

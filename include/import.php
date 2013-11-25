@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -132,7 +132,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Oct 26, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -161,9 +161,13 @@ function ProcessDataFromXbmc($aData)
         case 4  : UpdateStatus("XbmcSetsEnd", $aData["result"]["sets"][0]["setid"]); 
                   break;
               
-        // libMovieSets Import -> library id = 6.                   
+        // libMovieSets Import -> library id = 5.                   
         case 5  : ImportMovieSet($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
-                  break;        
+                  break;
+              
+        // libMovieSets Reset -> library id = 6.
+        case 6  : RefreshMovieSet($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
+                  break;
              
         // libTVShowsCounter -> library id = 11.  
         case 11 : UpdateStatus("XbmcTVShowsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
@@ -286,7 +290,7 @@ function ImportMovieSet($aError, $poster, $fanart, $aResult)
  * Function:	RefreshMovie
  *
  * Created on Sep 08, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Refresh the movie. 
  *
@@ -298,8 +302,6 @@ function RefreshMovie($aError, $poster, $fanart, $aResult, $fargoid)
 {
     if (empty($aError))
     {
-        //$aMovie  = $aResult["moviedetails"];
-        //$aGenres = $aResult["moviedetails"]["genre"]; //$aMovie["genre"];   
         $aMovie  = ConvertMovie($aResult["moviedetails"]);
     
         DeleteFile("../".cMOVIESTHUMBS."/".$aMovie[0].".jpg");
@@ -310,7 +312,37 @@ function RefreshMovie($aError, $poster, $fanart, $aResult, $fargoid)
         ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 562, 350);  //675, 420    
         ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175);  //200, 280
  
-        UpdateStatus("Ready", 1);
+        UpdateStatus("RefreshReady", 1);
+    }
+}
+
+/*
+ * Function:	RefreshMovieSet
+ *
+ * Created on Nov 23, 2013
+ * Updated on Nov 23, 2013
+ *
+ * Description: Refresh the movie set. 
+ *
+ * In:  $aError, $poster, $fanart, $aResult, $fargoid
+ * Out: -
+ *
+ */
+function RefreshMovieSet($aError, $poster, $fanart, $aResult, $fargoid)
+{
+    if (empty($aError))
+    {  
+        $aMovie = ConvertMovieSet($aResult["setdetails"]);
+    
+        DeleteFile("../".cSETSTHUMBS."/".$aMovie[0].".jpg");
+        DeleteFile("../".cSETSFANART."/".$aMovie[0].".jpg");
+    
+        UpdateMovieSet($fargoid, $aMovie);
+        
+        ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280  
+        ResizeAndSaveImage($aMovie[0], $fanart, "../".cSETSFANART, 562, 350); //675, 420 
+ 
+        UpdateStatus("RefreshReady", 1);
     }
 }
 
@@ -418,7 +450,7 @@ function ImportTVShowEpisode($aError, $poster, $aResult)
  * Function:	RefreshTVShow
  *
  * Created on Sep 09, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Refresh the tv show. 
  *
@@ -430,8 +462,6 @@ function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
 {   
     if (empty($aError))
     {
-        //$aTVShow = $aResult["tvshowdetails"];
-        //$aGenres = $aResult["tvshowdetails"]["genre"]; 
         $aTVShow = ConvertTVShow($aResult["tvshowdetails"]);
     
         DeleteFile("../".cTVSHOWSTHUMBS."/".$aTVShow[0].".jpg");
@@ -442,7 +472,7 @@ function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
         ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 562, 350);
         ResizeAndSaveImage($aTVShow[0], $poster, "../".cTVSHOWSTHUMBS, 125, 175);
     
-        UpdateStatus("Ready", 1);
+        UpdateStatus("RefreshReady", 1);
     }        
 }
 
@@ -488,7 +518,7 @@ function ImportAlbum($aError, $poster, $aResult)
  * Function:	RefreshAlbum
  *
  * Created on Sep 09, 2013
- * Updated on Nov 02, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Refresh the music album details. 
  *
@@ -500,8 +530,6 @@ function RefreshAlbum($aError, $poster, $aResult, $id)
 { 
     if (empty($aError))
     {    
-        //$aAlbum = $aResult["albumdetails"];
-        //$aGenres = $aResult["albumdetails"]["genre"]; 
         $aAlbum = ConvertAlbum($aResult["albumdetails"]);
     
         DeleteFile("../".cALBUMSTHUMBS."/".$aAlbum[0].".jpg");
@@ -512,7 +540,7 @@ function RefreshAlbum($aError, $poster, $aResult, $id)
         ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
         ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSTHUMBS, 125, 125);
     
-        UpdateStatus("Ready", 1);
+        UpdateStatus("RefreshReady", 1);
     }
 }
 

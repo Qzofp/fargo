@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Nov 22, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Nov 12, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -29,9 +29,7 @@
 function LoadFargoMedia(media)
 {      
     var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
-    //gSTATE.MEDIA = media;
     
-    //SetState("title", "latest");
     SetState("title", "name_asc");
     SetState("mode", "Information");
 
@@ -71,8 +69,7 @@ function LoadFargoMedia(media)
     $("#modes").on("click", SetButtonsHandler);
     
     // Media type events (titles, sets, series, albums).
-    $("#type").on("click", SetButtonsTypeHandler);
-    //$(".button").on("click", ".selection", SetShowButtonTypeHandler);    
+    $("#type").on("click", SetButtonsTypeHandler);   
     
     // Sort (title), Genres or Years click events.   
     $("#title").on("click", SetButtonsHandler);
@@ -187,7 +184,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Oct 25, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Perform action
  * 
@@ -199,12 +196,13 @@ function SetActionHandler()
 {    
     var $popup = $(".popup:visible");
     var media = GetState("media");
+    var type  = GetState("type");
     
     gTRIGGER.CANCEL = false;
     
     switch($popup.find(".title").text().split(" ")[0])
     {
-        case "Refresh"   : SetStartRefreshHandler(media, $popup.find(".id").text(), $popup.find(".xbmcid").text());
+        case "Refresh"   : PrepareRefreshHandler(type, $popup.find(".id").text(), $popup.find(".xbmcid").text());
                            //alert("Refresh Something! " + $popup.find(".id").text());                           
                            break;
                            
@@ -224,7 +222,7 @@ function SetActionHandler()
  * Function:	SetRemoveHandler
  *
  * Created on Oct 05, 2013
- * Updated on Nov 22, 2013
+ * Updated on Nov 23, 2013
  *
  * Description: Remove media from Frago handler.
  * 
@@ -235,7 +233,7 @@ function SetActionHandler()
 function SetRemoveHandler(id, xbmcid)
 {
     var $remove, finish;
-    var media, type, name, title;
+    var media, type, title;
     
     finish = 3 + Math.floor(Math.random() * 3);
     media  = GetState("media");
@@ -249,13 +247,13 @@ function SetRemoveHandler(id, xbmcid)
     // Remove media from Fargo.
     RemoveMediaFromFargo(type, id, xbmcid);
     
-    media = ConvertMediaToSingular(media);
-    name  = media.substr(0,1).toUpperCase() + media.substr(1); 
-    DisplayCleaningMessage("Removing " + media + "...", name + " removed!", $remove, ".no", finish);
+    media = ConvertMediaToSingular(type);
+    //name  = media.substr(0,1).toUpperCase() + media.substr(1); 
+    DisplayCleaningMessage("Removing " + media + "...", media + " removed!", $remove, ".no", finish);
     
     setTimeout(function(){
         title = $("#action_title").text();
-        LogEvent("Information", name + " " + title + " removed!");
+        LogEvent("Information", media + " " + title + " removed!");
     }, 800);    
     
     $(".yes").hide();
