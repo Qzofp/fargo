@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Nov 23, 2013
+ * Updated on Nov 29, 2013
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -217,10 +217,10 @@ function InsertTVShowSeason($aSeason)
  * Created on Oct 26, 2013
  * Updated on Nov 02, 2013
  *
- * Description: Insert TV Show Season in the database.
+ * Description: Insert TV Show Episode in the database.
  *
- * In:  $aSeason
- * Out:	Season in database table "seasons".
+ * In:  $aEpisode
+ * Out:	Episode in database table "episodes".
  *
  */
 function InsertTVShowEpisode($aEpisode)
@@ -237,6 +237,36 @@ function InsertTVShowEpisode($aEpisode)
     
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);    
+}
+
+/*
+ * Function:	RefreshTVShowEpisode
+ *
+ * Created on Nov 29, 2013
+ * Updated on Nov 29, 2013
+ *
+ * Description: Refresh TV Show Episode in the database.
+ *
+ * In:  $id, $aEpisode
+ * Out:	Episode in database table "episodes".
+ *
+ */
+function UpdateTVShowEpisode($id, $aEpisode)
+{   
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aEpisode);
+     
+    $sql = "UPDATE episodes ".
+           "SET episodeid = $aItems[0], refresh = refresh + 1, tvshowid = $aItems[1], title = '$aItems[2]',".
+           " originaltitle = '$aItems[3]', rating = $aItems[4], writer = '$aItems[5]', director = '$aItems[6]',".
+           " `cast` = '$aItems[7]', plot = '$aItems[8]', playcount = $aItems[9], episode = $aItems[10],".
+           " firstaired = '$aItems[11]', lastplayed = '$aItems[12]', dateadded = '$aItems[13]', votes = $aItems[14],".
+           " `file` = '$aItems[15]', showtitle = '$aItems[16]', season = $aItems[17], audio = '$aItems[18]',".
+           " video = '$aItems[19]', runtime = $aItems[20] ".
+           "WHERE id = $id";
+    
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);
 }
 
 /*

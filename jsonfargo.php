@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Nov 25, 2013
+ * Updated on Nov 28, 2013
  *
  * Description: The main Json Display page.
  * 
@@ -674,7 +674,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetPopupInfo
  *
  * Created on Nov 25, 2013
- * Updated on Nov 25, 2013
+ * Updated on Nov 28, 2013
  *
  * Description: Get the popup info for the refresh or delete popups from Fargo and return it as Json data. 
  *

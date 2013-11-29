@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Nov 23, 2013
+ * Updated on Nov 29, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -132,7 +132,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Nov 23, 2013
+ * Updated on Nov 29, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -196,10 +196,14 @@ function ProcessDataFromXbmc($aData)
         // libTVShowEpisodesCounter -> library id = 31.  
         case 31 : UpdateStatus("XbmcEpisodesEnd", $aData["result"]["episodes"][0]["episodeid"]);   
                   break;
-              
+                       
         // libTVShowEpisode Import -> library id = 32.
         case 32 : ImportTVShowEpisode($aData["error"], $aData["poster"], $aData["result"]);
-                  break;     
+                  break;
+              
+        // libTVShowEpisode Refresh -> library id = 33.
+        case 33 : RefreshTVShowEpisode($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
+                  break;         
                             
         // libAlbumsCounter -> library id = 41.  
         case 41 : UpdateStatus("XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
@@ -454,7 +458,7 @@ function ImportTVShowEpisode($aError, $poster, $aResult)
  *
  * Description: Refresh the tv show. 
  *
- * In:  $aError, $poster, $fanart, $aResult
+ * In:  $aError, $poster, $fanart, $aResult, $id
  * Out: -
  *
  */
@@ -471,6 +475,32 @@ function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
     
         ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 562, 350);
         ResizeAndSaveImage($aTVShow[0], $poster, "../".cTVSHOWSTHUMBS, 125, 175);
+    
+        UpdateStatus("RefreshReady", 1);
+    }        
+}
+
+/*
+ * Function:	RefreshTVShowEpisode
+ *
+ * Created on Nov 29, 2013
+ * Updated on Nov 29, 2013
+ *
+ * Description: Refresh the tv show episode. 
+ *
+ * In:  $aError, $poster, $fanart, $aResult, id
+ * Out: -
+ *
+ */
+function RefreshTVShowEpisode($aError, $poster, $aResult, $id)
+{   
+    if (empty($aError))
+    {
+        $aEpisode = ConvertTVShowEpisode($aResult["episodedetails"]);
+    
+        DeleteFile("../".cEPISODESTHUMBS."/".$aEpisode[0].".jpg");    
+        UpdateTVShowEpisode($id, $aEpisode);
+        SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);
     
         UpdateStatus("RefreshReady", 1);
     }        

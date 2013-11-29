@@ -7,7 +7,7 @@
  * File:    files.php
  *
  * Created on Mar 04, 2013
- * Updated on Jun 24, 2013
+ * Updated on Nov 28, 2013
  *
  * Description: Files and I/O toolbox functions.
  *
@@ -140,4 +140,27 @@ function DeleteFile($file)
 {
     array_map( "unlink", glob($file ));
 }
-?>
+
+/*
+ * Function:	DeleteFile
+ *
+ * Created on Nov 26, 2013
+ * Updated on Nov 28, 2013
+ *
+ * Description: Resize an Image and save it to a file.
+ *
+ * In:	$path, $aFiles
+ * Out:	Deleted file(s).
+ *
+ * Note: $aFiles is an array with file names.
+ * 
+ */
+function DeleteMultipleFiles($path, $aFiles)
+{
+    if (!empty($aFiles)) 
+    {
+        foreach ($aFiles as $file) {
+            array_map( "unlink", glob($path."/".$file));
+        }
+    }        
+}   

@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Nov 24, 2013
+ * Updated on Nov 29, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,7 +18,7 @@
  * Function:	PrepareRefreshHandler
  *
  * Created on Nov 23, 2013
- * Updated on Nov 24, 2013
+ * Updated on Nov 29, 2013
  *
  * Description: Prepare the refresh handler, show the refresh popup box and start the refresh.
  * 
@@ -37,9 +37,25 @@ function PrepareRefreshHandler(type, id, xbmcid)
                           break;                             
                           
         case "movieset" : SetStartRefreshHandler("movies", id, xbmcid);
-                          break;    
+                          break;
                       
+        case "tvtitles" : SetStartRefreshHandler("tvshows", id, xbmcid);
+                          break;                      
                       
+        case "series"   : //SetStartRefreshHandler("tvshows", id, xbmcid);
+                          break;  
+
+        case "seasons"  : id = id.split("_")[0];
+                          xbmcid = xbmcid.split("_")[0];
+                          alert(id + " " + xbmcid);
+                          //SetStartRefreshHandler("seasons", id.split("_")[0], xbmcid.split("_")[0]);
+                          break;          
+        
+        case "episodes" : SetStartRefreshHandler("episodes", id, xbmcid);
+                          break;           
+        
+        case "albums"   : SetStartRefreshHandler("music", id, xbmcid);
+                          break;                      
     }
 }
 

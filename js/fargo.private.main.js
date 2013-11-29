@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Nov 23, 2013
+ * Updated on Nov 28, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -222,7 +222,7 @@ function SetActionHandler()
  * Function:	SetRemoveHandler
  *
  * Created on Oct 05, 2013
- * Updated on Nov 23, 2013
+ * Updated on Nov 28, 2013
  *
  * Description: Remove media from Frago handler.
  * 
@@ -248,11 +248,10 @@ function SetRemoveHandler(id, xbmcid)
     RemoveMediaFromFargo(type, id, xbmcid);
     
     media = ConvertMediaToSingular(type);
-    //name  = media.substr(0,1).toUpperCase() + media.substr(1); 
     DisplayCleaningMessage("Removing " + media + "...", media + " removed!", $remove, ".no", finish);
     
     setTimeout(function(){
-        title = $("#action_title").text();
+        title = $("#action_title").html().replace("<br>", " "); 
         LogEvent("Information", media + " " + title + " removed!");
     }, 800);    
     
