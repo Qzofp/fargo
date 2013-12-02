@@ -435,7 +435,7 @@ function ResetStatus($media, $counter)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Nov 29, 2013
+ * Updated on Dec 02, 2013
  *
  * Description: Reports the status of the import media process. 
  *
@@ -463,7 +463,7 @@ function GetMediaStatus($media, $id)
                                 }
                                 break;
                       
-        case "seasons"        : $aJson = GetSeasonsImportStatus(cSEASONSTHUMBS);
+        case "seasons"        : $aJson = GetSeasonsImportRefreshStatus($id, cSEASONSTHUMBS);
                                 break;
                       
         case "episodes"       : $aJson = GetEpisodesImportRefreshStatus($id, cEPISODESTHUMBS);
@@ -544,18 +544,18 @@ function GetImportRefreshStatus($media, $id, $nameid, $thumbs)
 }
 
 /*
- * Function:	GetSeasonsImportStatus
+ * Function:	GetSeasonsImportRefreshStatus
  *
  * Created on Oct 21, 2013
- * Updated on Oct 28, 2013
+ * Updated on Dec 02, 2013
  *
  * Description: Reports the seasons status of the import process.
  *
- * In:  $thumbs
+ * In:  $id, $thumbs
  * Out: $aJson
  *
  */
-function GetSeasonsImportStatus($thumbs)
+function GetSeasonsImportRefreshStatus($seasonid, $thumbs)
 {
     $aJson['id']  = 0;
     $aJson['refresh'] = 0;
@@ -564,9 +564,16 @@ function GetSeasonsImportStatus($thumbs)
   
     $db = OpenDatabase();
 
-    $sql = "SELECT id, refresh, tvshowid, showtitle, title, season ".
-           "FROM seasons ".
-           "ORDER BY id DESC LIMIT 1";
+    if ($seasonid < 0) { // Import. 
+        $sql = "SELECT id, refresh, tvshowid, showtitle, title, season ".
+               "FROM seasons ".
+               "ORDER BY id DESC LIMIT 1";
+    }
+    else { // Refresh.
+        $sql = "SELECT id, refresh, tvshowid, showtitle, title, season ".
+               "FROM seasons ".
+               "WHERE id = $seasonid";    
+    }
         
     $stmt = $db->prepare($sql);
     if($stmt)
@@ -582,7 +589,12 @@ function GetSeasonsImportStatus($thumbs)
                 $stmt->bind_result($id, $refresh, $tvshowid, $showtitle, $title, $season);
                 while($stmt->fetch())
                 {                
-                    $aJson['id']       = $id;
+                    if ($seasonid < 0) {
+                        $aJson['id'] = $id;
+                    }
+                    else {
+                       $aJson['id'] = $tvshowid."_".$season; 
+                    }
                     $aJson['refresh']  = $refresh;
                     $aJson['tvshowid'] = $tvshowid;
                     $aJson['title']    = ShortenString($showtitle, 70)."</br>".ShortenString($title, 70);
@@ -627,7 +639,7 @@ function GetEpisodesImportRefreshStatus($id, $thumbs)
   
     $db = OpenDatabase();
 
-    if ( $id < 0) { // Import. 
+    if ($id < 0) { // Import. 
         $sql = "SELECT episodeid, refresh, showtitle, episode, title ".
                "FROM episodes ".
                "ORDER BY id DESC LIMIT 1";

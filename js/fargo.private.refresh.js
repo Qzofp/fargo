@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Nov 29, 2013
+ * Updated on Dec 02, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,7 +18,7 @@
  * Function:	PrepareRefreshHandler
  *
  * Created on Nov 23, 2013
- * Updated on Nov 29, 2013
+ * Updated on Dec 02, 2013
  *
  * Description: Prepare the refresh handler, show the refresh popup box and start the refresh.
  * 
@@ -30,31 +30,33 @@ function PrepareRefreshHandler(type, id, xbmcid)
 {
     switch(type)
     {
-        case "titles"   : SetStartRefreshHandler("movies", id, xbmcid);
+        case "titles"   : SetStartRefreshHandler("movies", id, xbmcid, -1);
                           break;
                           
-        case "sets"     : SetStartRefreshHandler("sets", id, xbmcid);
+        case "sets"     : SetStartRefreshHandler("sets", id, xbmcid, -1);
                           break;                             
                           
-        case "movieset" : SetStartRefreshHandler("movies", id, xbmcid);
+        case "movieset" : SetStartRefreshHandler("movies", id, xbmcid, -1);
                           break;
                       
-        case "tvtitles" : SetStartRefreshHandler("tvshows", id, xbmcid);
+        case "tvtitles" : SetStartRefreshHandler("tvshows", id, xbmcid, -1);
                           break;                      
                       
         case "series"   : //SetStartRefreshHandler("tvshows", id, xbmcid);
                           break;  
 
-        case "seasons"  : id = id.split("_")[0];
-                          xbmcid = xbmcid.split("_")[0];
-                          alert(id + " " + xbmcid);
-                          //SetStartRefreshHandler("seasons", id.split("_")[0], xbmcid.split("_")[0]);
+        case "seasons"  : //var start    = --xbmcid.split("_")[1];
+                          //var fargoid  = id.split("_")[0];
+                          //var tvshowid = xbmcid.split("_")[0];
+                          //alert(start + " " + fargoid + " " + tvshowid);
+                          
+                          SetStartRefreshHandler("seasons", id.split("_")[0], --xbmcid.split("_")[1], xbmcid.split("_")[0]);
                           break;          
         
-        case "episodes" : SetStartRefreshHandler("episodes", id, xbmcid);
+        case "episodes" : SetStartRefreshHandler("episodes", id, xbmcid, -1);
                           break;           
         
-        case "albums"   : SetStartRefreshHandler("music", id, xbmcid);
+        case "albums"   : SetStartRefreshHandler("music", id, xbmcid, -1);
                           break;                      
     }
 }
@@ -63,15 +65,15 @@ function PrepareRefreshHandler(type, id, xbmcid)
  * Function:	SetStartRefreshHandler
  *
  * Created on Sep 14, 2013
- * Updated on Nov 23, 2013
+ * Updated on Dec 02, 2013
  *
  * Description: Set the refresh handler, show the refresh popup box and start the refresh.
  * 
- * In:	media, id, xbmcid
+ * In:	media, id, xbmcid, tvshowid
  * Out:	title
  *
  */
-function SetStartRefreshHandler(media, id, xbmcid)
+function SetStartRefreshHandler(media, id, xbmcid, tvshowid)
 {
     InitImportBox();
     
@@ -86,7 +88,7 @@ function SetStartRefreshHandler(media, id, xbmcid)
             var online;
             
             // Check if XBMC is online and transfer XBMC media counter (total).
-            ImportCounter(json, media, -1);
+            ImportCounter(json, media, tvshowid);
             
             // Check if XBMC is online and start refresh.
             timer = setInterval(function()
@@ -101,7 +103,7 @@ function SetStartRefreshHandler(media, id, xbmcid)
                     if (online > 0 || i > 3)
                     {
                         if (online > 0) {
-                            StartRefresh(json, media, id, xbmcid);
+                            StartRefresh(json, media, id, xbmcid, tvshowid);
                         }
                         else {
                             ShowOffline();
@@ -121,15 +123,15 @@ function SetStartRefreshHandler(media, id, xbmcid)
  * Function:	StartRefresh
  *
  * Created on Sep 14, 2013
- * Updated on Oct 10, 2013
+ * Updated on Dec 02, 2013
  *
  * Description: Control and Refresh the media transfered from XBMC.
  *
- * In:	xbmc, media, id, xmbcid
+ * In:	xbmc, media, id, xmbcid, tvshowid
  * Out:	Refreshed media
  *
  */
-function StartRefresh(xbmc, media, id, xbmcid)
+function StartRefresh(xbmc, media, id, xbmcid, tvshowid)
 {
     var timeout = 0;
     var delay   = 0;
@@ -139,7 +141,7 @@ function StartRefresh(xbmc, media, id, xbmcid)
     
     // Import media process.
     $("#action_box .message").html(cSTATUS.ONLINE);  
-    ImportMedia(xbmc, media, id, xbmcid, -1);
+    ImportMedia(xbmc, media, id, xbmcid, tvshowid);
     LogEvent("Information", "Refresh " + ConvertMedia(media) + " started.");
             
     // Check status.
@@ -162,7 +164,12 @@ function StartRefresh(xbmc, media, id, xbmcid)
         else
         {
             // Show status and returns gTRIGGER.READY.
-            ShowRefreshStatus(media, xbmcid, percent);
+            if (tvshowid < 0) {
+                ShowRefreshStatus(media, xbmcid, percent);
+            }    
+            else {
+                ShowRefreshStatus(media, id, percent);
+            }    
             percent = 100 - 100/factor;
             
             // Wait until thumb is ready.

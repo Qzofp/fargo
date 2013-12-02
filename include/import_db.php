@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Nov 29, 2013
+ * Updated on Dec 02, 2013
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -206,6 +206,32 @@ function InsertTVShowSeason($aSeason)
     
     $sql = "INSERT INTO seasons(tvshowid, title, showtitle, playcount, season, episode, watchedepisodes) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], $aItems[5], $aItems[6])";
+
+    ExecuteQueryWithEscapeStrings($db, $sql);
+    CloseDatabase($db);    
+}
+
+/*
+ * Function:	UpdateTVShowSeason
+ *
+ * Created on Dec 02, 2013
+ * Updated on Dec 02, 2013
+ *
+ * Description: Update TV Show Season in the database.
+ *
+ * In:  $aSeason
+ * Out:	Season in database table "seasons".
+ *
+ */
+function UpdateTVShowSeason($id, $aSeason)
+{   
+    $db = OpenDatabase();
+    $aItems = AddEscapeStrings($db, $aSeason);
+
+    $sql = "UPDATE seasons ".
+           "SET tvshowid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', showtitle = '$aItems[2]', ".
+           " playcount = $aItems[3], season = $aItems[4], episode = $aItems[5], watchedepisodes = $aItems[6] ".
+           "WHERE id = $id";
 
     ExecuteQueryWithEscapeStrings($db, $sql);
     CloseDatabase($db);    

@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Nov 29, 2013
+ * Updated on Dec 02, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -132,7 +132,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Nov 29, 2013
+ * Updated on Dec 02, 2013
  *
  * Description: Process data from XBMC. 
  *
@@ -192,6 +192,10 @@ function ProcessDataFromXbmc($aData)
         // libTVShowSeasons Import -> library id = 16.
         case 16 : ImportTVShowSeason($aData["error"], $aData["poster"], $aData["result"]);
                   break;  
+              
+        // libTVShowSeasons Refresh -> library id = 17.    
+        case 17 : RefreshTVShowSeason($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
+                  break;        
               
         // libTVShowEpisodesCounter -> library id = 31.  
         case 31 : UpdateStatus("XbmcEpisodesEnd", $aData["result"]["episodes"][0]["episodeid"]);   
@@ -476,6 +480,32 @@ function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
         ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 562, 350);
         ResizeAndSaveImage($aTVShow[0], $poster, "../".cTVSHOWSTHUMBS, 125, 175);
     
+        UpdateStatus("RefreshReady", 1);
+    } 
+}
+
+/*
+ * Function:	RefreshTVShowSeason
+ *
+ * Created on Dec 02, 2013
+ * Updated on Dec 02, 2013
+ *
+ * Description: Refresh the tv show season. 
+ *
+ * In:  $aError, $poster, $fanart, $aResult, $id
+ * Out: -
+ *
+ */
+function RefreshTVShowSeason($aError, $poster, $aResult, $id)
+{   
+    if (empty($aError))
+    {
+        $aSeason = ConvertTVShowSeason($aResult["seasons"][0]);
+    
+        DeleteFile("../".cSEASONSTHUMBS."/".$aSeason[0]."_".$aSeason[4].".jpg");
+        UpdateTVShowSeason($id, $aSeason);    
+        ResizeAndSaveImage($aSeason[0]."_".$aSeason[4], $poster, "../".cSEASONSTHUMBS, 125, 175);
+        
         UpdateStatus("RefreshReady", 1);
     }        
 }
