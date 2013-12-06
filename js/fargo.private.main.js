@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Nov 28, 2013
+ * Updated on Dec 04, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -184,7 +184,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Nov 23, 2013
+ * Updated on Dec 04, 2013
  *
  * Description: Perform action
  * 
@@ -202,12 +202,10 @@ function SetActionHandler()
     
     switch($popup.find(".title").text().split(" ")[0])
     {
-        case "Refresh"   : PrepareRefreshHandler(type, $popup.find(".id").text(), $popup.find(".xbmcid").text());
-                           //alert("Refresh Something! " + $popup.find(".id").text());                           
+        case "Refresh"   : PrepareRefreshHandler(type, $popup.find(".id").text(), $popup.find(".xbmcid").text());                        
                            break;
                            
         case "Remove"    : SetRemoveHandler($popup.find(".id").text(), $popup.find(".xbmcid").text());
-                           //alert("Remove Something! " + $popup.find(".id").text()); 
                            break;
                            
         case "Cleaning"  : SetCleanDatabaseHandler();

@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Dec 02, 2013
+ * Updated on Dec 06, 2013
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -215,7 +215,7 @@ function InsertTVShowSeason($aSeason)
  * Function:	UpdateTVShowSeason
  *
  * Created on Dec 02, 2013
- * Updated on Dec 02, 2013
+ * Updated on Dec 06, 2013
  *
  * Description: Update TV Show Season in the database.
  *

@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Nov 25, 2013
+ * Updated on Dec 04, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -1270,7 +1270,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Nov 24, 2013
+ * Updated on Dec 04, 2013
  *
  * Description: Shows the media table.
  *
@@ -1331,8 +1331,8 @@ function ShowMediaTable(page, sort)
                     
                     img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
                     html[i]  = '<td class="i' + value.id + hide + '">';                    
-                    html[i] += '<img src="' + img + '"/>';
-                    html[i] += '</br>' + value.title + '</td>';
+                    html[i] += '<img src="' + img + '"/><br>';
+                    html[i] += value.title + '</td>';
                     
                     i++; j++;
                 });

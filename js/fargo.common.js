@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Nov 21, 2013
+ * Updated on Dec 06, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -326,7 +326,7 @@ function SetCloseHandler()
  * Function:	RefreshMediaTable
  *
  * Created on Sep 22, 2013
- * Updated on Sep 22, 2013
+ * Updated on Dec 06, 2013
  *
  * Description: When refresh media is finished then refresh media thumb on media table.
  * 
@@ -336,17 +336,60 @@ function SetCloseHandler()
  */
 function RefreshMediaTable(popup)
 {
-    var id, $refresh;
+    var id, type, $img, $title;
     
     if (popup.find(".cancel").text() == "Finish") 
     {
         id = popup.find(".id").text();                                                   
-        $refresh = $("#action_thumb img").attr("src");
+        $img = $("#action_thumb img").attr("src");
+        $title = $("#action_title").html();
 
         // Refresh image in media table.
-        $("#display_content .i" + id).find("img").attr("src", $refresh);
-                                                    
-    }    
+        $("#display_content .i" + id + " img").attr("src", $img);
+        
+        type = GetState("type");
+        if (type == "series") { // Rip season from title.
+            $title = $title.split("<br>")[0];
+        }
+          
+        if (type == "seasons" || type == "episodes") { // Rip showtitle from season or from episode.
+            $title = $title.split("<br>")[1];
+        }   
+        
+        // Shorten title.
+        if (type == "episodes") {
+            $title = ShortenString($title, 36);
+        }
+        else {
+            $title = ShortenString($title, 20);
+        }    
+        
+        // Refresh title in media table.
+        $("#display_content .i" + id).contents().last().replaceWith($title);
+    }
+}
+
+/*
+ * Function:	ShortenString
+ *
+ * Created on Dec 06, 2013
+ * Updated on Dec 06, 2013
+ *
+ * Description: Shorten string and add '...'.
+ *
+ * In:	string, length
+ * Out:	short
+ *
+ */
+function ShortenString(string, length)
+{
+    var short = string;
+      
+    if (string.length - length > 0) {
+        short = short.substring(0, length).trim() + '...';
+    }
+    
+    return short;
 }
 
 /*

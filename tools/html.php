@@ -7,7 +7,7 @@
  * File:    html.php
  *
  * Created on Mar 02, 2013
- * Updated on Aug 24, 2013
+ * Updated on Dec 06, 2013
  *
  * Description: HTML toolbox functions.
  *
@@ -163,30 +163,24 @@ function GetButtonValue($name)
  * Function:	ShortenString
  *
  * Created on Apr 06, 2013
- * Updated on Apr 06, 2013
+ * Updated on Dec 06, 2013
  *
- * Description: Get input value from a page.
+ * Description:  Shorten string and add '...'.
  *
- * In:	$string, length
+ * In:	$string, $length
  * Out:	$short
  *
  */
 function ShortenString($string, $length)
 {
     $short = $string;
-    $string_length = strlen($string);
-    $delta = $string_length - $length;
     
-    if ($delta > 0)
-    {
-        $rest = substr($string, 0, -$delta-3);
-        $short = rtrim($rest)."...";
-        
+    if (strlen($string) - $length > 0) {
+        $short = trim(substr($string, 0, $length))."...";   
     }
     
     return $short;
 }
-
 
 /*
  * Function:	unescape
