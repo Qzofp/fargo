@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Dec 06, 2013
+ * Updated on Dec 07, 2013
  *
  * Description: The main Json Display page.
  * 
@@ -1038,7 +1038,7 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
  * Function:	CreateSeriesQuery
  *
  * Created on Apr 08, 2013
- * Updated on Dec 06, 2013
+ * Updated on Dec 07, 2013
  *
  * Description: Create the sql query for the media TV shows table. 
  *
@@ -1048,8 +1048,8 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
  */
 function CreateSeriesQuery($title, $genre, $year, $sort, $login)
 {   
-    $sql = "SELECT DISTINCT  CONCAT(s.id, '_', s.seasons) AS id, CONCAT(t.xbmcid, '_', s.season) AS xbmcid, t.hide, t.refresh, t.title ".
-           "FROM (SELECT id, tvshowid, COUNT(season) AS seasons, season FROM seasons GROUP BY tvshowid) s ".
+    $sql = "SELECT DISTINCT  CONCAT(t.id, '_', s.seasons) AS id, CONCAT(t.xbmcid, '_', s.season) AS xbmcid, t.hide, t.refresh, t.title ".
+           "FROM (SELECT tvshowid, COUNT(season) AS seasons, season FROM seasons GROUP BY tvshowid) s ".
            "JOIN tvshows t ON s.tvshowid = t.xbmcid ";
     
     $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
