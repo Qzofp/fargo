@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Nov 11, 2013
+ * Updated on Dec 11, 2013
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -16,8 +16,9 @@
 var gTRIGGER = {
     START: 0,
     STARTTV: 0,
-    SLACK: 0,
     END: 0,
+    RETRY: 5,
+    SLACK: 0,
     READY: false,
     CANCEL: false
 };
@@ -26,7 +27,11 @@ var gTRIGGER = {
 var cIMPORT = {
     IMPORT:   "Import",
     REFRESH:  "Refresh",
-    FINISH:   "Finish"
+    FINISH:   "Finish",
+    START:    "Do you want to start importing [dummy]?",
+    WARNING:  "Warning:",
+    RUNNING:  "Import is running!",
+    CANCEL:   "Do you want to cancel the current import?"
 };
 
 var cSTATUS = {

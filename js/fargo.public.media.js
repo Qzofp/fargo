@@ -787,7 +787,7 @@ function SetShowButtonHandler()
         case "- Show All -" : SetState(state, "");
                               break;
                               
-        case "Import"       : media = GetState("media");  
+        case "Import"       : media = GetState("media");
                               setTimeout(function(){
                                 SetImportPopupHandler(media);
                               }, 500);                      

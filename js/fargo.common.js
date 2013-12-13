@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Dec 06, 2013
+ * Updated on Dec 13, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -119,7 +119,7 @@ function CheckInput(number, value)
  * Function:	CheckSettings
  *
  * Created on Jun 22, 2013
- * Updated on Jun 03, 2013
+ * Updated on Dec 11, 2013
  *
  * Description: Check input fields. If value is wrong return current value.
  * 
@@ -158,7 +158,7 @@ function CheckSettings(number, value)
                  break; 
              
         case 9 : // Check Timer
-                 if (value > 0 && value <= 10) {
+                 if (value > 299 && value <= 3000) {
                      check = true;
                  }    
                  break;  
@@ -273,7 +273,7 @@ function ShowPopupBox(type, title)
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Nov 21, 2013
+ * Updated on Dec 13, 2013
  *
  * Description: Close import or other popup window.
  * 
@@ -294,8 +294,7 @@ function SetCloseHandler()
         case "action_box"  : // Post ActionBox actions.
                              switch($popup.find(".title").text().split(" ")[0])
                              {
-                                case "Import"  : //alert("Close import");
-                                                 SetImportCancelHandler(); //Abort import.
+                                case "Import"  : SetImportCancelHandler(); //Finish or abort import.
                                                  break;
                                                  
                                 case "Refresh" : //alert("Finish Refresh"); 

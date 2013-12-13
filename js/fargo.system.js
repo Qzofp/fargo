@@ -503,7 +503,7 @@ function SetPropertyMouseHandler(event)
  * Function:	SetPropertyClickHandler
  *
  * Created on Jun 09, 2013
- * Updated on Sep 09, 2013
+ * Updated on Dec 11, 2013
  *
  * Description: Handle clicked property event.
  *
@@ -527,7 +527,6 @@ function SetPropertyClickHandler()
             case 2: //Import Movies library.
                     SetState("media", "movies");
                     SetImportPopupHandler("movies");
-                    //SetState("media", "system");
                     break;
                     
             case 4: //Clean TV Shows library...
@@ -536,8 +535,7 @@ function SetPropertyClickHandler()
                     
             case 5: //Import TV Shows library.
                     SetState("media", "tvshows");
-                    SetImportPopupHandler("tvshows");
-                    //SetState("media", "system");                
+                    SetImportPopupHandler("tvshows");               
                     break;
                     
             case 7: //Clean Music library...
@@ -546,8 +544,7 @@ function SetPropertyClickHandler()
                     
             case 8: //Import Music library.
                     SetState("media", "music");
-                    SetImportPopupHandler("music");;
-                    //SetState("media", "system");                
+                    SetImportPopupHandler("music");              
                     break;                
         }
     }

@@ -250,7 +250,7 @@ function ImportMovie($aError, $poster, $fanart, $aResult)
     
         UpdateStatus("XbmcSlack", 0);
         IncrementStatus("XbmcMoviesStart", 1);
-        IncrementStatus("ImportCounter", 1); 
+        IncrementStatus("ImportCounter", 1);
     }
     else if ($aError["code"] == -32602) // Movie not found, continue with the next one.
     { 
@@ -283,7 +283,7 @@ function ImportMovieSet($aError, $poster, $fanart, $aResult)
         ResizeAndSaveImage($aMovie[0], $fanart, "../".cSETSFANART, 562, 350); //675, 420 
         
         UpdateStatus("XbmcSlack", 0);
-        IncrementStatus("XbmcSetsStart", 1); 
+        IncrementStatus("XbmcSetsStart", 1);
         IncrementStatus("ImportCounter", 1);
     }
     else if ($aError["code"] == -32602) // Movie not found, continue with the next one.

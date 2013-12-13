@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Nov 21, 2013
+ * Updated on Dec 13, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -228,7 +228,7 @@ function SetRetryImportHandler(media, type, delta, start, selector)
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Oct 31, 2013
+ * Updated on Dec 12, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -238,7 +238,7 @@ function SetRetryImportHandler(media, type, delta, start, selector)
  */
 function StartImport(xbmc, media, type, delta, start, end, selector)
 {
-    var timeout = 0;
+    var retry   = 0;
     var busy    = false;
     var $ready  = $("#ready");
     
@@ -247,11 +247,10 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
     var $tit = $("#action_title");
     var $msg = $("#action_box .message");
     var msg  = cSTATUS.IMPORT.replace("[dummy]", ConvertMediaToSingular(type));
-    //var msg2 = cSTATUS.PROCESS.replace("[dummy]", ConvertMediaToSingular(type));
     
     (function setImportTimer() 
     {
-        if (gTRIGGER.CANCEL || start > end || timeout > xbmc.timeout/1000) 
+        if (gTRIGGER.CANCEL || start > end || retry > gTRIGGER.RETRY) 
         {            
             if (start > end) 
             {
@@ -270,26 +269,28 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
         {
             if (busy == false)
             {    
-                busy = true; // pause import.
+                busy = true; // Pause import.
                 ImportMedia(xbmc, type, -1, start, -1);       
                 start += 1;
-                timeout = 0; // reset timeout.
+                retry = 0; // Reset retries.
             }
         }
         
-        setTimeout(setImportTimer, 1000); // 1200   
+        // Timeout is set in the Fargo system screen.
+        setTimeout(setImportTimer, xbmc.timeout);
     }()); // End setImportTimer.   
         
     // Check status.
     var status = setInterval(function()
     {     
-        if (gTRIGGER.CANCEL || gTRIGGER.START > end  || timeout > xbmc.timeout/1000)
+        if (gTRIGGER.CANCEL || gTRIGGER.START > end  || retry > gTRIGGER.RETRY)
         {
-            if (timeout > xbmc.timeout/1000) {
+            if (retry > gTRIGGER.RETRY) {
                 SetRetryImportHandler(media, type, delta, start, selector);
             }
             
-            clearInterval(status); // End Status check.
+            // End Status check.
+            clearInterval(status); 
         }
         else
         {
@@ -300,17 +301,17 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
             }
             
             if ($ready.text() == "true") {
-                timeout++;
+                retry++;
             }
         }        
-    }, 1000); // 1200
+    }, xbmc.timeout); // 1000
 }
 
 /*
  * Function:	ShowStatus
  *
  * Created on Aug 19, 2013
- * Updated on Nov 21, 2013
+ * Updated on Dec 12, 2013
  *
  * Description: Show the import status.
  *
@@ -323,7 +324,7 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg)
     $.ajax({
         url: 'jsonmanage.php?action=status&media=' + media + '&mode=import',
         dataType: 'json',
-        success: function(json) 
+        success: function(json)
         {     
             gTRIGGER.START = Number(json.start);
             gTRIGGER.SLACK = Number(json.slack);
@@ -359,7 +360,6 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg)
             {
                 $msg.html(cSTATUS.SLACK);
                 $img.removeAttr("src").attr("src", "");
-                //json.start--;
                 $tit.html(cSTATUS.SKIP + --json.start);
             }
             
@@ -373,7 +373,7 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg)
  * Function:	SetTVSeasonImportHandler
  *
  * Created on Oct 19, 2013
- * Updated on Nov 21, 2013
+ * Updated on Dec 12, 2013
  *
  * Description: Start the seasons import handler.
  * 
@@ -415,7 +415,7 @@ function SetTVSeasonsImportHandler(media, selector, type)
                         if (end > 0 && end >= start) 
                         {
                             LogEvent("Information", "Import " + ConvertMedia(type) + " started.");
-                            StartTVSeasonsImportWrapper(json, start, end, delta);
+                            StartTVSeasonsImportWrapper(start, end, delta);
                         }
                         else if (end >= 0) 
                         {
@@ -442,23 +442,21 @@ function SetTVSeasonsImportHandler(media, selector, type)
  * Function:	StartTVSeasonsImportWrapper
  *
  * Created on Oct 19, 2013
- * Updated on Oct 31, 2013
+ * Updated on Dec 12, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
- * In:	xbmc, start, end, delta
+ * In:	start, end, delta
  * Out:	-
  *
  */
-function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
+function StartTVSeasonsImportWrapper(start, end, delta)
 {   
-    var timeout  = 0;
-    var $prg = $("#action_box .progress");
-    //var $img = $("#action_thumb img");
-    //var $tit = $("#action_title");
-    var $msg = $("#action_box .message");
-    var msg1 = cSTATUS.IMPORT.replace("[dummy]", "Season");
-    var msg2 = cSTATUS.PROCESS.replace("[dummy]", "Season");
+    var retry = 0;
+    var $prg  = $("#action_box .progress");
+    var $msg  = $("#action_box .message");
+    var msg1  = cSTATUS.IMPORT.replace("[dummy]", "Season");
+    var msg2  = cSTATUS.PROCESS.replace("[dummy]", "Season");
     
     gTRIGGER.STARTTV = start;
 
@@ -467,11 +465,10 @@ function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
     
     (function setImportTimer() 
     {
-        if (gTRIGGER.CANCEL || start > end || timeout > xbmc.timeout/1000) {
-            
+        if (gTRIGGER.CANCEL || start > end) // || retry > gTRIGGER.RETRY) 
+        {    
             if (start > end) 
             {
-                //alert("Import Seasons Finished!");
                 SetStartImportHandler("tvshows", 3, true, 3000);
                 setTimeout(function() 
                 {
@@ -494,20 +491,19 @@ function StartTVSeasonsImportWrapper(xbmc, start, end, delta)
     // Check TV Show Seasons status.
     var status = setInterval(function()
     {
-        if (gTRIGGER.CANCEL || start > end || timeout > xbmc.timeout/1000) 
+        if (gTRIGGER.CANCEL || start > end) // || retry > gTRIGGER.RETRY) 
         {   
-            if (timeout > xbmc.timeout/1000) {
+            //if (retry > gTRIGGER.RETRY) {
                 //SetRetryImportHandler(media, type, start, delta, selector);
-                alert("Retry Season Wrapper!");
-            }
+            //    alert("Retry Season Wrapper!");
+            //}
             
             clearInterval(status); // End Status check.
         }
         else { // Get seasons next TV Show.
-            // Returns gTRIGGER.STARTTV
             ShowTVShowSeasonsStatus(start, end, delta, $prg, $msg, msg1, msg2);
         }        
-    }, 1500);  
+    }, 1500);
 }
 
 /*
@@ -616,7 +612,7 @@ function StartSeasonsImportHandler(tvshowid)
  * Function:	StartSeasonsImport
  *
  * Created on Oct 19, 2013
- * Updated on Oct 25, 2013
+ * Updated on Dec 12, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -625,9 +621,9 @@ function StartSeasonsImportHandler(tvshowid)
  */
 function StartSeasonsImport(xbmc, start, end, tvshowid)
 {
-    var timeout  = 0;
-    var busy     = true;
-    var $ready   = $("#ready");
+    var retry  = 0;
+    var busy   = true;
+    var $ready = $("#ready");
     
     var $img = $("#action_thumb img");
     var $tit = $("#action_title");
@@ -638,7 +634,7 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
     
     (function setImportTimer() 
     {
-        if (gTRIGGER.CANCEL || start >= end || timeout > 2 * xbmc.timeout/1000) 
+        if (gTRIGGER.CANCEL || start >= end || retry > 2 * gTRIGGER.RETRY) 
         {            
             if (gTRIGGER.CANCEL) {
                 LogImportCounter("seasons", false);
@@ -651,25 +647,25 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
         {
             if (busy == false)
             {    
-                busy = true; // pause import.
+                busy = true; // Pause import.
                 ImportMedia(xbmc, "seasons", -1, start, tvshowid);       
                 start += 1;
-                timeout = 0; // reset timeout.
+                retry  = 0; // Reset timeout.
             }
         }
         
-        setTimeout(setImportTimer, 800);  // 1200
+        setTimeout(setImportTimer, 800);
     }()); // End setImportTimer.   
         
     // Check seasons status.
     var status = setInterval(function()
     {
-        if (gTRIGGER.CANCEL || gTRIGGER.START >= end || timeout > 2 * xbmc.timeout/1000)
+        if (gTRIGGER.CANCEL || gTRIGGER.START >= end || retry > 2 * gTRIGGER.RETRY)
         {
-            if (timeout > 2 * xbmc.timeout/1000) {
+            if (retry > 2 * gTRIGGER.RETRY) {
                 //SetRetryImportHandler(media, type, start, delta, selector);
-                alert("Retry Season");
-                //console.log("Retry?!? " + xbmc.timeout);
+                //alert("Retry Season");
+                console.log("Retry Season Counter: " + retry);
             }    
             clearInterval(status);
         }
@@ -682,10 +678,10 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
             }
             
             if ($ready.text() == "true") {
-                timeout++;
+                retry++;
             }
         }        
-    }, 800); // 1200
+    }, 800);
 }
 
 /*
@@ -730,10 +726,62 @@ function ShowSeasonsStatus($img, $tit)
 //////////////////////////////////   Common Import & Refresh Functions    /////////////////////////////////
 
 /*
+ * Function:	LockImport
+ *
+ * Created on Dec 13, 2013
+ * Updated on Dec 13, 2013
+ *
+ * Description: New imports cannot be started during the lock.
+ * 
+ * In:	-
+ * Out:	Set lock (ImportReady = 0 (false))
+ *
+ */
+function LockImport(callback)
+{
+    $.ajax({
+        url: 'jsonmanage.php?action=import&mode=lock',
+        dataType: 'json',
+        success: function(json) 
+        { 
+            if (callback && typeof(callback) === "function") {  
+                callback();
+            }             
+        } // End succes.    
+    }); // End Ajax.        
+}
+
+/*
+ * Function:	LockImport
+ *
+ * Created on Dec 13, 2013
+ * Updated on Dec 13, 2013
+ *
+ * Description: New imports cannot be started during the lock.
+ * 
+ * In:	-
+ * Out:	Remove lock (ImportReady = 1(true))
+ *
+ */
+function UnlockImport(callback)
+{
+    $.ajax({
+        url: 'jsonmanage.php?action=import&mode=unlock',
+        dataType: 'json',
+        success: function(json) 
+        { 
+            if (callback && typeof(callback) === "function") {  
+                callback();
+            }             
+        } // End succes.    
+    }); // End Ajax.        
+}
+
+/*
  * Function:	SetImportHandler
  *
  * Created on Sep 09, 2013
- * Updated on Sep 09, 2013
+ * Updated on Dec 13, 2013
  *
  * Description: Set the import handler, show the import popup box with yes/no buttons.
  * 
@@ -743,24 +791,48 @@ function ShowSeasonsStatus($img, $tit)
  */
 function SetImportPopupHandler(media)
 {
-    $("#action_box .message").text("Do you want to start importing " + ConvertMedia(media) + "?");
+    // Check if there is alread an import running.
+    $.ajax({
+        url: 'jsonmanage.php?action=import&mode=check',
+        dataType: 'json',
+        success: function(json) 
+        { 
+           var title;
+           
+           if (Number(json.check))
+           {
+               $("#action_box .message").text(cIMPORT.START.replace("[dummy]", ConvertMedia(media)));
+               title = cIMPORT.IMPORT + " " + ConvertMedia(media);
+               $("#action_wrapper").show();
+               //$("#action_box .progress").show();   
+               
+               if (media == "music") 
+               {
+                    $("#action_wrapper").height(116);
+                    $("#action_thumb").height(100);
+                    $("#action_thumb img").height(100);
+               }
+               else 
+               {
+                    $("#action_wrapper").height(156);
+                    $("#action_thumb").height(140);
+                    $("#action_thumb img").height(140);
+               }    
+           }
+           else 
+           {
+               $("#action_box .message").text(cIMPORT.CANCEL);
+               title = cIMPORT.WARNING + " " + cIMPORT.RUNNING;
+               $("#action_wrapper").hide();
+               //$("#action_box .progress").hide();       
+           }    
     
-    if (media == "music") 
-    {
-        $("#action_wrapper").height(116);
-        $("#action_thumb").height(100);
-        $("#action_thumb img").height(100);
-    }
-    else 
-    {
-        $("#action_wrapper").height(156);
-        $("#action_thumb").height(140);
-        $("#action_thumb img").height(140);
-    }
+           // Show popup.
+           ShowPopupBox("#action_box", title);
+           SetState("page", "popup"); 
     
-    // Show popup.
-    ShowPopupBox("#action_box", "Import " + ConvertMedia(media));
-    SetState("page", "popup"); 
+        } // End succes.    
+    }); // End Ajax.      
 }
 
 /*
@@ -1032,7 +1104,7 @@ function ShowFinished(found)
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Oct 28, 2013
+ * Updated on Dec 13, 2013
  *
  * Description: Set the import handler, cancel or finish the import.
  * 
@@ -1064,10 +1136,6 @@ function SetImportCancelHandler()
     
     // Reset import values.
     gTRIGGER.CANCEL = true;
-    //gTRIGGER.SLACK  = 0;
-    //gTRIGGER.TEMP   = -1;
-    //global_total_fargo = 0;
-    //global_total_xbmc  = 0;    
 
     $("#action_box .progress").progressbar({
         value : 0       
@@ -1077,8 +1145,14 @@ function SetImportCancelHandler()
         LogImportCounter(type, false);
     }
     
-    if (media != "system") {
-        window.location='index.php?media=' + media;              
+    if ($popup.find(".no").text() != "No")
+    {    
+        // Unlock import.
+        UnlockImport(function() {
+            if (media != "system") {
+                window.location='index.php?media=' + media;              
+            }                           
+        });        
     }
 }
 

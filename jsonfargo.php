@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Dec 07, 2013
+ * Updated on Dec 12, 2013
  *
  * Description: The main Json Display page.
  * 
@@ -1281,7 +1281,7 @@ function QueryMedia($sql, $page, $end, $length)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on Oct 06, 2013
+ * Updated on Dec 11, 2013
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -1306,7 +1306,7 @@ function GetSystemOptionProperties($name, $login)
                             $html = str_replace("[xbmcuser]", GetSetting("XBMCusername"), $html);
                             $html = str_replace("[fargouser]", GetUser(1), $html);
                             $html = str_replace("[password]", "******", $html);
-                            $html = str_replace("[timeout]", GetSetting("Timeout")/1000, $html);
+                            $html = str_replace("[timeout]", GetSetting("Timeout"), $html);
                             break;
                         
         case "library"    : $html = GetSetting($name);
@@ -1341,7 +1341,7 @@ function GetSystemOptionProperties($name, $login)
  * Function:	GenerateEventRows
  *
  * Created on Jun 10, 2013
- * Updated on Jun 10, 2013
+ * Updated on Dec 12, 2013
  *
  * Description: Generate event log table rows.
  *
@@ -1358,7 +1358,7 @@ function GenerateEventRows()
     $sql = "SELECT date, type, event ".
            "FROM log ".
            "ORDER BY date DESC ".
-           "LIMIT 0, 100";
+           "LIMIT 0, 250";
         
     $stmt = $db->prepare($sql);
     if($stmt)

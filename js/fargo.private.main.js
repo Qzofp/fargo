@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Dec 04, 2013
+ * Updated on Dec 13, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -184,7 +184,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Dec 04, 2013
+ * Updated on Dec 13, 2013
  *
  * Description: Perform action
  * 
@@ -202,17 +202,23 @@ function SetActionHandler()
     
     switch($popup.find(".title").text().split(" ")[0])
     {
-        case "Refresh"   : PrepareRefreshHandler(type, $popup.find(".id").text(), $popup.find(".xbmcid").text());                        
-                           break;
+        case cIMPORT.REFRESH : PrepareRefreshHandler(type, $popup.find(".id").text(), $popup.find(".xbmcid").text());                        
+                                break;
                            
-        case "Remove"    : SetRemoveHandler($popup.find(".id").text(), $popup.find(".xbmcid").text());
-                           break;
+        case "Remove"        : SetRemoveHandler($popup.find(".id").text(), $popup.find(".xbmcid").text());
+                               break;
                            
-        case "Cleaning"  : SetCleanDatabaseHandler();
-                           break;
+        case "Cleaning"      : SetCleanDatabaseHandler();
+                               break;
                            
-        case "Import"    : SetStartImportHandler(media, 1, true); //alert("Import Something!"); 
-                           break;                                       
+        case cIMPORT.IMPORT  : LockImport(function() {
+                                  SetStartImportHandler(media, 1, true, 0); 
+                               });
+                               break;
+                       
+        case cIMPORT.WARNING : // Cancel the current running import.
+                               alert("Cancel Import");
+                               break;              
     }
 }
 

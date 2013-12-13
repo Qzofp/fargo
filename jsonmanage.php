@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Nov 29, 2013
+ * Updated on Dec 13, 2013
  *
  * Description: The main Json Manage page.
  * 
@@ -84,7 +84,17 @@ switch($action)
                          $aJson = LogEvent("Warning", "Unauthorized counter action call!");
                       }                     
                       break;
-                 
+    
+    case "import"   : if($login)
+                      {
+                          $mode  = GetPageValue('mode');
+                          $aJson = ProcessImportMode($mode);
+                      }
+                      else {
+                          $aJson = LogEvent("Warning", "Unauthorized import action call!");
+                      }
+                      break;
+                      
     case "status"   : if($login)
                       {
                          $media = GetPageValue('media');
@@ -106,7 +116,18 @@ switch($action)
                       else {
                          $aJson = LogEvent("Warning", "Unauthorized status action call!");
                       }                        
-                      break;   
+                      break;
+                      
+    case "convert" : // Convert TV show id's to season id's for refresh serie.
+                     if($login)
+                     { 
+                        $id    = GetPageValue('id');
+                        $aJson = ConvertTVShowToSeasonID($id);
+                     }
+                     else {
+                        $aJson = LogEvent("Warning", "Unauthorized convert action call!");
+                     }                    
+                     break;                      
                      
     case "property" : if($login)
                       {
@@ -118,7 +139,7 @@ switch($action)
                       else {
                          $aJson = LogEvent("Warning", "Unauthorized property action call!");
                       }                       
-                      break;  
+                      break; 
                     
     case "log"     : if($login)
                      { 
@@ -420,7 +441,7 @@ function ResetStatus($media, $counter)
         UpdateStatus("ImportCounter", 0);
     }
     else {
-      UpdateStatus("RefreshReady", 0);
+        UpdateStatus("RefreshReady", 0);
     }
     
     UpdateStatus("Xbmc".$media."End", -1);
@@ -430,6 +451,39 @@ function ResetStatus($media, $counter)
 }
 
 /////////////////////////////////////////    Import Functions    //////////////////////////////////////////
+
+/*
+ * Function:	ProcessImportMode
+ *
+ * Created on Dec 13, 2013
+ * Updated on Dec 13, 2013
+ *
+ * Description: Process the import mode (check, lock or unlock import). 
+ *
+ * In:  $mode
+ * Out: $aJson
+ *
+ */
+function ProcessImportMode($mode)
+{
+    $aJson = null;
+    
+    switch($mode)
+    {
+        case "check"  : $aJson["check"] = GetStatus("ImportReady");
+                         break;
+                    
+        case "lock"   : UpdateStatus("ImportReady", 0); // 0 = false.
+                        $aJson["check"] = 0;
+                        break;
+                   
+        case "unlock" : UpdateStatus("ImportReady", 1); // 1 = true. 
+                        $aJson["check"] = 1;
+                        break;                   
+    }
+    
+    return $aJson;
+}
 
 /*
  * Function:	GetMediaStatus
@@ -686,6 +740,28 @@ function GetEpisodesImportRefreshStatus($id, $thumbs)
     return $aJson;
 }
 
+/*
+ * Function:	ConvertTVShowToSeasonID
+ *
+ * Created on Dec 10, 2013
+ * Updated on Dec 10, 2013
+ *
+ * Description: Convert TV show id's to season id for serie (season 1) refresh. 
+ *
+ * In:  $id
+ * Out: $aJson
+ *
+ */
+function ConvertTVShowToSeasonID($id)
+{
+    $aItems = explode("_", $id);    
+    $sql = "SELECT id FROM seasons WHERE tvshowid = $aItems[0] AND season = $aItems[1]";
+    
+    $aJson['id'] = GetItemFromDatabase("id", $sql);
+    
+    return $aJson;
+}
+
 /////////////////////////////////////////    System Functions    //////////////////////////////////////////
 
 /*
@@ -724,7 +800,7 @@ function SetSystemProperty($option, $number, $value)
  * Function:	SetSettingProperty
  *
  * Created on May 27, 2013
- * Updated on Aug 25, 2013
+ * Updated on Dec 11, 2013
  *
  * Description: Set the setting property. 
  *
@@ -764,7 +840,7 @@ function SetSettingProperty($number, $value)
                  break; 
              
         case 9 : // Set Timer
-                 UpdateSetting("Timeout", $value * 1000);
+                 UpdateSetting("Timeout", $value);
                  break;              
     }
     

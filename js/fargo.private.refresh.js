@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Dec 03, 2013
+ * Updated on Dec 10, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,7 +18,7 @@
  * Function:	PrepareRefreshHandler
  *
  * Created on Nov 23, 2013
- * Updated on Dec 03, 2013
+ * Updated on Dec 10, 2013
  *
  * Description: Prepare the refresh handler, show the refresh popup box and start the refresh.
  * 
@@ -42,10 +42,18 @@ function PrepareRefreshHandler(type, id, xbmcid)
         case "tvtitles" : SetStartRefreshHandler("tvshows", id, xbmcid, -1);
                           break;                      
                       
-        case "series"   : SetStartRefreshHandler("seasons", id.split("_")[0], --xbmcid.split("_")[1], xbmcid.split("_")[0]);
+        case "series"   : var xbmc = xbmcid.split("_")[1];
+                          if (xbmc > 0) {
+                             xbmc--;
+                          }
+                          ConvertAndStartSeriesRefresh(xbmcid, xbmc, xbmcid.split("_")[0]);
                           break;  
 
-        case "seasons"  : SetStartRefreshHandler("seasons", id.split("_")[0], --xbmcid.split("_")[1], xbmcid.split("_")[0]);
+        case "seasons"  : var xbmc = xbmcid.split("_")[1];
+                          if (xbmc > 0) {
+                             xbmc--;
+                          }
+                          SetStartRefreshHandler("seasons", id.split("_")[0], xbmc, xbmcid.split("_")[0]);
                           break;          
         
         case "episodes" : SetStartRefreshHandler("episodes", id, xbmcid, -1);
@@ -57,6 +65,33 @@ function PrepareRefreshHandler(type, id, xbmcid)
 }
 
 /*
+ * Function:	ConvertAndStartSeriesRefresh
+ *
+ * Created on Dec 10, 2013
+ * Updated on Dec 10, 2013
+ *
+ * Description: Convert TV show id's to season id's and refresh serie (season 1).
+ * 
+ * In:	xbmcid, tvshowid
+ * Out:	-
+ *
+ */
+function ConvertAndStartSeriesRefresh(id, start, tvshowid)
+{
+    $.ajax({
+        url: 'jsonmanage.php?action=convert&id=' + id,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {
+            //alert(json.id + " " + start + " " + tvshowid);
+            
+            SetStartRefreshHandler("seasons", json.id, start, tvshowid);
+        } // End Success.        
+    }); // End Ajax;      
+}
+
+/*
  * Function:	SetStartRefreshHandler
  *
  * Created on Sep 14, 2013
@@ -65,7 +100,7 @@ function PrepareRefreshHandler(type, id, xbmcid)
  * Description: Set the refresh handler, show the refresh popup box and start the refresh.
  * 
  * In:	media, id, xbmcid, tvshowid
- * Out:	title
+ * Out:	-
  *
  */
 function SetStartRefreshHandler(media, id, xbmcid, tvshowid)

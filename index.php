@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Nov 11, 2013
+ * Updated on Dec 13, 2013
  *
  * Description: Fargo's main page (openingspage). 
  *
