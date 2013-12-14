@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Nov 24, 2013
+ * Updated on Dec 14, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -253,7 +253,7 @@ function RemoveMediaFromFargo(media, id, xbmcid)
  * Function:	ClearActionBox
  *
  * Created on Sep 08, 2013
- * Updated on Oct 31, 2013
+ * Updated on Dec 14, 2013
  *
  * Description: Clear the action box. Set back to initial values.
  *
@@ -263,10 +263,11 @@ function RemoveMediaFromFargo(media, id, xbmcid)
  */
 function ClearActionBox()
 {
-    var $action = $("#action_box");
-    var $thumb  = $("#action_thumb");
+    var $action  = $("#action_box");
+    var $thumb   = $("#action_thumb");
+    var $wrapper = $("#action_wrapper");
     
-    setTimeout(function() {
+    setTimeout(function() {        
         $action.find(".id").text("");
         $("#action_box .xbmcid").text("");
         $action.find(".title").text("");
@@ -275,16 +276,17 @@ function ClearActionBox()
         $("#transfer").html("<br/>");
         $("#ready").html("<br/>");
         
-        $("#action_wrapper").removeAttr("style");
+        $wrapper.show();
+        $wrapper.removeAttr("style");
         $thumb.removeAttr("style");
         $thumb.children("img").removeAttr("style").attr("src", "");
         $("#action_title").height(30).html("&nbsp;");
-        
+           
         // Remove progressbar.
+        $("#action_box .progress").show();
         if($action.find(".ui-progressbar").length != 0) {   
             $action.find(".progress").progressbar( "destroy" );
         }        
-        //$(".progress").toggleClass("progress progress_off");
         
         // Reset buttons.
         $(".yes").show();

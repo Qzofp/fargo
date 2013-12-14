@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Dec 13, 2013
+ * Updated on Dec 14, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -184,7 +184,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Dec 13, 2013
+ * Updated on Dec 14, 2013
  *
  * Description: Perform action
  * 
@@ -216,9 +216,9 @@ function SetActionHandler()
                                });
                                break;
                        
-        case cIMPORT.WARNING : // Cancel the current running import.
-                               alert("Cancel Import");
-                               break;              
+        //case cIMPORT.WARNING : // Cancel the current running import.
+        //                       alert("Cancel Import");
+        //                       break;              
     }
 }
 

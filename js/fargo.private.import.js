@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Dec 13, 2013
+ * Updated on Dec 14, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -781,7 +781,7 @@ function UnlockImport(callback)
  * Function:	SetImportHandler
  *
  * Created on Sep 09, 2013
- * Updated on Dec 13, 2013
+ * Updated on Dec 14, 2013
  *
  * Description: Set the import handler, show the import popup box with yes/no buttons.
  * 
@@ -803,7 +803,7 @@ function SetImportPopupHandler(media)
            {
                $("#action_box .message").text(cIMPORT.START.replace("[dummy]", ConvertMedia(media)));
                title = cIMPORT.IMPORT + " " + ConvertMedia(media);
-               $("#action_wrapper").show();
+               //$("#action_wrapper").show();
                //$("#action_box .progress").show();   
                
                if (media == "music") 
@@ -821,10 +821,15 @@ function SetImportPopupHandler(media)
            }
            else 
            {
-               $("#action_box .message").text(cIMPORT.CANCEL);
-               title = cIMPORT.WARNING + " " + cIMPORT.RUNNING;
-               $("#action_wrapper").hide();
-               //$("#action_box .progress").hide();       
+                $("#action_box .message").text(cIMPORT.RUNNING);
+                title = cIMPORT.WARNING;
+                $("#action_wrapper").hide();
+                $("#action_box .progress").hide();
+                $("#action_title").height(5);
+                
+                $(".yes").hide();
+                $(".no").text("Okay");
+                
            }    
     
            // Show popup.
