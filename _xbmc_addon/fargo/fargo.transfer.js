@@ -482,7 +482,7 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
         id = 17; // Refresh TV Show Season.
     }
     
-    // libTVShowSeasons -> library id = 15 or 16.
+    // libTVShowSeasons -> library id = 16 or 17.
     var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons","params":\n\
                    {"tvshowid":'+ tvshowid +',"limits":{"start":'+ start +',"end":' + end + '},\n\
                    "properties":["episode","watchedepisodes","season","tvshowid","showtitle","playcount",\n\

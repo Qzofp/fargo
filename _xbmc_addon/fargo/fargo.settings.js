@@ -15,8 +15,9 @@
 /////////////////////////////////////////////    Settings    //////////////////////////////////////////////
 
 // Connection settings.
-var cFARGOSITE = "192.168.114.128/fargo";
-//var cFARGOSITE = "fargo.qzofp.nl";
+//var cFARGOSITE = "192.168.237.128/fargo";
+//var cFARGOSITE = "192.168.1.2/fargo";  // NAS
+var cFARGOSITE = "fargo.qzofp.nl";
 
 // Security settings.
 //var cKEY = "";

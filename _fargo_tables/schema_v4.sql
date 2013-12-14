@@ -2,7 +2,8 @@
 SQLyog Ultimate v11.11 (32 bit)
 MySQL - 5.5.27 : Database - fargo
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -12,9 +13,9 @@ MySQL - 5.5.27 : Database - fargo
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`fargo` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`qzofp_fargo` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
-USE `fargo`;
+USE `qzofp_fargo`;
 
 /*Table structure for table `episodes` */
 
@@ -27,7 +28,6 @@ CREATE TABLE `episodes` (
   `hide` tinyint(4) DEFAULT '0',
   `refresh` smallint(6) DEFAULT '0',
   `title` text,
-  `thumb` text,
   `originaltitle` text,
   `rating` decimal(10,2) DEFAULT NULL,
   `writer` text,
@@ -61,7 +61,7 @@ CREATE TABLE `genres` (
   `genre` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_genre` (`genre`)
-) ENGINE=InnoDB AUTO_INCREMENT=791 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1052 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `genretomovie` */
 
@@ -82,7 +82,7 @@ CREATE TABLE `genretomusic` (
   `genreid` int(11) DEFAULT NULL,
   `musicid` int(11) DEFAULT NULL,
   UNIQUE KEY `ix_genreid` (`genreid`,`musicid`),
-  UNIQUE KEY `ix_musicid` (`musicid`,`genreid`)
+  UNIQUE KEY `ix_albumid` (`musicid`,`genreid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `genretotvshow` */
@@ -106,7 +106,7 @@ CREATE TABLE `log` (
   `type` varchar(16) NOT NULL,
   `event` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=133 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=163 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `movies` */
 
@@ -119,9 +119,6 @@ CREATE TABLE `movies` (
   `refresh` smallint(6) DEFAULT '0',
   `title` text,
   `imdbnr` text,
-  `fanart` text,
-  `poster` text,
-  `thumb` text,
   `sorttitle` text,
   `originaltitle` text,
   `year` smallint(6) DEFAULT NULL,
@@ -141,19 +138,17 @@ CREATE TABLE `movies` (
   `runtime` smallint(6) DEFAULT NULL,
   `set` text,
   `setid` int(11) DEFAULT NULL,
-  `showlink` text,
   `audio` text,
   `video` text,
-  `top250` text,
   `votes` int(11) DEFAULT NULL,
   `file` text,
   `dateadded` datetime DEFAULT NULL,
-  `tag` text,
   `genre` text,
   PRIMARY KEY (`id`),
   KEY `ix_xbmcid` (`xbmcid`),
   KEY `ix_sorttitle` (`sorttitle`(10)),
-  KEY `ix_year` (`year`)
+  KEY `ix_year` (`year`),
+  KEY `ix_setid` (`setid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `music` */
@@ -167,7 +162,6 @@ CREATE TABLE `music` (
   `refresh` smallint(6) DEFAULT '0',
   `title` text,
   `artist` text,
-  `cover` text,
   `description` text,
   `genre` text,
   `theme` text,
@@ -179,7 +173,6 @@ CREATE TABLE `music` (
   `year` smallint(6) DEFAULT NULL,
   `mbalbumid` text,
   `mbalbumartistid` text,
-  `fanart` text,
   `playcount` smallint(6) DEFAULT NULL,
   `genreid` int(11) DEFAULT NULL,
   `artistid` int(11) DEFAULT NULL,
@@ -202,7 +195,6 @@ CREATE TABLE `seasons` (
   `refresh` smallint(6) DEFAULT '0',
   `title` text,
   `showtitle` text,
-  `thumb` text,
   `playcount` smallint(6) DEFAULT NULL,
   `season` smallint(6) DEFAULT NULL,
   `episode` smallint(6) DEFAULT NULL,
@@ -221,9 +213,7 @@ CREATE TABLE `sets` (
   `hide` tinyint(4) DEFAULT '0',
   `refresh` smallint(6) DEFAULT '0',
   `title` text,
-  `fanart` text,
-  `poster` text,
-  `thumb` text,
+  `sorttitle` text,
   `playcount` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_setid` (`setid`)
@@ -249,7 +239,7 @@ CREATE TABLE `status` (
   `name` varchar(32) DEFAULT NULL,
   `value` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `tvshows` */
 
@@ -262,9 +252,6 @@ CREATE TABLE `tvshows` (
   `refresh` smallint(6) DEFAULT '0',
   `title` text,
   `imdbnr` text,
-  `fanart` text,
-  `poster` text,
-  `thumb` text,
   `genre` text,
   `year` smallint(6) DEFAULT NULL,
   `rating` decimal(10,2) DEFAULT NULL,
@@ -280,11 +267,10 @@ CREATE TABLE `tvshows` (
   `file` text,
   `originaltitle` text,
   `sorttitle` text,
-  `episodeguide` text,
   `season` smallint(6) DEFAULT NULL,
+  `episodeguide` text,
   `watchedepisodes` smallint(6) DEFAULT NULL,
   `dateadded` datetime DEFAULT NULL,
-  `tag` text,
   PRIMARY KEY (`id`),
   KEY `ix_xbmcid` (`xbmcid`),
   KEY `ix_sorttitle` (`sorttitle`(10)),
