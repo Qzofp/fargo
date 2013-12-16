@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Dec 12, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: The main Json Display page.
  * 
@@ -134,7 +134,7 @@ function GetMediaInfo($media, $id)
  * Function:	GetMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Sep 21, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: Get the movie info from Fargo and return it as Json data. 
  *
@@ -169,7 +169,7 @@ function GetMovieInfo($id)
             
             $aMedia["xbmcid"]   = $xbmcid;
             $aMedia["refresh"]  = $refresh;
-            $aMedia["title"]    = ShortenString($title, 50);
+            $aMedia["title"]    = stripslashes(ShortenString($title, 50));
             $aMedia["director"] = str_replace("|", " / ", $director);
             $aMedia["writer"]   = str_replace("|", " / ", $writer);
             $aMedia["studio"]   = $studio;
@@ -178,8 +178,8 @@ function GetMovieInfo($id)
             $aMedia["runtime"]  = round($runtime/60)." Minutes";
             //$aMedia["votes"]    = $votes;
             $aMedia["rating"]   = $rating." ($votes votes)";
-            $aMedia["tagline"]  = $tagline;
-            $aMedia["plot"]     = $plot;
+            $aMedia["tagline"]  = stripslashes($tagline);
+            $aMedia["plot"]     = stripslashes($plot);
             $aMedia["mpaa"]     = ConvertToRatingsFlag($mpaa);
             $aMedia["country"]  = $country;
             $aMedia["trailer"]  = $trailer;
@@ -216,7 +216,7 @@ function GetMovieInfo($id)
  * Function:	GetTVShowInfo
  *
  * Created on Jul 09, 2013
- * Updated on Nov 11, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: Get the TV show info from Fargo and return it as Json data. 
  *
@@ -248,14 +248,14 @@ function GetTVShowInfo($id)
             $genre = str_replace('"', '', $genre);
             
             $aMedia["xbmcid"]          = $xbmcid;
-            $aMedia["title"]           = ShortenString($title, 50);
+            $aMedia["title"]           = stripslashes(ShortenString($title, 50));
             $aMedia["studio"]          = $studio;
             $aMedia["genre"]           = str_replace("|", " / ", $genre);
             $aMedia["year"]            = $year;
             $aMedia["premiered"]       = date( 'd/m/Y', strtotime($premiered));
             //$aMedia["votes"]           = $votes;
             $aMedia["rating"]          = $rating." ($votes votes)";
-            $aMedia["plot"]            = $plot;
+            $aMedia["plot"]            = stripslashes($plot);
             $aMedia["episode"]         = $episode;
             $aMedia["watchedepisodes"] = $watchedepisodes;
             //$aMedia["episodeguide"]    = $episodeguide;
@@ -288,7 +288,7 @@ function GetTVShowInfo($id)
  * Function:	GetTVShowEpisodeInfo
  *
  * Created on Nov 17, 2013
- * Updated on Nov 17, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: Get the TV show episode info from Fargo and return it as Json data. 
  *
@@ -318,8 +318,8 @@ function GetTVShowEpisodeInfo($id)
             $stmt->fetch();
             
             $aMedia["episodeid"]  = $episodeid;
-            $aMedia["title"]      = ShortenString($title, 50);
-            $aMedia["showtitle"]  = ShortenString($showtitle, 50);
+            $aMedia["title"]      = stripslashes(ShortenString($title, 50));
+            $aMedia["showtitle"]  = stripslashes(ShortenString($showtitle, 50));
             $aMedia["season"]     = $season;
             $aMedia["episode"]    = $episode;
             $aMedia["firstaired"] = date( 'd/m/Y', strtotime($firstaired));
@@ -331,7 +331,7 @@ function GetTVShowEpisodeInfo($id)
             $aMedia["audio"]      = ConvertToAudioFlag($audio);
             $aMedia["video"]      = ConvertToVideoFlag($video);
             $aMedia["aspect"]     = ConvertToAspectFlag($video, $file);            
-            $aMedia["plot"]       = $plot;
+            $aMedia["plot"]       = stripslashes($plot);
         }
         else
         {
@@ -359,7 +359,7 @@ function GetTVShowEpisodeInfo($id)
  * Function:	GetAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Sep 09, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: Get the album info from Fargo and return it as Json data. 
  *
@@ -399,7 +399,7 @@ function GetAlbumInfo($id)
             }
             
             $aMedia["xbmcid"]        = $xbmcid;
-            $aMedia["title"]         = ShortenString($title, 50);
+            $aMedia["title"]         = stripslashes(ShortenString($title, 50));
             $aMedia["genre"]         = str_replace("|", " / ", $genre);
             $aMedia["theme"]         = str_replace("|", " / ", $theme);
             $aMedia["mood"]          = str_replace("|", " / ", $mood);
@@ -408,7 +408,7 @@ function GetAlbumInfo($id)
             $aMedia["artist"]        = $artist;
             $aMedia["displayartist"] = $displayartist;
             $aMedia["rating"]        = $rating." (from 5 starts)";
-            $aMedia["description"]   = $description;
+            $aMedia["description"]   = stripslashes($description);
             $aMedia["albumlabel"]    = $albumlabel;
         }
         else
@@ -806,7 +806,7 @@ function GetPopupMediaInfo($sql, $thumb)
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Dec 06, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -910,8 +910,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
     // Fill parameters.
     $aParams['lastpage'] = ceil($rows/$max);
     $aParams['row']      = cMediaRow;
-    //$aParams['column']   = cMediaColumn;
-    $aParams['header']   = $header; // Header title for sets and series.
+    $aParams['header']   = stripslashes($header); // Header title for sets and series.
     
     // Fill Json.
     $aJson['params'] = $aParams;
@@ -1204,7 +1203,7 @@ function CreateQuerySortQrder($a, $title)
  * Function:	QueryMedia
  *
  * Created on Apr 03, 2013
- * Updated on Nov 16, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -1215,9 +1214,6 @@ function CreateQuerySortQrder($a, $title)
 function QueryMedia($sql, $page, $end, $length)
 {   
     $aMedia  = null; 
-
-    // Number of movies for 1 page
-    //$end   = cMediaRow * cMediaColumn;
     $start = ($page - 1) * $end;
     
     // Add limit.
@@ -1245,7 +1241,7 @@ function QueryMedia($sql, $page, $end, $length)
                     $aMedia[$i]['xbmcid']  = $xbmcid;  
                     $aMedia[$i]['hide']    = $hide;  
                     $aMedia[$i]['refresh'] = $refresh; 
-                    $aMedia[$i]['title']   = ShortenString($title, $length);
+                    $aMedia[$i]['title']   = stripslashes(ShortenString($title, $length));
                     
                     $i++;
                 }                  

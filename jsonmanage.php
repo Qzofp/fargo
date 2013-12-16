@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Dec 13, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: The main Json Manage page.
  * 
@@ -84,6 +84,16 @@ switch($action)
                          $aJson = LogEvent("Warning", "Unauthorized counter action call!");
                       }                     
                       break;
+                      
+    case "init"     : if($login)
+                      {
+                          UpdateStatus("ImportReady", 1);
+                          $aJson['init'] = "ready";
+                      }
+                      else {
+                          $aJson = LogEvent("Warning", "Unauthorized init action call!");
+                      }
+                      break;            
     
     case "import"   : if($login)
                       {

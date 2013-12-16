@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Dec 14, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Nov 23, 2013
+ * Updated on Dec 15, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -30,9 +30,11 @@ function LoadFargoMedia(media)
 {      
     var aOptions = ['Statistics', 'Settings', 'Library', 'Event Log', 'Credits', 'About'];
     
+    InitStatus();
+    
     SetState("title", "name_asc");
     SetState("mode", "Information");
-
+    
     ChangeControlBar(media);
     ChangeSubControlBar(media);
 
@@ -89,6 +91,30 @@ function LoadFargoMedia(media)
             
     // Keyboard events.
     $(document).on("keydown", SetKeyHandler);
+}
+
+/*
+ * Function:	InitStatus
+ *
+ * Created on Dec 15, 2013
+ * Updated on Dec 15, 2013
+ *
+ * Description: Initialize the status table.
+ *
+ * In:	-
+ * Out:	Initialized status table.
+ *
+ */
+function InitStatus()
+{
+    $.ajax({
+        url: 'jsonmanage.php?action=init',
+        dataType: 'json',
+        success: function(json)
+        {    
+            
+        } // End Success.        
+    }); // End Ajax;    
 }
 
 /*
