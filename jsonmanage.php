@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Dec 15, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: The main Json Manage page.
  * 
@@ -543,7 +543,7 @@ function GetMediaStatus($media, $id)
  * Function:	GetImportRefreshStatus
  *
  * Created on May 18, 2013
- * Updated on Oct 31, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: Reports the status of the import or refresh process.
  *
@@ -587,7 +587,7 @@ function GetImportRefreshStatus($media, $id, $nameid, $thumbs)
                 {                
                     $aJson['id']      = $xbmcid;
                     $aJson['refresh'] = $refresh;
-                    $aJson['title']   = ShortenString($title, 70);
+                    $aJson['title']   = stripslashes(ShortenString($title, 70));
                 }                  
             }
         }
@@ -611,7 +611,7 @@ function GetImportRefreshStatus($media, $id, $nameid, $thumbs)
  * Function:	GetSeasonsImportRefreshStatus
  *
  * Created on Oct 21, 2013
- * Updated on Dec 02, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: Reports the seasons status of the import process.
  *
@@ -661,7 +661,7 @@ function GetSeasonsImportRefreshStatus($seasonid, $thumbs)
                     }
                     $aJson['refresh']  = $refresh;
                     $aJson['tvshowid'] = $tvshowid;
-                    $aJson['title']    = ShortenString($showtitle, 70)."</br>".ShortenString($title, 70);
+                    $aJson['title']    = stripslashes(ShortenString($showtitle, 70))."</br>".stripslashes(ShortenString($title, 70));
                     $aJson['season']   = $season;
                 }                  
             }
@@ -686,7 +686,7 @@ function GetSeasonsImportRefreshStatus($seasonid, $thumbs)
  * Function:	GetEpisodesImportRefreshStatus
  *
  * Created on Oct 27, 2013
- * Updated on Nov 29, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: Reports the episode status of the import process.
  *
@@ -730,7 +730,7 @@ function GetEpisodesImportRefreshStatus($id, $thumbs)
                 {                
                     $aJson['id']      = $episodeid;
                     $aJson['refresh'] = $refresh;
-                    $aJson['title']   = ShortenString($showtitle, 70)."</br>$episode. ".ShortenString($title, 70);
+                    $aJson['title']   = stripslashes(ShortenString($showtitle, 70))."</br>$episode. ".stripslashes(ShortenString($title, 70));
                 }                  
             }
         }

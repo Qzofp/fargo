@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Dec 15, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: The main Json Display page.
  * 
@@ -751,7 +751,7 @@ function GetPopupInfo($media, $id)
  * Function:	GetPopupMediaInfo
  *
  * Created on Nov 22, 2013
- * Updated on Nov 25, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: Get the media info popups from Fargo and return it as Json data. 
  *
@@ -776,7 +776,7 @@ function GetPopupMediaInfo($sql, $thumb)
             
             $aMedia["xbmcid"]   = $xbmcid;
             $aMedia["refresh"]  = $refresh;
-            $aMedia["title"]    = $title;
+            $aMedia["title"]    = stripslashes($title);
         }
         else
         {
