@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Nov 16, 2013
+ * Updated on Dec 20, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Nov 12, 2013
+ * Updated on Dec 20, 2013
  *
  * Description: Load the media from Fargo with login.
  *
@@ -38,6 +38,9 @@ function LoadFargoMedia(media)
 
     //ShowMediaTable(media, gSTATE.PAGE, gSTATE.SORT);
     ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
+    
+    // On mouse move media event.
+    $("#display_content").on("mouseenter mouseleave", "td", SetScrollTitleHandler);
 
     // The media info or zoom in click events.
     $("#display_content").on("click", "td", SetInfoZoomHandler);

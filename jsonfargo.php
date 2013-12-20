@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Dec 17, 2013
+ * Updated on Dec 20, 2013
  *
  * Description: The main Json Display page.
  * 
@@ -1203,7 +1203,7 @@ function CreateQuerySortQrder($a, $title)
  * Function:	QueryMedia
  *
  * Created on Apr 03, 2013
- * Updated on Dec 15, 2013
+ * Updated on Dec 20, 2013
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -1241,7 +1241,8 @@ function QueryMedia($sql, $page, $end, $length)
                     $aMedia[$i]['xbmcid']  = $xbmcid;  
                     $aMedia[$i]['hide']    = $hide;  
                     $aMedia[$i]['refresh'] = $refresh; 
-                    $aMedia[$i]['title']   = stripslashes(ShortenString($title, $length));
+                    //$aMedia[$i]['title']   = stripslashes(ShortenString($title, $length));
+                    $aMedia[$i]['title']   = stripslashes($title);
                     
                     $i++;
                 }                  

@@ -6,13 +6,71 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Dec 04, 2013
+ * Updated on Dec 20, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
  */
 
 //////////////////////////////////////////    Main Functions    ///////////////////////////////////////////
+
+/*
+ * Function:	SetScrollTitleHandler
+ *
+ * Created on Dec 20, 2013
+ * Updated on Dec 20, 2013
+ *
+ * Description: Set scroll title text handler.
+ * 
+ * In:	event
+ * Out:	Scroll text.
+ *
+ * Note: Based on http://jsfiddle.net/sdleihssirhc/AYYQe/3/
+ *
+ */
+function SetScrollTitleHandler(event)
+{
+    var $title = $(this).children().last();
+    var max    = $title[0].scrollWidth;
+    
+    if (event.type == "mouseenter" && max > $title.width()) 
+    {
+        $title.css("text-overflow", "clip");     
+        ScrollTitle($title, 0, max - $title.width());
+    } 
+    else 
+    {
+        clearTimeout(gSTATE.TIMER);
+        //$title.removeAttr("style");
+        $title.css("text-overflow", "ellipsis");  
+        $title.scrollLeft(0);    
+    }
+}
+
+/*
+ * Function:	ScrollTitle
+ *
+ * Created on Dec 20, 2013
+ * Updated on Dec 20, 2013
+ *
+ * Description: Scroll title.
+ * 
+ * In:	title
+ * Out:	Scroll text.
+ *
+ * Note: Code from http://jsfiddle.net/sdleihssirhc/AYYQe/3/
+ *
+ */
+function ScrollTitle(title, i, max)
+{
+    title.scrollLeft(i);
+    console.log(i);
+    if (i < max) {
+        gSTATE.TIMER = setTimeout(function(){
+            ScrollTitle(title, ++i, max);
+        }, 40);
+    }
+}
 
 /*
  * Function:	SetInfoZoomHandler
@@ -182,7 +240,7 @@ function ShowMediaZoomIn(type, id)
  * Function:	ShowMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Sep 14, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: Show the movie info.
  * 
@@ -238,16 +296,24 @@ function ShowMovieInfo(id)
                 alwaysVisible:true
             });
             
-            // Show buttons (imdb, refresh, trailer).
-            if (json.media.imdbnr){
-               buttons += '<button type="button" class="url" value="' + json.media.imdbnr + '">IMDb</button>';
-            }
+            // Hide close button and add buttons (imdb, trailer).
+            if (json.media.imdbnr || json.media.trailer) 
+            {
+                $("#info_box .close").hide();
+ 
+                if (json.media.imdbnr){
+                    buttons += '<button type="button" class="url" value="' + json.media.imdbnr + '">IMDb</button>';
+                }
             
-            if (json.media.trailer){
-               buttons += '<button type="button" class="url" value="' + json.media.trailer + '">Trailer</button>';
-            }
+                if (json.media.trailer){
+                    buttons += '<button type="button" class="url" value="' + json.media.trailer + '">Trailer</button>';
+                }
             
-            $("#info_box .button").append(buttons);
+                $("#info_box .button").append(buttons);  
+            }
+            else {
+                $("#info_box .close").show();
+            }
             
             // Show popup.
             ShowPopupBox("#info_box", json.media.title);
@@ -260,7 +326,7 @@ function ShowMovieInfo(id)
  * Function:	ShowTVShowInfo
  *
  * Created on Jul 09, 2013
- * Updated on Sep 07, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: Show the TV show info.
  * 
@@ -308,21 +374,26 @@ function ShowTVShowInfo(id)
                 alwaysVisible:true
             });
             
-            // Show buttons (imdb, refresh, trailer).
+            // Hide close button and add button (TheTVDB, AniDB).
             if (json.media.imdbnr)
             {
-               pattern = /thetvdb/;            
-               if(pattern.exec(json.media.imdbnr)) {
-                   btnname = "TheTVDB";
-               }
-               else {
-                   btnname = "AniDB";
-               }
+                $("#info_box .close").hide();
                 
-               buttons += '<button type="button" class="url" value="' + json.media.imdbnr + '">' + btnname + '</button>';
-            }
+                pattern = /thetvdb/;            
+                if(pattern.exec(json.media.imdbnr)) {
+                   btnname = "TheTVDB";
+                }
+                else {
+                   btnname = "AniDB";
+                }
+                
+                buttons += '<button type="button" class="url" value="' + json.media.imdbnr + '">' + btnname + '</button>';
             
-            $("#info_box .button").append(buttons);
+                $("#info_box .button").append(buttons);
+            }
+            else {
+                $("#info_box .close").show();                
+            }
             
             // Show popup.
             ShowPopupBox("#info_box", json.media.title);
@@ -335,7 +406,7 @@ function ShowTVShowInfo(id)
  * Function:	ShowTVShowEpisodeInfo
  *
  * Created on Nov 17, 2013
- * Updated on Nov 17, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: Show the TV show episode info.
  * 
@@ -391,7 +462,8 @@ function ShowTVShowEpisodeInfo(id)
                 alwaysVisible:true
             });
             
-            // Show buttons (???).
+            // Show buttons close button.
+            $("#info_box .close").show();
             
             // Show popup.
             ShowPopupBox("#info_box", json.media.title);
@@ -404,7 +476,7 @@ function ShowTVShowEpisodeInfo(id)
  * Function:	ShowAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Sep 07, 2013
+ * Updated on Dec 17, 2013
  *
  * Description: Show the album info.
  * 
@@ -451,6 +523,9 @@ function ShowAlbumInfo(id)
                 color:'gray',
                 alwaysVisible:true
             });
+            
+            // Show buttons close button.
+            $("#info_box .close").show();            
             
             // Show popup.
             ShowPopupBox("#info_box", json.media.title);
@@ -1270,7 +1345,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Dec 04, 2013
+ * Updated on Dec 20, 2013
  *
  * Description: Shows the media table.
  *
@@ -1331,8 +1406,8 @@ function ShowMediaTable(page, sort)
                     
                     img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
                     html[i]  = '<td class="i' + value.id + hide + '">';                    
-                    html[i] += '<img src="' + img + '"/><br>';
-                    html[i] += value.title + '</td>';
+                    html[i] += '<img src="' + img + '"/><div>';
+                    html[i] += value.title + '</div></td>';
                     
                     i++; j++;
                 });
@@ -1346,7 +1421,8 @@ function ShowMediaTable(page, sort)
             if (type == "episodes")
             {
                 $("#display_content td").width(250);
-                $("#display_content img").width(220);     
+                $("#display_content img").width(220);
+                $("#display_content td div").width(240);
             }  
             
             // If images not found then show no poster.

@@ -8,3 +8,8 @@ http://localhost:8080/jsonrpc?request={"jsonrpc":"2.0","method":"VideoLibrary.Ge
 
 
 http://localhost:8152/jsonrpc?request={"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons","params":{"tvshowid":36,"properties":["episode","watchedepisodes","season","showtitle","playcount","art","thumbnail","fanart"]},"id":33}
+
+http://localhost:8080/jsonrpc?request={"jsonrpc": "2.0", "params": {"sort": {"order": "ascending", "method": "title"}, "filter": {"operator": "contains", "field": "title", "value": "Star Wars"}, "properties": ["title", "art", "file"]}, "method": "VideoLibrary.GetMovies", "id": "libMovies"}
+
+http://localhost:8080/jsonrpc?request={"jsonrpc": "2.0", "params": {"sort": {"order": "ascending", "method": "title"}, "filter": {"operator": "contains", "field": "title", "value": "Star Wars"}, "properties": ["file"]}, "method": "VideoLibrary.GetMovies", "id": "libMovies"}
+

@@ -6,7 +6,7 @@
  * File:    fargo.public.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Nov 12, 2013
+ * Updated on Dec 20, 2013
  *
  * Description: Fargo's jQuery and Javascript public contants and globals.
  *
@@ -18,7 +18,8 @@ var gSTATE = {
     LAST: 1,  // Last page.
     SORT: "",
     LIST: "",
-    SETTING: ""
+    SETTING: "",
+    TIMER: ""  // Used for title scroll.
 };
 
 var gTEMP = {
