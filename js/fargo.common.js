@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Dec 13, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -325,7 +325,7 @@ function SetCloseHandler()
  * Function:	RefreshMediaTable
  *
  * Created on Sep 22, 2013
- * Updated on Dec 06, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: When refresh media is finished then refresh media thumb on media table.
  * 
@@ -335,33 +335,27 @@ function SetCloseHandler()
  */
 function RefreshMediaTable(popup)
 {
-    var id, type, $img, $title;
+    var id, $img, $title;
     
     if (popup.find(".cancel").text() == "Finish") 
     {
-        id = popup.find(".id").text();                                                   
+        id   = popup.find(".id").text();                                                   
         $img = $("#action_thumb img").attr("src");
-        $title = $("#action_title").html();
 
         // Refresh image in media table.
         $("#display_content .i" + id + " img").attr("src", $img);
         
-        type = GetState("type");
-        if (type == "series") { // Rip season from title.
-            $title = $title.split("<br>")[0];
+        switch(GetState("type"))
+        {
+            case "seasons"  : $title = "<div>" + $("#action_sub").html() + "</div";
+                              break;
+                             
+            case "episodes" : $title = '<div style="width: 240px; text-overflow: ellipsis;">' + $("#action_sub").html() + '</div';
+                              break;
+                              
+            default : $title = "<div>" + $("#action_title").html() + "</div";
+                      break;
         }
-          
-        if (type == "seasons" || type == "episodes") { // Rip showtitle from season or from episode.
-            $title = $title.split("<br>")[1];
-        }   
-        
-        // Shorten title.
-        if (type == "episodes") {
-            $title = ShortenString($title, 36);
-        }
-        else {
-            $title = ShortenString($title, 20);
-        }    
         
         // Refresh title in media table.
         $("#display_content .i" + id).contents().last().replaceWith($title);

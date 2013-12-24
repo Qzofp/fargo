@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Dec 20, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: The main Json Display page.
  * 
@@ -674,7 +674,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetPopupInfo
  *
  * Created on Nov 25, 2013
- * Updated on Nov 28, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Get the popup info for the refresh or delete popups from Fargo and return it as Json data. 
  *
@@ -688,55 +688,55 @@ function GetPopupInfo($media, $id)
     
     switch($media)
     {                      
-        case "titles"   : $sql = "SELECT xbmcid, refresh, ".
-                                 "IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
+        case "titles"   : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
+                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
                                  "FROM movies WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMOVIESTHUMBS);
                           break;
                       
-        case "sets"     : $sql = "SELECT setid, refresh, ".
-                                 "IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ".
+        case "sets"     : $sql = "SELECT setid, refresh, title, NULL AS sub ".
+                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ".
                                  "FROM sets WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cSETSTHUMBS);
                           break;   
                       
-        case "movieset" : $sql = "SELECT xbmcid, refresh, ".
-                                 "IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ".
+        case "movieset" : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
+                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ".
                                  "FROM movies WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMOVIESTHUMBS);
                           break;                      
 
                       
-        case "tvtitles" : $sql = "SELECT xbmcid, refresh, ".
-                                 "IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
+        case "tvtitles" : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
+                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
                                  "FROM tvshows WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cTVSHOWSTHUMBS);
                           break;
                       
         case "series"   : $aItems = explode("_", $id);
-                          $sql = "SELECT CONCAT(t.xbmcid, '_', s.season) AS id, t.refresh, ".
-                                 "IF(LENGTH(t.title) > 70, CONCAT(LEFT(t.title, 69),'...'), t.title) AS title ".
+                          $sql = "SELECT CONCAT(t.xbmcid, '_', s.season) AS id, t.refresh, t.title, NULL AS sub ".
+                                 //"IF(LENGTH(t.title) > 70, CONCAT(LEFT(t.title, 69),'...'), t.title) AS title ".
                                  "FROM tvshows t, seasons s WHERE t.xbmcid = s.tvshowid AND t.id = $aItems[0] ".
                                  "LIMIT 0, 1";
                           $aJson = GetPopupMediaInfo($sql, cSEASONSTHUMBS);
                           break;
                       
         case "seasons"  : $aItems = explode("_", $id);
-                          $sql = "SELECT CONCAT(tvshowid, '_', season) AS id, refresh, ".
-                                 "IF(LENGTH(showtitle) > 70, CONCAT(LEFT(showtitle, 69),'...', '</br>', title), ".
-                                 "CONCAT(showtitle, '</br>', title)) AS title ".
+                          $sql = "SELECT CONCAT(tvshowid, '_', season) AS id, refresh, showtitle, title AS sub ".
+                                 //"IF(LENGTH(showtitle) > 70, CONCAT(LEFT(showtitle, 69),'...', '</br>', title), ".
+                                 //"CONCAT(showtitle, '</br>', title)) AS title ".
                                  "FROM seasons WHERE id = $aItems[0] ";
                           $aJson = GetPopupMediaInfo($sql, cSEASONSTHUMBS);
                           break;
                       
-        case "episodes" : $sql = "SELECT episodeid, refresh, ".
-                                 "IF(LENGTH(title) > 67, CONCAT(episode, '. ', LEFT(title, 66), '...'), CONCAT(episode, '. ', title)) AS title ".
+        case "episodes" : $sql = "SELECT episodeid, refresh, showtitle AS title, CONCAT(episode, '. ', title) AS sub ".
+                                 //"IF(LENGTH(title) > 67, CONCAT(episode, '. ', LEFT(title, 66), '...'), CONCAT(episode, '. ', title)) AS title ".
                                  "FROM episodes WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cEPISODESTHUMBS);
                           break;
                       
-        case "albums"   : $sql = "SELECT xbmcid, refresh, ".
-                                 "IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
+        case "albums"   : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
+                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
                                  "FROM music WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cALBUMSTHUMBS);
                           break;              
@@ -751,7 +751,7 @@ function GetPopupInfo($media, $id)
  * Function:	GetPopupMediaInfo
  *
  * Created on Nov 22, 2013
- * Updated on Dec 17, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Get the media info popups from Fargo and return it as Json data. 
  *
@@ -771,12 +771,13 @@ function GetPopupMediaInfo($sql, $thumb)
     {
         if($stmt->execute())
         {
-            $stmt->bind_result($xbmcid, $refresh, $title);
+            $stmt->bind_result($xbmcid, $refresh, $title, $sub);
             $stmt->fetch();
             
             $aMedia["xbmcid"]   = $xbmcid;
             $aMedia["refresh"]  = $refresh;
             $aMedia["title"]    = stripslashes($title);
+            $aMedia["sub"]      = stripslashes($sub);
         }
         else
         {

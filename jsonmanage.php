@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Dec 17, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: The main Json Manage page.
  * 
@@ -87,8 +87,10 @@ switch($action)
                       
     case "init"     : if($login)
                       {
-                          UpdateStatus("ImportReady", 1);
-                          $aJson['init'] = "ready";
+                          $aJson['ready'] = GetStatus("ImportReady");
+                          if ($aJson['ready'] >= 0) {
+                              UpdateStatus("ImportReady", -1);
+                          }
                       }
                       else {
                           $aJson = LogEvent("Warning", "Unauthorized init action call!");
@@ -296,7 +298,7 @@ function RemoveMediaFromFargo($media, $id, $xbmcid)
  * Function:	DeleteMediaQuery
  *
  * Created on Oct 05, 2013
- * Updated on Nov 28, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Delete media from Fargo database.
  *
@@ -319,7 +321,7 @@ function DeleteMedia($media, $id, $xbmcid)
         case "sets"     : // Won't delete the movies in the set. Maybe in the future releases.
                           DeleteMediaQuery("sets", $id);
                           DeleteFile(cSETSTHUMBS."/$xbmcid.jpg");
-                          DeleteFile(cSETSFANART."/$xbmcid.jpg");
+                          //DeleteFile(cSETSFANART."/$xbmcid.jpg");
                           break;
                             
         case "tvshows"  : // Delete episodes.
@@ -543,7 +545,7 @@ function GetMediaStatus($media, $id)
  * Function:	GetImportRefreshStatus
  *
  * Created on May 18, 2013
- * Updated on Dec 17, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Reports the status of the import or refresh process.
  *
@@ -587,7 +589,8 @@ function GetImportRefreshStatus($media, $id, $nameid, $thumbs)
                 {                
                     $aJson['id']      = $xbmcid;
                     $aJson['refresh'] = $refresh;
-                    $aJson['title']   = stripslashes(ShortenString($title, 70));
+                    $aJson['title']   = stripslashes($title);
+                    $aJson['sub']     = "&nbsp;";
                 }                  
             }
         }
@@ -611,7 +614,7 @@ function GetImportRefreshStatus($media, $id, $nameid, $thumbs)
  * Function:	GetSeasonsImportRefreshStatus
  *
  * Created on Oct 21, 2013
- * Updated on Dec 17, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Reports the seasons status of the import process.
  *
@@ -621,7 +624,7 @@ function GetImportRefreshStatus($media, $id, $nameid, $thumbs)
  */
 function GetSeasonsImportRefreshStatus($seasonid, $thumbs)
 {
-    $aJson['id']  = 0;
+    $aJson['id']      = 0;
     $aJson['refresh'] = 0;
     $aJson['title']   = "empty";
     $aJson['thumbs']  = $thumbs;
@@ -661,7 +664,8 @@ function GetSeasonsImportRefreshStatus($seasonid, $thumbs)
                     }
                     $aJson['refresh']  = $refresh;
                     $aJson['tvshowid'] = $tvshowid;
-                    $aJson['title']    = stripslashes(ShortenString($showtitle, 70))."</br>".stripslashes(ShortenString($title, 70));
+                    $aJson['title']    = stripslashes($showtitle);
+                    $aJson['sub']      = stripslashes($title);
                     $aJson['season']   = $season;
                 }                  
             }
@@ -686,7 +690,7 @@ function GetSeasonsImportRefreshStatus($seasonid, $thumbs)
  * Function:	GetEpisodesImportRefreshStatus
  *
  * Created on Oct 27, 2013
- * Updated on Dec 17, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Reports the episode status of the import process.
  *
@@ -730,7 +734,8 @@ function GetEpisodesImportRefreshStatus($id, $thumbs)
                 {                
                     $aJson['id']      = $episodeid;
                     $aJson['refresh'] = $refresh;
-                    $aJson['title']   = stripslashes(ShortenString($showtitle, 70))."</br>$episode. ".stripslashes(ShortenString($title, 70));
+                    $aJson['title']   = stripslashes($showtitle);
+                    $aJson['sub']     = $episode.". ".stripslashes($title);
                 }                  
             }
         }

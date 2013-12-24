@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Dec 02, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -227,7 +227,7 @@ function ProcessDataFromXbmc($aData)
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Nov 02, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Import the movie. 
  *
@@ -246,7 +246,7 @@ function ImportMovie($aError, $poster, $fanart, $aResult)
         ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175); //200, 280  
         InsertMovie($aMovie);
         InsertGenreToMedia($aGenres, "movies");
-        ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 562, 350); //675, 420 
+        ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 450, 280); //562, 350 //675, 420 
     
         UpdateStatus("XbmcSlack", 0);
         IncrementStatus("XbmcMoviesStart", 1);
@@ -263,7 +263,7 @@ function ImportMovie($aError, $poster, $fanart, $aResult)
  * Function:	ImportMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Oct 28, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Import the movie set. 
  *
@@ -280,7 +280,7 @@ function ImportMovieSet($aError, $poster, $fanart, $aResult)
         ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280      
         InsertMovieSet($aMovie);
 
-        ResizeAndSaveImage($aMovie[0], $fanart, "../".cSETSFANART, 562, 350); //675, 420 
+        //ResizeAndSaveImage($aMovie[0], $fanart, "../".cSETSFANART, 450, 280); //562, 350
         
         UpdateStatus("XbmcSlack", 0);
         IncrementStatus("XbmcSetsStart", 1);
@@ -298,7 +298,7 @@ function ImportMovieSet($aError, $poster, $fanart, $aResult)
  * Function:	RefreshMovie
  *
  * Created on Sep 08, 2013
- * Updated on Nov 23, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Refresh the movie. 
  *
@@ -317,7 +317,7 @@ function RefreshMovie($aError, $poster, $fanart, $aResult, $fargoid)
     
         UpdateMovie($fargoid, $aMovie);
        
-        ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 562, 350);  //675, 420    
+        ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART,  450, 280); //562, 350 //675, 420  
         ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175);  //200, 280
  
         UpdateStatus("RefreshReady", 1);
@@ -328,7 +328,7 @@ function RefreshMovie($aError, $poster, $fanart, $aResult, $fargoid)
  * Function:	RefreshMovieSet
  *
  * Created on Nov 23, 2013
- * Updated on Nov 23, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Refresh the movie set. 
  *
@@ -348,7 +348,7 @@ function RefreshMovieSet($aError, $poster, $fanart, $aResult, $fargoid)
         UpdateMovieSet($fargoid, $aMovie);
         
         ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280  
-        ResizeAndSaveImage($aMovie[0], $fanart, "../".cSETSFANART, 562, 350); //675, 420 
+        //ResizeAndSaveImage($aMovie[0], $fanart, "../".cSETSFANART, 450, 280); //562, 350 //675, 420 
  
         UpdateStatus("RefreshReady", 1);
     }
@@ -358,7 +358,7 @@ function RefreshMovieSet($aError, $poster, $fanart, $aResult, $fargoid)
  * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Nov 02, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Import the tv show. 
  *
@@ -377,7 +377,7 @@ function ImportTVShow($aError, $poster, $fanart, $aResult)
         ResizeAndSaveImage($aTVShow[0], $poster, "../".cTVSHOWSTHUMBS, 125, 175);
         InsertTVShow($aTVShow);
         InsertGenreToMedia($aGenres, "tvshows");
-        ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 562, 350);
+        ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 450, 280); //562, 350 //675, 420 
     
         UpdateStatus("XbmcSlack", 0);
         IncrementStatus("XbmcTVShowsStart", 1);
@@ -458,7 +458,7 @@ function ImportTVShowEpisode($aError, $poster, $aResult)
  * Function:	RefreshTVShow
  *
  * Created on Sep 09, 2013
- * Updated on Nov 23, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Refresh the tv show. 
  *
@@ -477,7 +477,7 @@ function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
     
         UpdateTVShow($id, $aTVShow);
     
-        ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 562, 350);
+        ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 450, 280); //562, 350 //675, 420 
         ResizeAndSaveImage($aTVShow[0], $poster, "../".cTVSHOWSTHUMBS, 125, 175);
     
         UpdateStatus("RefreshReady", 1);

@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Dec 10, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -153,7 +153,7 @@ function SetStartRefreshHandler(media, id, xbmcid, tvshowid)
  * Function:	StartRefresh
  *
  * Created on Sep 14, 2013
- * Updated on Dec 02, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Control and Refresh the media transfered from XBMC.
  *
@@ -163,7 +163,7 @@ function SetStartRefreshHandler(media, id, xbmcid, tvshowid)
  */
 function StartRefresh(xbmc, media, id, xbmcid, tvshowid)
 {
-    var timeout = 0;
+    var retry   = 0;
     var delay   = 0;
     var percent = 15;
     var factor  = 1.5;
@@ -177,12 +177,12 @@ function StartRefresh(xbmc, media, id, xbmcid, tvshowid)
     // Check status.
     var status = setInterval(function()
     {
-        if (gTRIGGER.CANCEL || delay >= xbmc.timeout/1000 || timeout > xbmc.timeout/1000)
+        if (gTRIGGER.CANCEL || delay >= gTRIGGER.RETRY || retry > gTRIGGER.RETRY)
         {
             if (gTRIGGER.CANCEL) {
                 LogEvent("Warning", "Refresh " + ConvertMedia(media) + " canceled!");
             }
-            else if (timeout > xbmc.timeout/1000) {
+            else if (retry > gTRIGGER.RETRY) {
                 ShowOffline();
             }
             else {
@@ -208,17 +208,17 @@ function StartRefresh(xbmc, media, id, xbmcid, tvshowid)
                 factor *= 2;
             }
             else if ($ready.text() == "true") {
-                timeout++;
+                retry++;
             }
         }        
-    }, 800);   
+    }, xbmc.timeout); // 800   
 }
 
 /*
  * Function:	ShowRefreshStatus
  *
  * Created on Sep 14, 2013
- * Updated on Nov 21, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Show the refresh status.
  *
@@ -248,6 +248,7 @@ function ShowRefreshStatus(media, id, percent)
             });
                     
             $("#action_title").html(json.title);
+            $("#action_sub").html(json.sub);
             
             $("#action_box .progress").progressbar({
                 value:percent       

@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Dec 20, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Dec 20, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Load the media from Fargo with system.
  *
@@ -32,7 +32,7 @@ function LoadFargoMedia(media)
     
     InitStatus();
     
-    SetState("title", "name_asc");
+    //SetState("title", "name_asc");
     SetState("mode", "Information");
     
     ChangeControlBar(media);
@@ -74,7 +74,7 @@ function LoadFargoMedia(media)
     $("#modes").on("click", SetButtonsHandler);
     
     // Media type events (titles, sets, series, albums).
-    $("#type").on("click", SetButtonsTypeHandler);   
+    $("#type").on("click", SetButtonsTypeHandler);
     
     // Sort (title), Genres or Years click events.   
     $("#title").on("click", SetButtonsHandler);
@@ -100,7 +100,7 @@ function LoadFargoMedia(media)
  * Function:	InitStatus
  *
  * Created on Dec 15, 2013
- * Updated on Dec 15, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Initialize the status table.
  *
@@ -112,10 +112,16 @@ function InitStatus()
 {
     $.ajax({
         url: 'jsonmanage.php?action=init',
+        async: false,
         dataType: 'json',
         success: function(json)
         {    
-            
+            if (Number(json.ready) > 0) {
+                SetState("title", "latest");
+            }
+            else {
+                SetState("title", "name_asc");
+            }
         } // End Success.        
     }); // End Ajax;    
 }

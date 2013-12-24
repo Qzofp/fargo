@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    fargo.transfer.js
  *
  * Created on Jul 13, 2013
- * Updated on Oct 27, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Fargo Transfer jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	Transfer
  *
  * Created on Jul 13, 2013
- * Updated on Oct 26, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Transfers data from XBMC to Fargo.
  * 
@@ -33,6 +33,9 @@ function Transfer()
     switch(aRequest.action)
     {
         case "counter"  : TransferMediaCounter(aRequest.key, aRequest.media, aRequest.tvshowid);
+                          break;
+                          
+        case "prepare"  : //TransferPrepareRefresh(aRequest.key, aRequest.media, aRequest.title);
                           break;
 
         case "movies"   : TransferMovie(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
@@ -268,7 +271,7 @@ function TransferMovie(key, xbmcid, fargoid)
  * Function:	TransferMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Oct 26, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Transfer movie set from XBMC to Fargo.
  * 
@@ -306,7 +309,7 @@ function TransferMovieSet(key, xbmcid, fargoid)
             if (json.result && json.result.setdetails)
             {         
                 poster = CreateImageUrl(json.result.setdetails.art.poster);
-                fanart = CreateImageUrl(json.result.setdetails.art.fanart);
+                fanart = ""; //CreateImageUrl(json.result.setdetails.art.fanart);
         
                 // Show title.
                 $("#info").text(json.result.setdetails.label);
@@ -324,7 +327,7 @@ function TransferMovieSet(key, xbmcid, fargoid)
                 { 
                     json.fargoid = fargoid;
                     json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7); // 0.7
-                    json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7); // 0.7
+                    //json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7); // 0.7
                 
                     // Transfer the data to Fargo.
                     TransferData(json);
@@ -460,7 +463,7 @@ function TransferTVShow(key, xbmcid, fargoid)
  * Function:	TransferTVShowSeason
  *
  * Created on Oct 18, 2013
- * Updated on Oct 26, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Transfer TV Show Season from XBMC to Fargo.
  * 
@@ -482,7 +485,7 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
         id = 17; // Refresh TV Show Season.
     }
     
-    // libTVShowSeasons -> library id = 16 or 17.
+    // libTVShowSeasons -> library id = 15 or 16.
     var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons","params":\n\
                    {"tvshowid":'+ tvshowid +',"limits":{"start":'+ start +',"end":' + end + '},\n\
                    "properties":["episode","watchedepisodes","season","tvshowid","showtitle","playcount",\n\
@@ -501,7 +504,7 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
             if (json.result && json.result.seasons && json.result.limits.total > 0)
             {
                 poster = CreateImageUrl(json.result.seasons[0].thumbnail);
-                fanart = CreateImageUrl(json.result.seasons[0].fanart);
+                fanart = ""; //CreateImageUrl(json.result.seasons[0].fanart);
         
                 // Show title.
                 $("#info").text(json.result.seasons[0].showtitle);
@@ -519,7 +522,7 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
                 {    
                     json.fargoid = fargoid;
                     json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
-                    json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                    //json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
                 
                     // Transfer the data to Fargo.
                     TransferData(json);

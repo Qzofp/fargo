@@ -2,7 +2,7 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    common.php
  *
@@ -132,7 +132,7 @@ function ShowHiddenInfoBox()
  * Function:	ShowHiddenActionBox
  *
  * Created on Sep 07, 2013
- * Updated on Oct 31, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Show hidden action box. This box with yes/no buttons is used for the Refresh and Delete modes.
  *
@@ -160,6 +160,7 @@ function ShowHiddenActionBox()
     echo "      <div id=\"action_thumb\"><img src=\"\"/></div>\n";
     echo "     </div>\n";
     echo "     <div id=\"action_title\">&nbsp;</div>\n";
+    echo "     <div id=\"action_sub\">&nbsp;</div>\n";
     echo "     <div class=\"progress\"></div>\n";   
     echo "     <div class=\"button\">\n";
     echo "      <button type=\"button\" class=\"yes\">Yes</button>\n";

@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Dec 14, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -228,7 +228,7 @@ function SetRetryImportHandler(media, type, delta, start, selector)
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Dec 12, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -245,6 +245,7 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
     var $prg = $("#action_box .progress");
     var $img = $("#action_thumb img");
     var $tit = $("#action_title");
+    var $sub = $("#action_sub");
     var $msg = $("#action_box .message");
     var msg  = cSTATUS.IMPORT.replace("[dummy]", ConvertMediaToSingular(type));
     
@@ -295,7 +296,7 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
         else
         {
             // Show status and returns gTRIGGER.START.
-            ShowStatus(delta, start-1, end, type, $prg, $img, $tit, $msg, msg);
+            ShowStatus(delta, start-1, end, type, $prg, $img, $tit, $sub, $msg, msg);
             if (gTRIGGER.START == start) {
                 busy = false; // Resume import.
             }
@@ -311,15 +312,15 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
  * Function:	ShowStatus
  *
  * Created on Aug 19, 2013
- * Updated on Dec 12, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Show the import status.
  *
- * In:	delta, start, end, media, $prg, $img, $tit, $msg, msg
+ * In:	delta, start, end, media, $prg, $img, $tit, $sub, $msg, msg
  * Out:	Status
  *
  */
-function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg)
+function ShowStatus(delta, start, end, media, $prg, $img, $tit, $sub, $msg, msg)
 {   
     $.ajax({
         url: 'jsonmanage.php?action=status&media=' + media + '&mode=import',
@@ -355,12 +356,14 @@ function ShowStatus(delta, start, end, media, $prg, $img, $tit, $msg, msg)
                 });
                     
                 $tit.html(json.title);
+                $sub.html(json.sub);
             }  
             else if (gTRIGGER.SLACK) 
             {
                 $msg.html(cSTATUS.SLACK);
                 $img.removeAttr("src").attr("src", "");
                 $tit.html(cSTATUS.SKIP + --json.start);
+                $sub.html("&nbsp;");
             }
             
         } // End succes.    
@@ -612,7 +615,7 @@ function StartSeasonsImportHandler(tvshowid)
  * Function:	StartSeasonsImport
  *
  * Created on Oct 19, 2013
- * Updated on Dec 12, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -627,6 +630,7 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
     
     var $img = $("#action_thumb img");
     var $tit = $("#action_title");
+    var $sub = $("#action_sub");
      
     // Import media process.
     ImportMedia(xbmc, "seasons", -1, start, tvshowid);
@@ -672,7 +676,7 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
         else
         {
             // Show status and returns gTRIGGER.START.
-            ShowSeasonsStatus($img, $tit);
+            ShowSeasonsStatus($img, $tit, $sub);
             if (gTRIGGER.START == start) {
                 busy = false; // Resume import.
             }
@@ -688,15 +692,15 @@ function StartSeasonsImport(xbmc, start, end, tvshowid)
  * Function:	ShowSeasonsStatus
  *
  * Created on Oct 20, 2013
- * Updated on Nov 21, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Show the import seasons status.
  *
- * In:	$img, $tit
+ * In:	$img, $tit, $sub
  * Out:	Status
  *
  */
-function ShowSeasonsStatus($img, $tit)
+function ShowSeasonsStatus($img, $tit, $sub)
 {   
     $.ajax({
         url: 'jsonmanage.php?action=status&media=seasons&mode=import',
@@ -718,6 +722,7 @@ function ShowSeasonsStatus($img, $tit)
                 });
                     
                 $tit.html(json.title);
+                $sub.html(json.sub);
             }           
         } // End succes.    
     }); // End Ajax. 
@@ -781,7 +786,7 @@ function UnlockImport(callback)
  * Function:	SetImportHandler
  *
  * Created on Sep 09, 2013
- * Updated on Dec 14, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Set the import handler, show the import popup box with yes/no buttons.
  * 
@@ -802,9 +807,7 @@ function SetImportPopupHandler(media)
            if (Number(json.check))
            {
                $("#action_box .message").text(cIMPORT.START.replace("[dummy]", ConvertMedia(media)));
-               title = cIMPORT.IMPORT + " " + ConvertMedia(media);
-               //$("#action_wrapper").show();
-               //$("#action_box .progress").show();   
+               title = cIMPORT.IMPORT + " " + ConvertMedia(media); 
                
                if (media == "music") 
                {
@@ -825,11 +828,12 @@ function SetImportPopupHandler(media)
                 title = cIMPORT.WARNING;
                 $("#action_wrapper").hide();
                 $("#action_box .progress").hide();
-                $("#action_title").height(5);
+
+                //$("#action_title").text("");
+                $("#action_sub").text("");
                 
                 $(".yes").hide();
-                $(".no").text("Okay");
-                
+                $(".no").text("Okay");        
            }    
     
            // Show popup.

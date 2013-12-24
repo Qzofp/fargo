@@ -575,7 +575,7 @@ function ActivateProperty()
  * Function:	CleanPopupBox
  *
  * Created on Jun 09, 2013
- * Updated on Nov 21, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: Show clean library popup box
  *
@@ -587,7 +587,8 @@ function CleanPopupBox(msg)
 {   
     $("#action_box .message").text("Do you want to clean the " + msg + "?");
     $("#action_wrapper").hide();
-    $("#action_title").height(5);
+    $("#action_title").text("");
+    $("#action_sub").text("");
         
     ShowPopupBox("#action_box", "Cleaning database");
     SetState("page", "popup");

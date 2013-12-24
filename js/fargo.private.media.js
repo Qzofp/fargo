@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Dec 14, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -118,7 +118,7 @@ function SetInfoZoomHandlerWithActions()
  * Function:	ShowModePopup
  *
  * Created on Sep 07, 2013
- * Updated on Nov 25, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Show the action popup with the yes/no buttons.
  * 
@@ -146,6 +146,12 @@ function ShowModePopup(mode, media, id)
             .attr('src', json.params.thumbs + '/' + json.media.xbmcid + '.jpg' + '?v=' + json.media.refresh);
     
             $("#action_title").html(json.media.title);
+            if (json.media.sub) {
+                $("#action_sub").html(json.media.sub);
+            }
+            /*else {
+                $("#action_sub").html("&nbsp;");
+            }*/
 
             if (media == "albums") 
             {
@@ -253,7 +259,7 @@ function RemoveMediaFromFargo(media, id, xbmcid)
  * Function:	ClearActionBox
  *
  * Created on Sep 08, 2013
- * Updated on Dec 14, 2013
+ * Updated on Dec 23, 2013
  *
  * Description: Clear the action box. Set back to initial values.
  *
@@ -280,7 +286,8 @@ function ClearActionBox()
         $wrapper.removeAttr("style");
         $thumb.removeAttr("style");
         $thumb.children("img").removeAttr("style").attr("src", "");
-        $("#action_title").height(30).html("&nbsp;");
+        $("#action_title").html("&nbsp;");
+        $("#action_sub").html("&nbsp;");
            
         // Remove progressbar.
         $("#action_box .progress").show();

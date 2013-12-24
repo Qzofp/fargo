@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Dec 20, 2013
+ * Updated on Dec 24, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -288,7 +288,7 @@ width:100%;
 }
 
 #info_left{ 
-margin:0 460px 0 10px;
+margin:0 395px 0 10px;  /* 460 */
 }
 
 #info_left table{
@@ -310,18 +310,18 @@ float:left;
 }
 
 .fanart_space{
-width:460px;
-margin-left:-460px;   
+width:395px;     /* 460 */
+margin-left:-395px; /* -460 */  
 }
 
 .cover_space{
-width:290px;
-margin-left:-290px;
+width:270px;   /* 290 */
+margin-left:-270px; /* -290 */
 }
 
 #info_fanart img{
-width:450px;
-height:280px;
+width:385px;    /* 450 */
+height:260px;   /* 280 */
 border:1px solid grey;
 border-radius:7px;
 }
@@ -330,8 +330,8 @@ border-radius:7px;
 #info_audio,
 #info_aspect{
 float:left;
-width:105px;
-margin-right:10px;
+width:100px;  /* 105 */ 
+margin-right:5px; /* 10 */ 
 }
 
 #info_mpaa{
@@ -343,7 +343,7 @@ margin-right:10px;
 #info_audio img,
 #info_aspect img,
 #info_mpaa img{
-height:30px;
+height:28px; /* 30 */
 }
 
 #info_plot{
@@ -391,8 +391,14 @@ height:140px;
 border-radius:5px;
 }
 
-#action_title{
-height:30px;
+#action_title,
+#action_sub{
+/*height:30px;*/
+width:500px;
+margin:auto;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
 font-weight:bold;
 font-size:0.9em;
 text-shadow:2px 2px 2px #000;
@@ -407,10 +413,10 @@ border-radius:5px;
 background:#454647;
 }
 
-// Obsolete ?
+/* Obsolete?
 #action_box .progress_off{
 height:20px;
-}
+}*/
 
 #transfer{
 height:0px;
@@ -806,7 +812,7 @@ color:dodgerblue;
 #state_xbmc,
 #state_row,
 #state_property{
-display:none; // Debug purposses.
+/*display:none;  // Debug purposses. */
 
 /* debug */
 position:absolute;
