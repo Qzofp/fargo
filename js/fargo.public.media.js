@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Dec 24, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -476,7 +476,7 @@ function ShowTVShowEpisodeInfo(id)
  * Function:	ShowAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Dec 24, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Show the album info.
  * 
@@ -507,6 +507,7 @@ function ShowAlbumInfo(id)
             
             // Change space size for album info and cover.
             $("#info_left").css("margin-right", 270); // 290
+            $("#info_left td div").css("width", 400);
             $("#info_right").toggleClass("fanart_space", false).toggleClass("cover_space", true);
             
             // Show fanart.
@@ -538,7 +539,7 @@ function ShowAlbumInfo(id)
  * Function:	ShowInfoTable
  *
  * Created on Jul 06, 2013
- * Updated on Nov 17, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Show the info.
  * 
@@ -560,7 +561,7 @@ function ShowInfoTable(aInfo)
         {    
             table += '<tr>';
             table += '<td class="left">' + this.left + '</td>';
-            table += '<td>' + this.right + '</td>';
+            table += '<td><div>' + this.right + '</div></td>';
             table += '</tr>';
         }
     });   

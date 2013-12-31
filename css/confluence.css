@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Dec 24, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -274,8 +274,10 @@ margin-bottom:10px;
 /* Begin Info Popup part */
 #info_box{
 top:6%;
-width:64%;
-margin-left:-33%;
+/*width:64%;
+margin-left:-33%;*/
+width:850px;
+margin-left:-440px;
 }
 
 #info_main{
@@ -292,17 +294,38 @@ margin:0 395px 0 10px;  /* 460 */
 }
 
 #info_left table{
-border-collapse:separate;
-border-spacing:10px 5px;
+/*border-collapse:separate;*/
+/*border-spacing:10px 5px;*/
+border-spacing:0px;
 font-size:1.3em;
 color:#FFF;
+}
+
+#info_left td{
+height:28px;
+padding-left:10px;
+cursor:pointer;
+}
+
+#info_left tr:hover > td{
+border-top:1px solid rgba(30,144,255,0.4);
+border-bottom:1px solid rgba(30,144,255,0.4);
+background-color:rgba(0,0,0,0.2);
 }
 
 #info_left td.left{
 width:30px;
 text-align:right;
-vertical-align:top;
+/*vertical-align:top;*/
 color:dodgerblue;
+}
+
+#info_left td div{
+width:335px;
+margin:auto;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
 }
 
 #info_right{
