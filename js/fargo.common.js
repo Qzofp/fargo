@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Dec 24, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -242,7 +242,7 @@ function SetPopupHandler(event)
  * Function:	ShowPopupBox
  *
  * Created on May 08, 2013
- * Updated on Sep 01, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Show popup box.
  * 
@@ -258,7 +258,7 @@ function ShowPopupBox(type, title)
     var mask = $("#mask");
         
     if (title) {
-        $(type + " .title").text(title);
+        $(type + " .title").html(title);
     }
     
     if (title == "Login") {

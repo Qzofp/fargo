@@ -42,6 +42,7 @@ function LoadFargoMedia(media)
     
     // On mouse move media event.
     $("#display_content, #info_left").on("mouseenter mouseleave", "td", SetScrollTitleHandler);
+    $("#info_box").on("mouseenter mouseleave", ".title", SetScrollTitleHandler);
     
     // The media info or zoom in click events.
     $("#display_content").on("click", "td", SetInfoZoomHandlerWithActions);

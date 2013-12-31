@@ -240,7 +240,7 @@ function ShowMediaZoomIn(type, id)
  * Function:	ShowMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Dec 24, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Show the movie info.
  * 
@@ -316,7 +316,7 @@ function ShowMovieInfo(id)
             }
             
             // Show popup.
-            ShowPopupBox("#info_box", json.media.title);
+            ShowPopupBox("#info_box", "<div>" + json.media.title + "</div>");
             SetState("page", "popup");    
         } // End succes.
     }); // End Ajax.       
@@ -326,7 +326,7 @@ function ShowMovieInfo(id)
  * Function:	ShowTVShowInfo
  *
  * Created on Jul 09, 2013
- * Updated on Dec 24, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Show the TV show info.
  * 
@@ -396,7 +396,7 @@ function ShowTVShowInfo(id)
             }
             
             // Show popup.
-            ShowPopupBox("#info_box", json.media.title);
+            ShowPopupBox("#info_box",  "<div>" + json.media.title + "</div>");
             SetState("page", "popup");    
         } // End succes.
     }); // End Ajax.       
@@ -406,7 +406,7 @@ function ShowTVShowInfo(id)
  * Function:	ShowTVShowEpisodeInfo
  *
  * Created on Nov 17, 2013
- * Updated on Dec 24, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Show the TV show episode info.
  * 
@@ -466,7 +466,7 @@ function ShowTVShowEpisodeInfo(id)
             $("#info_box .close").show();
             
             // Show popup.
-            ShowPopupBox("#info_box", json.media.title);
+            ShowPopupBox("#info_box",  "<div>" + json.media.title + "</div>");
             SetState("page", "popup");    
         } // End succes.
     }); // End Ajax.       
@@ -529,7 +529,7 @@ function ShowAlbumInfo(id)
             $("#info_box .close").show();            
             
             // Show popup.
-            ShowPopupBox("#info_box", json.media.title);
+            ShowPopupBox("#info_box",  "<div>" + json.media.title + "</div>");
             SetState("page", "popup");    
         } // End succes.
     }); // End Ajax.        

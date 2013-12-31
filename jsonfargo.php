@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Dec 24, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: The main Json Display page.
  * 
@@ -134,7 +134,7 @@ function GetMediaInfo($media, $id)
  * Function:	GetMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Dec 15, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Get the movie info from Fargo and return it as Json data. 
  *
@@ -169,7 +169,7 @@ function GetMovieInfo($id)
             
             $aMedia["xbmcid"]   = $xbmcid;
             $aMedia["refresh"]  = $refresh;
-            $aMedia["title"]    = stripslashes(ShortenString($title, 50));
+            $aMedia["title"]    = stripslashes($title);
             $aMedia["director"] = str_replace("|", " / ", $director);
             $aMedia["writer"]   = str_replace("|", " / ", $writer);
             $aMedia["studio"]   = $studio;
@@ -177,7 +177,7 @@ function GetMovieInfo($id)
             $aMedia["year"]     = $year;
             $aMedia["runtime"]  = round($runtime/60)." Minutes";
             //$aMedia["votes"]    = $votes;
-            $aMedia["rating"]   = $rating." ($votes votes)";
+            $aMedia["rating"]   = strcmp($rating, "0.00")?$rating." ($votes votes)":0;           
             $aMedia["tagline"]  = stripslashes($tagline);
             $aMedia["plot"]     = stripslashes($plot);
             $aMedia["mpaa"]     = ConvertToRatingsFlag($mpaa);
@@ -216,7 +216,7 @@ function GetMovieInfo($id)
  * Function:	GetTVShowInfo
  *
  * Created on Jul 09, 2013
- * Updated on Dec 15, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Get the TV show info from Fargo and return it as Json data. 
  *
@@ -248,13 +248,14 @@ function GetTVShowInfo($id)
             $genre = str_replace('"', '', $genre);
             
             $aMedia["xbmcid"]          = $xbmcid;
-            $aMedia["title"]           = stripslashes(ShortenString($title, 50));
+            $aMedia["title"]           = stripslashes($title);
             $aMedia["studio"]          = $studio;
             $aMedia["genre"]           = str_replace("|", " / ", $genre);
             $aMedia["year"]            = $year;
             $aMedia["premiered"]       = date( 'd/m/Y', strtotime($premiered));
             //$aMedia["votes"]           = $votes;
-            $aMedia["rating"]          = $rating." ($votes votes)";
+            //$aMedia["rating"]          = $rating." ($votes votes)";
+            $aMedia["rating"]          = strcmp($rating, "0.00")?$rating." ($votes votes)":0;              
             $aMedia["plot"]            = stripslashes($plot);
             $aMedia["episode"]         = $episode;
             $aMedia["watchedepisodes"] = $watchedepisodes;
@@ -288,7 +289,7 @@ function GetTVShowInfo($id)
  * Function:	GetTVShowEpisodeInfo
  *
  * Created on Nov 17, 2013
- * Updated on Dec 15, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Get the TV show episode info from Fargo and return it as Json data. 
  *
@@ -318,8 +319,8 @@ function GetTVShowEpisodeInfo($id)
             $stmt->fetch();
             
             $aMedia["episodeid"]  = $episodeid;
-            $aMedia["title"]      = stripslashes(ShortenString($title, 50));
-            $aMedia["showtitle"]  = stripslashes(ShortenString($showtitle, 50));
+            $aMedia["title"]      = stripslashes($title);
+            $aMedia["showtitle"]  = stripslashes($showtitle);
             $aMedia["season"]     = $season;
             $aMedia["episode"]    = $episode;
             $aMedia["firstaired"] = date( 'd/m/Y', strtotime($firstaired));
@@ -327,7 +328,7 @@ function GetTVShowEpisodeInfo($id)
             $aMedia["writer"]     = str_replace("|", " / ", $writer);                        
             $aMedia["year"]       = $year;
             $aMedia["runtime"]    = round($runtime/60)." Minutes";
-            $aMedia["rating"]     = $rating;
+            $aMedia["rating"]     = strcmp($rating, "0.00")?$rating:0;
             $aMedia["audio"]      = ConvertToAudioFlag($audio);
             $aMedia["video"]      = ConvertToVideoFlag($video);
             $aMedia["aspect"]     = ConvertToAspectFlag($video, $file);            
@@ -359,7 +360,7 @@ function GetTVShowEpisodeInfo($id)
  * Function:	GetAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Dec 15, 2013
+ * Updated on Dec 31, 2013
  *
  * Description: Get the album info from Fargo and return it as Json data. 
  *
@@ -399,7 +400,7 @@ function GetAlbumInfo($id)
             }
             
             $aMedia["xbmcid"]        = $xbmcid;
-            $aMedia["title"]         = stripslashes(ShortenString($title, 50));
+            $aMedia["title"]         = stripslashes($title);
             $aMedia["genre"]         = str_replace("|", " / ", $genre);
             $aMedia["theme"]         = str_replace("|", " / ", $theme);
             $aMedia["mood"]          = str_replace("|", " / ", $mood);

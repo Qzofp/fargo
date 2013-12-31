@@ -280,6 +280,15 @@ width:850px;
 margin-left:-440px;
 }
 
+#info_box .title div{
+width:600px;
+margin:auto;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+cursor:pointer;
+}
+
 #info_main{
 margin-top:10px; 
 }
