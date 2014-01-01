@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Dec 31, 2013
+ * Updated on Jan 01, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -52,7 +52,7 @@ switch($action)
                      $genre = GetPageValue('genre');
                      $year  = GetPageValue('year');
                      $sort  = GetPageValue('sort');
-                     $aJson = GetMedia($type, $page, $title, $level, unescape($genre), $year, $sort, $login);                     
+                     $aJson = GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login);                     
                      break;               
                      
     case "option" : $name  = GetPageValue('name');
@@ -808,7 +808,7 @@ function GetPopupMediaInfo($sql, $thumb)
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Dec 15, 2013
+ * Updated on Jan 01, 2014
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -824,6 +824,8 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
     $header  = "";
     $rows    = 0;
     $max     = 0; 
+    
+    $genre = addslashes($genre);
     
     switch ($type)
     {

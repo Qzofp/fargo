@@ -1371,7 +1371,7 @@ function ShowMediaTable(page, sort)
 
     $.ajax
     ({
-        url: 'jsonfargo.php?action=media' + '&type=' + type + '&page=' + page + '&title=' + title + '&genre=' + escape(genre) 
+        url: 'jsonfargo.php?action=media' + '&type=' + type + '&page=' + page + '&title=' + title + '&genre=' + encodeURIComponent(genre) 
                                           + '&year=' + year + '&sort=' + sort + '&level=' + level,
         async: false,
         dataType: 'json',

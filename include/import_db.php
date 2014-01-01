@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Dec 06, 2013
+ * Updated on Jan 01, 2014
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -355,7 +355,7 @@ function UpdateAlbum($id, $aAlbum)
  * Function:	InsertGenres
  *
  * Created on Jun 22, 2013
- * Updated on Jun 23, 2013
+ * Updated on Jan 01, 2013
  *
  * Description: Insert genres in the database.
  *
@@ -368,12 +368,12 @@ function InsertGenres($aGenres, $media)
     foreach ($aGenres as $genre)
     {
         $find = "SELECT * FROM genres ".
-                "WHERE genre = '$genre' AND media = '$media'";
+                "WHERE genre = '".addslashes($genre)."' AND media = '$media'";
         
         if (CountRowsWithQuery($find) == 0)
         {
             $sql = "INSERT INTO genres(genre, media) ".
-                   "VALUES ('$genre', '$media')";
+                   "VALUES ('".addslashes($genre)."', '$media')";
             
             ExecuteQuery($sql);
         }
@@ -384,7 +384,7 @@ function InsertGenres($aGenres, $media)
  * Function:	InsertGenreToMedia
  *
  * Created on Jun 26, 2013
- * Updated on Jun 26, 2013
+ * Updated on Jan 01, 2014
  *
  * Description: Insert genres linked to media in the database.
  *
@@ -397,10 +397,13 @@ function InsertGenreToMedia($aGenres, $media)
     // Get highest movie id.
     $mediaid = GetLastItemFromTable("id", $media);
     
+    // Remove dublicate entries.
+    $aGenres = array_unique($aGenres);
+    
     foreach ($aGenres as $genre)
     {
         $find = "SELECT id FROM genres ".
-                "WHERE genre = '$genre' AND media = '$media'";
+                "WHERE genre = '".addslashes($genre)."' AND media = '$media'";
         
         $genreid = GetItemFromDatabase("id", $find);        
         if (!empty($genreid))

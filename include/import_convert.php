@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Nov 14, 2013
+ * Updated on Jan 01, 2014
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -280,7 +280,7 @@ function ConvertAlbum($aXbmc)
  * Function:	ConvertGenres
  *
  * Created on Jun 22, 2013
- * Updated on Jul 04, 2013
+ * Updated on Jan 01, 2014
  *
  * Description: Convert genres from array to string and insert genres in database.
  *
@@ -290,8 +290,16 @@ function ConvertAlbum($aXbmc)
  */
 function ConvertGenre($aGenres, $media)
 {
-    InsertGenres($aGenres, $media);
-    $genres = '"'.implode('"|"', $aGenres).'"';
+    $genres = null;
+
+    // Remove dublicate entries.
+    $aGenres = array_unique($aGenres);
+    
+    if (!empty($aGenres)) 
+    {
+        InsertGenres($aGenres, $media);
+        $genres = '"'.implode('"|"', $aGenres).'"';
+    }
     
     return $genres;
 }
