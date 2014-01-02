@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Dec 24, 2013
+ * Updated on Jan 02, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -350,7 +350,8 @@ function DeleteMedia($media, $id, $xbmcid)
                           DeleteFile(cTVSHOWSFANART."/$xbmcid.jpg");
                           break;
                      
-        case "seasons"  : $aItems = explode("_", $id);
+        case "seasons"  : $db = OpenDatabase();            
+                          $aItems = explode("_", $id);
                           
                           // Delete episodes.
                           $sql = "SELECT CONCAT(episodeid, '.jpg') AS thumb FROM episodes WHERE tvshowid = ".
@@ -364,10 +365,11 @@ function DeleteMedia($media, $id, $xbmcid)
                          
                           // Delete seasons.
                           $sql = "SELECT CONCAT(tvshowid, '_', season) AS xbmcid FROM seasons WHERE id = $aItems[0]";
-                          $xbmcid = GetItemFromDatabase("xbmcid", $sql);
+                          $xbmcid = GetItemFromDatabase($db, "xbmcid", $sql);
                           DeleteFile(cSEASONSTHUMBS."/$xbmcid.jpg");
 
                           DeleteMediaQuery("seasons", $aItems[0]);
+                          CloseDatabase($db);                           
                           break;
                      
         case "episodes" : DeleteMediaQuery("episodes", $id);
@@ -759,7 +761,7 @@ function GetEpisodesImportRefreshStatus($id, $thumbs)
  * Function:	ConvertTVShowToSeasonID
  *
  * Created on Dec 10, 2013
- * Updated on Dec 10, 2013
+ * Updated on Jan 02, 2014
  *
  * Description: Convert TV show id's to season id for serie (season 1) refresh. 
  *
@@ -769,10 +771,13 @@ function GetEpisodesImportRefreshStatus($id, $thumbs)
  */
 function ConvertTVShowToSeasonID($id)
 {
-    $aItems = explode("_", $id);    
-    $sql = "SELECT id FROM seasons WHERE tvshowid = $aItems[0] AND season = $aItems[1]";
+    $db = OpenDatabase();    
     
-    $aJson['id'] = GetItemFromDatabase("id", $sql);
+    $aItems = explode("_", $id);    
+    $sql = "SELECT id FROM seasons WHERE tvshowid = $aItems[0] AND season = $aItems[1]"; 
+    $aJson['id'] = GetItemFromDatabase($db, "id", $sql);
+    
+    CloseDatabase($db); 
     
     return $aJson;
 }

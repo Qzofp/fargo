@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 01, 2014
+ * Updated on Jan 02, 2014
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -19,7 +19,7 @@
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Nov 02, 2013
+ * Updated on Jan 02, 2014
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -31,7 +31,7 @@ function ConvertMovie($aXbmc)
 {  
     $aMovie[0]  = $aXbmc["movieid"];
     $aMovie[1]  = $aXbmc["label"]; // title
-    $aMovie[2]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"], "movies"):null;
+    $aMovie[2]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"]):null;
     $aMovie[3]  = !empty($aXbmc["year"])?$aXbmc["year"]:0;
     
     $aMovie[4]  = !empty($aXbmc["rating"])?$aXbmc["rating"]:0;
@@ -280,27 +280,29 @@ function ConvertAlbum($aXbmc)
  * Function:	ConvertGenres
  *
  * Created on Jun 22, 2013
- * Updated on Jan 01, 2014
+ * Updated on Jan 02, 2014
  *
  * Description: Convert genres from array to string and insert genres in database.
  *
- * In:  $aGenre, $media
+ * In:  $aGenre
  * Out: $genres
  *
  */
-function ConvertGenre($aGenres, $media)
+function ConvertGenre($aGenres)
 {
     $genres = null;
 
-    // Remove dublicate entries.
-    $aGenres = array_unique($aGenres);
-    
     if (!empty($aGenres)) 
     {
-        InsertGenres($aGenres, $media);
+        // Remove dublicate entries.
+        $aGenres = array_unique($aGenres);
+        
+        // Sort genres.
+        sort($aGenres);
+        
         $genres = '"'.implode('"|"', $aGenres).'"';
     }
-    
+
     return $genres;
 }
 

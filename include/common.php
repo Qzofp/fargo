@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Nov 23, 2013
+ * Updated on Jan 04, 2014
  *
  * Description: The main Fargo functions page.
  *
@@ -376,7 +376,7 @@ function GetUser($id)
  * Function:	UpdateUser
  *
  * Created on Mar 27, 2013
- * Updated on Jun 17, 2013
+ * Updated on Jan 02, 2014
  *
  * Description: Update user in the user table.
  *
@@ -397,7 +397,7 @@ function UpdateUser($id, $user)
            "SET user='$aItems[0]' ".
            "WHERE id = $id";
     
-    ExecuteQueryWithEscapeStrings($db, $sql);
+    QueryDatabase($db, $sql);
     CloseDatabase($db);
 }
 
@@ -405,7 +405,7 @@ function UpdateUser($id, $user)
  * Function:	UpdatePassword
  *
  * Created on Mar 27, 2013
- * Updated on Mar 27, 2013
+ * Updated on Jan 02, 2014
  *
  * Description: Update password in the user table.
  *
@@ -426,7 +426,7 @@ function UpdatePassword($id, $pass)
            "SET password='$aItems[0]' ".
            "WHERE id = $id";
     
-    ExecuteQueryWithEscapeStrings($db, $sql);
+    QueryDatabase($db, $sql);
     CloseDatabase($db);  
 }
 
@@ -434,7 +434,7 @@ function UpdatePassword($id, $pass)
  * Function:	LogEvent
  *
  * Created on May 10, 2013
- * Updated on Apr 10, 2013
+ * Updated on Jan 02, 2014
  *
  * Description: Log event in the database log table. 
  *
@@ -460,7 +460,7 @@ function LogEvent($type, $event)
     $sql = "INSERT INTO log (date, type, event) ".
            "VALUES ('$aItems[0]', '$aItems[1]', '$aItems[2]')";
     
-    ExecuteQueryWithEscapeStrings($db, $sql);
+    QueryDatabase($db, $sql);
     CloseDatabase($db);
     
     return $aItems;

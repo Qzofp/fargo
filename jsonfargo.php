@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jan 01, 2014
+ * Updated on Jan 02, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -808,7 +808,7 @@ function GetPopupMediaInfo($sql, $thumb)
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Jan 01, 2014
+ * Updated on Jan 02, 2014
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -825,7 +825,9 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
     $rows    = 0;
     $max     = 0; 
     
-    $genre = addslashes($genre);
+    $db = OpenDatabase();
+
+    $genre = mysqli_real_escape_string($db, $genre);
     
     switch ($type)
     {
@@ -833,83 +835,85 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                          $aParams['column'] = cMediaColumn;
                          $header = "Movie Titles";
                          $sql    = CreateMediaQuery("movies", $title, $genre, $year, $sort, $login);
-                         $rows   = CountRowsWithQuery($sql);
+                         $rows   = CountRowsWithQuery($db, $sql);
                          $max    = cMediaRow * cMediaColumn;                             
-                         $aMedia = QueryMedia($sql, $page, $max, 20);
+                         $aMedia = QueryMedia($db, $sql, $page, $max);
                          break;
                     
         case "sets"    : $aParams['thumbs'] = cSETSTHUMBS;
                          $aParams['column'] = cMediaColumn;
                          $header = "Movie Sets";
                          $sql    = CreateSetsQuery($title, $genre, $year, $sort, $login);
-                         $rows   = CountRowsWithQuery($sql);
+                         $rows   = CountRowsWithQuery($db, $sql);
                          $max    = cMediaRow * cMediaColumn; 
-                         $aMedia = QueryMedia($sql, $page, $max, 20);
+                         $aMedia = QueryMedia($db, $sql, $page, $max);
                          break;
                      
         case "movieset": $aParams['thumbs'] = cMOVIESTHUMBS; // The set movies.
                          $aParams['column'] = cMediaColumn;
-                         $header = GetItemFromDatabase("title", "SELECT title FROM `sets` WHERE id = $level");
+                         $header = GetItemFromDatabase($db, "title", "SELECT title FROM `sets` WHERE id = $level");
                          $sql    = CreateMoviesSetQuery($title, $level, $genre, $year, $sort, $login);
-                         $rows   = CountRowsWithQuery($sql);
+                         $rows   = CountRowsWithQuery($db, $sql);
                          $max    = cMediaRow * cMediaColumn; 
-                         $aMedia = QueryMedia($sql, $page, $max, 20);
+                         $aMedia = QueryMedia($db, $sql, $page, $max);
                          break;                     
                     
         case "tvtitles": $aParams['thumbs'] = cTVSHOWSTHUMBS;
                          $aParams['column'] = cMediaColumn;
                          $header = "TV Show Titles";
                          $sql    = CreateMediaQuery("tvshows", $title, $genre, $year, $sort, $login);
-                         $rows   = CountRowsWithQuery($sql);
+                         $rows   = CountRowsWithQuery($db, $sql);
                          $max    = cMediaRow * cMediaColumn; 
-                         $aMedia = QueryMedia($sql, $page, $max, 20);
+                         $aMedia = QueryMedia($db, $sql, $page, $max);
                          break;
 
         case "series"   : $aParams['thumbs'] = cSEASONSTHUMBS;
                           $aParams['column'] = cMediaColumn;
                           $header = "TV Show Series";
                           $sql    = CreateSeriesQuery($title, $genre, $year, $sort, $login);
-                          $rows   = CountRowsWithQuery($sql);
+                          $rows   = CountRowsWithQuery($db, $sql);
                           $max    = cMediaRow * cMediaColumn; 
-                          $aMedia = QueryMedia($sql, $page, $max, 20);
+                          $aMedia = QueryMedia($db, $sql, $page, $max);
                           break;
                       
         case "seasons"  : $aParams['thumbs'] = cSEASONSTHUMBS;
                           $aParams['column'] = cMediaColumn;
                           $aItems = explode("_", $level);
-                          $header = GetItemFromDatabase("showtitle", "SELECT showtitle FROM seasons WHERE tvshowid = ".
+                          $header = GetItemFromDatabase($db, "showtitle", "SELECT showtitle FROM seasons WHERE tvshowid = ".
                                                         "(SELECT xbmcid FROM tvshows WHERE id = $aItems[0]) LIMIT 0, 1");
                           $sql    = CreateSeasonsQuery($aItems[0], $login);
-                          $rows   = CountRowsWithQuery($sql);
+                          $rows   = CountRowsWithQuery($db, $sql);
                           $max    = cMediaRow * cMediaColumn; 
-                          $aMedia = QueryMedia($sql, $page, $max, 20);
+                          $aMedia = QueryMedia($db, $sql, $page, $max);
                           break;
                       
         case "episodes" : $aParams['thumbs'] = cEPISODESTHUMBS;
                           $aParams['column'] = cMediaEpisodeColumn;
                           $aItems = explode("_", $level);
                           if ($aItems[1] > -1) {
-                            $header = GetItemFromDatabase("showtitle", "SELECT CONCAT(showtitle, ' - ', title) AS title ".
+                            $header = GetItemFromDatabase($db, "showtitle", "SELECT CONCAT(showtitle, ' - ', title) AS title ".
                                                           "FROM seasons WHERE id = $aItems[0]");
                           }
                           else {
-                            $header = GetItemFromDatabase("showtitle", "SELECT title FROM tvshows WHERE id = $aItems[0]");  
+                            $header = GetItemFromDatabase($db, "showtitle", "SELECT title FROM tvshows WHERE id = $aItems[0]");  
                           }
                           $sql    = CreateEpisodesQuery($aItems[0], $aItems[1], $login);
-                          $rows   = CountRowsWithQuery($sql);
+                          $rows   = CountRowsWithQuery($db, $sql);
                           $max    = cMediaRow * cMediaEpisodeColumn; 
-                          $aMedia = QueryMedia($sql, $page, $max, 36);
+                          $aMedia = QueryMedia($db, $sql, $page, $max);
                           break;                      
                       
         case "albums"   : $aParams['thumbs'] = cALBUMSTHUMBS;
                           $aParams['column'] = cMediaColumn;
                           $header = "Music Albums";
                           $sql    = CreateMediaQuery("music", $title, $genre, $year, $sort, $login);
-                          $rows   = CountRowsWithQuery($sql);
+                          $rows   = CountRowsWithQuery($db, $sql);
                           $max    = cMediaRow * cMediaColumn; 
-                          $aMedia = QueryMedia($sql, $page, $max, 20);
+                          $aMedia = QueryMedia($db, $sql, $page, $max);
                           break;             
-    }    
+    }   
+    
+    CloseDatabase($db); 
        
     // Fill parameters.
     $aParams['lastpage'] = ceil($rows/$max);
@@ -1207,15 +1211,15 @@ function CreateQuerySortQrder($a, $title)
  * Function:	QueryMedia
  *
  * Created on Apr 03, 2013
- * Updated on Dec 20, 2013
+ * Updated on Jan 02, 2014
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
- * In:  $sql, $page, $end, $length
+ * In:  $db, $sql, $page, $end
  * Out: $aJson
  *
  */
-function QueryMedia($sql, $page, $end, $length)
+function QueryMedia($db, $sql, $page, $end)
 {   
     $aMedia  = null; 
     $start = ($page - 1) * $end;
@@ -1223,7 +1227,7 @@ function QueryMedia($sql, $page, $end, $length)
     // Add limit.
     $sql .=  " LIMIT $start , $end";
         
-    $db = OpenDatabase();
+    //$db = OpenDatabase();
     $stmt = $db->prepare($sql);
     if($stmt)
     {
@@ -1245,7 +1249,6 @@ function QueryMedia($sql, $page, $end, $length)
                     $aMedia[$i]['xbmcid']  = $xbmcid;  
                     $aMedia[$i]['hide']    = $hide;  
                     $aMedia[$i]['refresh'] = $refresh; 
-                    //$aMedia[$i]['title']   = stripslashes(ShortenString($title, $length));
                     $aMedia[$i]['title']   = stripslashes($title);
                     
                     $i++;
@@ -1271,7 +1274,7 @@ function QueryMedia($sql, $page, $end, $length)
         die('Invalid query: '.mysqli_error($db));
     } 
 
-    CloseDatabase($db);  
+//    CloseDatabase($db);  
     
     return $aMedia;
 }

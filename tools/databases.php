@@ -7,7 +7,7 @@
  * File:    databases.php
  *
  * Created on Mar 09, 2013
- * Updated on Jun 26, 2013
+ * Updated on Jan 02, 2014
  *
  * Description: Database toolbox functions.
  *
@@ -150,20 +150,20 @@ function AddEscapeStrings($db, $aItems)
 }
 
 /*
- * Function:	ExecuteQueryWithEscapeStrings
+ * Function:	QueryDatabase
  *
  * Created on May 10, 2013
- * Updated on Jun 17, 2013
+ * Updated on Jan 02, 2014
  *
- * Description:  Execute a sql query with real escape strings.
+ * Description:  Execute a sql query.
  *
  * In:	$db, $sql
- * Out:	-
+ * Out:	Executed sql query
  *
- * Note:  This function works together with AddEscapeStrings().
+ * Note:  The database connection must exist.
  * 
  */
-function ExecuteQueryWithEscapeStrings($db, $sql)
+function QueryDatabase($db, $sql)
 {        
     $stmt = $db->prepare($sql);
     if($stmt)
@@ -235,17 +235,17 @@ function GetItemsFromDatabase($sql)
  * Function:	CountRowsWithQuery
  *
  * Created on Dec 20, 2009
- * Updated on May 18, 2011
+ * Updated on Jan 02, 2014
  *
  * Description: Count the number of rows from a sql query.
  *
- * In:	$sql
+ * In:	$db, $sql
  * Out:	$rows
  *
  */
-function CountRowsWithQuery($sql)
+function CountRowsWithQuery($db, $sql)
 {
-    $db = OpenDatabase();
+    //$db = OpenDatabase();
 
     $result = $db->query($sql);
     if ($result)
@@ -260,7 +260,7 @@ function CountRowsWithQuery($sql)
         die('Ececution query failed: '.$db->error);
     }
     
-    CloseDatabase($db);
+    //CloseDatabase($db);
     
     return $rows;
 }
@@ -312,20 +312,19 @@ function CountRows($table)
  * Function:	GetLastItemFromTable
  *
  * Created on Jun 26, 2013
- * Updated on Nov 10, 2013
+ * Updated on Jan 02, 2014
  *
  * Description: Get last added item from a database table.
  *
- * In:	$item, $sql
+ * In:	$db, $sql
  * Out:	$item
  * 
  * Note: Returns 1 item. The item must exist in the select query ($sql).
  * 
  */
-function GetItemFromDatabase($item, $sql)
+function GetItemFromDatabase($db, $item, $sql)
 {
-    $db = OpenDatabase();
-    //$item = 0;
+    //$db = OpenDatabase();
 
     $stmt = $db->prepare($sql);
     if($stmt)
@@ -346,7 +345,7 @@ function GetItemFromDatabase($item, $sql)
         die('Invalid query: '.mysqli_error($db));
     } 
     
-    CloseDatabase($db);
+    //CloseDatabase($db);
     
     return $item;
 }
