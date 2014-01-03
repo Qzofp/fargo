@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -1285,7 +1285,7 @@ function QueryMedia($db, $sql, $page, $end)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on Dec 11, 2013
+ * Updated on Jan 03, 2013
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -1296,47 +1296,50 @@ function QueryMedia($db, $sql, $page, $end)
 function GetSystemOptionProperties($name, $login)
 {
     $html = null;
+    $db = OpenDatabase();
+    
     switch(strtolower($name))
     {
-        case "statistics" : $html = GetSetting($name);                                
-                            $html = str_replace("[movies]", CountMedia("movies", $login), $html);
-                            $html = str_replace("[tvshows]", CountMedia("tvshows", $login), $html);
-                            $html = str_replace("[music]", CountMedia("music", $login), $html);
+        case "statistics" : $html = GetSetting($db, $name);                                
+                            $html = str_replace("[movies]", CountMedia($db, "movies", $login), $html);
+                            $html = str_replace("[tvshows]", CountMedia($db, "tvshows", $login), $html);
+                            $html = str_replace("[music]", CountMedia($db, "music", $login), $html);
                             break;
                                        
-        case "settings"   : $html = GetSetting($name);
-                            $html = str_replace("[connection]", GetSetting("XBMCconnection"), $html);
-                            $html = str_replace("[port]", GetSetting("XBMCport"), $html);
-                            $html = str_replace("[xbmcuser]", GetSetting("XBMCusername"), $html);
-                            $html = str_replace("[fargouser]", GetUser(1), $html);
+        case "settings"   : $html = GetSetting($db, $name);
+                            $html = str_replace("[connection]", GetSetting($db, "XBMCconnection"), $html);
+                            $html = str_replace("[port]", GetSetting($db, "XBMCport"), $html);
+                            $html = str_replace("[xbmcuser]", GetSetting($db, "XBMCusername"), $html);
+                            $html = str_replace("[fargouser]", GetUser($db, 1), $html);
                             $html = str_replace("[password]", "******", $html);
-                            $html = str_replace("[timeout]", GetSetting("Timeout"), $html);
+                            $html = str_replace("[timeout]", GetSetting($db, "Timeout"), $html);
                             break;
                         
-        case "library"    : $html = GetSetting($name);
+        case "library"    : $html = GetSetting($db, $name);
                             break;
                         
         case "event log"  : $html  = "<div class=\"system_scroll\">";
                             $html .= "<table>";
-                            $html .= GetSetting($name);
-                            $html .= GenerateEventRows();
+                            $html .= GetSetting($db, $name);
+                            $html .= GenerateEventRows($db);
                             $html .= "</table>";
                             $html .= "</div>";    
                             break;
                         
         case "credits"    : $html  = "<div class=\"system_scroll text\">";
-                            $html .= GetSetting($name);
+                            $html .= GetSetting($db, $name);
                             $html .= "</div>";
                             break;                        
                         
         case "about"      : $html  = "<div class=\"system_scroll text\">";
-                            $html .= GetSetting($name);
+                            $html .= GetSetting($db, $name);
                             $html .= "</div>";
                             
-                            $html = str_replace("[version]", GetSetting("Version"), $html);
+                            $html = str_replace("[version]", GetSetting($db, "Version"), $html);
                             break;                        
     }
     
+    CloseDatabase($db);
     $aJson['html'] = $html;
     return $aJson;
 }
@@ -1345,19 +1348,19 @@ function GetSystemOptionProperties($name, $login)
  * Function:	GenerateEventRows
  *
  * Created on Jun 10, 2013
- * Updated on Dec 12, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Generate event log table rows.
  *
- * In:  -
+ * In:  $db
  * Out: $events
  *
  */
-function GenerateEventRows()
+function GenerateEventRows($db)
 {
     $events = null;
     
-    $db = OpenDatabase();
+    //$db = OpenDatabase();
 
     $sql = "SELECT date, type, event ".
            "FROM log ".
@@ -1397,7 +1400,7 @@ function GenerateEventRows()
         die('Invalid query: '.mysqli_error($db));
     } 
 
-    CloseDatabase($db);  
+    //CloseDatabase($db);  
     
     return $events;
 }
@@ -1406,7 +1409,7 @@ function GenerateEventRows()
  * Function:	ProcessSetting
  *
  * Created on Jun 09, 2013
- * Updated on Jul 15, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Get value from settings database and process value if necessary. 
  *
@@ -1417,7 +1420,9 @@ function GenerateEventRows()
 function ProcessSetting($name)
 {
     $aJson = null;
-    $value = GetSetting($name);
+    $db = OpenDatabase();
+    
+    $value = GetSetting($db, $name);
     
     if ($name == "Hash") {
         $value = md5($value);
@@ -1425,6 +1430,7 @@ function ProcessSetting($name)
     
     $aJson["value"] = $value;
     
+    CloseDatabase($db);
     return $aJson;
 }
 
@@ -1432,7 +1438,7 @@ function ProcessSetting($name)
  * Function:	GetSortList
  *
  * Created on Jun 27, 2013
- * Updated on Sep 23, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Get list of items for sorting purposes. 
  *
@@ -1443,16 +1449,18 @@ function ProcessSetting($name)
 function GetSortList($type, $filter, $media, $login)
 {
     $aJson = null;
+    $db = OpenDatabase();    
     
     switch(strtolower($type))
     {
-        case "genres" : $aJson["list"] = GetGenres($filter, $media, $login);
+        case "genres" : $aJson["list"] = GetGenres($db, $filter, $media, $login);
                         break;
     
-        case "years"  : $aJson["list"] = GetYears($filter, $media, $login);
+        case "years"  : $aJson["list"] = GetYears($db, $filter, $media, $login);
                         break;
     }
     
+    CloseDatabase($db);    
     return $aJson;
 }
 
@@ -1460,15 +1468,15 @@ function GetSortList($type, $filter, $media, $login)
  * Function:	GetGenres
  *
  * Created on Jun 27, 2013
- * Updated on Nov 21, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Get genres from database table genres. 
  *
- * In:  $filter, $media, $login
+ * In:  $db, $filter, $media, $login
  * Out: $aJson
  *
  */
-function GetGenres($filter, $media, $login)
+function GetGenres($db, $filter, $media, $login)
 {
     $stm = "";
     if (!$login) {
@@ -1497,7 +1505,7 @@ function GetGenres($filter, $media, $login)
                "ORDER BY g.genre";         
     }
     
-    $aJson = GetItemsFromDatabase($sql);
+    $aJson = GetItemsFromDatabase($db, $sql);
     
     return $aJson;
 }
@@ -1506,15 +1514,15 @@ function GetGenres($filter, $media, $login)
  * Function:	GetYears
  *
  * Created on Jun 30, 2013
- * Updated on Nov 21, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Get years from database media table. 
  *
- * In:  $filter, $media, $login
+ * In:  $db, $filter, $media, $login
  * Out: $aJson
  *
  */
-function GetYears($filter, $media, $login)
+function GetYears($db, $filter, $media, $login)
 {
     $stm = "";
     if (!$login) {
@@ -1543,7 +1551,7 @@ function GetYears($filter, $media, $login)
                "ORDER BY m.`year` DESC";          
     }
     
-    $aJson = GetItemsFromDatabase($sql);
+    $aJson = GetItemsFromDatabase($db, $sql);
     
     return $aJson;
 }

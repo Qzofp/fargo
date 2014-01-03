@@ -7,9 +7,11 @@
  * File:    databases.php
  *
  * Created on Mar 09, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Database toolbox functions.
+ * 
+ * Tip: When a page start open the database and finished close the database. This for better performance. 
  *
  */
 
@@ -70,24 +72,24 @@ function CloseDatabase($db)
  * Function:	EmptyTable
  *
  * Created on Mar 09, 2012
- * Updated on Mar 09, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Empty a database table.
  *
- * In:	$table
+ * In:	$db, $table
  * Out:	-
  *
  */
-function EmptyTable($table)
+function EmptyTable($db, $table)
 {
-    $db = OpenDatabase();   
+    //$db = OpenDatabase();   
     
     $sql = "TRUNCATE TABLE $table";
     
-    //echo $sql."</br>";
-    ExecuteQuery($sql);
+    QueryDatabase($db, $sql);
+    //ExecuteQuery($sql);
     
-    CloseDatabase($db);
+    //CloseDatabase($db);
 }
 
 /*
@@ -186,20 +188,20 @@ function QueryDatabase($db, $sql)
  * Function:	GetItemsFromDatabase
  *
  * Created on Sep 12, 2010
- * Updated on Mar 11, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Get a list of items from the database.
  *
- * In:	$sql
+ * In:	$db, $sql
  * Out:	$aItems
  *
  */
-function GetItemsFromDatabase($sql)
+function GetItemsFromDatabase($db, $sql)
 {
     $aItems = null;
     $name   = null;
 
-    $db = OpenDatabase();
+    //$db = OpenDatabase();
     $stmt = $db->prepare($sql);
     if($stmt)
     {
@@ -226,7 +228,7 @@ function GetItemsFromDatabase($sql)
    	// Foutpagina maken, doorgeven fout met session variabele.
     }
 
-    CloseDatabase($db);
+    //CloseDatabase($db);
 
     return $aItems;
 }
@@ -269,17 +271,17 @@ function CountRowsWithQuery($db, $sql)
  * Function:	CountRows
  *
  * Created on Dec 20, 2009
- * Updated on May 13, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Count the number of rows from a sql query.
  *
- * In:	$table
+ * In:	$db, $table
  * Out:	$rows
  *
  */
-function CountRows($table)
+function CountRows($db, $table)
 {
-    $db = OpenDatabase();
+    //$db = OpenDatabase();
     $rows = 0;
 
     $sql = "SELECT count(*) FROM $table"; 
@@ -303,7 +305,7 @@ function CountRows($table)
         die('Invalid query: '.mysqli_error($db));
     } 
     
-    CloseDatabase($db);
+    //CloseDatabase($db);
     
     return $rows;
 }

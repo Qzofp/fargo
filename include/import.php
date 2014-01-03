@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 02, 2013
+ * Updated on Jan 03, 2013
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -24,17 +24,21 @@ require_once 'common.php';
 require_once 'import_convert.php';
 require_once 'import_db.php';
 
-$login = CheckImportKey();
+$db = OpenDatabase();
+
+$login = CheckImportKey($db);
 if($login)
 {
     $aData = ReceiveDataFromXbmc();
-    ProcessDataFromXbmc($aData);
+    ProcessDataFromXbmc($db, $aData);
 }
 else 
 {
     $aJson = LogEvent("Warning", "Unauthorized import call!");
     echo json_encode($aJson);
 }
+
+CloseDatabase($db);
 
 //debug
 //echo "<pre>";
@@ -47,15 +51,15 @@ else
  * Function:	CheckImportKey()
  *
  * Created on Sep 28, 2013
- * Updated on Sep 28, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Check if import key is valid. This proves that the users has logged in. 
  *
- * In:  -
+ * In:  $db
  * Out: $login
  *
  */
-function CheckImportKey()
+function CheckImportKey($db)
 {
     $login = false;
     
@@ -65,7 +69,7 @@ function CheckImportKey()
         $key = $_POST["key"];
     }      
     
-    $import = GetStatus("ImportKey");
+    $import = GetStatus($db, "ImportKey");
     if ($import == $key){    
         $login = true;
     }
@@ -132,93 +136,93 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Process data from XBMC. 
  *
- * In:  $aData
+ * In:  $db, $aData
  * Out: -
  *
  */
-function ProcessDataFromXbmc($aData)
+function ProcessDataFromXbmc($db, $aData)
 {
 
     switch($aData["id"])
     {
         // libMoviesCounter -> library id = 1.
-        case 1  : UpdateStatus("XbmcMoviesEnd", $aData["result"]["movies"][0]["movieid"]);
+        case 1  : UpdateStatus($db, "XbmcMoviesEnd", $aData["result"]["movies"][0]["movieid"]);
                   break;
              
         // libMovies Import -> library id = 2.                   
-        case 2  : ImportMovie($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
+        case 2  : ImportMovie($db, $aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
                   break;
         
         // libMovies Refresh -> library id = 3.     
-        case 3  : RefreshMovie($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
+        case 3  : RefreshMovie($db, $aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
                   break;
         
         // libMovieSetsCounter -> library id = 4.    
-        case 4  : UpdateStatus("XbmcSetsEnd", $aData["result"]["sets"][0]["setid"]); 
+        case 4  : UpdateStatus($db, "XbmcSetsEnd", $aData["result"]["sets"][0]["setid"]); 
                   break;
               
         // libMovieSets Import -> library id = 5.                   
-        case 5  : ImportMovieSet($aData["error"], $aData["poster"], $aData["result"]);
+        case 5  : ImportMovieSet($db, $aData["error"], $aData["poster"], $aData["result"]);
                   break;
               
         // libMovieSets Reset -> library id = 6.
-        case 6  : RefreshMovieSet($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
+        case 6  : RefreshMovieSet($db, $aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
                   break;
              
         // libTVShowsCounter -> library id = 11.  
-        case 11 : UpdateStatus("XbmcTVShowsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
+        case 11 : UpdateStatus($db, "XbmcTVShowsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
                   break;
         
         // libTVShows Import -> library id = 12.
-        case 12 : ImportTVShow($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
+        case 12 : ImportTVShow($db, $aData["error"], $aData["poster"], $aData["fanart"], $aData["result"]);
                   break;
              
         // libTVShows Refresh -> library id = 13.
-        case 13 : RefreshTVShow($aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
+        case 13 : RefreshTVShow($db, $aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
                   break;
              
         // libTVShowSeasonsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
-        case 14 : UpdateStatus("XbmcTVShowsSeasonsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
+        case 14 : UpdateStatus($db, "XbmcTVShowsSeasonsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
                   break;           
               
         // libSeasonsCounter -> library id = 15.
-        case 15 : UpdateStatus("XbmcSeasonsEnd", $aData["result"]["limits"]["total"]);
+        case 15 : UpdateStatus($db, "XbmcSeasonsEnd", $aData["result"]["limits"]["total"]);
                   break;   
               
         // libTVShowSeasons Import -> library id = 16.
-        case 16 : ImportTVShowSeason($aData["error"], $aData["poster"], $aData["result"]);
+        case 16 : ImportTVShowSeason($db, $aData["error"], $aData["poster"], $aData["result"]);
                   break;  
               
         // libTVShowSeasons Refresh -> library id = 17.    
-        case 17 : RefreshTVShowSeason($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
+        case 17 : RefreshTVShowSeason($db, $aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
                   break;        
               
         // libTVShowEpisodesCounter -> library id = 31.  
-        case 31 : UpdateStatus("XbmcEpisodesEnd", $aData["result"]["episodes"][0]["episodeid"]);   
+        case 31 : UpdateStatus($db, "XbmcEpisodesEnd", $aData["result"]["episodes"][0]["episodeid"]);   
                   break;
                        
         // libTVShowEpisode Import -> library id = 32.
-        case 32 : ImportTVShowEpisode($aData["error"], $aData["poster"], $aData["result"]);
+        case 32 : ImportTVShowEpisode($db, $aData["error"], $aData["poster"], $aData["result"]);
                   break;
               
         // libTVShowEpisode Refresh -> library id = 33.
-        case 33 : RefreshTVShowEpisode($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
+        case 33 : RefreshTVShowEpisode($db, $aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
                   break;         
                             
         // libAlbumsCounter -> library id = 41.  
-        case 41 : UpdateStatus("XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
+        case 41 : UpdateStatus($db, "XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
                   break;
         
         // libAlbums Import -> library id = 42.
-        case 42 : ImportAlbum($aData["error"], $aData["poster"], $aData["result"]);
+        case 42 : ImportAlbum($db, $aData["error"], $aData["poster"], $aData["result"]);
                   break;
              
         // libAlbums Refresh -> library id = 43.
-        case 43 : RefreshAlbum($aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
+        case 43 : RefreshAlbum($db, $aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
                   break;                       
     }
 }
@@ -227,17 +231,17 @@ function ProcessDataFromXbmc($aData)
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Import the movie. 
  *
- * In:  $aError, $poster, $fanart, $aResult
+ * In:  $db, $aError, $poster, $fanart, $aResult
  * Out: -
  *
  */
-function ImportMovie($aError, $poster, $fanart, $aResult)
+function ImportMovie($db, $aError, $poster, $fanart, $aResult)
 {   
-    $db = OpenDatabase();
+    //$db = OpenDatabase();
     
     if (empty($aError))
     {
@@ -251,34 +255,34 @@ function ImportMovie($aError, $poster, $fanart, $aResult)
         InsertGenres($db, $aGenres, "movies");
         InsertGenreToMedia($db, $aGenres, $id, "movies");
     
-        UpdateStatus("XbmcSlack", 0);
-        IncrementStatus("XbmcMoviesStart", 1);
-        IncrementStatus("ImportCounter", 1);
+        UpdateStatus($db, "XbmcSlack", 0);
+        IncrementStatus($db, "XbmcMoviesStart", 1);
+        IncrementStatus($db, "ImportCounter", 1);
     }
     else if ($aError["code"] == -32602) // Movie not found, continue with the next one.
     { 
-        UpdateStatus("XbmcSlack", 1);
-        IncrementStatus("XbmcMoviesStart", 1); 
+        UpdateStatus($db, "XbmcSlack", 1);
+        IncrementStatus($db, "XbmcMoviesStart", 1); 
     }
     
-    CloseDatabase($db); 
+    //CloseDatabase($db); 
 }
 
 /*
  * Function:	ImportMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Jan 02, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Import the movie set. 
  *
- * In:  $aError, $poster, $aResult
+ * In:  $db, $aError, $poster, $aResult
  * Out: -
  *
  */
-function ImportMovieSet($aError, $poster, $aResult)
+function ImportMovieSet($db, $aError, $poster, $aResult)
 {  
-    $db = OpenDatabase();    
+    //$db = OpenDatabase();    
     
     if (empty($aError))
     {
@@ -287,17 +291,17 @@ function ImportMovieSet($aError, $poster, $aResult)
         ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280    
         InsertMovieSet($db, $aMovie);         
         
-        UpdateStatus("XbmcSlack", 0);
-        IncrementStatus("XbmcSetsStart", 1);
-        IncrementStatus("ImportCounter", 1);
+        UpdateStatus($db, "XbmcSlack", 0);
+        IncrementStatus($db, "XbmcSetsStart", 1);
+        IncrementStatus($db, "ImportCounter", 1);
     }
     else if ($aError["code"] == -32602) // Movie not found, continue with the next one.
     { 
-       UpdateStatus("XbmcSlack", 1);
-       IncrementStatus("XbmcSetsStart", 1); 
+       UpdateStatus($db, "XbmcSlack", 1);
+       IncrementStatus($db, "XbmcSetsStart", 1); 
     }
     
-    CloseDatabase($db);     
+    //CloseDatabase($db);     
 }
 
 
@@ -305,7 +309,7 @@ function ImportMovieSet($aError, $poster, $aResult)
  * Function:	RefreshMovie
  *
  * Created on Sep 08, 2013
- * Updated on Jan 02, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Refresh the movie. 
  *
@@ -313,9 +317,9 @@ function ImportMovieSet($aError, $poster, $aResult)
  * Out: -
  *
  */
-function RefreshMovie($aError, $poster, $fanart, $aResult, $fargoid)
+function RefreshMovie($db, $aError, $poster, $fanart, $aResult, $fargoid)
 {
-    $db = OpenDatabase();
+    //$db = OpenDatabase();
     
     if (empty($aError))
     {
@@ -330,27 +334,27 @@ function RefreshMovie($aError, $poster, $fanart, $aResult, $fargoid)
         ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART,  450, 280); //562, 350 //675, 420  
         InsertGenres($db, $aGenres, "movies");
         
-        UpdateStatus("RefreshReady", 1);
+        UpdateStatus($db, "RefreshReady", 1);
     }
     
-    CloseDatabase($db);    
+    //CloseDatabase($db);    
 }
 
 /*
  * Function:	RefreshMovieSet
  *
  * Created on Nov 23, 2013
- * Updated on Jan 02, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Refresh the movie set. 
  *
- * In:  $aError, $poster, $aResult, $fargoid
+ * In:  $db, $aError, $poster, $aResult, $fargoid
  * Out: -
  *
  */
-function RefreshMovieSet($aError, $poster, $aResult, $fargoid)
+function RefreshMovieSet($db, $aError, $poster, $aResult, $fargoid)
 {
-    $db = OpenDatabase();    
+    //$db = OpenDatabase();    
     
     if (empty($aError))
     {  
@@ -362,27 +366,27 @@ function RefreshMovieSet($aError, $poster, $aResult, $fargoid)
         UpdateMovieSet($db, $fargoid, $aMovie);   
         ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280  
 
-        UpdateStatus("RefreshReady", 1);
+        UpdateStatus($db, "RefreshReady", 1);
     }
     
-    CloseDatabase($db);    
+    //CloseDatabase($db);    
 }
 
 /*
  * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Import the tv show. 
  *
- * In:  $aError, $poster, $fanart, $aResult
+ * In:  $db, $aError, $poster, $fanart, $aResult
  * Out: -
  *
  */
-function ImportTVShow($aError, $poster, $fanart, $aResult)
+function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
 {   
-    $db = OpenDatabase();     
+    //$db = OpenDatabase();     
     
     if (empty($aError))
     {
@@ -398,34 +402,34 @@ function ImportTVShow($aError, $poster, $fanart, $aResult)
         InsertGenres($db, $aGenres, "tvshows");
         InsertGenreToMedia($db, $aGenres, $id, "tvshows");
     
-        UpdateStatus("XbmcSlack", 0);
-        IncrementStatus("XbmcTVShowsStart", 1);
-        IncrementStatus("ImportCounter", 1);
+        UpdateStatus($db, "XbmcSlack", 0);
+        IncrementStatus($db, "XbmcTVShowsStart", 1);
+        IncrementStatus($db, "ImportCounter", 1);
     }
     else if ($aError["code"] == -32602) // TVShow not found, continue with the next one.
     { 
-       UpdateStatus("XbmcSlack", 1);
-       IncrementStatus("XbmcTVShowsStart", 1); 
+       UpdateStatus($db, "XbmcSlack", 1);
+       IncrementStatus($db, "XbmcTVShowsStart", 1); 
     }    
     
-    CloseDatabase($db);      
+    //CloseDatabase($db);      
 }
 
 /*
  * Function:	ImportTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Import the tv show season. 
  *
- * In:  $aError, $poster, $aResult
+ * In:  $db, $aError, $poster, $aResult
  * Out: -
  *
  */
-function ImportTVShowSeason($aError, $poster, $aResult)
+function ImportTVShowSeason($db, $aError, $poster, $aResult)
 { 
-    $db = OpenDatabase();      
+    //$db = OpenDatabase();      
     
     if (empty($aError))
     {    
@@ -435,35 +439,35 @@ function ImportTVShowSeason($aError, $poster, $aResult)
 
         InsertTVShowSeason($db, $aSeason);   
         
-        IncrementStatus("XbmcSeasonsStart", 1);
-        IncrementStatus("ImportCounter", 1);
+        IncrementStatus($db, "XbmcSeasonsStart", 1);
+        IncrementStatus($db, "ImportCounter", 1);
         
         if ($aResult["limits"]["end"] >= $aResult["limits"]["total"]) {
-            IncrementStatus("XbmcTVShowsSeasonsStart", 1);           
+            IncrementStatus($db, "XbmcTVShowsSeasonsStart", 1);           
         }
     }
     else {
-        IncrementStatus("XbmcTVShowsSeasonsStart", 1);
+        IncrementStatus($db, "XbmcTVShowsSeasonsStart", 1);
     }
     
-    CloseDatabase($db);       
+    //CloseDatabase($db);       
 }
 
 /*
  * Function:	ImportTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Import the TV Show Episode. 
  *
- * In:  $aError, $poster, $aResult
+ * In:  $db, $aError, $poster, $aResult
  * Out: -
  *
  */
-function ImportTVShowEpisode($aError, $poster, $aResult)
+function ImportTVShowEpisode($db, $aError, $poster, $aResult)
 {   
-    $db = OpenDatabase();     
+    //$db = OpenDatabase();     
     
     if (empty($aError))
     {
@@ -472,34 +476,34 @@ function ImportTVShowEpisode($aError, $poster, $aResult)
         SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);
         InsertTVShowEpisode($db, $aEpisode);
     
-        UpdateStatus("XbmcSlack", 0);
-        IncrementStatus("XbmcEpisodesStart", 1);
-        IncrementStatus("ImportCounter", 1);
+        UpdateStatus($db, "XbmcSlack", 0);
+        IncrementStatus($db, "XbmcEpisodesStart", 1);
+        IncrementStatus($db, "ImportCounter", 1);
     }
     else if ($aError["code"] == -32602) // TVShow not found, continue with the next one.
     { 
-       UpdateStatus("XbmcSlack", 1);
-       IncrementStatus("XbmcEpisodesStart", 1); 
+       UpdateStatus($db, "XbmcSlack", 1);
+       IncrementStatus($db, "XbmcEpisodesStart", 1); 
     }
     
-    CloseDatabase($db);       
+    //CloseDatabase($db);       
 }
 
 /*
  * Function:	RefreshTVShow
  *
  * Created on Sep 09, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Refresh the tv show. 
  *
- * In:  $aError, $poster, $fanart, $aResult, $id
+ * In:  $db, $aError, $poster, $fanart, $aResult, $id
  * Out: -
  *
  */
-function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
+function RefreshTVShow($db, $aError, $poster, $fanart, $aResult, $id)
 {   
-    $db = OpenDatabase();      
+    //$db = OpenDatabase();      
     
     if (empty($aError))
     {
@@ -514,27 +518,27 @@ function RefreshTVShow($aError, $poster, $fanart, $aResult, $id)
         ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 450, 280); //562, 350 //675, 420 
         InsertGenres($db, $aGenres, "tvshows");
     
-        UpdateStatus("RefreshReady", 1);
+        UpdateStatus($db, "RefreshReady", 1);
     } 
     
-    CloseDatabase($db);     
+    //CloseDatabase($db);     
 }
 
 /*
  * Function:	RefreshTVShowSeason
  *
  * Created on Dec 02, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Refresh the tv show season. 
  *
- * In:  $aError, $poster, $fanart, $aResult, $id
+ * In:  $db, $aError, $poster, $fanart, $aResult, $id
  * Out: -
  *
  */
-function RefreshTVShowSeason($aError, $poster, $aResult, $id)
+function RefreshTVShowSeason($db, $aError, $poster, $aResult, $id)
 {   
-    $db = OpenDatabase();      
+    //$db = OpenDatabase();      
     
     if (empty($aError))
     {
@@ -545,27 +549,27 @@ function RefreshTVShowSeason($aError, $poster, $aResult, $id)
         ResizeAndSaveImage($aSeason[0]."_".$aSeason[4], $poster, "../".cSEASONSTHUMBS, 125, 175);
         UpdateTVShowSeason($db, $id, $aSeason);
         
-        UpdateStatus("RefreshReady", 1);
+        UpdateStatus($db, "RefreshReady", 1);
     }  
     
-    CloseDatabase($db);      
+    //CloseDatabase($db);      
 }
 
 /*
  * Function:	RefreshTVShowEpisode
  *
  * Created on Nov 29, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Refresh the tv show episode. 
  *
- * In:  $aError, $poster, $fanart, $aResult, id
+ * In:  $db, $aError, $poster, $fanart, $aResult, id
  * Out: -
  *
  */
-function RefreshTVShowEpisode($aError, $poster, $aResult, $id)
+function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
 {   
-    $db = OpenDatabase();    
+    //$db = OpenDatabase();    
     
     if (empty($aError))
     {
@@ -576,27 +580,27 @@ function RefreshTVShowEpisode($aError, $poster, $aResult, $id)
         SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);        
         UpdateTVShowEpisode($db, $id, $aEpisode);
     
-        UpdateStatus("RefreshReady", 1);
+        UpdateStatus($db, "RefreshReady", 1);
     } 
     
-    CloseDatabase($db);       
+   //CloseDatabase($db);       
 }
 
 /*
  * Function:	ImportAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Import the music album. 
  *
- * In:  $aError, $poster, $aResult
+ * In:  $db, $aError, $poster, $aResult
  * Out: -
  *
  */
-function ImportAlbum($aError, $poster, $aResult)
+function ImportAlbum($db, $aError, $poster, $aResult)
 {   
-    $db = OpenDatabase();    
+    //$db = OpenDatabase();    
     
     if (empty($aError))
     {
@@ -612,34 +616,34 @@ function ImportAlbum($aError, $poster, $aResult)
         InsertGenres($db, $aGenres, "music");
         InsertGenreToMedia($db, $aGenres, $id, "music");
     
-        UpdateStatus("XbmcSlack", 0);
-        IncrementStatus("XbmcMusicStart", 1);
-        IncrementStatus("ImportCounter", 1); 
+        UpdateStatus($db, "XbmcSlack", 0);
+        IncrementStatus($db, "XbmcMusicStart", 1);
+        IncrementStatus($db, "ImportCounter", 1); 
     }
     else if ($aError["code"] == -32602) // Album not found, continue with the next one.
     { 
-       UpdateStatus("XbmcSlack", 1);
-       IncrementStatus("XbmcMusicStart", 1); 
+       UpdateStatus($db, "XbmcSlack", 1);
+       IncrementStatus($db, "XbmcMusicStart", 1); 
     }  
     
-    CloseDatabase($db);    
+    //CloseDatabase($db);    
 }
 
 /*
  * Function:	RefreshAlbum
  *
  * Created on Sep 09, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Refresh the music album details. 
  *
- * In:  $aError, $poster, $aResult, $id
+ * In:  $db, $aError, $poster, $aResult, $id
  * Out: -
  *
  */
-function RefreshAlbum($aError, $poster, $aResult, $id)
+function RefreshAlbum($db, $aError, $poster, $aResult, $id)
 { 
-    $db = OpenDatabase();    
+    //$db = OpenDatabase();    
     
     if (empty($aError))
     {    
@@ -654,10 +658,10 @@ function RefreshAlbum($aError, $poster, $aResult, $id)
         ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
         InsertGenres($db, $aGenres, "music");
     
-        UpdateStatus("RefreshReady", 1);
+        UpdateStatus($db, "RefreshReady", 1);
     }
     
-    CloseDatabase($db);    
+    //CloseDatabase($db);    
 }
 
 /*

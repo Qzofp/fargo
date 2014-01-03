@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Dec 31, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetScrollTitleHandler
  *
  * Created on Dec 20, 2013
- * Updated on Dec 20, 2013
+ * Updated on Jan 03, 2013
  *
  * Description: Set scroll title text handler.
  * 
@@ -31,19 +31,22 @@
 function SetScrollTitleHandler(event)
 {
     var $title = $(this).children().last();
-    var max    = $title[0].scrollWidth;
     
-    if (event.type == "mouseenter" && max > $title.width()) 
+    if ($title[0] !== undefined)
     {
-        $title.css("text-overflow", "clip");     
-        ScrollTitle($title, 0, max - $title.width());
-    } 
-    else 
-    {
-        clearTimeout(gSTATE.TIMER);
-        //$title.removeAttr("style");
-        $title.css("text-overflow", "ellipsis");  
-        $title.scrollLeft(0);    
+        var max = $title[0].scrollWidth;
+
+        if (event.type == "mouseenter" && max > $title.width()) 
+        {
+            $title.css("text-overflow", "clip");     
+            ScrollTitle($title, 0, max - $title.width());
+        } 
+        else 
+        {
+            clearTimeout(gSTATE.TIMER);
+            $title.css("text-overflow", "ellipsis");  
+            $title.scrollLeft(0);    
+        }
     }
 }
 

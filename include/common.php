@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jan 04, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: The main Fargo functions page.
  *
@@ -176,18 +176,18 @@ function ShowHiddenActionBox()
  * Function:	GenerateKey
  *
  * Created on Sep 28, 2013
- * Updated on Sep 28, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Generate key and store it in the database status table.
  *
- * In:  -
+ * In:  $db
  * Out:	$key
  * 
  */
-function GenerateKey()
+function GenerateKey($db)
 {
     $key = str_shuffle(md5(time()));    
-    UpdateStatus("ImportKey", $key);
+    UpdateStatus($db, "ImportKey", $key);
     
     return $key;
 }
@@ -196,21 +196,22 @@ function GenerateKey()
  * Function:	GetSetting
  *
  * Created on Mar 18, 2013
- * Updated on Mar 18, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Get a value from the settings table.
  *
- * In:  $name
+ * In:  $db, $name
  * Out:	$value
  * 
  */
-function GetSetting($name)
+function GetSetting($db, $name)
 {
     $sql = "SELECT value ".
            "FROM settings ".
            "WHERE name = '$name'";
     
-    list($value) = GetItemsFromDatabase($sql);
+    $value = GetItemFromDatabase($db, "value", $sql);
+    //list($value) = GetItemsFromDatabase($sql);
     
     return $value;
 }
@@ -219,42 +220,44 @@ function GetSetting($name)
  * Function:	UpdateSetting
  *
  * Created on Mar 18, 2013
- * Updated on Mar 18, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Update a row in the setting table.
  *
- * In:  $name, $value
+ * In:  $db, $name, $value
  * Out:	Updated value.
  * 
  */
-function UpdateSetting($name, $value)
+function UpdateSetting($db, $name, $value)
 {
     $sql = "UPDATE settings ".
            "SET value='$value' ".
            "WHERE name = '$name'";
     
-    ExecuteQuery($sql);
+    QueryDatabase($db, $sql);
+    //ExecuteQuery($sql);
 }
 
 /*
  * Function:	GetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jul 22, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Get a value from the status table.
  *
- * In:  $name
+ * In:  $db, $name
  * Out:	$value
  * 
  */
-function GetStatus($name)
+function GetStatus($db, $name)
 {
     $sql = "SELECT value ".
            "FROM status ".
            "WHERE name = '$name'";
     
-    list($value) = GetItemsFromDatabase($sql);
+    $value = GetItemFromDatabase($db, "value", $sql);
+    //list($value) = GetItemsFromDatabase($sql);
     
     return $value;
 }
@@ -263,59 +266,62 @@ function GetStatus($name)
  * Function:	UpdateStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jul 22, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Update a row in the status table.
  *
- * In:  $name, $value
+ * In:  $db, $name, $value
  * Out:	Updated value.
  * 
  */
-function UpdateStatus($name, $value)
+function UpdateStatus($db, $name, $value)
 {
     $sql = "UPDATE status ".
            "SET value='$value' ".
            "WHERE name = '$name'";
     
-    ExecuteQuery($sql);
+    QueryDatabase($db, $sql);
+    
+    //ExecuteQuery($sql);
 }
 
 /*
  * Function:	IncrementStatus
  *
  * Created on Sep 16, 2013
- * Updated on Sep 16, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Increment value in the status table.
  *
- * In:  $name, $incr
+ * In:  $db, $name, $incr
  * Out:	Incremented value.
  * 
  */
-function IncrementStatus($name, $incr)
+function IncrementStatus($db, $name, $incr)
 {
     $sql = "UPDATE status ".
            "SET `value`= `value` + $incr ".
            "WHERE `name` = '$name'";
     
-    ExecuteQuery($sql);
+    QueryDatabase($db, $sql);    
+    //ExecuteQuery($sql);
 }
 
 /*
  * Function:	CountMedia
  *
  * Created on Oct 06, 2013
- * Updated on Oct 06, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Count media with hide.
  *
- * In:	$table, $login
+ * In:	$db, $table, $login
  * Out:	$rows
  *
  */
-function CountMedia($table, $login)
+function CountMedia($db, $table, $login)
 {
-    $db = OpenDatabase();
+    //$db = OpenDatabase();
     $rows = 0;
 
     $sql = "SELECT count(*) FROM $table";
@@ -342,7 +348,7 @@ function CountMedia($table, $login)
         die('Invalid query: '.mysqli_error($db));
     } 
     
-    CloseDatabase($db);
+    //CloseDatabase($db);
     
     return $rows;
 }
@@ -351,23 +357,24 @@ function CountMedia($table, $login)
  * Function:	GetUser
  *
  * Created on Mar 27, 2013
- * Updated on Mar 27, 2013
+ * Updated on Jan 03, 2014
  *
  * Description: Get a user from the user table.
  *
- * In:  $id
+ * In:  $db, $id
  * Out:	$value
  * 
  * Note: Id 1 = Fargo User and Id 2 = XBMC user.
  * 
  */
-function GetUser($id)
+function GetUser($db, $id)
 {
     $sql = "SELECT user ".
            "FROM users ".
            "WHERE id = $id";
     
-    list($value) = GetItemsFromDatabase($sql);
+    $value = GetItemFromDatabase($db, "user", $sql);
+    //list($value) = GetItemsFromDatabase($sql);
     
     return $value;
 }
@@ -376,58 +383,48 @@ function GetUser($id)
  * Function:	UpdateUser
  *
  * Created on Mar 27, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Update user in the user table.
  *
- * In:  $id, $user
+ * In:  $db, $id, $user
  * Out:	-
  * 
  * Note: Id 1 = Fargo User.
  * 
  */
-function UpdateUser($id, $user)
+function UpdateUser($db, $id, $user)
 {   
-    $aItems[0] = $user;
-    
-    $db = OpenDatabase();
-    $aItems = AddEscapeStrings($db, $aItems);
-    
+    $user = mysqli_real_escape_string($db, $user);    
     $sql = "UPDATE users ".
-           "SET user='$aItems[0]' ".
+           "SET user='$user' ".
            "WHERE id = $id";
     
     QueryDatabase($db, $sql);
-    CloseDatabase($db);
 }
 
 /*
  * Function:	UpdatePassword
  *
  * Created on Mar 27, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Update password in the user table.
  *
- * In:  $id, $user
+ * In:  $db, $id, $user
  * Out:	-
  * 
  * Note: Id 1 = Fargo User.
  * 
  */
-function UpdatePassword($id, $pass)
+function UpdatePassword($db, $id, $pass)
 {    
-    $aItems[0] = $pass;
-
-    $db = OpenDatabase();
-    $aItems = AddEscapeStrings($db, $aItems);
-    
+    $pass = mysqli_real_escape_string($db, $pass);
     $sql = "UPDATE users ".
-           "SET password='$aItems[0]' ".
+           "SET password='$pass' ".
            "WHERE id = $id";
     
     QueryDatabase($db, $sql);
-    CloseDatabase($db);  
 }
 
 /*
@@ -531,7 +528,7 @@ function CreateImageLink($aUrl, $type)
  * Out:	$image
  *
  */
-function GetImageFromXbmc($type, $id, $link)
+/*function GetImageFromXbmc($type, $id, $link)
 {
    $conn = GetSetting("XBMCconnection");
    $port = GetSetting("XBMCport");
@@ -553,5 +550,4 @@ function GetImageFromXbmc($type, $id, $link)
    }    
    
    return $image;
-}
-?>
+}*/
