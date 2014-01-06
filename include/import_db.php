@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 06, 2014
  *
  * Description: The XBMC import database functions page. 
  * 

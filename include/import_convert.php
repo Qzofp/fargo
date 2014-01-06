@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 06, 2014
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -19,7 +19,7 @@
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 06, 2014
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -34,7 +34,7 @@ function ConvertMovie($aXbmc)
     $aMovie[2]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"]):null;
     $aMovie[3]  = !empty($aXbmc["year"])?$aXbmc["year"]:0;
     
-    $aMovie[4]  = !empty($aXbmc["rating"])?$aXbmc["rating"]:0;
+    $aMovie[4]  = !empty($aXbmc["rating"])?round($aXbmc["rating"], 2):0;
     $aMovie[5]  = !empty($aXbmc["director"])?implode("|", $aXbmc["director"]):null;  
     $aMovie[6]  = !empty($aXbmc["trailer"])?$aXbmc["trailer"]:null;
     $aMovie[7]  = !empty($aXbmc["tagline"])?$aXbmc["tagline"]:null; 
@@ -57,7 +57,7 @@ function ConvertMovie($aXbmc)
     $aMovie[20] = !empty($aXbmc["set"])?$aXbmc["set"]:null;
     $aMovie[21] = !empty($aXbmc["streamdetails"]["audio"])?ConvertAudio($aXbmc["streamdetails"]["audio"]):null; 
     $aMovie[22] = !empty($aXbmc["streamdetails"]["video"])?ConvertVideo($aXbmc["streamdetails"]["video"]):null;
-    $aMovie[23] = !empty($aXbmc["votes"])?$aXbmc["votes"]:0;
+    $aMovie[23] = !empty($aXbmc["votes"])?(int)str_replace(',', '', $aXbmc["votes"]):0;
     
     $aMovie[24] = !empty($aXbmc["file"])?$aXbmc["file"]:null;      
     $aMovie[25] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
@@ -105,7 +105,7 @@ function ConvertMovieSet($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Nov 11, 2013
+ * Updated on Jan 06, 2014
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -127,7 +127,7 @@ function ConvertTVShow($aXbmc)
     $aTVShow[2]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"], "tvshows"):null;
     $aTVShow[3]  = $aYear[0];
     
-    $aTVShow[4]  = !empty($aXbmc["rating"])?$aXbmc["rating"]:0;
+    $aTVShow[4]  = !empty($aXbmc["rating"])?round($aXbmc["rating"], 2):0;
     $aTVShow[5]  = !empty($aXbmc["plot"])?$aXbmc["plot"]:null;
     $aTVShow[6]  = !empty($aXbmc["studio"])?implode("|", $aXbmc["studio"]):null;
     $aTVShow[7]  = !empty($aXbmc["mpaa"])?$aXbmc["mpaa"]:null;    
@@ -190,7 +190,7 @@ function ConvertTVShowSeason($aXbmc)
  * Function:	ConvertTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Nov 14, 2013
+ * Updated on Jan 06, 2013
  *
  * Description: Convert xbmc TV Show Episode items. For instance to readably URL's.
  *
@@ -205,7 +205,7 @@ function ConvertTVShowEpisode($aXbmc)
     $aEpisode[2]  = $aXbmc["label"]; // title
     $aEpisode[3]  = !empty($aXbmc["originaltitle"])?$aXbmc["originaltitle"]:null;
     
-    $aEpisode[4]  = !empty($aXbmc["rating"])?$aXbmc["rating"]:0;
+    $aEpisode[4]  = !empty($aXbmc["rating"])?round($aXbmc["rating"], 2):0;
     $aEpisode[5]  = !empty($aXbmc["writer"])?ConvertWriter($aXbmc["writer"]):null;
     $aEpisode[6]  = !empty($aXbmc["director"])?implode("|", $aXbmc["director"]):null;
     $aEpisode[7]  = !empty($aXbmc["cast"])?ConvertCast($aXbmc["cast"]):null;
