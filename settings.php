@@ -14,7 +14,7 @@
  */
 
 // Database connection settings.
-define("cHOST",  "localhost");
+define("cHOST",  "127.0.0.1");
 define("cDBASE", "fargo");
 define("cUSER",  "fargo_dbo");
 define("cPASS",  "Mime1276"); 
