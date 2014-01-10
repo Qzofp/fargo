@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 03, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -48,40 +48,10 @@ CloseDatabase($db);
 /////////////////////////////////////////    Import Functions    //////////////////////////////////////////    
 
 /*
- * Function:	CheckImportKey()
- *
- * Created on Sep 28, 2013
- * Updated on Jan 03, 2014
- *
- * Description: Check if import key is valid. This proves that the users has logged in. 
- *
- * In:  $db
- * Out: $login
- *
- */
-function CheckImportKey($db)
-{
-    $login = false;
-    
-    $key = null;    
-    if (isset($_POST["key"]) && !empty($_POST["key"]))
-    {
-        $key = $_POST["key"];
-    }      
-    
-    $import = GetStatus($db, "ImportKey");
-    if ($import == $key){    
-        $login = true;
-    }
-    
-    return $login;
-}
-
-/*
  * Function:	ReceiveDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Oct 13, 2013
+ * Updated on Jan 09, 2014
  *
  * Description: Receive data from XBMC. 
  *
@@ -117,6 +87,12 @@ function ReceiveDataFromXbmc()
         $aData["fanart"] = $_POST["fanart"];
     }      
     
+    $aData["start"] = null;
+    if (isset($_POST["start"]) && !empty($_POST["start"]))
+    {
+        $aData["start"] = $_POST["start"];
+    }    
+    
     $aData["result"] = null;
     if (isset($_POST["result"]) && !empty($_POST["result"]))
     {
@@ -136,7 +112,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jan 07, 2014
  *
  * Description: Process data from XBMC. 
  *
@@ -146,11 +122,11 @@ function ReceiveDataFromXbmc()
  */
 function ProcessDataFromXbmc($db, $aData)
 {
-
     switch($aData["id"])
     {
         // libMoviesCounter -> library id = 1.
-        case 1  : UpdateStatus($db, "XbmcMoviesEnd", $aData["result"]["movies"][0]["movieid"]);
+        case 1  : UpdateMediaEndValue($db, $aData["error"], "Movies", $aData["start"]["movies"][0]["movieid"], $aData["result"]["movies"][0]["movieid"]);
+                  //UpdateStatus($db, "XbmcMoviesEnd", $aData["result"]["movies"][0]["movieid"]);
                   break;
              
         // libMovies Import -> library id = 2.                   
@@ -162,7 +138,8 @@ function ProcessDataFromXbmc($db, $aData)
                   break;
         
         // libMovieSetsCounter -> library id = 4.    
-        case 4  : UpdateStatus($db, "XbmcSetsEnd", $aData["result"]["sets"][0]["setid"]); 
+        case 4  : UpdateMediaEndValue($db, $aData["error"], "Sets", $aData["start"]["sets"][0]["setid"], $aData["result"]["sets"][0]["setid"]);
+                  //UpdateStatus($db, "XbmcSetsEnd", $aData["result"]["sets"][0]["setid"]); 
                   break;
               
         // libMovieSets Import -> library id = 5.                   
@@ -174,7 +151,8 @@ function ProcessDataFromXbmc($db, $aData)
                   break;
              
         // libTVShowsCounter -> library id = 11.  
-        case 11 : UpdateStatus($db, "XbmcTVShowsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
+        case 11 : UpdateMediaEndValue($db, $aData["error"], "TVShows", $aData["start"]["tvshows"][0]["tvshowid"], $aData["result"]["tvshows"][0]["tvshowid"]);
+                  //UpdateStatus($db, "XbmcTVShowsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
                   break;
         
         // libTVShows Import -> library id = 12.
@@ -186,11 +164,13 @@ function ProcessDataFromXbmc($db, $aData)
                   break;
              
         // libTVShowSeasonsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
-        case 14 : UpdateStatus($db, "XbmcTVShowsSeasonsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
+        case 14 : UpdateMediaEndValue($db, $aData["error"], "TVShowsSeasons", $aData["start"]["tvshows"][0]["tvshowid"], $aData["result"]["tvshows"][0]["tvshowid"]);
+                  //UpdateStatus($db, "XbmcTVShowsSeasonsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
                   break;           
               
         // libSeasonsCounter -> library id = 15.
-        case 15 : UpdateStatus($db, "XbmcSeasonsEnd", $aData["result"]["limits"]["total"]);
+        case 15 : UpdateMediaEndValue($db, $aData["error"], "Seasons", 0, $aData["result"]["limits"]["total"]);
+                  //UpdateStatus($db, "XbmcSeasonsEnd", $aData["result"]["limits"]["total"]);
                   break;   
               
         // libTVShowSeasons Import -> library id = 16.
@@ -202,7 +182,8 @@ function ProcessDataFromXbmc($db, $aData)
                   break;        
               
         // libTVShowEpisodesCounter -> library id = 31.  
-        case 31 : UpdateStatus($db, "XbmcEpisodesEnd", $aData["result"]["episodes"][0]["episodeid"]);   
+        case 31 : UpdateMediaEndValue($db, $aData["error"], "Episodes", $aData["start"]["episodes"][0]["episodeid"], $aData["result"]["episodes"][0]["episodeid"]);
+                  //UpdateStatus($db, "XbmcEpisodesEnd", $aData["result"]["episodes"][0]["episodeid"]);   
                   break;
                        
         // libTVShowEpisode Import -> library id = 32.
@@ -214,7 +195,8 @@ function ProcessDataFromXbmc($db, $aData)
                   break;         
                             
         // libAlbumsCounter -> library id = 41.  
-        case 41 : UpdateStatus($db, "XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
+        case 41 : UpdateMediaEndValue($db, $aData["error"], "Music", $aData["start"]["albums"][0]["albumid"], $aData["result"]["albums"][0]["albumid"]);
+                  //UpdateStatus($db, "XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
                   break;
         
         // libAlbums Import -> library id = 42.
@@ -224,6 +206,33 @@ function ProcessDataFromXbmc($db, $aData)
         // libAlbums Refresh -> library id = 43.
         case 43 : RefreshAlbum($db, $aData["error"], $aData["poster"], $aData["result"], $aData["fargoid"]);
                   break;                       
+    }
+}
+
+/*
+ * Function:	UpdateMediaEndValue
+ *
+ * Created on Jan 07, 2014
+ * Updated on Jan 09, 2014
+ *
+ * Description: Update the media end value. 
+ *
+ * In:  $db, $aError, $end, $value
+ * Out: -
+ *
+ */
+function UpdateMediaEndValue($db, $aError, $type, $start, $end)
+{
+    if (empty($aError)) 
+    {
+        if ($start > GetStatus($db, "Xbmc".$type."Start")) {
+            UpdateStatus($db, "Xbmc".$type."Start", $start);
+        }
+        
+        UpdateStatus($db, "Xbmc".$type."End", $end);
+    }
+    else {
+        UpdateStatus($db, $end, 0);
     }
 }
 
