@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.4
  *
  * File:    fargo.settings.js
  *
  * Created on Jul 14, 2013
- * Updated on Aug 24, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: Fargo Transfer jQuery and Javascript settings page.
  *
@@ -15,12 +15,12 @@
 /////////////////////////////////////////////    Settings    //////////////////////////////////////////////
 
 // Connection settings.
-//var cFARGOSITE = "192.168.237.128/fargo";
-//var cFARGOSITE = "192.168.1.2/fargo";  // NAS
-var cFARGOSITE = "fargo.qzofp.nl";
+var cFARGOSITE = "192.168.132.128/fargo";
+//var cFARGOSITE = "fargo.qzofp.nl";
 
-// Security settings.
-//var cKEY = "";
-
-// For better security rename the Fargo /include/import.php file.
+// For better security rename the Fargo /include/import.php and  /include/bulk.php files.
 var cIMPORT = "import.php";
+var cBULK   = "bulk.php";
+
+// Constants.
+var cBULKMAX = 250; // Max. items imported.

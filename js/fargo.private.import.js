@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Dec 24, 2013
+ * Updated on Jan 09, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -228,7 +228,7 @@ function SetRetryImportHandler(media, type, delta, start, selector)
  * Function:	StartImport
  *
  * Created on Jul 22, 2013
- * Updated on Dec 23, 2013
+ * Updated on Jan 09, 2014
  *
  * Description: Control and Import the media transfered from XBMC.
  *
@@ -276,7 +276,7 @@ function StartImport(xbmc, media, type, delta, start, end, selector)
                 retry = 0; // Reset retries.
             }
         }
-        
+               
         // Timeout is set in the Fargo system screen.
         setTimeout(setImportTimer, xbmc.timeout);
     }()); // End setImportTimer.   

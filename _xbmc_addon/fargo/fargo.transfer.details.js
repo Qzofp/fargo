@@ -1,14 +1,14 @@
 /*
- * Title:   Fargo
+ * Title:   Fargo Transfer
  * Author:  Qzofp Productions
  * Version: 0.4
  *
- * File:    fargo.transfer.js
+ * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Dec 24, 2013
+ * Updated on Jan 10, 2014
  *
- * Description: Fargo Transfer jQuery and Javascript functions page.
+ * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
  */
 
@@ -108,7 +108,7 @@ function TransferMediaCounter(key, media, id)
  * Function:	RequestCounter
  *
  * Created on Oct 06, 2013
- * Updated on Oct 26, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: JSON Request XBMC media counter and the media highest id.
  * 
@@ -118,26 +118,33 @@ function TransferMediaCounter(key, media, id)
  */
 function RequestCounter(library, id, key)
 {
-    var counter_req = '{"jsonrpc":"2.0","method":"' + library + '",\n\
-                        "params":{"limits":{"start":0,"end":1}},"id":"' + id + '"}';
+    var counter_req = '{"jsonrpc":"2.0","method":"' + library + '",' +
+                      '"params":{"limits":{"start":0,"end":1}},"id":"' + id + '"}';
     
     // Get media total (counter) from XBMC.
-    $.getJSON("../jsonrpc?request=" + counter_req, function(json)
+    $.getJSON("../jsonrpc?request=" + counter_req, function(json) // First request.
     {
-        var start = Number(json.result.limits.total) - 1;
-        var end   = Number(json.result.limits.total);
+        if (json.error === undefined) 
+        {   
+            var start = Number(json.result.limits.total) - 1;
+            var end   = Number(json.result.limits.total);
         
-        var max_req = '{"jsonrpc":"2.0","method":"' + library + '",\n\
-                        "params":{"limits":{"start":' + start + ',"end":' + end + '}},"id":"' + id + '"}';
+            var max_req = '{"jsonrpc":"2.0","method":"' + library + '",' +
+                          '"params":{"limits":{"start":' + start + ',"end":' + end + '}},"id":"' + id + '"}';
         
-        // Get highest id (maxid) from XBMC.
-        $.getJSON("../jsonrpc?request=" + max_req, function(data)
-        {
-            data.key = key;
-            
-            // Tranfer data to Fargo.
-            TransferData(data);          
-        }); // End getJSON.         
+            // Get highest id (maxid) from XBMC.
+            $.getJSON("../jsonrpc?request=" + max_req, function(data) // Second request.
+            {
+                data.key   = key;
+                data.start = json.result; // The start values from the first request.
+                TransferData(data, cIMPORT); // Tranfer data to Fargo.        
+            }); // End getJSON.
+        }
+        else // Error, media not found?
+        { 
+            json.key = key;
+            TransferData(json, cIMPORT);
+        }
     }); // End getJSON.         
 }
 
@@ -145,7 +152,7 @@ function RequestCounter(library, id, key)
  * Function:	RequestSeasonCounter
  *
  * Created on Oct 18, 2013
- * Updated on Oct 26, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: JSON Request XBMC season counter.
  * 
@@ -155,17 +162,15 @@ function RequestCounter(library, id, key)
  */
 function RequestSeasonCounter(tvshowid, id, key)
 {
-    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons",\n\
-                    "params":{"tvshowid":'+ tvshowid +',"limits":{"start":0,"end":1}},\n\
-                    "id":"' + id + '"}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons",' +
+                   '"params":{"tvshowid":'+ tvshowid +',"limits":{"start":0,"end":1}},' +
+                   '"id":"' + id + '"}';
     
     // Get season total (counter) from XBMC.
     $.getJSON("../jsonrpc?request=" + request, function(json)
     {
         json.key = key;
-            
-        // Tranfer data to Fargo.
-        TransferData(json);                 
+        TransferData(json, cIMPORT);  // Tranfer data to Fargo.               
     }); // End getJSON.         
 }
 
@@ -173,7 +178,7 @@ function RequestSeasonCounter(tvshowid, id, key)
  * Function:	TransferMovie
  *
  * Created on Oct 07, 2013
- * Updated on Oct 26, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: Transfer movie from XBMC to Fargo.
  * 
@@ -194,12 +199,12 @@ function TransferMovie(key, xbmcid, fargoid)
     }
 
     // libMovies -> library id = 2 or 3.
-    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetMovieDetails","params":\n\
-                   {"movieid":' + xbmcid + ',\n\
-                   "properties":["title","genre","year","rating","director","trailer","tagline","plot",\n\
-                   "plotoutline","originaltitle","lastplayed","playcount","writer","studio","mpaa","cast",\n\
-                   "country","imdbnumber","runtime","set","showlink","streamdetails","top250","votes","fanart",\n\
-                   "thumbnail","file","sorttitle","resume","setid","dateadded","tag","art"]},"id":'+ id +'}';     
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetMovieDetails","params":' +
+                   '{"movieid":' + xbmcid + ',' +
+                   '"properties":["title","genre","year","rating","director","trailer","tagline","plot",' +
+                   '"plotoutline","originaltitle","lastplayed","playcount","writer","studio","mpaa","cast",' +
+                   '"country","imdbnumber","runtime","set","showlink","streamdetails","top250","votes","fanart",' +
+                   '"thumbnail","file","sorttitle","resume","setid","dateadded","tag","art"]},"id":'+ id +'}'; 
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -233,15 +238,12 @@ function TransferMovie(key, xbmcid, fargoid)
                     json.fargoid = fargoid;
                     json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7); // 0.7
                     json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7); // 0.7
-                
-                    // Transfer the data to Fargo.
-                    TransferData(json);
+                  
+                    TransferData(json, cIMPORT); // Transfer the data to Fargo.
                 }); // End when.         
             } 
             else if (json.error.code == -32602) { // Movie not found.
-                TransferData(json);
-                //xbmcid = Number(xbmcid) + 1;
-                //TransferMovie(key, xbmcid, fargoid);
+                TransferData(json, cIMPORT);
             }
         }, // End success.
         error: function(xhr, textStatus, errorThrown ) {
@@ -271,7 +273,7 @@ function TransferMovie(key, xbmcid, fargoid)
  * Function:	TransferMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Dec 24, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: Transfer movie set from XBMC to Fargo.
  * 
@@ -292,9 +294,9 @@ function TransferMovieSet(key, xbmcid, fargoid)
     }
 
     // libMovieSets -> library id = 5 or 6.
-    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetMovieSetDetails","params":\n\
-                   {"setid":' + xbmcid + ',\n\
-                   "properties":["title","playcount","art","thumbnail"]},"id":'+ id +'}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetMovieSetDetails","params":' +
+                   '{"setid":' + xbmcid + ',' +
+                   '"properties":["title","playcount","art","thumbnail"]},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -328,15 +330,12 @@ function TransferMovieSet(key, xbmcid, fargoid)
                     json.fargoid = fargoid;
                     json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7); // 0.7
                     //json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7); // 0.7
-                
-                    // Transfer the data to Fargo.
-                    TransferData(json);
+                   
+                    TransferData(json, cIMPORT); // Transfer the data to Fargo.
                 }); // End when.         
             } 
             else if (json.error.code == -32602) { // Movie not found.
-                TransferData(json);
-                //xbmcid = Number(xbmcid) + 1;
-                //TransferMovie(key, xbmcid, fargoid);
+                TransferData(json, cIMPORT);
             }
         }, // End success.
         error: function(xhr, textStatus, errorThrown ) {
@@ -366,7 +365,7 @@ function TransferMovieSet(key, xbmcid, fargoid)
  * Function:	TransferTVShow
  *
  * Created on Oct 07, 2013
- * Updated on Oct 26, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: Transfer TV Show from XBMC to Fargo.
  * 
@@ -387,12 +386,12 @@ function TransferTVShow(key, xbmcid, fargoid)
     }
     
     // libTVShows -> library id = 12 or 13.
-    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":\n\
-                    {"tvshowid":' + xbmcid + ',\n\
-                    "properties":["title","genre","year","rating","plot","studio","mpaa","cast","playcount",\n\
-                    "episode","imdbnumber","premiered","votes","lastplayed","fanart","thumbnail","file",\n\
-                    "originaltitle","sorttitle","episodeguide","season","watchedepisodes","dateadded",\n\
-                    "tag","art"]},"id":'+ id +'}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetTVShowDetails","params":' +
+                   '{"tvshowid":' + xbmcid + ',' +
+                   '"properties":["title","genre","year","rating","plot","studio","mpaa","cast","playcount",' +
+                   '"episode","imdbnumber","premiered","votes","lastplayed","fanart","thumbnail","file",' +
+                   '"originaltitle","sorttitle","episodeguide","season","watchedepisodes","dateadded",' +
+                   '"tag","art"]},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -427,13 +426,12 @@ function TransferTVShow(key, xbmcid, fargoid)
                     json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
                     json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
                 
-                    // Transfer the data to Fargo.
-                    TransferData(json);
+                    TransferData(json, cIMPORT); // Transfer the data to Fargo.
       
                 }); // End when.         
             }
             else if (json.error.code == -32602) { // TV Show not found.
-                TransferData(json);
+                TransferData(json, cIMPORT);
             }
         }, // End success.
         error: function(xhr, textStatus, errorThrown ) {
@@ -463,7 +461,7 @@ function TransferTVShow(key, xbmcid, fargoid)
  * Function:	TransferTVShowSeason
  *
  * Created on Oct 18, 2013
- * Updated on Dec 24, 2013
+ * Updated on Jan 10, 2013
  *
  * Description: Transfer TV Show Season from XBMC to Fargo.
  * 
@@ -486,10 +484,10 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
     }
     
     // libTVShowSeasons -> library id = 15 or 16.
-    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons","params":\n\
-                   {"tvshowid":'+ tvshowid +',"limits":{"start":'+ start +',"end":' + end + '},\n\
-                   "properties":["episode","watchedepisodes","season","tvshowid","showtitle","playcount",\n\
-                   "thumbnail"]},"id":'+ id +'}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons","params":' +
+                   '{"tvshowid":'+ tvshowid +',"limits":{"start":'+ start +',"end":' + end + '},' +
+                   '"properties":["episode","watchedepisodes","season","tvshowid","showtitle","playcount",' +
+                   '"thumbnail"]},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -523,16 +521,15 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
                     json.fargoid = fargoid;
                     json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
                     //json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
-                
-                    // Transfer the data to Fargo.
-                    TransferData(json);
+                     
+                    TransferData(json, cIMPORT); // Transfer the data to Fargo.
       
                 }); // End when.         
             }
             else  // TV Show Season not found.
             {   
                 json.error = error;
-                TransferData(json);
+                TransferData(json, cIMPORT);
             }
         }, // End success.
         error: function(xhr, textStatus, errorThrown ) {
@@ -562,7 +559,7 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
  * Function:	TransferTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Oct 27, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: Transfer TV Show Episode from XBMC to Fargo.
  * 
@@ -583,12 +580,12 @@ function TransferTVShowEpisode(key, xbmcid, fargoid)
     }
     
     // libTVShows -> library id = 32 or 33.
-    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetEpisodeDetails","params":\n\
-                    {"episodeid":' + xbmcid + ',\n\
-                    "properties":["tvshowid","title","rating","plot","cast","playcount",\n\
-                    "episode","firstaired","votes","lastplayed","fanart","thumbnail","file",\n\
-                    "originaltitle","showtitle","season","streamdetails","runtime","dateadded",\n\
-                    "writer","director","art"]},"id":'+ id +'}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetEpisodeDetails","params":' +
+                   '{"episodeid":' + xbmcid + ',' +
+                   '"properties":["tvshowid","title","rating","plot","cast","playcount",' +
+                   '"episode","firstaired","votes","lastplayed","fanart","thumbnail","file",' +
+                   '"originaltitle","showtitle","season","streamdetails","runtime","dateadded",' +
+                   '"writer","director","art"]},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -623,13 +620,12 @@ function TransferTVShowEpisode(key, xbmcid, fargoid)
                     json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7); 
                     //json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
                 
-                    // Transfer the data to Fargo.
-                    TransferData(json);
+                    TransferData(json, cIMPORT); // Transfer the data to Fargo.
       
                 }); // End when.         
             }
             else if (json.error.code == -32602) { // TV Show not found.
-                TransferData(json);
+                TransferData(json, cIMPORT);
             }
         }, // End success.
         error: function(xhr, textStatus, errorThrown ) {
@@ -659,7 +655,7 @@ function TransferTVShowEpisode(key, xbmcid, fargoid)
  * Function:	TransferAlbum
  *
  * Created on Jul 13, 2013
- * Updated on Oct 26, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: Transfer music album from XBMC to Fargo.
  * 
@@ -680,11 +676,11 @@ function TransferAlbum(key, xbmcid, fargoid)
     }    
     
     // libAlbums -> library id = 42 or 43.
-    var request = '{"jsonrpc":"2.0","method":"AudioLibrary.GetAlbumDetails","params":\n\
-                    {"albumid":' + xbmcid + ',\n\
-                    "properties":["title","description","artist","genre","theme","mood","style","type",\n\
-                    "albumlabel","rating","year","musicbrainzalbumid","musicbrainzalbumartistid","fanart",\n\
-                    "thumbnail","playcount","genreid","artistid","displayartist"]},"id":'+ id +'}';
+    var request = '{"jsonrpc":"2.0","method":"AudioLibrary.GetAlbumDetails","params":' +
+                   '{"albumid":' + xbmcid + ',' +
+                   '"properties":["title","description","artist","genre","theme","mood","style","type",' +
+                   '"albumlabel","rating","year","musicbrainzalbumid","musicbrainzalbumartistid","fanart",' +
+                   '"thumbnail","playcount","genreid","artistid","displayartist"]},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -718,13 +714,12 @@ function TransferAlbum(key, xbmcid, fargoid)
                     json.fargoid = fargoid;
                     json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
                     //json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
-                
-                    // Transfer the data with Ajax.
-                    TransferData(json);
+                    
+                    TransferData(json, cIMPORT); // Transfer the data with Ajax.
                 }); // End when.         
             }
             else if (json.error.code == -32602) { // TV Show not found.
-                TransferData(json);
+                TransferData(json, cIMPORT);
             }
         }, // End success.
         error: function(xhr, textStatus, errorThrown ) {
@@ -843,71 +838,4 @@ function DrawImageOnCanvas(selector, image)
     }
     
     return deferred.promise();
-}
-
-/*
- * Function:	TransferData
- *
- * Created on Jul 14, 2013
- * Updated on Sep 29, 2013
- *
- * Description: Call ajax and transfers the data from XBMC to Fargo.
- * 
- * In:	data
- * Out:	Transfered data.
- *
- */
-function TransferData(data)
-{
-    var url = "http://" + cFARGOSITE + "/include/" + cIMPORT;
-    
-    // Send the images to PHP to save it on the server.
-    var request = $.ajax({
-        type: "POST",
-        url: url,
-        data: data
-    }); // End ajax.
-                
-    // Callback handler that will be called on success.
-    request.done(function (response, textStatus, jqXHR){
-        // log a message to the console
-        console.log("Json data send successfully!");
-    }); // End request.done.
-        
-    // callback handler that will be called on failure
-    request.fail(function (jqXHR, textStatus, errorThrown){
-        // log the error to the console
-        console.error("The following error occured: " + textStatus, errorThrown);
-    }); // End request.fail.  
-}
-
-/*
- * Function:	GetUrlParameters
- *
- * Created on Jul 13, 2013
- * Updated on Jul 13, 2013
- *
- * Description: Get URL parameters.
- * 
- * In:	-
- * Out:	-
- *
- * Note: Code from http://stackoverflow.com/questions/979975/how-to-get-the-value-from-url-parameter
- *
- */
-function GetUrlParameters()
-{
-    var params = {};
-
-    if (location.search) {
-        var parts = location.search.substring(1).split('&');
-
-        for (var i = 0; i < parts.length; i++) {
-            var nv = parts[i].split('=');
-            if (!nv[0]) continue;
-            params[nv[0]] = nv[1] || true;
-        }
-    }
-
-    return params;
 }

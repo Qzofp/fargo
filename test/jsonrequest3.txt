@@ -1,0 +1,8 @@
+Get all movies + last played
+----------------------------
+http://localhost:8080/jsonrpc?request={"jsonrpc":"2.0","method":"VideoLibrary.GetMovies","params":{"properties":["lastplayed"]},"id":2}
+
+Get all episodes + last played
+------------------------------
+http://localhost:8080/jsonrpc?request={"jsonrpc":"2.0","method":"VideoLibrary.GetEpisodes","params":{"properties":["lastplayed"]},"id":3}
+http://localhost:8080/jsonrpc?request={"jsonrpc":"2.0","method":"VideoLibrary.GetEpisodes","params":{"properties":["lastplayed"],"limits":{"end":100,"start":0}},"id":7}

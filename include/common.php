@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jan 10, 2014
  *
  * Description: The main Fargo functions page.
  *
@@ -464,6 +464,36 @@ function LogEvent($type, $event)
 }
 
 //////////////////////////////////////////    Misc Functions    ///////////////////////////////////////////
+
+/*
+ * Function:	CheckImportKey()
+ *
+ * Created on Sep 28, 2013
+ * Updated on Jan 03, 2014
+ *
+ * Description: Check if import key is valid. This proves that the users has logged in. 
+ *
+ * In:  $db
+ * Out: $login
+ *
+ */
+function CheckImportKey($db)
+{
+    $login = false;
+    
+    $key = null;    
+    if (isset($_POST["key"]) && !empty($_POST["key"]))
+    {
+        $key = $_POST["key"];
+    }      
+    
+    $import = GetStatus($db, "ImportKey");
+    if ($import == $key){    
+        $login = true;
+    }
+    
+    return $login;
+}
 
 /*
  * Function:    EncodeLink
