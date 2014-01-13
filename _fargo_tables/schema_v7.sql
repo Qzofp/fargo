@@ -1,9 +1,8 @@
 /*
 SQLyog Ultimate v11.11 (32 bit)
-MySQL - 5.5.27 : Database - fargo
+MySQL - 5.5.34 : Database - fargo
 *********************************************************************
-*/
-
+*/
 
 /*!40101 SET NAMES utf8 */;
 
@@ -16,6 +15,18 @@ MySQL - 5.5.27 : Database - fargo
 CREATE DATABASE /*!32312 IF NOT EXISTS*/`fargo` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
 USE `fargo`;
+
+/*Table structure for table `albumsmeta` */
+
+DROP TABLE IF EXISTS `albumsmeta`;
+
+CREATE TABLE `albumsmeta` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `albumid` int(11) NOT NULL,
+  `playcount` smallint(6) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ix_albumid` (`albumid`)
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `episodes` */
 
@@ -49,19 +60,19 @@ CREATE TABLE `episodes` (
   PRIMARY KEY (`id`),
   KEY `ix_episodeid` (`episodeid`),
   KEY `ix_tvshowid` (`tvshowid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=309 DEFAULT CHARSET=utf8;
 
-/*Table structure for table `episodesbulk` */
+/*Table structure for table `episodesmeta` */
 
-DROP TABLE IF EXISTS `episodesbulk`;
+DROP TABLE IF EXISTS `episodesmeta`;
 
-CREATE TABLE `episodesbulk` (
+CREATE TABLE `episodesmeta` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `episodeid` int(11) NOT NULL,
-  `lastplayed` datetime DEFAULT NULL,
+  `playcount` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_episodeid` (`episodeid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=251 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `genres` */
 
@@ -73,7 +84,7 @@ CREATE TABLE `genres` (
   `genre` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_genre` (`media`,`genre`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5575 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `genretomovie` */
 
@@ -118,7 +129,7 @@ CREATE TABLE `log` (
   `type` varchar(16) NOT NULL,
   `event` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=862 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `movies` */
 
@@ -161,19 +172,19 @@ CREATE TABLE `movies` (
   KEY `ix_sorttitle` (`sorttitle`(10)),
   KEY `ix_year` (`year`),
   KEY `ix_setid` (`setid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8;
 
-/*Table structure for table `moviesbulk` */
+/*Table structure for table `moviesmeta` */
 
-DROP TABLE IF EXISTS `moviesbulk`;
+DROP TABLE IF EXISTS `moviesmeta`;
 
-CREATE TABLE `moviesbulk` (
+CREATE TABLE `moviesmeta` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `movieid` int(11) NOT NULL,
-  `lastplayed` datetime DEFAULT NULL,
+  `playcount` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_movieid` (`movieid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `music` */
 
@@ -206,7 +217,7 @@ CREATE TABLE `music` (
   KEY `ix_xbmcid` (`xbmcid`),
   KEY `ix_sorttitle` (`sorttitle`(10)),
   KEY `ix_year` (`year`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `seasons` */
 
@@ -225,7 +236,19 @@ CREATE TABLE `seasons` (
   `watchedepisodes` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_tvshowid` (`tvshowid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
+
+/*Table structure for table `seasonsmeta` */
+
+DROP TABLE IF EXISTS `seasonsmeta`;
+
+CREATE TABLE `seasonsmeta` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `seasonid` int(11) NOT NULL,
+  `playcount` smallint(6) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ix_seasonid` (`seasonid`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `sets` */
 
@@ -241,7 +264,19 @@ CREATE TABLE `sets` (
   `playcount` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `ix_setid` (`setid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
+
+/*Table structure for table `setsmeta` */
+
+DROP TABLE IF EXISTS `setsmeta`;
+
+CREATE TABLE `setsmeta` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `setid` int(11) NOT NULL,
+  `playcount` smallint(6) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ix_setid` (`setid`)
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `settings` */
 
@@ -252,7 +287,7 @@ CREATE TABLE `settings` (
   `name` varchar(64) NOT NULL,
   `value` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `status` */
 
@@ -263,7 +298,7 @@ CREATE TABLE `status` (
   `name` varchar(32) DEFAULT NULL,
   `value` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `tvshows` */
 
@@ -299,7 +334,19 @@ CREATE TABLE `tvshows` (
   KEY `ix_xbmcid` (`xbmcid`),
   KEY `ix_sorttitle` (`sorttitle`(10)),
   KEY `ix_year` (`year`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
+
+/*Table structure for table `tvshowsmeta` */
+
+DROP TABLE IF EXISTS `tvshowsmeta`;
+
+CREATE TABLE `tvshowsmeta` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tvshowid` int(11) NOT NULL,
+  `playcount` smallint(6) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ix_tvshowid` (`tvshowid`)
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `users` */
 
@@ -311,7 +358,7 @@ CREATE TABLE `users` (
   `password` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_user` (`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 10, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -112,7 +112,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 07, 2014
  *
  * Description: Process data from XBMC. 
  *
@@ -125,9 +125,8 @@ function ProcessDataFromXbmc($db, $aData)
     switch($aData["id"])
     {
         // libMoviesCounter -> library id = 1.
-        case 1  : //UpdateMediaEndValue($db, $aData["error"], "Movies", $aData["start"]["movies"][0]["movieid"], $aData["result"]["movies"][0]["movieid"]);
-                  EmptyTable($db, "moviesmeta");
-                  UpdateStatus($db, "XbmcMoviesEnd", $aData["result"]["limits"]["total"]);
+        case 1  : UpdateMediaEndValue($db, $aData["error"], "Movies", $aData["start"]["movies"][0]["movieid"], $aData["result"]["movies"][0]["movieid"]);
+                  //UpdateStatus($db, "XbmcMoviesEnd", $aData["result"]["movies"][0]["movieid"]);
                   break;
              
         // libMovies Import -> library id = 2.                   

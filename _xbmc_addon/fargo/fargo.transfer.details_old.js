@@ -6,7 +6,7 @@
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 10, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -75,7 +75,7 @@ function TransferMediaCounter(key, media, id)
     switch (media)
     {
         case "movies"    : // libMoviesCounter -> library id = 1.
-                           RequestCounter("VideoLibrary.GetMovies", 1, key);
+                           RequestCounter("VideoLibrary.GetMovies", 1, key);           
                            break;
 
         case "sets"      : // libMovieSetsCounter -> library id = 4.
@@ -108,7 +108,7 @@ function TransferMediaCounter(key, media, id)
  * Function:	RequestCounter
  *
  * Created on Oct 06, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 10, 2014
  *
  * Description: JSON Request XBMC media counter and the media highest id.
  * 
@@ -124,9 +124,27 @@ function RequestCounter(library, id, key)
     // Get media total (counter) from XBMC.
     $.getJSON("../jsonrpc?request=" + counter_req, function(json) // First request.
     {
-        json.key = key;
-        TransferData(json, cIMPORT);
-        //}
+        if (json.error === undefined) 
+        {   
+            var start = Number(json.result.limits.total) - 1;
+            var end   = Number(json.result.limits.total);
+        
+            var max_req = '{"jsonrpc":"2.0","method":"' + library + '",' +
+                          '"params":{"limits":{"start":' + start + ',"end":' + end + '}},"id":"' + id + '"}';
+        
+            // Get highest id (maxid) from XBMC.
+            $.getJSON("../jsonrpc?request=" + max_req, function(data) // Second request.
+            {
+                data.key   = key;
+                data.start = json.result; // The start values from the first request.
+                TransferData(data, cIMPORT); // Tranfer data to Fargo.        
+            }); // End getJSON.
+        }
+        else // Error, media not found?
+        { 
+            json.key = key;
+            TransferData(json, cIMPORT);
+        }
     }); // End getJSON.         
 }
 

@@ -4,12 +4,12 @@
  * Author:  Qzofp Productions
  * Version: 0.4
  *
- * File:    bulk.php
+ * File:    meta.php
  *
  * Created on Jan 10, 2014
- * Updated on Jan 10, 2014
+ * Updated on Jan 11, 2014
  *
- * Description: Fargo's bulk import page. This page is called from XBMC which push the data to Fargo.
+ * Description: Fargo's meta data import page. This page is called from XBMC which push the data to Fargo.
  *
  */
 
@@ -27,8 +27,8 @@ $db = OpenDatabase();
 $login = CheckImportKey($db);
 if($login)
 {
-    $aData = ReceiveBulkData();
-    ProcessBulkData($db, $aData);
+    $aData = ReceiveMetaData();
+    ProcessMetaData($db, $aData);
 }
 else 
 {
@@ -44,18 +44,18 @@ CloseDatabase($db);
 //echo "</pre></br>";
 
 /*
- * Function:	ReceiveBulkData
+ * Function:	ReceiveMetaData
  *
  * Created on Jan 10, 2014
- * Updated on Jan 10, 2014
+ * Updated on Jan 11, 2014
  *
- * Description: Receive bulk data from XBMC. 
+ * Description: Receive meta data from XBMC. 
  *
  * In:  -
  * Out: $aData
  *
  */    
-function ReceiveBulkData()
+function ReceiveMetaData()
 {
     $aData = null;    
     
@@ -63,7 +63,7 @@ function ReceiveBulkData()
     if (isset($_POST["id"]) && !empty($_POST["id"]))
     {
         $aData["id"] = $_POST["id"];
-    } 
+    }
     
     $aData["error"] = null;
     if (isset($_POST["error"]) && !empty($_POST["error"]))
@@ -81,10 +81,10 @@ function ReceiveBulkData()
 }
 
 /*
- * Function:	ProcessBulkData
+ * Function:	ProcessMetaData
  *
- * Created on Jan 10 15, 2013
- * Updated on Jan 10, 2014
+ * Created on Jan 10, 2014
+ * Updated on Jan 11, 2014
  *
  * Description: Process bulk data from XBMC. 
  *
@@ -92,44 +92,60 @@ function ReceiveBulkData()
  * Out: -
  *
  */
-function ProcessBulkData($db, $aData)
+function ProcessMetaData($db, $aData)
 {
     switch($aData["id"])
     {
-        // libMovies Import -> library id = 1.
-        case 1: BulkImportMedia($db, $aData, "movies", "movieid");
+        // libMovies -> library id = 1.
+        case 1: ImportMediaMeta($db, $aData, "movies", "movieid");
                 break;
             
-        // libTVShowEpisode Import -> library id = 5.  
-        case 5: BulkImportMedia($db, $aData, "episodes", "episodeid");
+         // libMovieSets -> library id = 2.    
+        case 2: ImportMediaMeta($db, $aData, "sets", "setid");
                 break;
+            
+         // libTVShows -> library id = 3.    
+        case 3: ImportMediaMeta($db, $aData, "tvshows", "tvshowid");
+                break;  
+          
+         // libTVShowSeasons -> library id = 4.   
+        case 4:  ImportMediaMeta($db, $aData, "seasons", "seasonid");
+                break;             
+            
+        // libTVShowEpisodes -> library id = 5.  
+        case 5: ImportMediaMeta($db, $aData, "episodes", "episodeid");
+                break;
+            
+        // libAlbums -> library id = 6.
+        case 6: ImportMediaMeta($db, $aData, "albums", "albumid");
+                break;            
     }
 }
 
 /*
- * Function:	BulkImportMedia
+ * Function:	ImportMediaMeta
  *
- * Created on Jan 10, 2013
- * Updated on Jan 10, 2014
+ * Created on Jan 10, 2014
+ * Updated on Jan 11, 2014
  *
- * Description: Import bulk media. 
+ * Description: Import media meta data. 
  *
  * In:  $db, $aData, $type, $id
  * Out: -
  *
  */
-function BulkImportMedia($db, $aData, $type, $id)
+function ImportMediaMeta($db, $aData, $type, $id)
 {       
     if (empty($aData["error"]) && !empty($aData["result"]))
     {
         $max = count($aData["result"][$type]);
-        $sql = "INSERT INTO ".$type."bulk($id, lastplayed) VALUES";
-        
+        $sql = "INSERT INTO ".$type."meta($id, playcount) VALUES";
+                
         for ($i = 0; $i < $max - 1; $i++) {
-           $sql .= "(".$aData["result"][$type][$i][$id].", '".$aData["result"][$type][$i]['lastplayed']."'),"; 
+           $sql .= "(".$aData["result"][$type][$i][$id].", '".$aData["result"][$type][$i]['playcount']."'),"; 
         }
 
-        $sql .= "(".$aData["result"][$type][$i][$id].", '".$aData["result"][$type][$i]['lastplayed']."')";       
+        $sql .= "(".$aData["result"][$type][$i][$id].", '".$aData["result"][$type][$i]['playcount']."')";       
         QueryDatabase($db, $sql);
     }
 }

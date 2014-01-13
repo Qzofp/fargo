@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.2
+ * Version: 0.4
  *
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Nov 14, 2013
+ * Updated on Jan 10, 2014
  *
  * Description: Fargo's settings page.
  *

@@ -61,8 +61,8 @@ switch($action)
     case "reset"    : if($login) 
                       {
                          $media   = GetPageValue('media');
-                         //$retry   = GetPageValue('retry');
-                         $aJson   = ResetStatus($media);
+                         $counter = GetPageValue('counter');
+                         $aJson   = ResetStatus($media, $counter);
                       }
                       else {
                          $aJson = LogEvent("Warning", "Unauthorized reset action call!");
@@ -420,21 +420,21 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 03, 2014
  *
  * Description: Reset the status. 
  *
- * In:  $media
+ * In:  $media, $counter
  * Out: $aJson
  *
  */
-function ResetStatus($media)
+function ResetStatus($media, $counter)
 {       
     $aJson = null;
     
     $db = OpenDatabase();
 
-    /*if ($media == "seasons") 
+    if ($media == "seasons") 
     {
         $start = GetStatus($db, "XbmcSeasonsStart");
         $end   = GetStatus($db, "XbmcSeasonsEnd");
@@ -442,14 +442,14 @@ function ResetStatus($media)
         if ($start >= $end) {
             UpdateStatus($db, "XbmcSeasonsStart", 0);
         }
-    }*/
+    }
     
-    /*if ($retry == "false") {
+    if ($counter == "true") {
         UpdateStatus($db, "ImportCounter", 0);
-    }*/
-    /*else {
+    }
+    else {
         UpdateStatus($db, "RefreshReady", 0);
-    }*/
+    }
     
     UpdateStatus($db, "Xbmc".$media."End", -1);
     
