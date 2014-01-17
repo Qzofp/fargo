@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 17, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -241,7 +241,7 @@ function UpdateMediaEndValue($db, $aError, $type, $start, $end)
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jan 17, 2014
  *
  * Description: Import the movie. 
  *
@@ -258,22 +258,22 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
         $aGenres = $aResult["moviedetails"]["genre"]; //$aMovie["genre"];
         $aMovie  = ConvertMovie($aResult["moviedetails"]);
         
+        $id = InsertMovie($db, $aMovie);     
         ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175); //200, 280          
-        $id = InsertMovie($db, $aMovie);    
+        InsertGenres($db, $aGenres, "movies");  
         ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 450, 280); //562, 350 //675, 420         
         
-        InsertGenres($db, $aGenres, "movies");
         InsertGenreToMedia($db, $aGenres, $id, "movies");
     
-        UpdateStatus($db, "XbmcSlack", 0);
+        //UpdateStatus($db, "XbmcSlack", 0);
         IncrementStatus($db, "XbmcMoviesStart", 1);
         IncrementStatus($db, "ImportCounter", 1);
     }
-    else if ($aError["code"] == -32602) // Movie not found, continue with the next one.
-    { 
-        UpdateStatus($db, "XbmcSlack", 1);
-        IncrementStatus($db, "XbmcMoviesStart", 1); 
-    }
+    //else if ($aError["code"] == -32602) // Movie not found, continue with the next one.
+    //{ 
+        //UpdateStatus($db, "XbmcSlack", 1);
+        //IncrementStatus($db, "XbmcMoviesStart", 1); 
+    //}
     
     //CloseDatabase($db); 
 }

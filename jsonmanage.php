@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 17, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -99,11 +99,13 @@ switch($action)
                       
     case "status"   : if($login)
                       {
-                         $media = GetPageValue('media');
-                         $mode  = GetPageValue('mode');
-                         $id    = GetPageValue('id');
+                         $media  = GetPageValue('media');
+                         //$mode  = GetPageValue('mode');
+                         $id     = GetPageValue('id');
+                         $xbmcid = GetPageValue('xbmcid');
                         
-                         $aJson = GetMediaStatus($mode, $media, $id);
+                         //$aJson = GetMediaStatus($mode, $media, $id);
+                         $aJson = GetMediaStatus($media, $id, $xbmcid);
                       }
                       else {
                          $aJson = LogEvent("Warning", "Unauthorized status action call!");
@@ -420,7 +422,7 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 17, 2014
  *
  * Description: Reset the status. 
  *
@@ -451,6 +453,7 @@ function ResetStatus($media)
         UpdateStatus($db, "RefreshReady", 0);
     }*/
     
+    UpdateStatus($db, "ImportCounter", 0);
     UpdateStatus($db, "Xbmc".$media."End", -1);
     
     $aJson["connection"] = GetSetting($db, "XBMCconnection");
@@ -556,6 +559,83 @@ function ProcessImportMode($mode)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
+ * Updated on Jan 14, 2014
+ *
+ * Description: Reports the status of the import media process. 
+ *
+ * In:  $media, $id, $xbmcid
+ * Out: $aJson
+ *
+ */
+function GetMediaStatus($media, $id, $xbmcid)
+{
+    $aJson = null;   
+    $db = OpenDatabase();
+    
+    switch ($media)    
+    {   
+        case "movies"         : $aJson = GetImportStatus($db, "movies", "movieid", $id, $xbmcid, cMOVIESTHUMBS);
+                                break;
+                      
+        case "sets"           : 
+                                break;                      
+    
+        case "tvshows"        : ;
+                                break;
+                                            
+        case "seasons"        : 
+                                break;
+                      
+        case "episodes"       : 
+                                break;                      
+                      
+        case "music"          : 
+                                break;                      
+    }      
+ 
+    CloseDatabase($db);
+    return $aJson;    
+}    
+
+/*
+ * Function:	GetImportRefreshStatus
+ *
+ * Created on May 18, 2013
+ * Updated on Jan 17, 2014
+ *
+ * Description: Reports the status of the import or refresh process.
+ *
+ * In:  $db, $media, $id, $xbmcid, $thumbs
+ * Out: $aJson
+ *
+ */
+function GetImportStatus($db, $table, $nameid, $id, $xbmcid, $thumbs)
+{
+    //$aJson['id']  = 0;
+    //$aJson['refresh'] = 0;
+    $aJson['title']   = "empty";
+    $aJson['thumbs']  = $thumbs;
+
+    $sql = "SELECT $nameid FROM ".$table."meta ".
+           "WHERE id = $id";
+    
+    $aJson['nextid'] = GetItemFromDatabase($db, $nameid, $sql);
+
+    $sql = "SELECT title FROM $table ".
+           "WHERE xbmcid = $xbmcid"; 
+    
+    $aJson['xbmcid'] = $xbmcid;
+    $aJson['title']  = GetItemFromDatabase($db, "title", $sql);
+    $aJson['sub']    = "&nbsp;";
+    
+    return $aJson;
+}
+
+
+/*
+ * Function:	GetMediaStatus
+ *
+ * Created on May 18, 2013
  * Updated on Jan 03, 2014
  *
  * Description: Reports the status of the import media process. 
@@ -564,7 +644,7 @@ function ProcessImportMode($mode)
  * Out: $aJson
  *
  */
-function GetMediaStatus($mode, $media, $id)
+function GetMediaStatusOld($mode, $media, $id)
 {
     $aJson = null;   
     $db = OpenDatabase();

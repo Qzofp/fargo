@@ -6,7 +6,7 @@
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 17, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -160,7 +160,7 @@ function RequestSeasonCounter(tvshowid, id, key)
  * Function:	TransferMovie
  *
  * Created on Oct 07, 2013
- * Updated on Jan 10, 2014
+ * Updated on Jan 17, 2014
  *
  * Description: Transfer movie from XBMC to Fargo.
  * 

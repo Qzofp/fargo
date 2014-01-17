@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jan 13, 2014
+ * Updated on Jan 17, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -47,7 +47,7 @@ function SetStartImportHandler(media, step)
  * Function:	SetStartMoviesImportHandler
  *
  * Created on Jan 12, 2014
- * Updated on Jan 13, 2014
+ * Updated on Jan 14, 2014
  *
  * Description:  Start the import handler.
  * 
@@ -64,25 +64,30 @@ function SetStartMoviesImportHandler(step)
                  break;
                  
         case 2 : // Import Movies.
-                 console.log("Start movies import.");
+                 StartImportHandler("movies", 3);
+                 //console.log("Start movies import."); // Debug.
                  break;
                  
-                 
+        case 3: // Import Sets meta data.
+                console.log("Start sets meta data import."); // Debug.
+                break;
     }
 }
 
 
 /*
- * Function:	SetStartMetaImportHandler
+ * Function:	StartMetaImportHandler
  *
  * Created on Jan 12, 2014
- * Updated on Jan 13, 2014
+ * Updated on Jan 16, 2014
  *
  * Description:  Start the meta import handler.
  * 
  * In:	type
  * Out:	-
  *
+ * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END. 
+ * 
  */
 function StartMetaImportHandler(type)
 {
@@ -101,11 +106,13 @@ function StartMetaImportHandler(type)
             
             meta.progress(function(i) {
                 ShowMetaProgress($prg, type, i, end-1);
-                //console.log("Counter: " + i);
+                //console.log("Meta Counter: " + i);
             }); 
             
             meta.done (function() {
-                SetStartImportHandler(type, 2); // Step 2: Import media.
+                if (!gTRIGGER.CANCEL) {
+                    SetStartImportHandler(type, 2); // Step 2: Import media.
+                }
             }).fail (function() {
                ShowOffline(); 
             });
@@ -119,12 +126,14 @@ function StartMetaImportHandler(type)
  * Function:	StartOnlineHandler
  *
  * Created on Jul 14, 2013
- * Updated on Jan 13, 2014
+ * Updated on Jan 14, 2014
  *
  * Description:  Check if XBMC is online.
  * 
  * In:	type
  * Out:	Globals cCONNECT, gTRIGGER.START and gTRIGGER.END
+ *
+ * Note : Init globals cCONNECT, gTRIGGER.START and gTRIGGER.END.
  *
  */
 function StartOnlineHandler(type)
@@ -161,8 +170,8 @@ function StartOnlineHandler(type)
 /*
  * Function:	StartMetaImport
  *
- * Created on Jan,12, 2014
- * Updated on Jan 13, 2014
+ * Created on Jan 12, 2014
+ * Updated on Jan 17, 2014
  *
  * Description: Control and Import the media meta data transfered from XBMC.
  *
@@ -178,11 +187,15 @@ function StartMetaImport(type, end)
     
     deferred.notify(0);
     
-    for(var i = 1; i < end; i++){
+    for(var i = 1; i <= end; i++)
+    {       
+        //console.log("Meta Counter: " + i);
         currentStep = currentStep.pipe(function(j){
-            deferred.notify(++j);
-            url = GetTransferUrl(cCONNECT) + "/fargo/meta.html?action=" + type + "&counter=" + j + "&key=" + cCONNECT.key;
-            return ImportData(url, j);
+            if (!gTRIGGER.CANCEL) {
+                deferred.notify(++j);
+                url = GetTransferUrl(cCONNECT) + "/fargo/meta.html?action=" + type + "&counter=" + j + "&key=" + cCONNECT.key;
+                return ImportData(url, j);
+            }
         });
     }
     $.when(currentStep).done(function(){
@@ -199,11 +212,11 @@ function StartMetaImport(type, end)
  * Function:	ShowMetaProgress
  *
  * Created on Jan 13, 2014
- * Updated on Jan 13, 2014
+ * Updated on Jan 16, 2014
  *
- * Description: Set the import handler, show the import popup box and start import.
+ * Description: Show the meta data import progress.
  * 
- * In:	i, end
+ * In:	$prg, type, i, end
  * Out:	-
  *
  */
@@ -227,6 +240,252 @@ function ShowMetaProgress($prg, type, i, end)
     if (i == 1 ) {
         $("#action_box .message").html(cSTATUS.SEARCH.replace("[dummy]", ConvertMedia(type)));
     }
+}
+
+/*
+ * Function:	StartImportHandler
+ *
+ * Created on Jan 14, 2014
+ * Updated on Jan 16, 2014
+ *
+ * Description:  Start the media import handler.
+ * 
+ * In:	type, next
+ * Out:	-
+ *
+ * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END. 
+ *
+ */
+function StartImportHandler(type, next)
+{
+    var $prg = $("#action_box .progress");
+    var $img = $("#action_thumb img");
+    var $tit = $("#action_title");
+    var $sub = $("#action_sub");
+    var $msg = $("#action_box .message");
+       
+    $msg.html(cSTATUS.WAIT);
+    setTimeout(function() {
+    
+        if (gTRIGGER.START >= gTRIGGER.END) 
+        {
+           $msg.html(cSTATUS.NOTFOUND.replace("[dummy]", ConvertMedia(type)));
+           SetStartImportHandler(type, next); // Continue with the next step.
+        }
+        else 
+        {
+            //$msg.html(cSTATUS.ONLINE);
+            //LogEvent("Information", "Import movies meta data started.");
+            var start = StartImport(type);
+            
+            start.progress(function(i, status) {
+                ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, status);
+                console.log("Counter: " + i); // debug.
+            }); 
+            
+            start.done (function() {
+                if (!gTRIGGER.CANCEL) {
+                    SetStartImportHandler(type, next);  // Continue with the next step.
+                }
+            }).fail (function() {
+                ShowOffline(); 
+            });
+        }    
+    }, cCONNECT.timeout); // End setTimeout.
+}
+
+/*
+ * Function:	StartImport
+ *
+ * Created on Jan 14, 2014
+ * Updated on Jan 17, 2014
+ *
+ * Description: Control and Import the media data transfered from XBMC.
+ *
+ * In:	type
+ * Out:	-
+ *
+ * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END. 
+ *
+ */
+
+function StartImport(type)
+{
+    var deferred = $.Deferred(); 
+    var url, ready;
+    var retry = 0;
+    var start = gTRIGGER.START;
+    gTRIGGER.BUSY = false;
+    
+    cMETA.NEXTID = 0;
+    
+    (function setImportTimer() 
+    {
+        if (gTRIGGER.CANCEL || start > gTRIGGER.END || retry > gTRIGGER.RETRY) 
+        {            
+            if (start > gTRIGGER.END) {
+                deferred.resolve(); // Import is ready
+            }      
+            return; // End Import.
+        }
+        
+        // Returns cMETA.
+        GetXbmcIdAndStatus(type, start, cMETA.NEXTID);
+        
+        if (gTRIGGER.BUSY == false)
+        {
+            gTRIGGER.BUSY = true;
+               
+            url = GetTransferUrl(cCONNECT) + "/fargo/transfer.html?action=" + type + "&xbmcid=" + cMETA.NEXTID + "&fargoid=-1" + "&key=" + cCONNECT.key;
+            ready = ImportData(url, 0);
+            ready.done(function() {
+                deferred.notify(start, cMETA);
+            }).fail(function() {
+                deferred.reject();
+            }); // End Ready.
+            
+            start += 1;
+            retry = 0;
+        }
+               
+        // Timeout is set in the Fargo system screen.
+        setTimeout(setImportTimer, cCONNECT.timeout);
+    }()); // End setImportTimer.
+    
+    return deferred.promise();
+}
+
+
+/*
+ * Function:	StartImport
+ *
+ * Created on Jan 14, 2014
+ * Updated on Jan 17, 2014
+ *
+ * Description: Control and Import the media data transfered from XBMC.
+ *
+ * In:	type, end
+ * Out:	-
+ *
+ * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END. 
+ *
+ */
+function StartImportTest(type)
+{
+    var deferred = $.Deferred(); 
+    var url, currentStep;
+    var start = gTRIGGER.START;
+    
+    // Returns XBMCID, cSTATUS 
+    GetXbmcIdAndStatus(type, start++, 0);
+    //console.log("Get xbmcid ready..."); //debug
+    
+    url = GetTransferUrl(cCONNECT) + "/fargo/transfer.html?action=" + type + "&xbmcid=" + cMETA.nextid + "&fargoid=-1" + "&key=" + cCONNECT.key;
+    currentStep = ImportData(url, start);
+    
+    deferred.notify(0, cMETA);
+    
+    for(var i = start; i <= gTRIGGER.END; i++)
+    {  
+        //console.log("Import Counter: " + i);
+        currentStep = currentStep.pipe(function(j){
+            if (!gTRIGGER.CANCEL) {
+                GetXbmcIdAndStatus(type, j, cMETA.nextid);
+                deferred.notify(++j, cMETA);
+                url = GetTransferUrl(cCONNECT) + "/fargo/transfer.html?action=" + type + "&xbmcid=" + cMETA.nextid + "&fargoid=-1" + "&key=" + cCONNECT.key;
+                return ImportData(url, j);
+            }
+        });
+    }
+    $.when(currentStep).done(function(){
+        //console.log("All steps done.");
+        
+        deferred.resolve();
+    }).fail(function(){
+        deferred.reject();
+    });
+    
+    return deferred.promise();
+}
+
+/*
+ * Function:	GetXbmcIdAndStatus
+ *
+ * Created on Jan 14, 2014
+ * Updated on Jan 14, 2014
+ *
+ * Description: Control and Import the media data transfered from XBMC.
+ *
+ * In:	type, start, xbmcid
+ * Out:	Global cMETA (xbmcid, title, subtitle, thumbs)
+ *
+ */
+function GetXbmcIdAndStatus(type, start, xbmcid)
+{  
+    $.ajax({
+        url: 'jsonmanage.php?action=status&media=' + type + '&id=' + start + '&xbmcid=' + xbmcid,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {     
+            cMETA.NEXTID = json.nextid;
+            cMETA.TITLE  = json.title;
+            cMETA.SUB    = json.sub;
+            cMETA.THUMBS = json.thumbs;
+            cMETA.XBMCID = json.xbmcid;
+            
+            //console.log("METa done."); // debug.
+            
+        } // End succes.    
+    }); // End Ajax.    
+}
+
+/*
+ * Function:	ShowImportProgress
+ *
+ * Created on Jan 16, 2014
+ * Updated on Jan 17, 2014
+ *
+ * Description: Show the import progress.
+ * 
+ * In:	$msg, $prg, $img, $tit, $sub, type, i, status
+ * Out:	-
+ *
+ */
+function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, status)
+{
+    var delta = gTRIGGER.END - gTRIGGER.START;
+    
+    var percent = i - (gTRIGGER.END - delta);
+    percent = Math.round(percent/delta * 100);
+                
+    $prg.progressbar({
+        value : percent       
+    });
+    
+    if (i == 0) {
+        $msg.html(cSTATUS.IMPORT.replace("[dummy]", ConvertMediaToSingular(type)));
+    }
+    else 
+    {    
+        // Preload image.
+        var img = new Image();      
+        img.src = status.THUMBS + '/'+ status.XBMCID +'.jpg';
+        
+        console.log(i + " " + img.src); // debug.
+        
+        $img.attr('src', img.src);
+                                
+        // If images not found then show no poster.
+        $img.error(function(){
+            $(this).attr('src', 'images/no_poster.jpg');
+        });
+                    
+        $tit.html(status.TITLE);
+        $sub.html(status.SUB);
+    }
+    
+    gTRIGGER.BUSY = false;
 }
 
 
@@ -454,7 +713,7 @@ function SetRetryImportHandler(media, type, delta, start, selector)
  * Out:	-
  *
  */
-function StartImport(xbmc, media, type, delta, start, end, selector)
+function StartImportOld(xbmc, media, type, delta, start, end, selector)
 {
     var retry   = 0;
     var busy    = false;
@@ -1066,12 +1325,14 @@ function SetImportPopupHandler(media)
  * Function:	ImportData
  *
  * Created on Jan 13, 2013
- * Updated on Jan 13, 2014
+ * Updated on Jan 14, 2014
  *
  * Description: Import data transfered from XBMC.
  *
  * In:	url, counter
  * Out:	Imported media counter
+ *
+ * Note: Uses global cCONNECT.
  *
  */
 function ImportData(url, counter)
@@ -1079,12 +1340,8 @@ function ImportData(url, counter)
     var deferred = $.Deferred();
     var $result = $("#transfer");
     var $ready  = $("#ready");
-    var iframe;
+    var iframe  = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';
     var i = 0;
-    
-    // if counter factor 3 or 5 check if XBMC is still online.
-    
-    iframe = '<iframe src="' + url + '" onload="IframeReady()"></iframe>';
     
     // Reset values.
     $ready.text("false");    
@@ -1108,7 +1365,7 @@ function ImportData(url, counter)
         }
         i++;    
         
-    }, 1000); // End _timer. 
+    }, cCONNECT.timeout); // End _timer.
      
     return deferred.promise();
 }
