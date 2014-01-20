@@ -7,7 +7,7 @@
  * File:    meta.php
  *
  * Created on Jan 10, 2014
- * Updated on Jan 11, 2014
+ * Updated on Jan 20, 2014
  *
  * Description: Fargo's meta data import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -84,7 +84,7 @@ function ReceiveMetaData()
  * Function:	ProcessMetaData
  *
  * Created on Jan 10, 2014
- * Updated on Jan 11, 2014
+ * Updated on Jan 20, 2014
  *
  * Description: Process bulk data from XBMC. 
  *
@@ -109,7 +109,7 @@ function ProcessMetaData($db, $aData)
                 break;  
           
          // libTVShowSeasons -> library id = 4.   
-        case 4:  ImportMediaMeta($db, $aData, "seasons", "seasonid");
+        case 4: ImportSeasonsMeta($db, $aData);
                 break;             
             
         // libTVShowEpisodes -> library id = 5.  
@@ -147,5 +147,35 @@ function ImportMediaMeta($db, $aData, $type, $id)
 
         $sql .= "(".$aData["result"][$type][$i][$id].", '".$aData["result"][$type][$i]['playcount']."')";       
         QueryDatabase($db, $sql);
+    }
+}
+
+/*
+ * Function:	ImportSeasonsMeta
+ *
+ * Created on Jan 10, 2014
+ * Updated on Jan 20, 2014
+ *
+ * Description: Import media meta data. 
+ *
+ * In:  $db, $aData
+ * Out: -
+ *
+ */
+function ImportSeasonsMeta($db, $aData)
+{       
+    if (empty($aData["error"]) && !empty($aData["result"]))
+    {
+        $max = count($aData["result"]["seasons"]);
+        $sql = "INSERT INTO seasonsmeta(seasonid, playcount) VALUES";
+                
+        for ($i = 0; $i < $max - 1; $i++) {
+           $sql .= "(".$aData["result"]["seasons"][$i]["seasonid"].", '".$aData["result"]["seasons"][$i]['playcount']."'),"; 
+        }
+
+        $sql .= "(".$aData["result"]["seasons"][$i]["seasonid"].", '".$aData["result"]["seasons"][$i]['playcount']."')"; 
+        QueryDatabase($db, $sql);
+        
+        UpdateStatus($db, "XbmcSeasonsEnd", mysqli_insert_id($db));
     }
 }

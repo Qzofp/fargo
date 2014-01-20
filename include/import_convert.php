@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 06, 2014
+ * Updated on Jan 20, 2014
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -163,7 +163,7 @@ function ConvertTVShow($aXbmc)
  * Function:	ConvertTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Nov 02, 2013
+ * Updated on Jan 20, 2014
  *
  * Description: Convert xbmc TV Show Season items. For instance to readably URL's.
  *
@@ -173,15 +173,14 @@ function ConvertTVShow($aXbmc)
  */
 function ConvertTVShowSeason($aXbmc)
 {
-    $aSeason[0] = $aXbmc["tvshowid"];
+    $aSeason[0] = $aXbmc["seasonid"];
     $aSeason[1] = $aXbmc["label"]; // title
-    $aSeason[2] = !empty($aXbmc["showtitle"])?$aXbmc["showtitle"]:null;    
-    $aSeason[3] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
-    $aSeason[4] = !empty($aXbmc["season"])?$aXbmc["season"]:0;
-    $aSeason[5] = !empty($aXbmc["episode"])?$aXbmc["episode"]:0;
-    $aSeason[6] = !empty($aXbmc["watchedepisodes"])?$aXbmc["watchedepisodes"]:0; 
-    
-    //$aSeason[3] = EncodeLink($aXbmc, "thumbnail");
+    $aSeason[2] = $aXbmc["tvshowid"];
+    $aSeason[3] = !empty($aXbmc["showtitle"])?$aXbmc["showtitle"]:null;    
+    $aSeason[4] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
+    $aSeason[5] = !empty($aXbmc["season"])?$aXbmc["season"]:0;
+    $aSeason[6] = !empty($aXbmc["episode"])?$aXbmc["episode"]:0;
+    $aSeason[7] = !empty($aXbmc["watchedepisodes"])?$aXbmc["watchedepisodes"]:0;
     
     return $aSeason;
 }

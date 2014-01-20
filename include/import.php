@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 17, 2014
+ * Updated on Jan 20, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -112,7 +112,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 19, 2014
  *
  * Description: Process data from XBMC. 
  *
@@ -125,9 +125,7 @@ function ProcessDataFromXbmc($db, $aData)
     switch($aData["id"])
     {
         // libMoviesCounter -> library id = 1.
-        case 1  : //UpdateMediaEndValue($db, $aData["error"], "Movies", $aData["start"]["movies"][0]["movieid"], $aData["result"]["movies"][0]["movieid"]);
-                  EmptyTable($db, "moviesmeta");
-                  UpdateStatus($db, "XbmcMoviesEnd", $aData["result"]["limits"]["total"]);
+        case 1  : UpdateStatus($db, "XbmcMoviesEnd", $aData["result"]["limits"]["total"]);
                   break;
              
         // libMovies Import -> library id = 2.                   
@@ -139,8 +137,7 @@ function ProcessDataFromXbmc($db, $aData)
                   break;
         
         // libMovieSetsCounter -> library id = 4.    
-        case 4  : UpdateMediaEndValue($db, $aData["error"], "Sets", $aData["start"]["sets"][0]["setid"], $aData["result"]["sets"][0]["setid"]);
-                  //UpdateStatus($db, "XbmcSetsEnd", $aData["result"]["sets"][0]["setid"]); 
+        case 4  : UpdateStatus($db, "XbmcSetsEnd", $aData["result"]["limits"]["total"]);
                   break;
               
         // libMovieSets Import -> library id = 5.                   
@@ -152,8 +149,7 @@ function ProcessDataFromXbmc($db, $aData)
                   break;
              
         // libTVShowsCounter -> library id = 11.  
-        case 11 : UpdateMediaEndValue($db, $aData["error"], "TVShows", $aData["start"]["tvshows"][0]["tvshowid"], $aData["result"]["tvshows"][0]["tvshowid"]);
-                  //UpdateStatus($db, "XbmcTVShowsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
+        case 11 : UpdateStatus($db, "XbmcTVShowsEnd", $aData["result"]["limits"]["total"]);
                   break;
         
         // libTVShows Import -> library id = 12.
@@ -165,14 +161,14 @@ function ProcessDataFromXbmc($db, $aData)
                   break;
              
         // libTVShowSeasonsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
-        case 14 : UpdateMediaEndValue($db, $aData["error"], "TVShowsSeasons", $aData["start"]["tvshows"][0]["tvshowid"], $aData["result"]["tvshows"][0]["tvshowid"]);
+        //case 14 : UpdateMediaEndValue($db, $aData["error"], "TVShowsSeasons", $aData["start"]["tvshows"][0]["tvshowid"], $aData["result"]["tvshows"][0]["tvshowid"]);
                   //UpdateStatus($db, "XbmcTVShowsSeasonsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
-                  break;           
+        //          break;
               
         // libSeasonsCounter -> library id = 15.
-        case 15 : UpdateMediaEndValue($db, $aData["error"], "Seasons", 0, $aData["result"]["limits"]["total"]);
+        //case 15 : UpdateMediaEndValue($db, $aData["error"], "Seasons", 0, $aData["result"]["limits"]["total"]);
                   //UpdateStatus($db, "XbmcSeasonsEnd", $aData["result"]["limits"]["total"]);
-                  break;   
+        //          break;   
               
         // libTVShowSeasons Import -> library id = 16.
         case 16 : ImportTVShowSeason($db, $aData["error"], $aData["poster"], $aData["result"]);
@@ -196,8 +192,7 @@ function ProcessDataFromXbmc($db, $aData)
                   break;         
                             
         // libAlbumsCounter -> library id = 41.  
-        case 41 : UpdateMediaEndValue($db, $aData["error"], "Music", $aData["start"]["albums"][0]["albumid"], $aData["result"]["albums"][0]["albumid"]);
-                  //UpdateStatus($db, "XbmcMusicEnd", $aData["result"]["albums"][0]["albumid"]); 
+        case 41 : UpdateStatus($db, "XbmcMusicEnd", $aData["result"]["limits"]["total"]);
                   break;
         
         // libAlbums Import -> library id = 42.
@@ -222,7 +217,7 @@ function ProcessDataFromXbmc($db, $aData)
  * Out: -
  *
  */
-function UpdateMediaEndValue($db, $aError, $type, $start, $end)
+function UpdateMediaEndValue($db, $aError, $type, $start, $end) // Obsolete
 {
     if (empty($aError)) 
     {
@@ -241,7 +236,7 @@ function UpdateMediaEndValue($db, $aError, $type, $start, $end)
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Jan 17, 2014
+ * Updated on Jan 18, 2014
  *
  * Description: Import the movie. 
  *
@@ -251,18 +246,17 @@ function UpdateMediaEndValue($db, $aError, $type, $start, $end)
  */
 function ImportMovie($db, $aError, $poster, $fanart, $aResult)
 {   
-    //$db = OpenDatabase();
-    
     if (empty($aError))
     {
         $aGenres = $aResult["moviedetails"]["genre"]; //$aMovie["genre"];
         $aMovie  = ConvertMovie($aResult["moviedetails"]);
         
-        $id = InsertMovie($db, $aMovie);     
+            
         ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175); //200, 280          
-        InsertGenres($db, $aGenres, "movies");  
+        $id = InsertMovie($db, $aMovie);  
         ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 450, 280); //562, 350 //675, 420         
         
+        InsertGenres($db, $aGenres, "movies"); 
         InsertGenreToMedia($db, $aGenres, $id, "movies");
     
         //UpdateStatus($db, "XbmcSlack", 0);
@@ -273,9 +267,7 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
     //{ 
         //UpdateStatus($db, "XbmcSlack", 1);
         //IncrementStatus($db, "XbmcMoviesStart", 1); 
-    //}
-    
-    //CloseDatabase($db); 
+    //} 
 }
 
 /*
@@ -386,7 +378,7 @@ function RefreshMovieSet($db, $aError, $poster, $aResult, $fargoid)
  * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jan 18, 2014
  *
  * Description: Import the tv show. 
  *
@@ -396,8 +388,6 @@ function RefreshMovieSet($db, $aError, $poster, $aResult, $fargoid)
  */
 function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
 {   
-    //$db = OpenDatabase();     
-    
     if (empty($aError))
     {
         $aGenres = $aResult["tvshowdetails"]["genre"];
@@ -412,24 +402,22 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
         InsertGenres($db, $aGenres, "tvshows");
         InsertGenreToMedia($db, $aGenres, $id, "tvshows");
     
-        UpdateStatus($db, "XbmcSlack", 0);
+        //UpdateStatus($db, "XbmcSlack", 0);
         IncrementStatus($db, "XbmcTVShowsStart", 1);
         IncrementStatus($db, "ImportCounter", 1);
     }
-    else if ($aError["code"] == -32602) // TVShow not found, continue with the next one.
-    { 
-       UpdateStatus($db, "XbmcSlack", 1);
-       IncrementStatus($db, "XbmcTVShowsStart", 1); 
-    }    
-    
-    //CloseDatabase($db);      
+    //else if ($aError["code"] == -32602) // TVShow not found, continue with the next one.
+    //{ 
+    //   UpdateStatus($db, "XbmcSlack", 1);
+    //   IncrementStatus($db, "XbmcTVShowsStart", 1); 
+    //}        
 }
 
 /*
  * Function:	ImportTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jan 20, 2014
  *
  * Description: Import the tv show season. 
  *
@@ -438,29 +426,25 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
  *
  */
 function ImportTVShowSeason($db, $aError, $poster, $aResult)
-{ 
-    //$db = OpenDatabase();      
-    
+{      
     if (empty($aError))
     {    
-        $aSeason = ConvertTVShowSeason($aResult["seasons"][0]);
+        $aSeason = ConvertTVShowSeason($aResult["seasondetails"]);
 
-        ResizeAndSaveImage($aSeason[0]."_".$aSeason[4], $poster, "../".cSEASONSTHUMBS, 125, 175);
+        ResizeAndSaveImage($aSeason[0], $poster, "../".cSEASONSTHUMBS, 125, 175);
 
         InsertTVShowSeason($db, $aSeason);   
         
         IncrementStatus($db, "XbmcSeasonsStart", 1);
         IncrementStatus($db, "ImportCounter", 1);
         
-        if ($aResult["limits"]["end"] >= $aResult["limits"]["total"]) {
-            IncrementStatus($db, "XbmcTVShowsSeasonsStart", 1);           
-        }
+        //if ($aResult["limits"]["end"] >= $aResult["limits"]["total"]) {
+        //    IncrementStatus($db, "XbmcTVShowsSeasonsStart", 1);           
+        //}
     }
-    else {
-        IncrementStatus($db, "XbmcTVShowsSeasonsStart", 1);
-    }
-    
-    //CloseDatabase($db);       
+    //else {
+    //    IncrementStatus($db, "XbmcTVShowsSeasonsStart", 1);
+    //}       
 }
 
 /*
@@ -600,7 +584,7 @@ function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
  * Function:	ImportAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jan 18, 2014
  *
  * Description: Import the music album. 
  *
@@ -610,8 +594,6 @@ function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
  */
 function ImportAlbum($db, $aError, $poster, $aResult)
 {   
-    //$db = OpenDatabase();    
-    
     if (empty($aError))
     {
         $aGenres = $aResult["albumdetails"]["genre"]; 
@@ -626,17 +608,15 @@ function ImportAlbum($db, $aError, $poster, $aResult)
         InsertGenres($db, $aGenres, "music");
         InsertGenreToMedia($db, $aGenres, $id, "music");
     
-        UpdateStatus($db, "XbmcSlack", 0);
+        //UpdateStatus($db, "XbmcSlack", 0);
         IncrementStatus($db, "XbmcMusicStart", 1);
         IncrementStatus($db, "ImportCounter", 1); 
     }
-    else if ($aError["code"] == -32602) // Album not found, continue with the next one.
-    { 
-       UpdateStatus($db, "XbmcSlack", 1);
-       IncrementStatus($db, "XbmcMusicStart", 1); 
-    }  
-    
-    //CloseDatabase($db);    
+    //else if ($aError["code"] == -32602) // Album not found, continue with the next one.
+    //{ 
+    //   UpdateStatus($db, "XbmcSlack", 1);
+    //   IncrementStatus($db, "XbmcMusicStart", 1); 
+    //}    
 }
 
 /*

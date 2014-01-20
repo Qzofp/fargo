@@ -200,7 +200,7 @@ function UpdateTVShow($db, $id, $aTVShow)
  * Function:	InsertTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Jan 02, 2014
+ * Updated on Jan 20, 2014
  *
  * Description: Insert TV Show Season in the database.
  *
@@ -210,14 +210,12 @@ function UpdateTVShow($db, $id, $aTVShow)
  */
 function InsertTVShowSeason($db, $aSeason)
 {   
-    //$db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aSeason);
     
-    $sql = "INSERT INTO seasons(tvshowid, title, showtitle, playcount, season, episode, watchedepisodes) ".
-           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], $aItems[5], $aItems[6])";
+    $sql = "INSERT INTO seasons(seasonid, title, tvshowid, showtitle, playcount, season, episode, watchedepisodes) ".
+           "VALUES ($aItems[0], '$aItems[1]', $aItems[2], '$aItems[3]', $aItems[4], $aItems[5], $aItems[6], $aItems[7])";
 
-    QueryDatabase($db, $sql);
-    //CloseDatabase($db);    
+    QueryDatabase($db, $sql);   
 }
 
 /*

@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jan 13, 2014
+ * Updated on Jan 20, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Dec 31, 2013
+ * Updated on Jan 19, 2014
  *
  * Description: Load the media from Fargo with system.
  *
@@ -62,8 +62,8 @@ function LoadFargoMedia(media)
     $("#display_system_right").on("click", ".property .on", SetPropertyClickHandler);
     
     // Yes or retry button is pressed. Preform action
-    $(".button").on("click", ".yes", SetActionHandler);
-    $(".button").on("click", ".retry", SetActionHandler);
+    $(".button").on("click", ".yes", {retry:false}, SetActionHandler);
+    $(".button").on("click", ".retry", {retry:true}, SetActionHandler);
     
     // No button is pressed, close popup.
     $(".button").on("click", ".no", SetCloseHandler);
@@ -220,19 +220,24 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Jan 13, 2014
+ * Updated on Jan 19, 2014
  *
  * Description: Perform action
  * 
- * In:	-
+ * In:	retry
  * Out:	Action
  *
  */
-function SetActionHandler()
+function SetActionHandler(event)
 {    
     var $popup = $(".popup:visible");
     var media = GetState("media");
     var type  = GetState("type");
+
+    var step = 1;
+    if (event.data.retry) {
+        step = gTRIGGER.STEP1;
+    }
     
     gTRIGGER.CANCEL = false;
     
@@ -248,8 +253,7 @@ function SetActionHandler()
                                break;
                            
         case cIMPORT.IMPORT  : LockImport(function() {
-                                  SetStartImportHandler(media, 1); // Step 1: Import media meta data.
-                                  //SetStartImportHandler(media, 1, true, 0); 
+                                  SetStartImportHandler(media, step, event.data.retry); 
                                });
                                break;           
     }

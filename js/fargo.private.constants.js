@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Jan 17, 2014
+ * Updated on Jan 20, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -18,23 +18,28 @@ var gTRIGGER = {
     STARTTV: 0,
     END: 0,
     RETRY: 5,
-    SLACK: 0,
+    STEP1: 1,
+    STEP2: 2,
     READY: false,
     CANCEL: false,
-    BUSY: false
+    BULK: 25 // 250; // Max. items imported.
 };
 
-var cMETA = {
-    NEXTID: 0,
+var gMEDIA = {
     TITLE: "",
     SUB: "",
-    THUMB : "",
+    THUMBS : "",
     XBMCID : 0    
 };
 
 // Connections constants.
-var cCONNECT = null;
-var cBULKMAX = 25; // 250; // Max. items imported.
+var gCONNECT = {
+    CONNECTION : "",
+    PORT : 0,
+    TIMEOUT : 0,
+    KEY : "",
+    STATUS: "Offline"
+};
 
 // Import constants.
 var cIMPORT = {

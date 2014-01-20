@@ -6,7 +6,7 @@
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Jan 17, 2014
+ * Updated on Jan 20, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	Transfer
  *
  * Created on Jul 13, 2013
- * Updated on Dec 24, 2013
+ * Updated on Jan 20, 2014
  *
  * Description: Transfers data from XBMC to Fargo.
  * 
@@ -47,7 +47,7 @@ function Transfer()
         case "tvshows"  : TransferTVShow(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
                           break;
                          
-        case "seasons"  : TransferTVShowSeason(aRequest.key, aRequest.xbmcid, aRequest.fargoid, aRequest.tvshowid);
+        case "seasons"  : TransferTVShowSeason(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
                           break;
                          
         case "episodes" : TransferTVShowEpisode(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
@@ -86,13 +86,13 @@ function TransferMediaCounter(key, media, id)
                            RequestCounter("VideoLibrary.GetTVShows", 11, key);
                            break;
                          
-        case "tvseasons" : // libTVShowsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
-                           RequestCounter("VideoLibrary.GetTVShows", 14, key);
-                           break;                         
+        //case "tvseasons" : // libTVShowsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
+        //                   RequestCounter("VideoLibrary.GetTVShows", 14, key);
+        //                   break;                      
                          
-        case "seasons"   : // libTVShowSeasonsCounter -> library id = 15.
-                           RequestSeasonCounter(id, 15, key);
-                           break;
+        //case "seasons"   : // libTVShowSeasonsCounter -> library id = 15.
+        //                   RequestSeasonCounter(id, 15, key);
+        //                   break;
                        
         case "episodes" : // libTVShowEpisodesCounter -> library id = 31.
                            RequestCounter("VideoLibrary.GetEpisodes", 31, key);
@@ -443,20 +443,19 @@ function TransferTVShow(key, xbmcid, fargoid)
  * Function:	TransferTVShowSeason
  *
  * Created on Oct 18, 2013
- * Updated on Jan 10, 2013
+ * Updated on Jan 20, 2013
  *
  * Description: Transfer TV Show Season from XBMC to Fargo.
  * 
- * In:	key, start, fargoid, tvshowid
+ * In:	key, start, fargoid
  * Out:	Transfered TV Show Season.
  *
  */
-function TransferTVShowSeason(key, start, fargoid, tvshowid)
+function TransferTVShowSeason(key, xbmcid, fargoid)
 {
     var a, b, a_chk, b_chk;
     var id, poster, fanart;
     var error = {code : -32602};
-    var end = Number(start) + 1; 
     
     if (fargoid < 0) {
         id = 16; // Import TV Show Season.
@@ -466,10 +465,10 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
     }
     
     // libTVShowSeasons -> library id = 15 or 16.
-    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons","params":' +
-                   '{"tvshowid":'+ tvshowid +',"limits":{"start":'+ start +',"end":' + end + '},' +
-                   '"properties":["episode","watchedepisodes","season","tvshowid","showtitle","playcount",' +
-                   '"thumbnail"]},"id":'+ id +'}';
+    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasonDetails","params":' + 
+                  '{"seasonid":' + xbmcid + 
+                  ',"properties":["episode","watchedepisodes","season","tvshowid","showtitle",' +
+                  '"playcount","thumbnail"]},"id":' + id + '}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,
@@ -481,13 +480,13 @@ function TransferTVShowSeason(key, start, fargoid, tvshowid)
         success: function(json) 
         {            
             json.key = key; 
-            if (json.result && json.result.seasons && json.result.limits.total > 0)
+            if (json.result && json.result.seasondetails)
             {
-                poster = CreateImageUrl(json.result.seasons[0].thumbnail);
+                poster = CreateImageUrl(json.result.seasondetails.thumbnail);
                 fanart = ""; //CreateImageUrl(json.result.seasons[0].fanart);
         
                 // Show title.
-                $("#info").text(json.result.seasons[0].showtitle);
+                $("#info").text(json.result.seasondetails.label);
         
                 // Draw image on canvas and wait until it's doen.
                 a = DrawImageOnCanvas("poster", poster);
