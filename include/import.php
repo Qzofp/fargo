@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 20, 2014
+ * Updated on Jan 21, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -179,8 +179,8 @@ function ProcessDataFromXbmc($db, $aData)
                   break;        
               
         // libTVShowEpisodesCounter -> library id = 31.  
-        case 31 : UpdateMediaEndValue($db, $aData["error"], "Episodes", $aData["start"]["episodes"][0]["episodeid"], $aData["result"]["episodes"][0]["episodeid"]);
-                  //UpdateStatus($db, "XbmcEpisodesEnd", $aData["result"]["episodes"][0]["episodeid"]);   
+        case 31 : UpdateStatus($db, "XbmcEpisodesEnd", $aData["result"]["limits"]["total"]);
+                  //UpdateMediaEndValue($db, $aData["error"], "Episodes", $aData["start"]["episodes"][0]["episodeid"], $aData["result"]["episodes"][0]["episodeid"]); 
                   break;
                        
         // libTVShowEpisode Import -> library id = 32.

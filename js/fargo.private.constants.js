@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Jan 20, 2014
+ * Updated on Jan 24, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -15,9 +15,9 @@
 // Trigger globals.
 var gTRIGGER = {
     START: 0,
-    STARTTV: 0,
+    COUNTER: 1,
     END: 0,
-    RETRY: 5,
+    RETRY: 25,
     STEP1: 1,
     STEP2: 2,
     READY: false,

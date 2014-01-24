@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jan 20, 2014
+ * Updated on Jan 21, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -572,7 +572,7 @@ function ProcessImportMode($mode)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Jan 18, 2014
+ * Updated on Jan 21, 2014
  *
  * Description: Reports the status of the import media process. 
  *
@@ -599,7 +599,7 @@ function GetMediaStatus($media, $id, $xbmcid)
         case "seasons"        : $aJson = GetSeriesImportStatus($db, "Seasons", "seasonid", $id, $xbmcid, cSEASONSTHUMBS);
                                 break;
                       
-        case "episodes"       : 
+        case "episodes"       : $aJson = GetSeriesImportStatus($db, "Episodes", "episodeid", $id, $xbmcid, cEPISODESTHUMBS);
                                 break;                      
                       
         case "music"          : $aJson = GetMusicImportStatus($db, $id, $xbmcid);
@@ -614,7 +614,7 @@ function GetMediaStatus($media, $id, $xbmcid)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Jan 20, 2014
+ * Updated on Jan 21, 2014
  *
  * Description: Reports the status of the import process.
  *
@@ -637,6 +637,8 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
     $aJson['title']  = GetItemFromDatabase($db, "title", $sql);
     $aJson['sub']    = "&nbsp;";
     
+    $aJson['counter'] = GetStatus($db, "Xbmc".$table."Start");    
+    
     return $aJson;
 }
 
@@ -644,7 +646,7 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
  * Function:	GetMusicImportStatus
  *
  * Created on Jan 18, 2013
- * Updated on Jan 20, 2014
+ * Updated on Jan 21, 2014
  *
  * Description: Reports the status of the Music import process.
  *
@@ -667,6 +669,8 @@ function GetMusicImportStatus($db, $id, $xbmcid)
     $aJson['title']  = GetItemFromDatabase($db, "title", $sql);
     $aJson['sub']    = "&nbsp;";
     
+    $aJson['counter'] = GetStatus($db, "XbmcMusicStart");
+    
     return $aJson;
 }
 
@@ -674,7 +678,7 @@ function GetMusicImportStatus($db, $id, $xbmcid)
  * Function:	GetSeriesImportStatus
  *
  * Created on Jan 20, 2014
- * Updated on Jan 20, 2014
+ * Updated on Jan 21, 2014
  *
  * Description: Reports the status of the series (seasons, episodes) import process.
  *
@@ -697,6 +701,8 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
     $sql = "SELECT title FROM $table ".
            "WHERE $typeid = $xbmcid";    
     $aJson['sub'] = GetItemFromDatabase($db, "title", $sql);
+    
+    $aJson['counter'] = GetStatus($db, "Xbmc".$table."Start");
     
     return $aJson;
 }
