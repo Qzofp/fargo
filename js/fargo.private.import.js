@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jan 24, 2014
+ * Updated on Jan 26, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -197,6 +197,7 @@ function StartOnlineHandler(media, type, next, online, retry)
     gTRIGGER.STEP1 = next - 1;
     if (retry) {
         next = gTRIGGER.STEP2;
+        console.log('STEP 2: ' + next); //debug
     }
     
     // Returns cCONNECT, gTRIGGER.START and gTRIGGER.END.
@@ -267,7 +268,7 @@ function StartOnlineCheck(type, retry)
  * Function:	StartMetaImportHandler
  *
  * Created on Jan 12, 2014
- * Updated on Jan 24, 2014
+ * Updated on Jan 26, 2014
  *
  * Description:  Start the meta import handler.
  * 
@@ -291,7 +292,7 @@ function StartMetaImportHandler(media, type, next)
     $tit.html("&nbsp;");
     $sub.html("&nbsp;");    
     
-    gTRIGGER.STEP2 = next;
+    gTRIGGER.STEP2 = next - 1;
         
     if (gTRIGGER.END >= 0)
     {
@@ -398,7 +399,7 @@ function ShowMetaProgress($prg, type, i, end)
  * Function:	StartImportHandler
  *
  * Created on Jan 14, 2014
- * Updated on Jan 24, 2014
+ * Updated on Jan 26, 2014
  *
  * Description:  Start the media import handler.
  * 
@@ -418,8 +419,13 @@ function StartImportHandler(media, type, next, factor)
     
     var delta = gTRIGGER.END - gTRIGGER.START;     
     
-    gTRIGGER.STEP2 = next - 1;
-    
+    if (type == "seasons") {
+        gTRIGGER.STEP2 = next - 2;
+    }
+    else {
+        gTRIGGER.STEP2 = next - 1;
+    }
+
     $prg.progressbar({value : 0 });
     //$img.removeAttr("src").attr("src", "");
     //$tit.html("&nbsp;");
@@ -632,7 +638,7 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
  * Function:	StartSeasonsMetaImportHandler
  *
  * Created on Jan 20, 2014
- * Updated on Jan 24, 2014
+ * Updated on Jan 26, 2014
  *
  * Description:  Start the seasons meta import handler.
  * 
@@ -654,7 +660,7 @@ function StartSeasonsMetaImportHandler(media, type, next)
     $tit.html("&nbsp;");
     $sub.html("&nbsp;");     
     
-    gTRIGGER.STEP2 = next;
+    gTRIGGER.STEP2 = next - 1;
         
     if (gTRIGGER.END >= 0)
     {

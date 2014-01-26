@@ -17,7 +17,7 @@ var gTRIGGER = {
     START: 0,
     COUNTER: 1,
     END: 0,
-    RETRY: 25,
+    RETRY: 10,
     STEP1: 1,
     STEP2: 2,
     READY: false,

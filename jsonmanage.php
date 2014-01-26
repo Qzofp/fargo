@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jan 21, 2014
+ * Updated on Jan 26, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -434,7 +434,7 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jan 19, 2014
+ * Updated on Jan 26, 2014
  *
  * Description: Reset the status. 
  *
@@ -452,8 +452,8 @@ function ResetStatus($media, $retry)
         $media = "seasons";
     }
     
-    if ($retry == "false") {
-        
+    if ($retry == "false" || $media == "seasons")
+    {    
         if ($media != "music") {
            EmptyTable($db, $media."meta");
         }
@@ -719,7 +719,7 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
  * Out: $aJson
  *
  */
-function GetMediaStatusOld($mode, $media, $id) // obsolete
+/*function GetMediaStatusOld($mode, $media, $id) // obsolete
 {
     $aJson = null;   
     $db = OpenDatabase();
@@ -762,7 +762,7 @@ function GetMediaStatusOld($mode, $media, $id) // obsolete
     
     CloseDatabase($db);
     return $aJson;
-}
+}*/
 
 /*
  * Function:	GetImportRefreshStatus
@@ -776,7 +776,7 @@ function GetMediaStatusOld($mode, $media, $id) // obsolete
  * Out: $aJson
  *
  */
-function GetImportRefreshStatus($db, $mode, $media, $id, $nameid, $thumbs)
+/*function GetImportRefreshStatus($db, $mode, $media, $id, $nameid, $thumbs)
 {
     $aJson['id']  = 0;
     $aJson['refresh'] = 0;
@@ -831,7 +831,7 @@ function GetImportRefreshStatus($db, $mode, $media, $id, $nameid, $thumbs)
     //CloseDatabase($db);
 
     return $aJson;
-}
+}*/
 
 /*
  * Function:	GetSeasonsImportRefreshStatus
@@ -845,7 +845,7 @@ function GetImportRefreshStatus($db, $mode, $media, $id, $nameid, $thumbs)
  * Out: $aJson
  *
  */
-function GetSeasonsImportRefreshStatus($db, $mode, $seasonid, $thumbs)
+/*function GetSeasonsImportRefreshStatus($db, $mode, $seasonid, $thumbs)
 {
     $aJson['id']      = 0;
     $aJson['refresh'] = 0;
@@ -907,7 +907,7 @@ function GetSeasonsImportRefreshStatus($db, $mode, $seasonid, $thumbs)
     //CloseDatabase($db);
 
     return $aJson;
-}
+}*/
 
 /*
  * Function:	GetEpisodesImportRefreshStatus
@@ -921,7 +921,7 @@ function GetSeasonsImportRefreshStatus($db, $mode, $seasonid, $thumbs)
  * Out: $aJson
  *
  */
-function GetEpisodesImportRefreshStatus($db, $mode, $id, $thumbs)
+/*function GetEpisodesImportRefreshStatus($db, $mode, $id, $thumbs)
 {
     $aJson['id']  = 0;
     $aJson['refresh'] = 0;
@@ -976,7 +976,7 @@ function GetEpisodesImportRefreshStatus($db, $mode, $id, $thumbs)
     //CloseDatabase($db);
 
     return $aJson;
-}
+}*/
 
 /*
  * Function:	GetTVShowsIds

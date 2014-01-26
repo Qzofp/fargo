@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jan 25, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -1045,7 +1045,7 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
  * Function:	CreateSeriesQuery
  *
  * Created on Apr 08, 2013
- * Updated on Dec 07, 2013
+ * Updated on Jan 25, 2014
  *
  * Description: Create the sql query for the media TV shows table. 
  *
@@ -1055,8 +1055,8 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
  */
 function CreateSeriesQuery($title, $genre, $year, $sort, $login)
 {   
-    $sql = "SELECT DISTINCT  CONCAT(t.id, '_', s.seasons) AS id, CONCAT(t.xbmcid, '_', s.season) AS xbmcid, t.hide, t.refresh, t.title ".
-           "FROM (SELECT tvshowid, COUNT(season) AS seasons, season FROM seasons GROUP BY tvshowid) s ".
+    $sql = "SELECT DISTINCT  CONCAT(t.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, t.hide, t.refresh, t.title ".
+           "FROM (SELECT seasonid, tvshowid, COUNT(season) AS seasons, season FROM seasons GROUP BY tvshowid) s ".
            "JOIN tvshows t ON s.tvshowid = t.xbmcid ";
     
     $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
@@ -1069,7 +1069,7 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateSeasonsQuery
  *
  * Created on Nov 12, 2013
- * Updated on Nov 25, 2013
+ * Updated on Jan 25, 2014
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -1079,7 +1079,7 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
  */
 function CreateSeasonsQuery($id, $login)
 {
-    $sql = "SELECT CONCAT(id, '_', season) AS id, CONCAT(tvshowid, '_', season) AS xbmcid, hide, refresh, title ".
+    $sql = "SELECT CONCAT(id, '_', season) AS id, seasonid AS xbmcid, hide, refresh, title ".
            "FROM seasons WHERE tvshowid = (SELECT xbmcid FROM tvshows WHERE id = $id) ";
     
     // Hide media items if not login.
