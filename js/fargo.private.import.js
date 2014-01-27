@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jan 26, 2014
+ * Updated on Jan 27, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -197,11 +197,11 @@ function StartOnlineHandler(media, type, next, online, retry)
     gTRIGGER.STEP1 = next - 1;
     if (retry) {
         next = gTRIGGER.STEP2;
-        console.log('STEP 2: ' + next); //debug
+        //console.log('STEP 2: ' + next); //debug
     }
     
     // Returns cCONNECT, gTRIGGER.START and gTRIGGER.END.
-    var start = StartOnlineCheck(type, retry);
+    var start = StartOnlineCheck(type);
     start.done (function() {
         
         if (online || retry) {
@@ -210,7 +210,7 @@ function StartOnlineHandler(media, type, next, online, retry)
         
         SetStartImportHandler(media, next, retry);      
     }).fail (function() {
-        ShowOffline(); 
+        ShowOffline(true); 
     }); // End Start.    
 }
 
@@ -218,7 +218,7 @@ function StartOnlineHandler(media, type, next, online, retry)
  * Function:	StartOnlineCheck
  *
  * Created on Jul 14, 2013
- * Updated on Jan 19, 2014
+ * Updated on Jan 27, 2014
  *
  * Description:  Check if XBMC is online.
  * 
@@ -228,14 +228,14 @@ function StartOnlineHandler(media, type, next, online, retry)
  * Note : Init globals cCONNECT, gTRIGGER.START and gTRIGGER.END.
  *
  */
-function StartOnlineCheck(type, retry)
+function StartOnlineCheck(type)
 {
     var deferred = $.Deferred();
     //InitImportBox();
     
     // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
-        url: 'jsonmanage.php?action=reset&media=' + type + '&retry=' + retry,
+        url: 'jsonmanage.php?action=reset&media=' + type,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -307,7 +307,7 @@ function StartMetaImportHandler(media, type, next)
                 SetStartImportHandler(media, next, false); // Continue with the next step.
             }
         }).fail (function() {
-            ShowOffline(); 
+            ShowOffline(true); 
         });
     }         
 }
@@ -316,7 +316,7 @@ function StartMetaImportHandler(media, type, next)
  * Function:	StartMetaImport
  *
  * Created on Jan 12, 2014
- * Updated on Jan 24, 2014
+ * Updated on Jan 27, 2014
  *
  * Description: Control and Import the media meta data transfered from XBMC.
  *
@@ -327,28 +327,39 @@ function StartMetaImportHandler(media, type, next)
 function StartMetaImport(type, end)
 {
     var deferred = $.Deferred();   
-    var url = GetTransferUrl() + "/fargo/meta.html?action=" + type + "&counter=" + 0 + "&key=" + gCONNECT.KEY;
-    var currentStep = ImportData(url, 0);  
     
-    deferred.notify(0);
+    $.ajax({ 
+        url: 'jsonmanage.php?action=initmeta&type=' + type,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {      
+            var url = GetTransferUrl() + "/fargo/meta.html?action=" + type + "&counter=" + 0 + "&key=" + gCONNECT.KEY;
+            var currentStep = ImportData(url, 0);  
     
-    for(var i = 1; i < end; i++)
-    {       
-        //console.log("Meta Counter: " + i);
-        currentStep = currentStep.pipe(function(j){
-            if (!gTRIGGER.CANCEL) {
-                deferred.notify(++j);
-                url = GetTransferUrl() + "/fargo/meta.html?action=" + type + "&counter=" + j + "&key=" + gCONNECT.KEY;
-                return ImportData(url, j);
+            deferred.notify(0);
+    
+            for(var i = 1; i < end; i++)
+            {       
+                //console.log("Meta Counter: " + i);
+                currentStep = currentStep.pipe(function(j){
+                    if (!gTRIGGER.CANCEL) 
+                    {
+                        deferred.notify(++j);
+                        url = GetTransferUrl() + "/fargo/meta.html?action=" + type + "&counter=" + j + "&key=" + gCONNECT.KEY;
+                        return ImportData(url, j);
+                    }
+                });
             }
-        });
-    }
-    $.when(currentStep).done(function(){
-        //console.log("All steps done.");
-        deferred.resolve();
-    }).fail(function(){
-        deferred.reject();
-    });
+            $.when(currentStep).done(function(){
+                //console.log("All steps done.");
+                deferred.resolve();
+            }).fail(function(){
+                deferred.reject();
+            });
+ 
+        } // End succes.    
+    }); // End Ajax.       
     
     return deferred.promise();
 }
@@ -458,7 +469,7 @@ function StartImportHandler(media, type, next, factor)
                     }, gCONNECT.TIMEOUT);
                 }
             }).fail (function() {
-                ShowOffline(); 
+                ShowOffline(true); 
             });
         }    
     }, gCONNECT.TIMEOUT); // End setTimeout.
@@ -468,7 +479,7 @@ function StartImportHandler(media, type, next, factor)
  * Function:	StartImport
  *
  * Created on Jan 14, 2014
- * Updated on Jan 24, 2014
+ * Updated on Jan 27, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
@@ -501,8 +512,11 @@ function StartImport(type, factor)
                 deferred.resolve(); // End Import.
             }
             
-            if (retry > gTRIGGER.RETRY) {
-                console.log("Retry import...");
+            if (retry > gTRIGGER.RETRY) 
+            {
+                gTRIGGER.CANCEL = true;
+                ShowOffline(false);
+                //console.log("Retry import...");
             }         
             // End status check.
             clearInterval(status); 
@@ -679,7 +693,7 @@ function StartSeasonsMetaImportHandler(media, type, next)
                 SetStartImportHandler(media, next, false); // Continue with the next step.
             }
         }).fail (function() {
-            ShowOffline(); 
+            ShowOffline(true); 
         });
     }         
 }
@@ -1068,17 +1082,23 @@ function ShowNoNewMedia(media, callback) // Obsolete
  * Function:	ShowOffline
  *
  * Created on Aug 19, 2013
- * Updated on Sep 30, 2013
+ * Updated on Jan 27, 2014
  *
  * Description: Show offline message and add to log event.
  * 
- * In:	msg
+ * In:	offline
  * Out:	-
  *
  */
-function ShowOffline()
+function ShowOffline(offline)
 {
-    $("#action_box .message").html(cSTATUS.OFFLINE);
+    if (offline) {
+        $("#action_box .message").html(cSTATUS.OFFLINE);
+    }
+    else {
+        $("#action_box .message").html(cSTATUS.LOST);
+    }
+    
     SetState("xbmc", "offline");
     
     $(".cancel").toggleClass("cancel retry");    

@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jan 26, 2014
+ * Updated on Jan 27, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -61,8 +61,8 @@ switch($action)
     case "reset"    : if($login) 
                       {
                          $media   = GetPageValue('media');
-                         $retry   = GetPageValue('retry');
-                         $aJson   = ResetStatus($media, $retry);
+                         //$retry   = GetPageValue('retry');
+                         $aJson   = ResetStatus($media);
                       }
                       else {
                          $aJson = LogEvent("Warning", "Unauthorized reset action call!");
@@ -112,17 +112,27 @@ switch($action)
                       }                        
                       break;
                       
+    case "initmeta" : if($login)
+                      { 
+                        $type  = GetPageValue('type');
+                        $aJson = InitMeta($type);
+                      }
+                      else {
+                         $aJson = LogEvent("Warning", "Unauthorized init meta action call!");
+                      }                    
+                      break;                   
+                      
     case "tvshowids": // Get TV Shows id's to retrieve the Seasons meta data.
-                     if($login)
-                     { 
-                        $start  = GetPageValue('start');
-                        $offset = GetPageValue('offset');
-                        $aJson  = GetTVShowsIds($start, $offset);
-                     }
-                     else {
-                        $aJson = LogEvent("Warning", "Unauthorized series (meta data) action call!");
-                     }                    
-                     break;      
+                      if($login)
+                      { 
+                         $start  = GetPageValue('start');
+                         $offset = GetPageValue('offset');
+                         $aJson  = GetTVShowsIds($start, $offset);
+                      }
+                      else {
+                         $aJson = LogEvent("Warning", "Unauthorized series (meta data) action call!");
+                      }                    
+                      break;      
                       
     case "convert" : // Convert TV show id's to season id's for refresh serie.
                      if($login)
@@ -434,15 +444,15 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jan 26, 2014
+ * Updated on Jan 27, 2014
  *
  * Description: Reset the status. 
  *
- * In:  $media, $retry
+ * In:  $media
  * Out: $aJson
  *
  */
-function ResetStatus($media, $retry)
+function ResetStatus($media)
 {       
     $aJson = null;
     
@@ -452,7 +462,7 @@ function ResetStatus($media, $retry)
         $media = "seasons";
     }
     
-    if ($retry == "false" || $media == "seasons")
+    /*if ($retry == "false" || $media == "seasons")
     {    
         if ($media != "music") {
            EmptyTable($db, $media."meta");
@@ -460,7 +470,7 @@ function ResetStatus($media, $retry)
         else {
            EmptyTable($db, "albumsmeta"); 
         }
-    }
+    }*/
     
     UpdateStatus($db, "ImportCounter", 0);
     UpdateStatus($db, "Xbmc".$media."End", -1);
@@ -978,32 +988,7 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
     return $aJson;
 }*/
 
-/*
- * Function:	GetTVShowsIds
- *
- * Created on Jan 20, 2014
- * Updated on Jan 20, 2014
- *
- * Description: Get TV Shows id's to retrieve the Seasons meta data.. 
- *
- * In:  $start, $offset
- * Out: $aJson
- *
- */
-function GetTVShowsIds($start, $offset)
-{
-    $aJson = null;
-    $db = OpenDatabase();
-    
-    $sql = "SELECT tvshowid FROM tvshowsmeta ".
-           "LIMIT $start, $offset";
-    
-    $aJson["tvshowids"] = GetItemsFromDatabase($db, $sql);
-    
-    CloseDatabase($db); 
-    
-    return $aJson;
-}
+
 
 /*
  * Function:	ConvertTVShowToSeasonID
@@ -1017,7 +1002,7 @@ function GetTVShowsIds($start, $offset)
  * Out: $aJson
  *
  */
-function ConvertTVShowToSeasonID($id)
+function ConvertTVShowToSeasonID($id) // Obsolete?
 {
     $db = OpenDatabase();    
     
@@ -1027,6 +1012,67 @@ function ConvertTVShowToSeasonID($id)
     
     CloseDatabase($db); 
     
+    return $aJson;
+}
+
+//////////////////////////////////////////    Meta Functions    ///////////////////////////////////////////
+
+/*
+ * Function:	InitMeta
+ *
+ * Created on Jan 27, 2014
+ * Updated on Jan 27, 2014
+ *
+ * Description: Initialize meta data (empty meta tables).
+ *
+ * In:  $type
+ * Out: $aJson
+ *
+ */
+function InitMeta($type)
+{
+    $aJson = null;
+    $db = OpenDatabase();
+    
+    if ($type != "music") {
+        EmptyTable($db, $type."meta");
+    }
+    else {
+        EmptyTable($db, "albumsmeta"); 
+    }    
+
+    $aJson['status'] = "ready";
+    
+    CloseDatabase($db); 
+    return $aJson;
+}
+
+/*
+ * Function:	GetTVShowsIds
+ *
+ * Created on Jan 20, 2014
+ * Updated on Jan 20, 2014
+ *
+ * Description: Get TV Shows id's to retrieve the Seasons meta data.
+ *
+ * In:  $start, $offset
+ * Out: $aJson
+ *
+ */
+function GetTVShowsIds($start, $offset)
+{
+    $aJson = null;
+    $db = OpenDatabase();
+    
+    // Init meta for seasons.
+    EmptyTable($db, "seasonsmeta");     
+    
+    $sql = "SELECT tvshowid FROM tvshowsmeta ".
+           "LIMIT $start, $offset";
+    
+    $aJson["tvshowids"] = GetItemsFromDatabase($db, $sql);
+    
+    CloseDatabase($db); 
     return $aJson;
 }
 

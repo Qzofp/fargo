@@ -237,7 +237,7 @@ function SetActionHandler(event)
     var step = 1;
     if (event.data.retry) {
         step = gTRIGGER.STEP1;
-        console.log('STEP 1: ' + step);  //Debug.
+        //console.log('STEP 1: ' + step);  //Debug.
     }
     
     gTRIGGER.CANCEL = false;
