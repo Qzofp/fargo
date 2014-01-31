@@ -7,7 +7,7 @@
  * File:    meta.php
  *
  * Created on Jan 10, 2014
- * Updated on Jan 27, 2014
+ * Updated on Jan 28, 2014
  *
  * Description: Fargo's meta data import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -32,7 +32,7 @@ if($login)
 }
 else 
 {
-    $aJson = LogEvent("Warning", "Unauthorized import call!");
+    $aJson = LogEvent("Warning", "Unauthorized meta import call!");
     echo json_encode($aJson);
 }
 
@@ -100,15 +100,15 @@ function ProcessMetaData($db, $aData)
         case 1: ImportMediaMeta($db, $aData, "movies", "movieid");
                 break;
             
-         // libMovieSets -> library id = 2.    
+        // libMovieSets -> library id = 2.    
         case 2: ImportMediaMeta($db, $aData, "sets", "setid");
                 break;
             
-         // libTVShows -> library id = 3.    
+        // libTVShows -> library id = 3.    
         case 3: ImportMediaMeta($db, $aData, "tvshows", "tvshowid");
                 break;  
           
-         // libTVShowSeasons -> library id = 4.   
+        // libTVShowSeasons -> library id = 4.   
         case 4: ImportSeasonsMeta($db, $aData);
                 break;             
             

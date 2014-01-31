@@ -6,7 +6,7 @@
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Jan 20, 2014
+ * Updated on Jan 29, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	Transfer
  *
  * Created on Jul 13, 2013
- * Updated on Jan 20, 2014
+ * Updated on Jan 29, 2014
  *
  * Description: Transfers data from XBMC to Fargo.
  * 
@@ -32,10 +32,10 @@ function Transfer()
     
     switch(aRequest.action)
     {
-        case "counter"  : TransferMediaCounter(aRequest.key, aRequest.media, aRequest.tvshowid);
+        case "counter"  : TransferMediaCounter(aRequest.key, aRequest.media);
                           break;
                           
-        case "prepare"  : //TransferPrepareRefresh(aRequest.key, aRequest.media, aRequest.title);
+        case "search"   : SearchAndTransferTitle(aRequest.key, aRequest.media, aRequest.fargoid, aRequest.title);
                           break;
 
         case "movies"   : TransferMovie(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
@@ -62,45 +62,37 @@ function Transfer()
  * Function:	TransferMediaCounter
  *
  * Created on Jul 22, 2013
- * Updated on Oct 26, 2013
+ * Updated on Jan 28, 2014
  *
  * Description: Transfers media counter (e.g. total number of movies) from XBMC to Fargo.
  * 
- * In:	media, key, id
+ * In:	media, key
  * Out:	Transfered media counter.
  *
  */
-function TransferMediaCounter(key, media, id)
+function TransferMediaCounter(key, media)
 {
     switch (media)
     {
-        case "movies"    : // libMoviesCounter -> library id = 1.
-                           RequestCounter("VideoLibrary.GetMovies", 1, key);
-                           break;
+        case "movies"   : // libMoviesCounter -> library id = 1.
+                          RequestCounter("VideoLibrary.GetMovies", 1, key);
+                          break;
 
-        case "sets"      : // libMovieSetsCounter -> library id = 4.
-                           RequestCounter("VideoLibrary.GetMovieSets", 4, key);         
-                           break;        
+        case "sets"     : // libMovieSetsCounter -> library id = 4.
+                          RequestCounter("VideoLibrary.GetMovieSets", 4, key);         
+                          break;        
             
-        case "tvshows"   : // libTVShowsCounter -> library id = 11.
-                           RequestCounter("VideoLibrary.GetTVShows", 11, key);
-                           break;
-                         
-        //case "tvseasons" : // libTVShowsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
-        //                   RequestCounter("VideoLibrary.GetTVShows", 14, key);
-        //                   break;                      
-                         
-        //case "seasons"   : // libTVShowSeasonsCounter -> library id = 15.
-        //                   RequestSeasonCounter(id, 15, key);
-        //                   break;
-                       
+        case "tvshows"  : // libTVShowsCounter -> library id = 11.
+                          RequestCounter("VideoLibrary.GetTVShows", 11, key);
+                          break;
+                                 
         case "episodes" : // libTVShowEpisodesCounter -> library id = 31.
-                           RequestCounter("VideoLibrary.GetEpisodes", 31, key);
-                           break;                         
+                          RequestCounter("VideoLibrary.GetEpisodes", 31, key);
+                          break;                         
         
-        case "music"   :   // libAlbumsCounter -> library id = 21.
-                           RequestCounter("AudioLibrary.GetAlbums", 41, key);
-                           break;
+        case "music"    : // libAlbumsCounter -> library id = 21.
+                          RequestCounter("AudioLibrary.GetAlbums", 41, key);
+                          break;
     }
 }
 
@@ -108,7 +100,7 @@ function TransferMediaCounter(key, media, id)
  * Function:	RequestCounter
  *
  * Created on Oct 06, 2013
- * Updated on Jan 12, 2014
+ * Updated on Jan 28, 2014
  *
  * Description: JSON Request XBMC media counter and the media highest id.
  * 
@@ -122,11 +114,10 @@ function RequestCounter(library, id, key)
                       '"params":{"limits":{"start":0,"end":1}},"id":"' + id + '"}';
     
     // Get media total (counter) from XBMC.
-    $.getJSON("../jsonrpc?request=" + counter_req, function(json) // First request.
+    $.getJSON("../jsonrpc?request=" + counter_req, function(json)
     {
         json.key = key;
         TransferData(json, cIMPORT);
-        //}
     }); // End getJSON.         
 }
 
@@ -142,7 +133,7 @@ function RequestCounter(library, id, key)
  * Out: json
  *
  */
-function RequestSeasonCounter(tvshowid, id, key)
+/*function RequestSeasonCounter(tvshowid, id, key)  // Obsolete
 {
     var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons",' +
                    '"params":{"tvshowid":'+ tvshowid +',"limits":{"start":0,"end":1}},' +
@@ -153,6 +144,69 @@ function RequestSeasonCounter(tvshowid, id, key)
     {
         json.key = key;
         TransferData(json, cIMPORT);  // Tranfer data to Fargo.               
+    }); // End getJSON.         
+}*/
+
+/*
+ * Function:	SearchAndTransferTitle
+ *
+ * Created on Jan 28, 2014
+ * Updated on Jan 29, 2014
+ *
+ * Description: Search andtransfer title from XBMC to Fargo.
+ * 
+ * In:	key, media, title
+ * Out:	Transfered search results.
+ *
+ */
+function SearchAndTransferTitle(key, media, fargoid, title)
+{
+    switch (media)
+    {
+        case "movies"   : TransferTitle(key, "VideoLibrary.GetMovies", fargoid, title, 1);
+                          break;
+
+        case "sets"     :    
+                          break;        
+            
+        case "tvshows"  : 
+                          break;
+                                                       
+        case "seasons"  : 
+                          break;
+                       
+        case "episodes" :
+                          break;                         
+        
+        case "music"    : 
+                          break;
+    }
+}
+
+/*
+ * Function:	TransferTitle
+ *
+ * Created on Jan 28, 2014
+ * Updated on Jan 29, 2014
+ *
+ * Description: JSON Request XBMC media title and transfer title to Fargo.
+ * 
+ * In:	key, library, fargoid, title
+ * Out: json.counter, json.maxid
+ *
+ */
+function TransferTitle(key, library, fargoid, title, id)
+{    
+    var search_req = '{"jsonrpc": "2.0", "params": {"sort": {"method": "label"}, "filter":' +
+                     '{"operator": "contains", "field": "title", "value": "' + title + '"}},' +
+                     '"method": "' + library + '", "id": "'+ id +'"}';
+    
+    // Get media total (counter) from XBMC.
+    $.getJSON("../jsonrpc?request=" + search_req, function(json)
+    {
+        json.key = key;
+        json.fargoid = fargoid;
+        TransferData(json, cSEARCH);
     }); // End getJSON.         
 }
 

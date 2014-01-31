@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Jan 31, 2014
+ * Updated on Dec 24, 2013
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,20 +18,19 @@
  * Function:	PrepareRefreshHandler
  *
  * Created on Nov 23, 2013
- * Updated on Jan 31, 2014
+ * Updated on Dec 10, 2013
  *
  * Description: Prepare the refresh handler, show the refresh popup box and start the refresh.
  * 
- * In:	type, $popup
+ * In:	type, id, xbmcid
  * Out:	title
  *
  */
-function PrepareRefreshHandler(type, $popup) // May be not necessary and can be replaced with StartRefreshOnlineHandler!
+function PrepareRefreshHandler(type, id, xbmcid)
 {
     switch(type)
     {
-        case "titles"   : StartRefreshOnlineHandler("movies", "movies", $popup);
-                          //SetStartRefreshHandler("movies", id, xbmcid, -1);
+        case "titles"   : SetStartRefreshHandler("movies", id, xbmcid, -1);
                           break;
                           
         case "sets"     : SetStartRefreshHandler("sets", id, xbmcid, -1);
@@ -66,198 +65,6 @@ function PrepareRefreshHandler(type, $popup) // May be not necessary and can be 
 }
 
 /*
- * Function:	StartRefreshOnlineHandler
- *
- * Created on Jan 31, 2014
- * Updated on Jan 31, 2014
- *
- * Description:  Check if XBMC is online handler for refresh media.
- * 
- * In:	media, type, $popup
- * Out:	Globals cCONNECT, gTRIGGER.START and gTRIGGER.END
- *
- * Note : Init globals cCONNECT, gTRIGGER.START and gTRIGGER.END.
- *
- */
-function StartRefreshOnlineHandler(media, type, $popup)
-{   
-    InitImportBox();
-    
-    // Returns cCONNECT, gTRIGGER.START and gTRIGGER.END.
-    var start = StartOnlineCheck(type);
-    start.done (function() {
-    
-        $("#action_box .message").html(cSTATUS.ONLINE);
-        StartRefreshHandler(media, type, $popup);
-        
-    }).fail (function() {
-        ShowOffline(true); 
-    }); // End Start.    
-}
-
-/*
- * Function:	StartRefreshHandler
- *
- * Created on Sep 14, 2013
- * Updated on Jan 31, 2014
- *
- * Description: Set the refresh handler and start the refresh.
- * 
- * In:	media, type, $popup
- * Out:	-
- *
- */
-function StartRefreshHandler(media, type, $popup)
-{
-    
-    var $prg = $("#action_box .progress");
-    var $img = $("#action_thumb img");
-    var $tit = $("#action_title");
-    var $sub = $("#action_sub");
-    var $msg = $("#action_box .message");
-    
-    var fargoid = $popup.find(".id").text();
-    var xbmcid  = $popup.find(".xbmcid").text();
-    //var title   = $popup.find("#action_title").text();
-    
-    console.log("1. Start Refresh Handler " + fargoid + " " + xbmcid); // debug
-    //console.log(title);
-    //$msg.html(cSTATUS.WAIT);
-    
-    setTimeout(function() {
-    
-        //LogEvent("Information", "Refresh " + ConvertMedia(media) + " started.");
-            
-        var start = StartRefresh(type, fargoid, xbmcid);
-        start.progress(function(i, id) {
-            //ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta);
-            console.log("Counter: " + i + " " + id); // debug.
-        });
-            
-        start.done (function() {
-            if (!gTRIGGER.CANCEL) 
-            {
-                setTimeout(function() {
-                   ShowRefreshFinished(media);
-                }, gCONNECT.TIMEOUT);
-            }
-        }).fail (function() {
-            ShowOffline(true); 
-        });
-         
-    }, gCONNECT.TIMEOUT); // End setTimeout.
-}
-
-/*
- * Function:	StartRefresh
- *
- * Created on Sep 14, 2013
- * Updated on Jan 31, 2013
- *
- * Description: Control and Refresh the media transfered from XBMC.
- *
- * In:	type, fargoid, xbmcid
- * Out:	Refreshed media
- *
- */
-function StartRefresh(type, fargoid, xbmcid)
-{
-    var deferred = $.Deferred(); 
-    var url, ready;
-    var start = 0;
-    var retry = 0;
-        
-    // Get status (returns gMEDIA and gTRIGGER.STATUS)
-    GetMediaStatus(type, fargoid, xbmcid);    
-    
-    // Check media status.
-    var status = setInterval(function()
-    {     
-        if (gTRIGGER.CANCEL || retry > gTRIGGER.RETRY)
-        {
-            deferred.notify(start, xbmcid);// Show status.
-            deferred.resolve(); // End Import.
-
-            if (retry > gTRIGGER.RETRY) 
-            {
-                gTRIGGER.CANCEL = true;
-                ShowOffline(false);
-            }
-            
-            // End status check.
-            clearInterval(status); 
-        }
-        else
-        {           
-            // Get status (returns gMEDIA and gTRIGGER.STATUS).
-            GetMediaStatus(type, fargoid, xbmcid);            
-            switch (gTRIGGER.STATUS)
-            {
-                case -999 : // Error.
-                            break;
-                            
-                case -1   : // Wait
-                            break;
-                            
-                case 1    : // Match, refresh media.
-                            break;
-                            
-                case 2    : // Match title but not fargoid.
-                            break;
-                            
-                case 3    : // Title doesn't match, use id to get media.
-                            // Not implemented yet... 
-                            break;
-            }
-                
-            if (gMEDIA.TITLE) {            
-                deferred.notify(start, xbmcid);// Show status.
-            }
-            
-            retry++;
-        }
-    }, gCONNECT.TIMEOUT);    
-    
-    // Refresh media.
-    (function setImportTimer() 
-    {
-        if (gTRIGGER.CANCEL) {              
-            return; // End Refresh.
-        } 
-
-        
-        if (gMEDIA.XBMCID != xbmcid)
-        {
-            xbmcid = gMEDIA.XBMCID;
-               
-            url = GetTransferUrl() + "/fargo/transfer.html?action=" + type + "&xbmcid=" + gMEDIA.XBMCID + "&fargoid=-1" + "&key=" + gCONNECT.KEY;
-            
-            ready = ImportData(url, 0);
-            ready.done(function() {
-                //start++;
-                retry = 0;
-            }).fail(function() {
-                console.log("Failure..."); //debug
-                gTRIGGER.CANCEL = true;
-                deferred.reject();
-            }); // End Ready.
-        }
-               
-        // Timeout is set in the Fargo system screen.
-        setTimeout(setImportTimer, gCONNECT.TIMEOUT);
-    }()); // End setImportTimer. 
-    
-    return deferred.promise();    
-}
-
-
-
-
-
-
-
-
-/*
  * Function:	ConvertAndStartSeriesRefresh
  *
  * Created on Dec 10, 2013
@@ -269,7 +76,7 @@ function StartRefresh(type, fargoid, xbmcid)
  * Out:	-
  *
  */
-function ConvertAndStartSeriesRefresh(id, start, tvshowid) // Obsolete?
+function ConvertAndStartSeriesRefresh(id, start, tvshowid)
 {
     $.ajax({
         url: 'jsonmanage.php?action=convert&id=' + id,
@@ -296,7 +103,7 @@ function ConvertAndStartSeriesRefresh(id, start, tvshowid) // Obsolete?
  * Out:	-
  *
  */
-function SetStartRefreshHandler_old(media, id, xbmcid, tvshowid)  // Obsolete
+function SetStartRefreshHandler(media, id, xbmcid, tvshowid)
 {
     InitImportBox();
     
@@ -354,7 +161,7 @@ function SetStartRefreshHandler_old(media, id, xbmcid, tvshowid)  // Obsolete
  * Out:	Refreshed media
  *
  */
-function StartRefresh_old(xbmc, media, id, xbmcid, tvshowid) // Obsolete
+function StartRefresh(xbmc, media, id, xbmcid, tvshowid)
 {
     var retry   = 0;
     var delay   = 0;
@@ -419,7 +226,7 @@ function StartRefresh_old(xbmc, media, id, xbmcid, tvshowid) // Obsolete
  * Out:	Status
  *
  */
-function ShowRefreshStatus(media, id, percent) // Obsolete
+function ShowRefreshStatus(media, id, percent)
 {   
     $.ajax({
         url: 'jsonmanage.php?action=status&media=' + media + '&mode=refresh' + '&id=' + id,

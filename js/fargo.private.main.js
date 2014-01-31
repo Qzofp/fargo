@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jan 20, 2014
+ * Updated on Jan 31, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -220,7 +220,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Jan 19, 2014
+ * Updated on Jan 31, 2014
  *
  * Description: Perform action
  * 
@@ -231,8 +231,8 @@ function ChangeSubControlBar(media)
 function SetActionHandler(event)
 {    
     var $popup = $(".popup:visible");
-    var media = GetState("media");
-    var type  = GetState("type");
+    var media  = GetState("media");
+    var type   = GetState("type");
 
     var step = 1;
     if (event.data.retry) {
@@ -244,10 +244,10 @@ function SetActionHandler(event)
     
     switch($popup.find(".title").text().split(" ")[0])
     {
-        case cIMPORT.REFRESH : PrepareRefreshHandler(type, $popup.find(".id").text(), $popup.find(".xbmcid").text());                        
-                                break;
+        case cIMPORT.REFRESH : PrepareRefreshHandler(type, $popup);                        
+                               break;
                            
-        case "Remove"        : SetRemoveHandler($popup.find(".id").text(), $popup.find(".xbmcid").text());
+        case "Remove"        : SetRemoveHandler($popup);
                                break;
                            
         case "Cleaning"      : SetCleanDatabaseHandler();
@@ -264,18 +264,21 @@ function SetActionHandler(event)
  * Function:	SetRemoveHandler
  *
  * Created on Oct 05, 2013
- * Updated on Nov 28, 2013
+ * Updated on Jan 31, 2014
  *
  * Description: Remove media from Frago handler.
  * 
- * In:	id, xbmcid
+ * In:	$popup
  * Out:	-
  *
  */
-function SetRemoveHandler(id, xbmcid)
+function SetRemoveHandler($popup)
 {
     var $remove, finish;
     var media, type, title;
+    
+    var fargoid = $popup.find(".id").text();
+    var xbmcid  = $popup.find(".xbmcid").text();
     
     finish = 3 + Math.floor(Math.random() * 3);
     media  = GetState("media");
@@ -287,7 +290,7 @@ function SetRemoveHandler(id, xbmcid)
     $remove.show();  
     
     // Remove media from Fargo.
-    RemoveMediaFromFargo(type, id, xbmcid);
+    RemoveMediaFromFargo(type, fargoid, xbmcid);
     
     media = ConvertMediaToSingular(type);
     DisplayCleaningMessage("Removing " + media + "...", media + " removed!", $remove, ".no", finish);

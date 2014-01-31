@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jan 27, 2014
+ * Updated on Jan 31, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -208,7 +208,7 @@ function StartOnlineHandler(media, type, next, online, retry)
             $("#action_box .message").html(cSTATUS.ONLINE);
         }
         
-        SetStartImportHandler(media, next, retry);      
+        SetStartImportHandler(media, next, retry);
     }).fail (function() {
         ShowOffline(true); 
     }); // End Start.    
@@ -577,7 +577,7 @@ function StartImport(type, factor)
  * Function:	GetMediaStatus
  *
  * Created on Jan 14, 2014
- * Updated on Jan 18, 2014
+ * Updated on Jan 31, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
@@ -598,6 +598,7 @@ function GetMediaStatus(type, start, xbmcid)
             gMEDIA.THUMBS = json.thumbs;
             gMEDIA.XBMCID = json.xbmcid;
             
+            gTRIGGER.STATUS  = json.status;
             gTRIGGER.COUNTER = json.counter;       
         } // End succes.    
     }); // End Ajax.    

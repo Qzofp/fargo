@@ -444,7 +444,7 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jan 27, 2014
+ * Updated on Jan 31, 2014
  *
  * Description: Reset the status. 
  *
@@ -472,6 +472,7 @@ function ResetStatus($media)
         }
     }*/
     
+    UpdateStatus($db, "ImportStatus", -1); // Needed for refresh media.   
     UpdateStatus($db, "ImportCounter", 0);
     UpdateStatus($db, "Xbmc".$media."End", -1);
     
@@ -624,7 +625,7 @@ function GetMediaStatus($media, $id, $xbmcid)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Jan 21, 2014
+ * Updated on Jan 31, 2014
  *
  * Description: Reports the status of the import process.
  *
@@ -644,10 +645,11 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
     $sql = "SELECT title FROM $table ".
            "WHERE $nameid = $xbmcid";
     
-    $aJson['title']  = GetItemFromDatabase($db, "title", $sql);
-    $aJson['sub']    = "&nbsp;";
+    $aJson['title'] = GetItemFromDatabase($db, "title", $sql);
+    $aJson['sub']   = "&nbsp;";
     
-    $aJson['counter'] = GetStatus($db, "Xbmc".$table."Start");    
+    $aJson['status']  = GetStatus($db, "ImportStatus"); // Needed for refresh media.
+    $aJson['counter'] = GetStatus($db, "Xbmc".$table."Start");  
     
     return $aJson;
 }

@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Jan 27, 2014
+ * Updated on Jan 31, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -22,14 +22,15 @@ var gTRIGGER = {
     STEP2: 2,
     READY: false,
     CANCEL: false,
-    BULK: 25 // 250; // Max. items imported.
+    BULK: 25, // 250; // Max. items imported.
+    STATUS : -1    
 };
 
 var gMEDIA = {
     TITLE: "",
     SUB: "",
     THUMBS : "",
-    XBMCID : 0    
+    XBMCID : 0
 };
 
 // Connections constants.
