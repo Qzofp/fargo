@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jan 31, 2014
+ * Updated on Feb 01, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -185,7 +185,7 @@ function SetStartMusicImportHandler(step, retry)
  * In:	media, type, next, online, retry
  * Out:	Globals cCONNECT, gTRIGGER.START and gTRIGGER.END
  *
- * Note : Init globals cCONNECT, gTRIGGER.START and gTRIGGER.END.
+ * Note : Init globals cCONNECT, gTRIGGER.START and gTRIGGER.END
  *
  */
 function StartOnlineHandler(media, type, next, online, retry)
@@ -268,14 +268,14 @@ function StartOnlineCheck(type)
  * Function:	StartMetaImportHandler
  *
  * Created on Jan 12, 2014
- * Updated on Jan 26, 2014
+ * Updated on Feb 01, 2014
  *
  * Description:  Start the meta import handler.
  * 
  * In:	media, type, next
  * Out:	-
  *
- * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END. 
+ * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END
  * 
  */
 function StartMetaImportHandler(media, type, next)
@@ -299,7 +299,6 @@ function StartMetaImportHandler(media, type, next)
         var meta = StartMetaImport(type, end);            
         meta.progress(function(i) {
             ShowMetaProgress($prg, type, i, end-1);
-                //console.log("Meta Counter: " + i);
         }); 
             
         meta.done (function() {
@@ -417,7 +416,7 @@ function ShowMetaProgress($prg, type, i, end)
  * In:	media, type, next, factor
  * Out:	-
  *
- * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END. 
+ * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END
  *
  */
 function StartImportHandler(media, type, next, factor)
@@ -486,7 +485,7 @@ function StartImportHandler(media, type, next, factor)
  * In:	type, factor
  * Out:	-
  *
- * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END. 
+ * Note: Uses globals cCONNECT, gTRIGGER.START and gTRIGGER.END
  *
  */
 function StartImport(type, factor)
@@ -608,7 +607,7 @@ function GetMediaStatus(type, start, xbmcid)
  * Function:	ShowImportProgress
  *
  * Created on Jan 16, 2014
- * Updated on Jan 23, 2014
+ * Updated on Feb 01, 2014
  *
  * Description: Show the import progress.
  * 
@@ -625,10 +624,8 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
         value : percent     
     });
     
-    if ($msg.text() == cSTATUS.WAIT) 
-    {
+    if ($msg.text() == cSTATUS.WAIT) {
         $msg.html(cSTATUS.IMPORT.replace("[dummy]", ConvertMediaToSingular(type)));
-
     }
     else 
     {    

@@ -7,7 +7,7 @@
  * File:    search.php
  *
  * Created on Jan 28, 2014
- * Updated on Jan 31, 2014
+ * Updated on Feb 02, 2014
  *
  * Description: Fargo's search page. This page is called from XBMC which push the data to Fargo.
  *
@@ -42,7 +42,7 @@ CloseDatabase($db);
  * Function:	ReceiveSearchResults
  *
  * Created on Jan 28, 2014
- * Updated on Jan 29, 2014
+ * Updated on Feb 01, 2014
  *
  * Description: Receive search results from XBMC. 
  *
@@ -60,10 +60,10 @@ function ReceiveSearchResults()
         $aData["id"] = $_POST["id"];
     }    
     
-    $aData["fargoid"] = null;
-    if (isset($_POST["fargoid"]) && !empty($_POST["fargoid"]))
+    $aData["xbmcid"] = null;
+    if (isset($_POST["xbmcid"]) && !empty($_POST["xbmcid"]))
     {
-        $aData["fargoid"] = $_POST["fargoid"];
+        $aData["xbmcid"] = $_POST["xbmcid"];
     }        
     
     $aData["error"] = null;
@@ -133,7 +133,7 @@ function ProcessSearchResults($db, $aResults)
  * Function:	UpdateSearchResults
  *
  * Created on Jan 29, 2014
- * Updated on Jan 29, 2014
+ * Updated on Feb 02, 2014
  *
  * Description: Update search results for refresh purposes.
  *
@@ -146,11 +146,16 @@ function UpdateSearchResults($db, $aResults, $type, $typeid)
     $status = 0; // No match.
     if ($aResults["result"]["limits"]["total"] > 0)
     {
-        $status = 2; // Match title but not fargoid.
         for ($i = 0; $i < $aResults["result"]["limits"]["total"]; $i++) 
         {
-            if ($aResults["fargoid"] == $aResults["result"][$type][$i][$typeid]) {
-                $status = 1; // Match.
+            if ($aResults["result"][$type][$i][$typeid] > $status) {
+                $status = $aResults["result"][$type][$i][$typeid]; // Find highest id.
+            }
+            
+            if ($aResults["xbmcid"] == $aResults["result"][$type][$i][$typeid]) 
+            {
+                $status = $aResults["xbmcid"]; // Match.
+                $i = $aResults["result"]["limits"]["total"];
             }
         }
         UpdateStatus($db, "ImportStatus", $status); 

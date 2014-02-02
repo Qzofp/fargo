@@ -6,7 +6,7 @@
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Jan 29, 2014
+ * Updated on Feb 02, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	Transfer
  *
  * Created on Jul 13, 2013
- * Updated on Jan 29, 2014
+ * Updated on Feb 01, 2014
  *
  * Description: Transfers data from XBMC to Fargo.
  * 
@@ -35,7 +35,7 @@ function Transfer()
         case "counter"  : TransferMediaCounter(aRequest.key, aRequest.media);
                           break;
                           
-        case "search"   : SearchAndTransferTitle(aRequest.key, aRequest.media, aRequest.fargoid, aRequest.title);
+        case "search"   : SearchAndTransferTitle(aRequest.key, aRequest.media, aRequest.xbmcid, aRequest.title);
                           break;
 
         case "movies"   : TransferMovie(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
@@ -151,19 +151,19 @@ function RequestCounter(library, id, key)
  * Function:	SearchAndTransferTitle
  *
  * Created on Jan 28, 2014
- * Updated on Jan 29, 2014
+ * Updated on Feb 01, 2014
  *
  * Description: Search andtransfer title from XBMC to Fargo.
  * 
- * In:	key, media, title
+ * In:	key, media, xbmcid, title
  * Out:	Transfered search results.
  *
  */
-function SearchAndTransferTitle(key, media, fargoid, title)
+function SearchAndTransferTitle(key, media, xbmcid, title)
 {
     switch (media)
     {
-        case "movies"   : TransferTitle(key, "VideoLibrary.GetMovies", fargoid, title, 1);
+        case "movies"   : TransferTitle(key, "VideoLibrary.GetMovies", xbmcid, title, 1);
                           break;
 
         case "sets"     :    
@@ -187,25 +187,25 @@ function SearchAndTransferTitle(key, media, fargoid, title)
  * Function:	TransferTitle
  *
  * Created on Jan 28, 2014
- * Updated on Jan 29, 2014
+ * Updated on Feb 02, 2014
  *
  * Description: JSON Request XBMC media title and transfer title to Fargo.
  * 
- * In:	key, library, fargoid, title
+ * In:	key, library, xbmcid, title
  * Out: json.counter, json.maxid
  *
  */
-function TransferTitle(key, library, fargoid, title, id)
+function TransferTitle(key, library, xbmcid, title, id)
 {    
     var search_req = '{"jsonrpc": "2.0", "params": {"sort": {"method": "label"}, "filter":' +
-                     '{"operator": "contains", "field": "title", "value": "' + title + '"}},' +
+                     '{"operator": "is", "field": "title", "value": "' + title + '"}},' +
                      '"method": "' + library + '", "id": "'+ id +'"}';
     
     // Get media total (counter) from XBMC.
     $.getJSON("../jsonrpc?request=" + search_req, function(json)
     {
         json.key = key;
-        json.fargoid = fargoid;
+        json.xbmcid = xbmcid;
         TransferData(json, cSEARCH);
     }); // End getJSON.         
 }

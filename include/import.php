@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 21, 2014
+ * Updated on Feb 02, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -311,7 +311,7 @@ function ImportMovieSet($db, $aError, $poster, $aResult)
  * Function:	RefreshMovie
  *
  * Created on Sep 08, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 02, 2014
  *
  * Description: Refresh the movie. 
  *
@@ -321,8 +321,6 @@ function ImportMovieSet($db, $aError, $poster, $aResult)
  */
 function RefreshMovie($db, $aError, $poster, $fanart, $aResult, $fargoid)
 {
-    //$db = OpenDatabase();
-    
     if (empty($aError))
     {
         $aGenres = $aResult["moviedetails"]["genre"]; 
@@ -336,10 +334,8 @@ function RefreshMovie($db, $aError, $poster, $fanart, $aResult, $fargoid)
         ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART,  450, 280); //562, 350 //675, 420  
         InsertGenres($db, $aGenres, "movies");
         
-        UpdateStatus($db, "RefreshReady", 1);
-    }
-    
-    //CloseDatabase($db);    
+        UpdateStatus($db, "ImportStatus", -100);
+    } 
 }
 
 /*
