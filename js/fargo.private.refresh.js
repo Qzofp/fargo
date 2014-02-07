@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 02, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,7 +18,7 @@
  * Function:	PrepareRefreshHandler
  *
  * Created on Nov 23, 2013
- * Updated on Jan 31, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Prepare the refresh handler, show the refresh popup box and start the refresh.
  * 
@@ -34,33 +34,40 @@ function PrepareRefreshHandler(type, $popup) // May be not necessary and can be 
                           //SetStartRefreshHandler("movies", id, xbmcid, -1);
                           break;
                           
-        case "sets"     : SetStartRefreshHandler("sets", id, xbmcid, -1);
-                          break;                             
+        case "sets"     : StartRefreshOnlineHandler("sets", "sets", $popup);
+                          //SetStartRefreshHandler("sets", id, xbmcid, -1);
+                          break;                  
                           
-        case "movieset" : SetStartRefreshHandler("movies", id, xbmcid, -1);
+        case "movieset" : StartRefreshOnlineHandler("movies", "movies", $popup);
+                          //SetStartRefreshHandler("movies", id, xbmcid, -1);
                           break;
                       
-        case "tvtitles" : SetStartRefreshHandler("tvshows", id, xbmcid, -1);
+        case "tvtitles" : StartRefreshOnlineHandler("tvshows", "tvshows", $popup);
+                          //SetStartRefreshHandler("tvshows", id, xbmcid, -1);
                           break;                      
                       
-        case "series"   : var xbmc = xbmcid.split("_")[1];
+        case "series"   : StartRefreshOnlineHandler("tvshows", "seasons", $popup);
+                          /*var xbmc = xbmcid.split("_")[1];
                           if (xbmc > 0) {
                              xbmc--;
                           }
-                          ConvertAndStartSeriesRefresh(xbmcid, xbmc, xbmcid.split("_")[0]);
+                          ConvertAndStartSeriesRefresh(xbmcid, xbmc, xbmcid.split("_")[0]);*/
                           break;  
 
-        case "seasons"  : var xbmc = xbmcid.split("_")[1];
+        case "seasons"  : StartRefreshOnlineHandler("tvshows", "seasons", $popup);
+                          /*var xbmc = xbmcid.split("_")[1];
                           if (xbmc > 0) {
                              xbmc--;
                           }
-                          SetStartRefreshHandler("seasons", id.split("_")[0], xbmc, xbmcid.split("_")[0]);
+                          SetStartRefreshHandler("seasons", id.split("_")[0], xbmc, xbmcid.split("_")[0]);*/
                           break;          
         
-        case "episodes" : SetStartRefreshHandler("episodes", id, xbmcid, -1);
+        case "episodes" : StartRefreshOnlineHandler("episodes", "episodes", $popup);
+                          //SetStartRefreshHandler("episodes", id, xbmcid, -1);
                           break;           
         
-        case "albums"   : SetStartRefreshHandler("music", id, xbmcid, -1);
+        case "albums"   : StartRefreshOnlineHandler("music", "music", $popup);
+                          //SetStartRefreshHandler("music", id, xbmcid, -1);
                           break;                      
     }
 }
@@ -69,11 +76,11 @@ function PrepareRefreshHandler(type, $popup) // May be not necessary and can be 
  * Function:	StartRefreshOnlineHandler
  *
  * Created on Jan 31, 2014
- * Updated on Feb 01, 2014
+ * Updated on Feb 05, 2014
  *
  * Description:  Check if XBMC is online handler for refresh media.
  * 
- * In:	media, type, $popup
+ * In:	type, $popup
  * Out:	Globals cCONNECT, gTRIGGER.START and gTRIGGER.END
  *
  * Note : Init globals cCONNECT, gTRIGGER.START and gTRIGGER.END.
@@ -84,12 +91,12 @@ function StartRefreshOnlineHandler(media, type, $popup)
     InitImportBox();
     
     // Returns cCONNECT, gTRIGGER.START and gTRIGGER.END.
-    var start = StartOnlineCheck(type);
+    var start = StartOnlineCheck(media);
     start.done (function() {
     
         $("#action_box .message").html(cSTATUS.ONLINE);
         setTimeout(function() {
-            StartRefreshHandler(media, type, $popup);       
+            StartRefreshHandler(type, $popup);       
         }, gCONNECT.TIMEOUT);
         
     }).fail (function() {
@@ -101,15 +108,15 @@ function StartRefreshOnlineHandler(media, type, $popup)
  * Function:	StartRefreshHandler
  *
  * Created on Sep 14, 2013
- * Updated on Feb 01, 2014
+ * Updated on Feb 05, 2014
  *
  * Description: Set the refresh handler and start the refresh.
  * 
- * In:	media, type, $popup
+ * In:	type, $popup
  * Out:	-
  *
  */
-function StartRefreshHandler(media, type, $popup)
+function StartRefreshHandler(type, $popup)
 {  
     var $prg = $("#action_box .progress");
     var $img = $("#action_thumb img");
@@ -135,11 +142,11 @@ function StartRefreshHandler(media, type, $popup)
             if (!gTRIGGER.CANCEL) 
             {
                 setTimeout(function() {
-                   ShowRefreshFinished(media);
+                   ShowRefreshFinished(type);
                 }, gCONNECT.TIMEOUT);
             }
-        }).fail (function() {
-            ShowOffline(true); 
+        }).fail (function(s) {
+            ShowOffline(s); 
         });
          
     }, gCONNECT.TIMEOUT); // End setTimeout.
@@ -149,7 +156,7 @@ function StartRefreshHandler(media, type, $popup)
  * Function:	StartRefresh
  *
  * Created on Sep 14, 2013
- * Updated on Feb 02, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Control and Refresh the media transfered from XBMC.
  *
@@ -172,18 +179,13 @@ function StartRefresh(type, fargoid, xbmcid)
     var status = setInterval(function()
     {     
         if (gTRIGGER.CANCEL || retry > gTRIGGER.RETRY)
-        {
-            //deferred.notify(start, xbmcid);// Show status.
-            
+        {        
             if (retry > gTRIGGER.RETRY) 
             {
                 gTRIGGER.CANCEL = true;
-                console.log("retry...");
-                deferred.reject(); // Failure.
+                //console.log("Retry..."); // Debug.
+                deferred.reject(false); // Failure.
             }
-            //else {
-            //    deferred.resolve(); // End Import.  
-            //}
             
             // End status check.
             clearInterval(status); 
@@ -199,44 +201,37 @@ function StartRefresh(type, fargoid, xbmcid)
             switch (Number(gTRIGGER.STATUS))
             {
                 case -999 : // Error.
-                            console.log("Error!");
-                            deferred.reject(); // Failure.
+                            //console.log("Error!");  // Debug.
+                            deferred.reject(false); // Failure.
                             gTRIGGER.CANCEL = true;
                             break;
                             
-                case - 100 : // Refresh ready
-                            console.log("Refresh ready");
+                case -200 : // Not found.
+                            //console.log("Not Found!");  // Debug.
+                            deferred.resolve(); // Not found.
+                            gTRIGGER.CANCEL = true;                    
+                            break;
+                            
+                case -100 : // Refresh ready
+                            //console.log("Refresh ready");  // Debug.
                             deferred.resolve(); // Refresh ready.
                             gTRIGGER.CANCEL = true;
                             break;                              
                             
                 case -1   : // Wait
                             i++;
-                            console.log("Waiting... " + i);
+                            //console.log("Waiting... " + i);  // Debug.
                             break;
                 
                 case 0    : // No match on title, try on id.
                             i++;
-                            console.log("Try on id refresh. " + i);
+                            //console.log("Try on id refresh. " + i);  // Debug.
                             break;
                             
                 default   : i++;
                             xbmcid = gTRIGGER.STATUS;
-                            console.log("Match start refresh. " + i + " " + xbmcid);
+                            //console.log("Match start refresh. " + i + " " + xbmcid);  // Debug.
                             break;
-                
-                /*case 1    : // Match id, refresh media.
-                            i++;
-                            console.log("Match start refresh. " + i);
-                            break;
-                            
-                case 2    : // Match title but not fargoid.
-                            console.log("Match title but not fargoid!");
-                            deferred.resolve(); // Refresh ready.
-                            gTRIGGER.CANCEL = true;                        
-                            break;
-               */             
-          
             }
             
             retry++;
@@ -269,9 +264,9 @@ function StartRefresh(type, fargoid, xbmcid)
             ready.done(function() {
                 
             }).fail(function() {
-                console.log("Failure..."); //debug
+                //console.log("Failure..."); //debug
                 gTRIGGER.CANCEL = true;
-                deferred.reject();  // Failure.
+                deferred.reject(true);  // Failure.
             }); // End Ready.
         }
                
@@ -286,7 +281,7 @@ function StartRefresh(type, fargoid, xbmcid)
  * Function:	ShowRefreshProgress
  *
  * Created on Feb 01, 2014
- * Updated on Feb 01, 2014
+ * Updated on Feb 05, 2014
  *
  * Description: Show the import progress.
  * 
@@ -315,25 +310,31 @@ function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i, id)
         value : percent     
     });
     
-    if ($msg.text() == cSTATUS.WAIT) 
-    {    
-        $msg.html(cSTATUS.REFRESH.replace("[dummy]", ConvertMediaToSingular(type)));
-        $img.removeAttr("src").attr("src", "");
+    if ($msg.text() == cSTATUS.WAIT) {    
+        $msg.html(cSTATUS.SEARCH.replace("[dummy]", ConvertMediaToSingular(type)));
     }
     else 
     {    
-        // Preload image.
-        var img = new Image();      
-        img.src = gMEDIA.THUMBS + '/'+ id +'.jpg';
-        $img.attr('src', img.src);
+        if (Number(gTRIGGER.STATUS) >= 0)
+        {
+            $msg.html(cSTATUS.REFRESH.replace("[dummy]", ConvertMediaToSingular(type)));
+            $img.removeAttr("src").attr("src", "");        
+        }
+        else 
+        {    
+            // Preload image.
+            var img = new Image();      
+            img.src = gMEDIA.THUMBS + '/'+ id +'.jpg';
+            $img.attr('src', img.src);
                                 
-        // If images not found then show no poster.
-        $img.error(function(){
-            $(this).attr('src', 'images/no_poster.jpg');
-        });
+            // If images not found then show no poster.
+            $img.error(function(){
+                $(this).attr('src', 'images/no_poster.jpg');
+            });
                     
-        $tit.html(gMEDIA.TITLE);
-        $sub.html(gMEDIA.SUB);
+            $tit.html(gMEDIA.TITLE);
+            $sub.html(gMEDIA.SUB);
+        }
     }
 }
 
@@ -540,21 +541,29 @@ function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i, id)
  * Function:	ShowRefreshFinished
  *
  * Created on Sep 14, 2013
- * Updated on Feb 02, 2014
+ * Updated on Feb 03, 2014
  *
  * Description: Show refresh finished message and add to log event.
  * 
- * In:	media
+ * In:	-
  * Out:	-
  *
  * Note: Uses globals gMEDIA and gTRIGGER.STATUS 
  *
  */
-function ShowRefreshFinished(media)
+function ShowRefreshFinished(type)
 {   
-    var msg = cSTATUS.READY.replace("[dummy]", cIMPORT.REFRESH);
+    var msg;
     
-    LogEvent("Information", "Refresh '" + gMEDIA.TITLE + "' finished.");  
+    if (Number(gTRIGGER.STATUS) != -200) {
+        msg = cSTATUS.READY.replace("[dummy]", cIMPORT.REFRESH);
+        LogEvent("Information", "Refresh '" + gMEDIA.TITLE + "' finished.");  
+    }
+    else 
+    {
+        msg = cSTATUS.NOMATCH.replace("[dummy]", ConvertMediaToSingular(type));
+        LogEvent("Warning", "Refresh '" + gMEDIA.TITLE + "' failed!");
+    }
     
     $("#action_box .message").html(msg);             
     $("#action_box .progress").progressbar({

@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Feb 02, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -217,7 +217,7 @@ function ProcessDataFromXbmc($db, $aData)
  * Out: -
  *
  */
-function UpdateMediaEndValue($db, $aError, $type, $start, $end) // Obsolete
+/*function UpdateMediaEndValue($db, $aError, $type, $start, $end) // Obsolete
 {
     if (empty($aError)) 
     {
@@ -230,13 +230,13 @@ function UpdateMediaEndValue($db, $aError, $type, $start, $end) // Obsolete
     else {
         UpdateStatus($db, $end, 0);
     }
-}
+}*/
 
 /*
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Jan 18, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Import the movie. 
  *
@@ -259,22 +259,23 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
         InsertGenres($db, $aGenres, "movies"); 
         InsertGenreToMedia($db, $aGenres, $id, "movies");
     
-        //UpdateStatus($db, "XbmcSlack", 0);
         IncrementStatus($db, "XbmcMoviesStart", 1);
         IncrementStatus($db, "ImportCounter", 1);
+        UpdateStatus($db, "ImportStatus", -100);
     }
-    //else if ($aError["code"] == -32602) // Movie not found, continue with the next one.
-    //{ 
-        //UpdateStatus($db, "XbmcSlack", 1);
-        //IncrementStatus($db, "XbmcMoviesStart", 1); 
-    //} 
+    else if ($aError["code"] == -32602) {
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
+    }
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }
 }
 
 /*
  * Function:	ImportMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Import the movie set. 
  *
@@ -284,8 +285,6 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
  */
 function ImportMovieSet($db, $aError, $poster, $aResult)
 {  
-    //$db = OpenDatabase();    
-    
     if (empty($aError))
     {
         $aMovie = ConvertMovieSet($aResult["setdetails"]);
@@ -293,25 +292,23 @@ function ImportMovieSet($db, $aError, $poster, $aResult)
         ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280    
         InsertMovieSet($db, $aMovie);         
         
-        UpdateStatus($db, "XbmcSlack", 0);
         IncrementStatus($db, "XbmcSetsStart", 1);
         IncrementStatus($db, "ImportCounter", 1);
+        UpdateStatus($db, "ImportStatus", -100);
     }
-    else if ($aError["code"] == -32602) // Movie not found, continue with the next one.
-    { 
-       UpdateStatus($db, "XbmcSlack", 1);
-       IncrementStatus($db, "XbmcSetsStart", 1); 
-    }
-    
-    //CloseDatabase($db);     
+    else if ($aError["code"] == -32602) { 
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
+    } 
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }    
 }
-
 
 /*
  * Function:	RefreshMovie
  *
  * Created on Sep 08, 2013
- * Updated on Feb 02, 2014
+ * Updated on Feb 05, 2014
  *
  * Description: Refresh the movie. 
  *
@@ -335,14 +332,20 @@ function RefreshMovie($db, $aError, $poster, $fanart, $aResult, $fargoid)
         InsertGenres($db, $aGenres, "movies");
         
         UpdateStatus($db, "ImportStatus", -100);
-    } 
+    }
+    else if ($aError["code"] == -32602) { // Not found.
+        UpdateStatus($db, "ImportStatus", -200);
+    }
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error.
+    }    
 }
 
 /*
  * Function:	RefreshMovieSet
  *
  * Created on Nov 23, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 05, 2014
  *
  * Description: Refresh the movie set. 
  *
@@ -352,29 +355,31 @@ function RefreshMovie($db, $aError, $poster, $fanart, $aResult, $fargoid)
  */
 function RefreshMovieSet($db, $aError, $poster, $aResult, $fargoid)
 {
-    //$db = OpenDatabase();    
-    
     if (empty($aError))
     {  
         $aMovie = ConvertMovieSet($aResult["setdetails"]);
     
         DeleteFile("../".cSETSTHUMBS."/".$aMovie[0].".jpg");
-        DeleteFile("../".cSETSFANART."/".$aMovie[0].".jpg");
+        //DeleteFile("../".cSETSFANART."/".$aMovie[0].".jpg");
     
         UpdateMovieSet($db, $fargoid, $aMovie);   
         ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280  
 
-        UpdateStatus($db, "RefreshReady", 1);
-    }
-    
-    //CloseDatabase($db);    
+        UpdateStatus($db, "ImportStatus", -100);
+    } 
+    else if ($aError["code"] == -32602) {  // Not found.
+        UpdateStatus($db, "ImportStatus", -200);
+    } 
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error.
+    }    
 }
 
 /*
  * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Jan 18, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Import the tv show. 
  *
@@ -398,22 +403,23 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
         InsertGenres($db, $aGenres, "tvshows");
         InsertGenreToMedia($db, $aGenres, $id, "tvshows");
     
-        //UpdateStatus($db, "XbmcSlack", 0);
         IncrementStatus($db, "XbmcTVShowsStart", 1);
         IncrementStatus($db, "ImportCounter", 1);
+        UpdateStatus($db, "ImportStatus", -100);
     }
-    //else if ($aError["code"] == -32602) // TVShow not found, continue with the next one.
-    //{ 
-    //   UpdateStatus($db, "XbmcSlack", 1);
-    //   IncrementStatus($db, "XbmcTVShowsStart", 1); 
-    //}        
+    else if ($aError["code"] == -32602) { 
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
+    } 
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }       
 }
 
 /*
  * Function:	ImportTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Jan 20, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Import the tv show season. 
  *
@@ -433,21 +439,21 @@ function ImportTVShowSeason($db, $aError, $poster, $aResult)
         
         IncrementStatus($db, "XbmcSeasonsStart", 1);
         IncrementStatus($db, "ImportCounter", 1);
-        
-        //if ($aResult["limits"]["end"] >= $aResult["limits"]["total"]) {
-        //    IncrementStatus($db, "XbmcTVShowsSeasonsStart", 1);           
-        //}
+        UpdateStatus($db, "ImportStatus", -100);
     }
-    //else {
-    //    IncrementStatus($db, "XbmcTVShowsSeasonsStart", 1);
-    //}       
+    else if ($aError["code"] == -32602) { 
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
+    } 
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }        
 }
 
 /*
  * Function:	ImportTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Import the TV Show Episode. 
  *
@@ -457,8 +463,6 @@ function ImportTVShowSeason($db, $aError, $poster, $aResult)
  */
 function ImportTVShowEpisode($db, $aError, $poster, $aResult)
 {   
-    //$db = OpenDatabase();     
-    
     if (empty($aError))
     {
         $aEpisode = ConvertTVShowEpisode($aResult["episodedetails"]);
@@ -466,24 +470,23 @@ function ImportTVShowEpisode($db, $aError, $poster, $aResult)
         SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);
         InsertTVShowEpisode($db, $aEpisode);
     
-        UpdateStatus($db, "XbmcSlack", 0);
         IncrementStatus($db, "XbmcEpisodesStart", 1);
         IncrementStatus($db, "ImportCounter", 1);
+        UpdateStatus($db, "ImportStatus", -100);
     }
-    else if ($aError["code"] == -32602) // TVShow not found, continue with the next one.
-    { 
-       UpdateStatus($db, "XbmcSlack", 1);
-       IncrementStatus($db, "XbmcEpisodesStart", 1); 
-    }
-    
-    //CloseDatabase($db);       
+    else if ($aError["code"] == -32602) { 
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
+    } 
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }  
 }
 
 /*
  * Function:	RefreshTVShow
  *
  * Created on Sep 09, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 05, 2014
  *
  * Description: Refresh the tv show. 
  *
@@ -492,9 +495,7 @@ function ImportTVShowEpisode($db, $aError, $poster, $aResult)
  *
  */
 function RefreshTVShow($db, $aError, $poster, $fanart, $aResult, $id)
-{   
-    //$db = OpenDatabase();      
-    
+{     
     if (empty($aError))
     {
         $aGenres = $aResult["tvshowdetails"]["genre"];
@@ -508,17 +509,21 @@ function RefreshTVShow($db, $aError, $poster, $fanart, $aResult, $id)
         ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 450, 280); //562, 350 //675, 420 
         InsertGenres($db, $aGenres, "tvshows");
     
-        UpdateStatus($db, "RefreshReady", 1);
+        UpdateStatus($db, "ImportStatus", -100);
+    }
+    else if ($aError["code"] == -32602) { 
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
     } 
-    
-    //CloseDatabase($db);     
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }
 }
 
 /*
  * Function:	RefreshTVShowSeason
  *
  * Created on Dec 02, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Refresh the tv show season. 
  *
@@ -527,29 +532,31 @@ function RefreshTVShow($db, $aError, $poster, $fanart, $aResult, $id)
  *
  */
 function RefreshTVShowSeason($db, $aError, $poster, $aResult, $id)
-{   
-    //$db = OpenDatabase();      
-    
+{
     if (empty($aError))
     {
-        $aSeason = ConvertTVShowSeason($aResult["seasons"][0]);
-    
-        DeleteFile("../".cSEASONSTHUMBS."/".$aSeason[0]."_".$aSeason[4].".jpg");
+        $aSeason = ConvertTVShowSeason($aResult["seasondetails"]);
+        
+        DeleteFile("../".cSEASONSTHUMBS."/".$aSeason[0].".jpg");
 
-        ResizeAndSaveImage($aSeason[0]."_".$aSeason[4], $poster, "../".cSEASONSTHUMBS, 125, 175);
+        ResizeAndSaveImage($aSeason[0], $poster, "../".cSEASONSTHUMBS, 125, 175);
         UpdateTVShowSeason($db, $id, $aSeason);
         
-        UpdateStatus($db, "RefreshReady", 1);
-    }  
-    
-    //CloseDatabase($db);      
+        UpdateStatus($db, "ImportStatus", -100);
+    }
+    else if ($aError["code"] == -32602) { 
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
+    } 
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }     
 }
 
 /*
  * Function:	RefreshTVShowEpisode
  *
  * Created on Nov 29, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Refresh the tv show episode. 
  *
@@ -559,8 +566,6 @@ function RefreshTVShowSeason($db, $aError, $poster, $aResult, $id)
  */
 function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
 {   
-    //$db = OpenDatabase();    
-    
     if (empty($aError))
     {
         $aEpisode = ConvertTVShowEpisode($aResult["episodedetails"]);
@@ -570,17 +575,21 @@ function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
         SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);        
         UpdateTVShowEpisode($db, $id, $aEpisode);
     
-        UpdateStatus($db, "RefreshReady", 1);
+        UpdateStatus($db, "ImportStatus", -100);
+    }
+    else if ($aError["code"] == -32602) { 
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
     } 
-    
-   //CloseDatabase($db);       
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }
 }
 
 /*
  * Function:	ImportAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Jan 18, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Import the music album. 
  *
@@ -604,22 +613,23 @@ function ImportAlbum($db, $aError, $poster, $aResult)
         InsertGenres($db, $aGenres, "music");
         InsertGenreToMedia($db, $aGenres, $id, "music");
     
-        //UpdateStatus($db, "XbmcSlack", 0);
         IncrementStatus($db, "XbmcMusicStart", 1);
         IncrementStatus($db, "ImportCounter", 1); 
+        UpdateStatus($db, "ImportStatus", -100);
     }
-    //else if ($aError["code"] == -32602) // Album not found, continue with the next one.
-    //{ 
-    //   UpdateStatus($db, "XbmcSlack", 1);
-    //   IncrementStatus($db, "XbmcMusicStart", 1); 
-    //}    
+    else if ($aError["code"] == -32602) { 
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
+    } 
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }   
 }
 
 /*
  * Function:	RefreshAlbum
  *
  * Created on Sep 09, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Refresh the music album details. 
  *
@@ -629,8 +639,6 @@ function ImportAlbum($db, $aError, $poster, $aResult)
  */
 function RefreshAlbum($db, $aError, $poster, $aResult, $id)
 { 
-    //$db = OpenDatabase();    
-    
     if (empty($aError))
     {    
         $aGenres = $aResult["albumdetails"]["genre"]; 
@@ -644,10 +652,14 @@ function RefreshAlbum($db, $aError, $poster, $aResult, $id)
         ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
         InsertGenres($db, $aGenres, "music");
     
-        UpdateStatus($db, "RefreshReady", 1);
+        UpdateStatus($db, "ImportStatus", -100);
     }
-    
-    //CloseDatabase($db);    
+    else if ($aError["code"] == -32602) { 
+        UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.
+    } 
+    else {
+        UpdateStatus($db, "ImportStatus", -999); // Error, not used yet, only for refresh.
+    }    
 }
 
 /*

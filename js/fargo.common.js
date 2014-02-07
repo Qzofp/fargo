@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Dec 31, 2013
+ * Updated on Feb 07, 2014
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -325,7 +325,7 @@ function SetCloseHandler()
  * Function:	RefreshMediaTable
  *
  * Created on Sep 22, 2013
- * Updated on Dec 24, 2013
+ * Updated on Feb 07, 2014
  *
  * Description: When refresh media is finished then refresh media thumb on media table.
  * 
@@ -341,9 +341,12 @@ function RefreshMediaTable(popup)
     {
         id   = popup.find(".id").text();                                                   
         $img = $("#action_thumb img").attr("src");
+        
+        //console.log($("#display_content [class^='i" + id + "']").html()); // debug.
 
         // Refresh image in media table.
-        $("#display_content .i" + id + " img").attr("src", $img);
+        //$("#display_content .i" + id + " img").attr("src", $img);
+        $("#display_content [class^='i" + id + "'] img").attr("src", $img);
         
         switch(GetState("type"))
         {
@@ -358,7 +361,8 @@ function RefreshMediaTable(popup)
         }
         
         // Refresh title in media table.
-        $("#display_content .i" + id).contents().last().replaceWith($title);
+        //$("#display_content .i" + id).contents().last().replaceWith($title);
+        $("#display_content [class^='i" + id + "']").contents().last().replaceWith($title);
     }
 }
 

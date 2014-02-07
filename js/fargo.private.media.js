@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Dec 23, 2013
+ * Updated on Feb 07, 2014
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -80,7 +80,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Function:	SetInfoZoomHandlerWithActions
  *
  * Created on Aug 31, 2013
- * Updated on Nov 23, 2013
+ * Updated on Feb 07, 2014
  *
  * Description: Set and show the media info.
  * 
@@ -93,23 +93,28 @@ function SetInfoZoomHandlerWithActions()
     var mode  = GetState("mode");
     var media = GetState("media");
     var type  = GetState("type");
-    var id = $(this).attr("class").match(/\d+(_\d+)?/g);
+    var id    = $(this).attr("class");
+    
+    //var id = $(this).attr("class").match(/^[^\d]*(\d+)/g);
+    //var id = $(this).attr("class").match(/\d+(_\d+)?/g);
         
     switch(mode)
     {
-        case "Refresh"   : //alert ("Refresh");
+        case "Refresh"   : id = id.replace(/i/g, '').match(/^[^\d]*(\d+)/g);
                            ShowModePopup(mode, type, id);
                            break;
                          
-        case "Hide/Show" : //alert ("Hide and Show");
+        case "Hide/Show" : //id = id.replace(/i/g, '').match(/^[^\d]*(\d+)/g);
+                           id = id.match(/\d+(_\d+)?/g);
                            HideOrShowMedia(type, id);
                            break;               
 
-        case "Remove"    : //alert ("Delete");
+        case "Remove"    : id = id.replace(/i/g, '').match(/^[^\d]*(\d+)/g);
                            ShowModePopup(mode, type, id);
                            break;
         
-        default          : ShowInfoZoomMedia(media, type, id); //Mode is Normal.
+        default          : id = id.match(/\d+(_\d+)?/g);
+                           ShowInfoZoomMedia(media, type, id); //Mode is Normal.
                            break;
     }    
 }

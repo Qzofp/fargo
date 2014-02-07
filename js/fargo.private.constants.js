@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Feb 01, 2014
+ * Updated on Feb 05, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -61,7 +61,7 @@ var cSTATUS = {
     WAIT:     "Please wait...",
     RETRY:    "Retry import...",
     FINISH:   "Import of [dummy] finished.",
-    SEARCH:   "Searching for new [dummy]...",
+    SEARCH:   "Searching for [dummy]...",
     PROCESS:  "Processing [dummy]...", 
     IMPORT:   "Importing [dummy]...",
     REFRESH:  "Refreshing [dummy]... ",
@@ -69,7 +69,7 @@ var cSTATUS = {
     NOTFOUND: "No new [dummy] found.",
     SLACK:    "Slack detected...",
     SKIP:     "Skipping empty record ",
-    NOMATCH:  "Refresh failed! Doesn't match with [dummy] in XBMC."
+    NOMATCH: "Refresh failed! [dummy] cannot be found in XBMC."
 };
 
 

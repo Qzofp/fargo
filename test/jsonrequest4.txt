@@ -4,6 +4,8 @@ localhost:8080/jsonrpc?request=
 {"jsonrpc": "2.0", "params": {"sort": {"order": "ascending", "method": "title"}, "filter": {"operator": "contains", "field": "title", "value": "Star Wars"}, "properties": ["title", "art", "file"]}, "method": "VideoLibrary.GetMovies", "id": "libMovies"}
 {"jsonrpc": "2.0", "params": {"sort": {"method": "title"}, "filter": {"operator": "contains", "field": "title", "value": "Johnny English"}, "properties": ["title"]}, "method": "VideoLibrary.GetMovies", "id": "libMovies"}
 
+{"jsonrpc": "2.0", "params": {"sort": {"method": "label"}, "filter":{"operator": "is", "field": "title", "value": "Alegría"}},"method": "AudioLibrary.GetAlbums", "id": "6"}
+
 Refresh stappen
 ---------------
 1. Zoek op titel

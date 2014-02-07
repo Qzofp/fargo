@@ -7,7 +7,7 @@
  * File:    search.php
  *
  * Created on Jan 28, 2014
- * Updated on Feb 02, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Fargo's search page. This page is called from XBMC which push the data to Fargo.
  *
@@ -85,7 +85,7 @@ function ReceiveSearchResults()
  * Function:	ProcessSearchResults
  *
  * Created on Jan 29, 2014
- * Updated on Jan 29, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Process search results from XBMC. 
  *
@@ -95,7 +95,7 @@ function ReceiveSearchResults()
  */
 function ProcessSearchResults($db, $aResults)
 {
-    if (empty($aResults["error"]) && !empty($aResults["result"]))
+    if (!empty($aResults["result"]))
     {    
         switch($aResults["id"])
         {
@@ -104,23 +104,23 @@ function ProcessSearchResults($db, $aResults)
                     break;
             
             // libMovieSets -> library id = 2.    
-            case 2: 
+            case 2: CheckAndUpdateResults($db, $aResults, "setdetails", "setid");
                     break;
             
             // libTVShows -> library id = 3.    
-            case 3: 
+            case 3: UpdateSearchResults($db, $aResults, "tvshows", "tvshowid");
                     break;  
           
             // libTVShowSeasons -> library id = 4.   
-            case 4: 
+            case 4: CheckAndUpdateResults($db, $aResults, "seasondetails", "seasonid");
                     break;             
             
             // libTVShowEpisodes -> library id = 5.  
-            case 5: 
+            case 5: UpdateSearchResults($db, $aResults, "episodes", "episodeid");
                     break;
             
             // libAlbums -> library id = 6.
-            case 6: 
+            case 6: UpdateSearchResults($db, $aResults, "music", "music");
                     break;            
         }
     }
@@ -133,7 +133,7 @@ function ProcessSearchResults($db, $aResults)
  * Function:	UpdateSearchResults
  *
  * Created on Jan 29, 2014
- * Updated on Feb 02, 2014
+ * Updated on Feb 03, 2014
  *
  * Description: Update search results for refresh purposes.
  *
@@ -143,24 +143,57 @@ function ProcessSearchResults($db, $aResults)
  */
 function UpdateSearchResults($db, $aResults, $type, $typeid)
 {
-    $status = 0; // No match.
-    if ($aResults["result"]["limits"]["total"] > 0)
+    if (empty($aResults["error"])) 
     {
-        for ($i = 0; $i < $aResults["result"]["limits"]["total"]; $i++) 
+        $status = 0; // No match.
+        if ($aResults["result"]["limits"]["total"] > 0)
         {
-            if ($aResults["result"][$type][$i][$typeid] > $status) {
-                $status = $aResults["result"][$type][$i][$typeid]; // Find highest id.
-            }
-            
-            if ($aResults["xbmcid"] == $aResults["result"][$type][$i][$typeid]) 
+            for ($i = 0; $i < $aResults["result"]["limits"]["total"]; $i++) 
             {
-                $status = $aResults["xbmcid"]; // Match.
-                $i = $aResults["result"]["limits"]["total"];
+                if ($aResults["result"][$type][$i][$typeid] > $status) {
+                    $status = $aResults["result"][$type][$i][$typeid]; // Find highest id.
+                }
+            
+                if ($aResults["xbmcid"] == $aResults["result"][$type][$i][$typeid]) 
+                {
+                    $status = $aResults["xbmcid"]; // Match.
+                    $i = $aResults["result"]["limits"]["total"];
+                }
             }
+            UpdateStatus($db, "ImportStatus", $status); 
         }
-        UpdateStatus($db, "ImportStatus", $status); 
+        else {
+            UpdateStatus($db, "ImportStatus", $status); // No match.
+        }
     }
-    else {
-        UpdateStatus($db, "ImportStatus", $status); // No match.
+    else if ($aError["code"] == -32602) {  // Not found.
+        UpdateStatus($db, "ImportStatus", -200);
+    }
+}
+
+/*
+ * Function:	CheckAndUpdateResults
+ *
+ * Created on Feb 03, 2014
+ * Updated on Feb 03, 2014
+ *
+ * Description: Check if the id exists and then update the status.
+ *
+ * In:  $db, $aResults, $details, $typeid
+ * Out: -
+ *
+ * Note: Sets and Seasons can't be filtered, hence the check if the id exists.
+ * 
+ */
+function CheckAndUpdateResults($db, $aResults, $details, $typeid)
+{
+    if (empty($aResults["error"])) 
+    {
+        if (!empty($aResults["result"][$details][$typeid])) {
+            UpdateStatus($db, "ImportStatus", $aResults["result"][$details][$typeid]);
+        }
+    }
+    else if ($aError["code"] == -32602) {  // Not found.
+        UpdateStatus($db, "ImportStatus", -200);
     }
 }

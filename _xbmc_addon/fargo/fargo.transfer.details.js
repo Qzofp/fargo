@@ -6,7 +6,7 @@
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Feb 02, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -151,7 +151,7 @@ function RequestCounter(library, id, key)
  * Function:	SearchAndTransferTitle
  *
  * Created on Jan 28, 2014
- * Updated on Feb 01, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Search andtransfer title from XBMC to Fargo.
  * 
@@ -163,22 +163,22 @@ function SearchAndTransferTitle(key, media, xbmcid, title)
 {
     switch (media)
     {
-        case "movies"   : TransferTitle(key, "VideoLibrary.GetMovies", xbmcid, title, 1);
+        case "movies"   : TransferTitle(key, "title", "VideoLibrary.GetMovies", xbmcid, title, 1);
                           break;
 
-        case "sets"     :    
-                          break;        
+        case "sets"     : TransferTitleId(key, "VideoLibrary.GetMovieSetDetails", "setid", xbmcid, 2);
+                          break; 
             
-        case "tvshows"  : 
+        case "tvshows"  : TransferTitle(key, "title", "VideoLibrary.GetTVShows", xbmcid, title, 3);
                           break;
                                                        
-        case "seasons"  : 
+        case "seasons"  : TransferTitleId(key, "VideoLibrary.GetSeasonDetails", "seasonid", xbmcid, 4);
                           break;
                        
-        case "episodes" :
+        case "episodes" : TransferTitle(key, "title", "VideoLibrary.GetEpisodes", xbmcid, title, 5);
                           break;                         
         
-        case "music"    : 
+        case "music"    : TransferTitle(key, "album", "AudioLibrary.GetAlbums", xbmcid, title, 6);
                           break;
     }
 }
@@ -187,7 +187,7 @@ function SearchAndTransferTitle(key, media, xbmcid, title)
  * Function:	TransferTitle
  *
  * Created on Jan 28, 2014
- * Updated on Feb 02, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: JSON Request XBMC media title and transfer title to Fargo.
  * 
@@ -195,10 +195,10 @@ function SearchAndTransferTitle(key, media, xbmcid, title)
  * Out: json.counter, json.maxid
  *
  */
-function TransferTitle(key, library, xbmcid, title, id)
+function TransferTitle(key, field, library, xbmcid, title, id)
 {    
     var search_req = '{"jsonrpc": "2.0", "params": {"sort": {"method": "label"}, "filter":' +
-                     '{"operator": "is", "field": "title", "value": "' + title + '"}},' +
+                     '{"operator": "is", "field": "' + field + '", "value": "' + title + '"}},' +
                      '"method": "' + library + '", "id": "'+ id +'"}';
     
     // Get media total (counter) from XBMC.
@@ -206,6 +206,33 @@ function TransferTitle(key, library, xbmcid, title, id)
     {
         json.key = key;
         json.xbmcid = xbmcid;
+        TransferData(json, cSEARCH);
+    }); // End getJSON.         
+}
+
+/*
+ * Function:	TransferTitleId
+ *
+ * Created on Feb 03, 2014
+ * Updated on Feb 03, 2014
+ *
+ * Description: JSON Request XBMC media title and transfer the title id to Fargo.
+ * 
+ * In:	key, library, xbmcid, title
+ * Out: json.counter, json.maxid
+ * 
+ * Note: Sets and Seasons can't be filtered, hence the check if the id exists.
+ *
+ */
+function TransferTitleId(key, library, typeid, xbmcid, id)
+{            
+    var search_req = '{"jsonrpc":"2.0","method":"' + library + '","params":{"'+ typeid +'":'+ xbmcid +'},"id":'+ id +'}';  
+    
+    // Get media total (counter) from XBMC.
+    $.getJSON("../jsonrpc?request=" + search_req, function(json)
+    {
+        json.key = key;
+        //json.xbmcid = xbmcid;
         TransferData(json, cSEARCH);
     }); // End getJSON.         
 }

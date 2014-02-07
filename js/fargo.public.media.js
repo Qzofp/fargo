@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jan 05, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -1298,7 +1298,7 @@ function ConvertMedia(media)
  * Function:	ConvertMediaToSingular
  *
  * Created on Sep 07, 2013
- * Updated on Nov 25, 2013
+ * Updated on Feb 05, 2014
  *
  * Description: Convert the media string to a singular string.
  * 
@@ -1329,7 +1329,7 @@ function ConvertMediaToSingular(media)
         case 'tvtitles' : media = "TV Show";
                           break;
                       
-        case 'series'   : media = "TV Show";
+        case 'series'   : media = "Season"; //"TV Show";
                           break;                             
                         
         case 'seasons'  : media = "Season";

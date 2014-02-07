@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jan 25, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -675,7 +675,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetPopupInfo
  *
  * Created on Nov 25, 2013
- * Updated on Dec 24, 2013
+ * Updated on Feb 07, 2014
  *
  * Description: Get the popup info for the refresh or delete popups from Fargo and return it as Json data. 
  *
@@ -690,43 +690,36 @@ function GetPopupInfo($media, $id)
     switch($media)
     {                      
         case "titles"   : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
-                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
                                  "FROM movies WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMOVIESTHUMBS);
                           break;
                       
         case "sets"     : $sql = "SELECT setid, refresh, title, NULL AS sub ".
-                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ".
                                  "FROM sets WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cSETSTHUMBS);
                           break;   
                       
         case "movieset" : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
-                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ".
                                  "FROM movies WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMOVIESTHUMBS);
                           break;                      
 
                       
         case "tvtitles" : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
-                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
                                  "FROM tvshows WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cTVSHOWSTHUMBS);
                           break;
                       
-        case "series"   : $aItems = explode("_", $id);
-                          $sql = "SELECT CONCAT(t.xbmcid, '_', s.season) AS id, t.refresh, t.title, NULL AS sub ".
-                                 //"IF(LENGTH(t.title) > 70, CONCAT(LEFT(t.title, 69),'...'), t.title) AS title ".
-                                 "FROM tvshows t, seasons s WHERE t.xbmcid = s.tvshowid AND t.id = $aItems[0] ".
+        case "series"   : //$aItems = explode("_", $id);
+                          $sql = "SELECT seasonid AS id, t.refresh, t.title, s.title AS sub ".
+                                 "FROM tvshows t, seasons s WHERE t.xbmcid = s.tvshowid AND s.id = $id ".
                                  "LIMIT 0, 1";
                           $aJson = GetPopupMediaInfo($sql, cSEASONSTHUMBS);
                           break;
                       
-        case "seasons"  : $aItems = explode("_", $id);
-                          $sql = "SELECT CONCAT(tvshowid, '_', season) AS id, refresh, showtitle, title AS sub ".
-                                 //"IF(LENGTH(showtitle) > 70, CONCAT(LEFT(showtitle, 69),'...', '</br>', title), ".
-                                 //"CONCAT(showtitle, '</br>', title)) AS title ".
-                                 "FROM seasons WHERE id = $aItems[0] ";
+        case "seasons"  : //$aItems = explode("_", $id);
+                          $sql = "SELECT seasonid AS id, refresh, showtitle, title AS sub ".
+                                 "FROM seasons WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cSEASONSTHUMBS);
                           break;
                       
@@ -808,7 +801,7 @@ function GetPopupMediaInfo($sql, $thumb)
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Jan 02, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -880,7 +873,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                           $aParams['column'] = cMediaColumn;
                           $aItems = explode("_", $level);
                           $header = GetItemFromDatabase($db, "showtitle", "SELECT showtitle FROM seasons WHERE tvshowid = ".
-                                                        "(SELECT xbmcid FROM tvshows WHERE id = $aItems[0]) LIMIT 0, 1");
+                                                             "(SELECT tvshowid FROM seasons WHERE id = $aItems[0]) LIMIT 0, 1");
                           $sql    = CreateSeasonsQuery($aItems[0], $login);
                           $rows   = CountRowsWithQuery($db, $sql);
                           $max    = cMediaRow * cMediaColumn; 
@@ -892,10 +885,10 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                           $aItems = explode("_", $level);
                           if ($aItems[1] > -1) {
                             $header = GetItemFromDatabase($db, "showtitle", "SELECT CONCAT(showtitle, ' - ', title) AS title ".
-                                                          "FROM seasons WHERE id = $aItems[0]");
+                                                               "FROM seasons WHERE id = $aItems[0]");
                           }
                           else {
-                            $header = GetItemFromDatabase($db, "showtitle", "SELECT title FROM tvshows WHERE id = $aItems[0]");  
+                            $header = GetItemFromDatabase($db, "showtitle", "SELECT showtitle FROM seasons WHERE id = $aItems[0]");  
                           }
                           $sql    = CreateEpisodesQuery($aItems[0], $aItems[1], $login);
                           $rows   = CountRowsWithQuery($db, $sql);
@@ -1045,7 +1038,7 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
  * Function:	CreateSeriesQuery
  *
  * Created on Apr 08, 2013
- * Updated on Jan 25, 2014
+ * Updated on Feb 07, 2014
  *
  * Description: Create the sql query for the media TV shows table. 
  *
@@ -1055,8 +1048,9 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
  */
 function CreateSeriesQuery($title, $genre, $year, $sort, $login)
 {   
-    $sql = "SELECT DISTINCT  CONCAT(t.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, t.hide, t.refresh, t.title ".
-           "FROM (SELECT seasonid, tvshowid, COUNT(season) AS seasons, season FROM seasons GROUP BY tvshowid) s ".
+    $sql = "SELECT DISTINCT  CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, s.hide, s.refresh, t.title ".
+           "FROM (SELECT id, seasonid, hide, refresh, tvshowid, COUNT(season) AS seasons, season FROM seasons ".
+           "GROUP BY tvshowid) s ".
            "JOIN tvshows t ON s.tvshowid = t.xbmcid ";
     
     $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
@@ -1069,7 +1063,7 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateSeasonsQuery
  *
  * Created on Nov 12, 2013
- * Updated on Jan 25, 2014
+ * Updated on Feb 06, 2014
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -1080,7 +1074,7 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
 function CreateSeasonsQuery($id, $login)
 {
     $sql = "SELECT CONCAT(id, '_', season) AS id, seasonid AS xbmcid, hide, refresh, title ".
-           "FROM seasons WHERE tvshowid = (SELECT xbmcid FROM tvshows WHERE id = $id) ";
+           "FROM seasons WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ";
     
     // Hide media items if not login.
     if(!$login) {
@@ -1096,7 +1090,7 @@ function CreateSeasonsQuery($id, $login)
  * Function:	 CreateEpisodesQuery
  *
  * Created on Nov 12, 2013
- * Updated on Nov 25, 2013
+ * Updated on Feb 06, 2014
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -1113,7 +1107,7 @@ function CreateEpisodesQuery($id, $season, $login)
     }
     else {
        $sql = "SELECT id, episodeid, hide, refresh, CONCAT(episode, '. ', title) ".
-              "FROM episodes WHERE tvshowid = (SELECT xbmcid FROM tvshows WHERE id = $id) ";       
+              "FROM episodes WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ";       
     }    
     
     // Hide media items if not login.
