@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jan 02, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -98,7 +98,7 @@ padding:15px 0 0 0;
 font-size:2em;
 text-shadow:2px 2px 2px #000;
 text-align:center;
-color:lightgray;
+color:orange; /*lightgray;*/
 }
 
 #header_sort{
@@ -189,7 +189,7 @@ font-size:1.5em;
 font-weight:bold;
 text-shadow:2px 2px 2px #000;
 text-align:center;
-color:orange;    
+color:orange;
 }
 
 .popup .close_left{

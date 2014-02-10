@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -108,7 +108,7 @@ function StartRefreshOnlineHandler(media, type, $popup)
  * Function:	StartRefreshHandler
  *
  * Created on Sep 14, 2013
- * Updated on Feb 05, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: Set the refresh handler and start the refresh.
  * 
@@ -128,7 +128,7 @@ function StartRefreshHandler(type, $popup)
     var xbmcid  = $popup.find(".xbmcid").text();
     var title   = $popup.find("#action_title").text();
     
-    LogEvent("Information", "Refresh '" + title + "' started.");  
+    LogEvent('Information', 'Refresh "' + title + '" started.');
     $msg.html(cSTATUS.WAIT);
     
     setTimeout(function() {
@@ -339,209 +339,11 @@ function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i, id)
 }
 
 
-
-
-
-
-/*
- * Function:	ConvertAndStartSeriesRefresh
- *
- * Created on Dec 10, 2013
- * Updated on Dec 10, 2013
- *
- * Description: Convert TV show id's to season id's and refresh serie (season 1).
- * 
- * In:	xbmcid, tvshowid
- * Out:	-
- *
- */
-/*function ConvertAndStartSeriesRefresh(id, start, tvshowid) // Obsolete?
-{
-    $.ajax({
-        url: 'jsonmanage.php?action=convert&id=' + id,
-        async: false,
-        dataType: 'json',
-        success: function(json)
-        {
-            //alert(json.id + " " + start + " " + tvshowid);
-            
-            SetStartRefreshHandler("seasons", json.id, start, tvshowid);
-        } // End Success.        
-    }); // End Ajax;      
-}*/
-
-/*
- * Function:	SetStartRefreshHandler
- *
- * Created on Sep 14, 2013
- * Updated on Dec 02, 2013
- *
- * Description: Set the refresh handler, show the refresh popup box and start the refresh.
- * 
- * In:	media, id, xbmcid, tvshowid
- * Out:	-
- *
- */
-/*function SetStartRefreshHandler_old(media, id, xbmcid, tvshowid)  // Obsolete
-{
-    InitImportBox();
-    
-    // Reset status, get xbmc connection (url) and port.
-    $.ajax({
-        url: 'jsonmanage.php?action=reset&media=' + media + '&counter=false',
-        async: false,
-        dataType: 'json',
-        success: function(json)
-        {
-            var timer, i = 0;
-            var online;
-            
-            // Check if XBMC is online and transfer XBMC media counter (total).
-            ImportCounter(json, media, tvshowid);
-            
-            // Check if XBMC is online and start refresh.
-            timer = setInterval(function()
-            {
-                // Check if iframe from ImportCounter finished loading.
-                if ($("#ready").text() == "true")
-                {
-                    // Returns gTRIGGER.END;
-                    GetXbmcMediaLimits(media);
-                    online = gTRIGGER.END; // If value > 0 then XBMC is online.
-                    
-                    if (online > 0 || i > 3)
-                    {
-                        if (online > 0) {
-                            StartRefresh(json, media, id, xbmcid, tvshowid);
-                        }
-                        else {
-                            ShowOffline();
-                        }
-                        
-                        clearInterval(timer);
-                    }
-                }
-                i++;
-                
-            }, 1000); // End timer  
-        } // End Success.        
-    }); // End Ajax;    
-}*/
-
-/*
- * Function:	StartRefresh
- *
- * Created on Sep 14, 2013
- * Updated on Dec 24, 2013
- *
- * Description: Control and Refresh the media transfered from XBMC.
- *
- * In:	xbmc, media, id, xmbcid, tvshowid
- * Out:	Refreshed media
- *
- */
-/*function StartRefresh_old(xbmc, media, id, xbmcid, tvshowid) // Obsolete
-{
-    var retry   = 0;
-    var delay   = 0;
-    var percent = 15;
-    var factor  = 1.5;
-    var $ready  = $("#ready");
-    
-    // Import media process.
-    $("#action_box .message").html(cSTATUS.ONLINE);  
-    ImportMedia(xbmc, media, id, xbmcid, tvshowid);
-    LogEvent("Information", "Refresh " + ConvertMedia(media) + " started.");
-            
-    // Check status.
-    var status = setInterval(function()
-    {
-        if (gTRIGGER.CANCEL || delay >= gTRIGGER.RETRY || retry > gTRIGGER.RETRY)
-        {
-            if (gTRIGGER.CANCEL) {
-                LogEvent("Warning", "Refresh " + ConvertMedia(media) + " canceled!");
-            }
-            else if (retry > gTRIGGER.RETRY) {
-                ShowOffline();
-            }
-            else {
-                ShowRefreshFinished(media);
-            }             
-            
-            clearInterval(status);
-        }
-        else
-        {
-            // Show status and returns gTRIGGER.READY.
-            if (tvshowid < 0) {
-                ShowRefreshStatus(media, xbmcid, percent);
-            }    
-            else {
-                ShowRefreshStatus(media, id, percent);
-            }    
-            percent = 100 - 100/factor;
-            
-            // Wait until thumb is ready.
-            if (gTRIGGER.READY) {
-                delay += 2;
-                factor *= 2;
-            }
-            else if ($ready.text() == "true") {
-                retry++;
-            }
-        }        
-    }, xbmc.timeout); // 800   
-}*/
-
-/*
- * Function:	ShowRefreshStatus
- *
- * Created on Sep 14, 2013
- * Updated on Dec 24, 2013
- *
- * Description: Show the refresh status.
- *
- * In:	media
- * Out:	Status
- *
- */
-/*function ShowRefreshStatus(media, id, percent) // Obsolete
-{   
-    $.ajax({
-        url: 'jsonmanage.php?action=status&media=' + media + '&mode=refresh' + '&id=' + id,
-        dataType: 'json',
-        success: function(json) 
-        {     
-            gTRIGGER.READY = Number(json.ready);
-            
-            $("#action_box .message").html(cSTATUS.REFRESH);   
-                      
-            // Preload image.
-            var img = new Image();
-            img.src = json.thumbs + '/'+ json.id +'.jpg?v=' + json.refresh;
-            $("#action_thumb img").attr('src', img.src);
-                                
-            // If images not found then show no poster.
-            $("#action_thumb img").error(function(){
-                $(this).attr('src', 'images/no_poster.jpg');
-            });
-                    
-            $("#action_title").html(json.title);
-            $("#action_sub").html(json.sub);
-            
-            $("#action_box .progress").progressbar({
-                value:percent       
-            });
-            
-        } // End succes.    
-    }); // End Ajax. 
-}*/
-
 /*
  * Function:	ShowRefreshFinished
  *
  * Created on Sep 14, 2013
- * Updated on Feb 03, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: Show refresh finished message and add to log event.
  * 
@@ -557,12 +359,12 @@ function ShowRefreshFinished(type)
     
     if (Number(gTRIGGER.STATUS) != -200) {
         msg = cSTATUS.READY.replace("[dummy]", cIMPORT.REFRESH);
-        LogEvent("Information", "Refresh '" + gMEDIA.TITLE + "' finished.");  
+        LogEvent('Information', 'Refresh "' + gMEDIA.TITLE + '" finished.');  
     }
     else 
     {
         msg = cSTATUS.NOMATCH.replace("[dummy]", ConvertMediaToSingular(type));
-        LogEvent("Warning", "Refresh '" + gMEDIA.TITLE + "' failed!");
+        LogEvent('Warning', 'Refresh "' + gMEDIA.TITLE + '" failed!');
     }
     
     $("#action_box .message").html(msg);             

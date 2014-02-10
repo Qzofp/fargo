@@ -7,7 +7,7 @@
  * File:    databases.php
  *
  * Created on Mar 09, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jan 09, 2014
  *
  * Description: Database toolbox functions.
  * 
@@ -314,7 +314,7 @@ function CountRows($db, $table)
  * Function:	GetLastItemFromTable
  *
  * Created on Jun 26, 2013
- * Updated on Jan 02, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: Get last added item from a database table.
  *
@@ -324,10 +324,9 @@ function CountRows($db, $table)
  * Note: Returns 1 item. The item must exist in the select query ($sql).
  * 
  */
-function GetItemFromDatabase($db, $item, $sql)
+function GetItemFromDatabase($db, $item, $sql)  // $item is not needed.
 {
-    //$db = OpenDatabase();
-
+    $item = null;
     $stmt = $db->prepare($sql);
     if($stmt)
     {
@@ -346,8 +345,6 @@ function GetItemFromDatabase($db, $item, $sql)
     {
         die('Invalid query: '.mysqli_error($db));
     } 
-    
-    //CloseDatabase($db);
     
     return $item;
 }
@@ -395,4 +392,3 @@ function GetLastItemFromTable($item, $table)
     
     return $item;
 }
-?>

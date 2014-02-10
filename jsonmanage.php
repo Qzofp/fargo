@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -180,7 +180,7 @@ if (!empty($aJson)) {
  * Function:	HideOrShowMediaInFargo
  *
  * Created on Nov 20, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: Hide or show media.
  *
@@ -191,36 +191,40 @@ if (!empty($aJson)) {
 function HideOrShowMediaInFargo($media, $id, $value)
 {
     $aJson = null;
+    $db = OpenDatabase();
     
     switch ($media)
     {
-        case "titles"   : $aJson = HideOrShowMedia("movies", $id, $value);
+        case "titles"   : $aJson = HideOrShowMedia($db, "movies", $id, $value);
                           break;
         
-        case "sets"     : $aJson = HideOrShowMedia("sets", $id, $value);
+        case "sets"     : $aJson = HideOrShowMedia($db, "sets", $id, $value);
                           break;
                       
-        case "movieset" : $aJson = HideOrShowMedia("movies", $id, $value);
+        case "movieset" : $aJson = HideOrShowMedia($db, "movies", $id, $value);
                           break;                      
                     
-        case "tvtitles" : $aJson = HideOrShowMedia("tvshows", $id, $value);
+        case "tvtitles" : $aJson = HideOrShowMedia($db, "tvshows", $id, $value);
                           break;
                       
         case "series"   : $aItems = explode("_", $id);
-                          $aJson = HideOrShowMedia("tvshows", $aItems[0], $value);
+                          $sql = "SELECT id FROM tvshows WHERE xbmcid = (SELECT tvshowid FROM seasons WHERE id = $aItems[0])";
+                          $id = GetItemFromDatabase($db, "xbmcid", $sql);
+                          $aJson = HideOrShowMedia($db, "tvshows", $id, $value);
                           break;                      
 
         case "seasons"  : $aItems = explode("_", $id);
-                          $aJson = HideOrShowMedia("seasons", $aItems[0], $value);
+                          $aJson = HideOrShowMedia($db, "seasons", $aItems[0], $value);
                           break;
                       
-        case "episodes" : $aJson = HideOrShowMedia("episodes", $id, $value);
+        case "episodes" : $aJson = HideOrShowMedia($db, "episodes", $id, $value);
                           break;
                       
-        case "albums"   : $aJson = HideOrShowMedia("music", $id, $value);
+        case "albums"   : $aJson = HideOrShowMedia($db, "music", $id, $value);
                           break;                      
     }
     
+    CloseDatabase($db);     
     return $aJson;
 }
 
@@ -228,23 +232,24 @@ function HideOrShowMediaInFargo($media, $id, $value)
  * Function:	HideOrShowMedia
  *
  * Created on Sep 23, 2013
- * Updated on Nov 22, 2013
+ * Updated on Feb 09, 2014
  *
  * Description: Update hide media hide column.
  *
- * In:  $media, $id, $value
+ * In:  $db, $media, $id, $value
  * Out:	Update hide column
  * 
  */
-function HideOrShowMedia($table, $id, $value)
+function HideOrShowMedia($db, $table, $id, $value)
 {
     $aJson = null;
     
     $sql = "UPDATE $table ".
            "SET hide = $value ".
            "WHERE id = $id";
-            
-    ExecuteQuery($sql);
+      
+    QueryDatabase($db, $sql);
+    //ExecuteQuery($sql);
     
     $aJson["ready"] = true;
     return $aJson;
@@ -254,7 +259,7 @@ function HideOrShowMedia($table, $id, $value)
  * Function:	RemoveMediaFromFargo
  *
  * Created on Nov 22, 2013
- * Updated on Jan 20, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: Delete media from Fargo database.
  *
@@ -265,37 +270,41 @@ function HideOrShowMedia($table, $id, $value)
 function RemoveMediaFromFargo($media, $id, $xbmcid)
 {   
     $aJson = null;
+    $db = OpenDatabase();    
     
     switch ($media)
     {
-        case "titles"   : $aJson = DeleteMedia("movies", $id, $xbmcid);
+        case "titles"   : $aJson = DeleteMedia($db, "movies", $id, $xbmcid);
                           break;
         
-        case "sets"     : $aJson = DeleteMedia("sets", $id, $xbmcid);
+        case "sets"     : $aJson = DeleteMedia($db, "sets", $id, $xbmcid);
                           break;
                     
-        case "movieset" : $aJson = DeleteMedia("movies", $id, $xbmcid);
+        case "movieset" : $aJson = DeleteMedia($db, "movies", $id, $xbmcid);
                           break;
                       
-        case "tvtitles" : $aJson = DeleteMedia("tvshows", $id, $xbmcid); // TV Show + Seasons + Episodes.
+        case "tvtitles" : $aJson = DeleteMedia($db, "tvshows", $id, $xbmcid); // TV Show + Seasons + Episodes.
                           break;
                       
-        case "series"   : $aId   = explode("_", $id);
-                          $aXbmc = explode("_", $xbmcid);
-                          $aJson = DeleteMedia("tvshows", $aId[0], $aXbmc[0]); // TV Show + Seasons + Episodes.
+        case "series"   : $sql = "SELECT id FROM tvshows WHERE xbmcid = (SELECT tvshowid FROM seasons WHERE id = $id)";
+                          $id = GetItemFromDatabase($db, "id", $sql);
+                          $sql = "SELECT xbmcid FROM tvshows WHERE id = $id";
+                          $xbmcid = GetItemFromDatabase($db, "xbmcid", $sql);
+                          $aJson = DeleteMedia($db, "tvshows", $id, $xbmcid); // TV Show + Seasons + Episodes.
                           break;  
                       
-        case "seasons"  : $aJson = DeleteMedia("seasons", $id, $xbmcid); // Season + Episodes.
+        case "seasons"  : $aJson = DeleteMedia($db, "seasons", $id, $xbmcid); // Season + Episodes.
                           break;                      
                       
-        case "episodes" : $aJson = DeleteMedia("episodes", $id, $xbmcid);
+        case "episodes" : $aJson = DeleteMedia($db, "episodes", $id, $xbmcid);
                           break;
                       
-        case "albums"   : $aJson = DeleteMedia("music", $id, $xbmcid);
+        case "albums"   : $aJson = DeleteMedia($db, "music", $id, $xbmcid);
                           break;                      
                     
     }
     
+    CloseDatabase($db);      
     return $aJson;   
 }
 
@@ -303,18 +312,17 @@ function RemoveMediaFromFargo($media, $id, $xbmcid)
  * Function:	DeleteMediaQuery
  *
  * Created on Oct 05, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: Delete media from Fargo database.
  *
- * In:  $media, $id, $xbmcid
+ * In:  $db, $media, $id, $xbmcid
  * Out:	Deleted media
  * 
  */
-function DeleteMedia($media, $id, $xbmcid)
+function DeleteMedia($db, $media, $id, $xbmcid)
 {
-    $aJson = null; 
-    $db = OpenDatabase();
+    $aJson = null;
     
     switch ($media)
     {
@@ -358,25 +366,27 @@ function DeleteMedia($media, $id, $xbmcid)
                           DeleteFile(cTVSHOWSFANART."/$xbmcid.jpg");
                           break;
                      
-        case "seasons"  : $aItems = explode("_", $id);
+        case "seasons"  : //$aItems = explode("_", $id);
                           
                           // Delete episodes.
-                          $sql = "SELECT CONCAT(episodeid, '.jpg') AS thumb FROM episodes WHERE tvshowid = ".
-                                 "(SELECT tvshowid FROM seasons WHERE id = $aItems[0]) AND season = $aItems[1]";
+                          $sql = "SELECT CONCAT(episodeid, '.jpg') AS thumb FROM episodes ".
+                                 "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
+                                 "AND season = (SELECT season FROM seasons WHERE id = $id)";
                           $aThumbs = GetItemsFromDatabase($db, $sql);
                           DeleteMultipleFiles(cEPISODESTHUMBS, $aThumbs);
                           
-                          $sql = "DELETE FROM episodes WHERE tvshowid = (SELECT tvshowid FROM seasons ".
-                                 "WHERE id = $aItems[0]) AND season = $aItems[1]";
+                          $sql = "DELETE FROM episodes ".
+                                 "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
+                                 "AND season = (SELECT season FROM seasons WHERE id = $id)";                                  
                           QueryDatabase($db, $sql);
                           //ExecuteQuery($sql);
                          
                           // Delete seasons.
-                          $sql = "SELECT CONCAT(tvshowid, '_', season) AS xbmcid FROM seasons WHERE id = $aItems[0]";
+                          $sql = "SELECT seasonid AS xbmcid FROM seasons WHERE id = $id";
                           $xbmcid = GetItemFromDatabase($db, "xbmcid", $sql);
                           DeleteFile(cSEASONSTHUMBS."/$xbmcid.jpg");
 
-                          DeleteMediaQuery($db, "seasons", $aItems[0]);                        
+                          DeleteMediaQuery($db, "seasons", $id);  
                           break;
                      
         case "episodes" : DeleteMediaQuery($db, "episodes", $id);
@@ -388,9 +398,7 @@ function DeleteMedia($media, $id, $xbmcid)
                           DeleteFile(cALBUMSTHUMBS."/$xbmcid.jpg");
                           DeleteFile(cALBUMSCOVERS."/$xbmcid.jpg");
                           break;                             
-    }
-   
-    CloseDatabase($db);   
+    } 
                           
     $aJson["ready"] = true;
     return $aJson;    
@@ -573,7 +581,7 @@ function ProcessImportMode($mode)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Jan 21, 2014
+ * Updated on Feb 09, 2014
  *
  * Description: Reports the status of the import media process. 
  *
@@ -588,19 +596,19 @@ function GetMediaStatus($media, $id, $xbmcid)
     
     switch ($media)    
     {   
-        case "movies"         : $aJson = GetImportStatus($db, "Movies", "movieid", "xbmcid", $id, $xbmcid, cMOVIESTHUMBS);
+        case "movies"         : $aJson = GetImportStatus($db, "movies", "movieid", "xbmcid", $id, $xbmcid, cMOVIESTHUMBS);
                                 break;
                       
-        case "sets"           : $aJson = GetImportStatus($db, "Sets", "setid", "setid", $id, $xbmcid, cSETSTHUMBS);
+        case "sets"           : $aJson = GetImportStatus($db, "sets", "setid", "setid", $id, $xbmcid, cSETSTHUMBS);
                                 break;                      
     
-        case "tvshows"        : $aJson = GetImportStatus($db, "TVShows", "tvshowid", "xbmcid", $id, $xbmcid, cTVSHOWSTHUMBS);
+        case "tvshows"        : $aJson = GetImportStatus($db, "tvshows", "tvshowid", "xbmcid", $id, $xbmcid, cTVSHOWSTHUMBS);
                                 break;
                                             
-        case "seasons"        : $aJson = GetSeriesImportStatus($db, "Seasons", "seasonid", $id, $xbmcid, cSEASONSTHUMBS);
+        case "seasons"        : $aJson = GetSeriesImportStatus($db, "seasons", "seasonid", $id, $xbmcid, cSEASONSTHUMBS);
                                 break;
                       
-        case "episodes"       : $aJson = GetSeriesImportStatus($db, "Episodes", "episodeid", $id, $xbmcid, cEPISODESTHUMBS);
+        case "episodes"       : $aJson = GetSeriesImportStatus($db, "episodes", "episodeid", $id, $xbmcid, cEPISODESTHUMBS);
                                 break;                      
                       
         case "music"          : $aJson = GetMusicImportStatus($db, $id, $xbmcid);
@@ -710,279 +718,6 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
     
     return $aJson;
 }
-
-/*
- * Function:	GetMediaStatus
- *
- * Created on May 18, 2013
- * Updated on Jan 03, 2014
- *
- * Description: Reports the status of the import media process. 
- *
- * In:  $mode, $media, $id
- * Out: $aJson
- *
- */
-/*function GetMediaStatusOld($mode, $media, $id) // obsolete
-{
-    $aJson = null;   
-    $db = OpenDatabase();
-    
-    switch ($media)    
-    {   
-        case "movies"         : $aJson = GetImportRefreshStatus($db, $mode, $media, $id, "xbmcid", cMOVIESTHUMBS);
-                                break;
-                      
-        case "sets"           : $aJson = GetImportRefreshStatus($db, $mode, $media, $id, "setid", cSETSTHUMBS);
-                                break;                      
-    
-        case "tvshows"        : $aJson = GetImportRefreshStatus($db, $mode, $media, $id, "xbmcid", cTVSHOWSTHUMBS);
-                                break;
-                      
-        case "tvshowsseasons" : $aJson['id'] = -1;
-                                if (GetStatus($db, "XbmcSeasonsStart") == GetStatus($db, "XbmcSeasonsEnd")) {
-                                    $aJson['id'] = 1;
-                                }
-                                break;
-                      
-        case "seasons"        : $aJson = GetSeasonsImportRefreshStatus($db, $mode, $id, cSEASONSTHUMBS);
-                                break;
-                      
-        case "episodes"       : $aJson = GetEpisodesImportRefreshStatus($db, $mode, $id, cEPISODESTHUMBS);
-                                break;                      
-                      
-        case "music"          : $aJson = GetImportRefreshStatus($db, $mode, $media, $id, "xbmcid", cALBUMSTHUMBS);
-                                break;                      
-    }    
-    
-    if ($mode == "import")  
-    {
-        $aJson['start'] = GetStatus($db, "Xbmc".$media."Start");
-        $aJson['slack'] = GetStatus($db, "XbmcSlack");
-    }
-    else {
-        $aJson['ready'] = GetStatus($db, "RefreshReady");
-    }    
-    
-    CloseDatabase($db);
-    return $aJson;
-}*/
-
-/*
- * Function:	GetImportRefreshStatus
- *
- * Created on May 18, 2013
- * Updated on Jan 03, 2014
- *
- * Description: Reports the status of the import or refresh process.
- *
- * In:  $db, $mode, $media, $id, $nameid, $thumbs
- * Out: $aJson
- *
- */
-/*function GetImportRefreshStatus($db, $mode, $media, $id, $nameid, $thumbs)
-{
-    $aJson['id']  = 0;
-    $aJson['refresh'] = 0;
-    $aJson['title']   = "empty";
-    $aJson['thumbs']  = $thumbs;
-  
-    //$db = OpenDatabase();
-
-    if ($mode == "import") { // Import.
-        $sql = "SELECT $nameid, refresh, title ".
-               "FROM $media ".
-               "ORDER BY id DESC LIMIT 1";
-    }
-    else { // Refresh.
-        $sql = "SELECT $nameid, refresh, title ".
-               "FROM $media ".
-               "WHERE $nameid = $id";   
-    }
-     
-    $stmt = $db->prepare($sql);
-    if($stmt)
-    {
-        if($stmt->execute())
-        {
-            // Get number of rows.
-            $stmt->store_result();
-            $rows = $stmt->num_rows;
-
-            if ($rows != 0)
-            {              
-                $stmt->bind_result($xbmcid, $refresh, $title);
-                while($stmt->fetch())
-                {                
-                    $aJson['id']      = $xbmcid;
-                    $aJson['refresh'] = $refresh;
-                    $aJson['title']   = stripslashes($title);
-                    $aJson['sub']     = "&nbsp;";
-                }                  
-            }
-        }
-        else
-        {
-            die('Ececution query failed: '.mysqli_error($db));
-        }
-        $stmt->close();
-    }
-    else
-    {
-        die('Invalid query: '.mysqli_error($db));
-    } 
-
-    //CloseDatabase($db);
-
-    return $aJson;
-}*/
-
-/*
- * Function:	GetSeasonsImportRefreshStatus
- *
- * Created on Oct 21, 2013
- * Updated on Jan 03, 2014
- *
- * Description: Reports the seasons status of the import process.
- *
- * In:  $db, $mode, $seasonid, $thumbs
- * Out: $aJson
- *
- */
-/*function GetSeasonsImportRefreshStatus($db, $mode, $seasonid, $thumbs)
-{
-    $aJson['id']      = 0;
-    $aJson['refresh'] = 0;
-    $aJson['title']   = "empty";
-    $aJson['thumbs']  = $thumbs;
-  
-    //$db = OpenDatabase();
-
-    if ($mode == "import") { // Import. 
-        $sql = "SELECT id, refresh, tvshowid, showtitle, title, season ".
-               "FROM seasons ".
-               "ORDER BY id DESC LIMIT 1";
-    }
-    else { // Refresh.
-        $sql = "SELECT id, refresh, tvshowid, showtitle, title, season ".
-               "FROM seasons ".
-               "WHERE id = $seasonid";    
-    }
-        
-    $stmt = $db->prepare($sql);
-    if($stmt)
-    {
-        if($stmt->execute())
-        {
-            // Get number of rows.
-            $stmt->store_result();
-            $rows = $stmt->num_rows;
-
-            if ($rows != 0)
-            {              
-                $stmt->bind_result($id, $refresh, $tvshowid, $showtitle, $title, $season);
-                while($stmt->fetch())
-                {                
-                    if ($mode == "import") {
-                        $aJson['id'] = $id;
-                    }
-                    else {
-                       $aJson['id'] = $tvshowid."_".$season; 
-                    }
-                    $aJson['refresh']  = $refresh;
-                    $aJson['tvshowid'] = $tvshowid;
-                    $aJson['title']    = stripslashes($showtitle);
-                    $aJson['sub']      = stripslashes($title);
-                    $aJson['season']   = $season;
-                }                  
-            }
-        }
-        else
-        {
-            die('Ececution query failed: '.mysqli_error($db));
-        }
-        $stmt->close();
-    }
-    else
-    {
-        die('Invalid query: '.mysqli_error($db));
-    } 
-
-    //CloseDatabase($db);
-
-    return $aJson;
-}*/
-
-/*
- * Function:	GetEpisodesImportRefreshStatus
- *
- * Created on Oct 27, 2013
- * Updated on Jan 03, 2014
- *
- * Description: Reports the episode status of the import process.
- *
- * In:  $db, $mode, $id, $thumbs
- * Out: $aJson
- *
- */
-/*function GetEpisodesImportRefreshStatus($db, $mode, $id, $thumbs)
-{
-    $aJson['id']  = 0;
-    $aJson['refresh'] = 0;
-    $aJson['title']   = "empty";
-    $aJson['thumbs']  = $thumbs;
-  
-    //$db = OpenDatabase();
-
-    if ($mode == "import") { // Import. 
-        $sql = "SELECT episodeid, refresh, showtitle, episode, title ".
-               "FROM episodes ".
-               "ORDER BY id DESC LIMIT 1";
-    }
-    else { // Refresh.
-        $sql = "SELECT episodeid, refresh, showtitle, episode, title ".
-               "FROM episodes ".
-               "WHERE episodeid = $id";      
-    }       
-        
-    $stmt = $db->prepare($sql);
-    if($stmt)
-    {
-        if($stmt->execute())
-        {
-            // Get number of rows.
-            $stmt->store_result();
-            $rows = $stmt->num_rows;
-
-            if ($rows != 0)
-            {              
-                $stmt->bind_result($episodeid, $refresh, $showtitle, $episode, $title);
-                while($stmt->fetch())
-                {                
-                    $aJson['id']      = $episodeid;
-                    $aJson['refresh'] = $refresh;
-                    $aJson['title']   = stripslashes($showtitle);
-                    $aJson['sub']     = $episode.". ".stripslashes($title);
-                }                  
-            }
-        }
-        else
-        {
-            die('Ececution query failed: '.mysqli_error($db));
-        }
-        $stmt->close();
-    }
-    else
-    {
-        die('Invalid query: '.mysqli_error($db));
-    } 
-
-    //CloseDatabase($db);
-
-    return $aJson;
-}*/
-
-
 
 /*
  * Function:	ConvertTVShowToSeasonID
