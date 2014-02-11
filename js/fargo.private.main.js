@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 11, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -131,7 +131,7 @@ function InitStatus()
  * Function:	ChangeProperty
  *
  * Created on May 27, 2013
- * Updated on Nov 21, 2013
+ * Updated on Feb 11, 2014
  *
  * Description: Get option and update property value.
  *
@@ -152,7 +152,7 @@ function ChangeProperty(number, value)
             
             // Log event...
             if (json.counter > 0) {
-                LogEvent("Information", "Cleaned " + json.counter + " " + ConvertMedia(json.name) + " items.");
+                LogEvent("Information", "Removed " + json.counter + " " + ConvertMedia(json.name) + " items.");
             }
             
         } // End Success.        
@@ -220,7 +220,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Jan 31, 2014
+ * Updated on Feb 11, 2014
  *
  * Description: Perform action
  * 
@@ -237,26 +237,25 @@ function SetActionHandler(event)
     var step = 1;
     if (event.data.retry) {
         step = gTRIGGER.STEP1;
-        //console.log('STEP 1: ' + step);  //Debug.
     }
     
     gTRIGGER.CANCEL = false;
     
     switch($popup.find(".title").text().split(" ")[0])
     {
-        case cIMPORT.REFRESH : PrepareRefreshHandler(type, $popup);                        
-                               break;
+        case cIMPORT.REFRESH  : PrepareRefreshHandler(type, $popup);                        
+                                 break;
                            
-        case "Remove"        : SetRemoveHandler($popup);
-                               break;
+        case "Remove"         : SetRemoveHandler($popup);
+                                 break;
                            
-        case "Cleaning"      : SetCleanDatabaseHandler();
-                               break;
+        case cSYSTEM.REMOVING : SetCleanDatabaseHandler();
+                                 break;
                            
-        case cIMPORT.IMPORT  : LockImport(function() {
-                                  SetStartImportHandler(media, step, event.data.retry); 
-                               });
-                               break;           
+        case cIMPORT.IMPORT   : LockImport(function() {
+                                   SetStartImportHandler(media, step, event.data.retry); 
+                                });
+                                break;           
     }
 }
 
@@ -308,7 +307,7 @@ function SetRemoveHandler($popup)
  * Function:	SetCleanDatabaseHandler
  *
  * Created on Jun 10, 2013
- * Updated on Nov 21, 2013
+ * Updated on Feb 11, 2014
  *
  * Description: Clean a database table (Library or Event Log).
  * 
@@ -336,19 +335,18 @@ function SetCleanDatabaseHandler()
     // Truncate table and delete pictures (posters, fanart and thumbs).
     ChangeProperty(number, "");
     
-    if (option == "Library") 
+    if (option == "Library")
     {
-        DisplayCleaningMessage("Cleaning library...", "Library cleaned!", $clean, ".no", finish);
+        DisplayCleaningMessage(cSYSTEM.MESSAGE1 + "...", cSYSTEM.MESSAGE3, $clean, ".no", finish);
     }
     else 
     {
-        DisplayCleaningMessage("Cleaning event log...", "Event log cleaned!", $clean, ".no", finish);   
+        DisplayCleaningMessage(cSYSTEM.MESSAGE4 + "...", cSYSTEM.MESSAGE5, $clean, ".no", finish);   
         
         setTimeout(function(){
             $(".option.dim").addClass('on');  
             ShowProperty("Event Log");
-        }, 500);
-        
+        }, 500);   
     }
     
     $(".yes").hide();

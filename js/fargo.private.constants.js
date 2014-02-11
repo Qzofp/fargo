@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Feb 05, 2014
+ * Updated on Feb 11, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -57,7 +57,6 @@ var cSTATUS = {
     OFFLINE:  "XBMC is offline!",
     LOST:     "XBMC connection lost!",
     CONNECT:  "Connecting... ",
-//    START:    "Starting with [dummy] import.",
     WAIT:     "Please wait...",
     RETRY:    "Retry import...",
     FINISH:   "Import of [dummy] finished.",
@@ -72,4 +71,11 @@ var cSTATUS = {
     NOMATCH: "Refresh failed! [dummy] cannot be found in XBMC."
 };
 
-
+var cSYSTEM = {
+    REMOVING: "Removing",
+    MESSAGE1: "Removing library",
+    MESSAGE2: "Do you want to remove the [dummy]?",
+    MESSAGE3: "Library removed!",
+    MESSAGE4: "Removing event log",
+    MESSAGE5: "Event log removed!"
+};

@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.4
  *
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Nov 21, 2013
+ * Updated on Feb 11, 2014
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -575,22 +575,28 @@ function ActivateProperty()
  * Function:	CleanPopupBox
  *
  * Created on Jun 09, 2013
- * Updated on Dec 24, 2013
+ * Updated on Feb 11, 2014
  *
- * Description: Show clean library popup box
+ * Description: Show removing library popup box. This was known as cleaning library, hence the name.
  *
  * In:	msg
  * Out:	Popup box
  *
  */
 function CleanPopupBox(msg)
-{   
-    $("#action_box .message").text("Do you want to clean the " + msg + "?");
+{       
+    $("#action_box .message").text(cSYSTEM.MESSAGE2.replace("[dummy]", msg));
     $("#action_wrapper").hide();
     $("#action_title").text("");
     $("#action_sub").text("");
-        
-    ShowPopupBox("#action_box", "Cleaning database");
+    
+    if (msg == "event log") {
+        ShowPopupBox("#action_box", cSYSTEM.MESSAGE4);
+    }
+    else{
+        ShowPopupBox("#action_box", cSYSTEM.MESSAGE1);
+    }
+    
     SetState("page", "popup");
 }
 
