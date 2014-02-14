@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 14, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -120,7 +120,17 @@ switch($action)
                       else {
                          $aJson = LogEvent("Warning", "Unauthorized init meta action call!");
                       }                    
-                      break;                   
+                      break;
+                      
+    case "chkmeta"  : if($login)
+                      { 
+                        $type  = GetPageValue('type');
+                        $aJson = CheckMeta($type);
+                      }
+                      else {
+                         $aJson = LogEvent("Warning", "Unauthorized check meta action call!");
+                      }                    
+                      break;                      
                       
     case "tvshowids": // Get TV Shows id's to retrieve the Seasons meta data.
                       if($login)
@@ -452,7 +462,7 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Feb 05, 2014
+ * Updated on Feb 14, 2014
  *
  * Description: Reset the status. 
  *
@@ -474,6 +484,19 @@ function ResetStatus($media)
     UpdateStatus($db, "ImportCounter", 0);
     UpdateStatus($db, "Xbmc".$media."End", -1);
     
+    // Get last id media item and set ImportStart.
+    if ($media == "movies" || $media == "tvshows" || $media == "music") {
+        $name = "xbmcid";
+    }
+    else {
+        $name = rtrim($media, 's')."id";
+    }  
+    $sql = "SELECT $name FROM $media ".
+           "WHERE id = (SELECT MAX(id) FROM $media)";    
+    $lastid = GetItemFromDatabase($db, "id", $sql);
+    //$lastid = !empty($lastid)?$lastid:0;
+    UpdateStatus($db, "ImportStart", !empty($lastid)?$lastid:0);
+    
     $aJson["connection"] = GetSetting($db, "XBMCconnection");
     $aJson["port"]       = GetSetting($db, "XBMCport");
     $aJson["timeout"]    = GetSetting($db, "Timeout");
@@ -489,7 +512,7 @@ function ResetStatus($media)
  * Function:	GetCountersStatus
  *
  * Created on Jan 03, 2014
- * Updated on Feb 05, 2014
+ * Updated on Feb 14, 2014
  *
  * Description: Get status counter
  *
@@ -506,7 +529,38 @@ function GetCountersStatus($media)
         $media = "tvshows";
     }
     
-    $aJson['xbmc']['start'] = GetStatus($db, "Xbmc".$media."Start");
+    switch ($media)
+    {
+        case "movies"   : $meta = "moviesmeta";
+                          $name = "movieid";
+                          break;
+                      
+        case "sets"     : $meta = "setsmeta";
+                          $name = "setid";
+                          break;
+   
+        case "tvshows"  : $meta = "tvshowsmeta";
+                          $name = "tvshowid";
+                          break;
+                     
+        case "seasons"  : $meta = "seasonsmeta";
+                          $name = "seasonid";
+                          break;
+                     
+        case "episodes" : $meta = "episodesmeta";
+                          $name = "episodeid";
+                          break;
+                      
+        case "music"    : $meta = "albumsmeta";
+                          $name = "albumid";
+                          break;                
+    }
+    
+    $id = GetStatus($db, "ImportStart");
+    
+    $sql = "SELECT id+1 AS id FROM $meta WHERE $name = $id";
+    $aJson['xbmc']['start'] = GetItemFromDatabase($db, "id", $sql); //GetStatus($db, "Xbmc".$media."Start");
+    
     $aJson['xbmc']['end']   = GetStatus($db, "Xbmc".$media."End");
     $aJson['import']        = GetStatus($db, "ImportCounter");
     
@@ -771,6 +825,41 @@ function InitMeta($type)
     }    
 
     $aJson['status'] = "ready";
+    
+    CloseDatabase($db); 
+    return $aJson;
+}
+
+/*
+ * Function:	CheckMeta
+ *
+ * Created on Feb 12, 2014
+ * Updated on Feb 12, 2014
+ *
+ * Description: Initialize meta data (empty meta tables).
+ *
+ * In:  $type
+ * Out: $aJson
+ *
+ */
+function CheckMeta($type)
+{
+    $aJson = null;
+    $db = OpenDatabase();
+
+    if ($type != "music") {
+        $total = CountRows($db, $type."meta");
+    }
+    else {
+        $total = CountRows($db, "albumsmeta");
+    }    
+    
+    $end = GetStatus($db, "Xbmc".$type."End");
+    
+    $aJson['check'] = false;
+    if ($total == $end) {
+        $aJson['check'] = true;
+    }
     
     CloseDatabase($db); 
     return $aJson;

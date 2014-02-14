@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 01, 2014
+ * Updated on Feb 12, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -306,7 +306,7 @@ function StartMetaImportHandler(media, type, next)
                 SetStartImportHandler(media, next, false); // Continue with the next step.
             }
         }).fail (function() {
-            ShowOffline(true); 
+            ShowOffline(true);
         });
     }         
 }
@@ -315,7 +315,7 @@ function StartMetaImportHandler(media, type, next)
  * Function:	StartMetaImport
  *
  * Created on Jan 12, 2014
- * Updated on Jan 27, 2014
+ * Updated on Feb 12, 2014
  *
  * Description: Control and Import the media meta data transfered from XBMC.
  *
@@ -327,7 +327,7 @@ function StartMetaImport(type, end)
 {
     var deferred = $.Deferred();   
     
-    $.ajax({ 
+    $.ajax({ // Begin Ajax 1.
         url: 'jsonmanage.php?action=initmeta&type=' + type,
         async: false,
         dataType: 'json',
@@ -351,14 +351,29 @@ function StartMetaImport(type, end)
                 });
             }
             $.when(currentStep).done(function(){
-                //console.log("All steps done.");
-                deferred.resolve();
+                //console.log("All steps done.");     
+                $.ajax({ // Begin Ajax 2.
+                    url: 'jsonmanage.php?action=chkmeta&type=' + type,
+                    async: false,
+                    dataType: 'json',
+                    success: function(json)
+                    {                  
+                        if (json.check) {
+                            deferred.resolve();
+                        }
+                        else {
+                            deferred.reject();
+                        }     
+                    } // End succes.    
+                }); // End Ajax 2.              
+                
+                //deferred.resolve();
             }).fail(function(){
                 deferred.reject();
             });
  
         } // End succes.    
-    }); // End Ajax.       
+    }); // End Ajax 1.       
     
     return deferred.promise();
 }
@@ -598,7 +613,7 @@ function GetMediaStatus(type, start, xbmcid)
             gMEDIA.XBMCID = json.xbmcid;
             
             gTRIGGER.STATUS  = json.status;
-            gTRIGGER.COUNTER = json.counter;       
+            gTRIGGER.COUNTER = json.counter;
         } // End succes.    
     }); // End Ajax.    
 }
@@ -700,7 +715,7 @@ function StartSeasonsMetaImportHandler(media, type, next)
  * Function:	StartSeasonsMetaImport
  *
  * Created on Jan 20, 2014
- * Updated on Jan 20, 2014
+ * Updated on Feb 12, 2014
  *
  * Description: Control and Import the seasons media meta data transfered from XBMC.
  *
@@ -714,7 +729,7 @@ function StartSeasonsMetaImport(type)
 {
     var deferred = $.Deferred();
     
-    $.ajax({ 
+    $.ajax({  // Begin Ajax 1.
         url: 'jsonmanage.php?action=tvshowids&start=0&offset=5000',
         async: false,
         dataType: 'json',
@@ -728,8 +743,7 @@ function StartSeasonsMetaImport(type)
                 deferred.notify(0);
     
                 for(var i = 1; i < gTRIGGER.END; i++)
-                {       
-                    //console.log("Meta Counter: " +  json.tvshowids[i]); //Debug
+                {
                     currentStep = currentStep.pipe(function(j){
                         if (!gTRIGGER.CANCEL) {
                             deferred.notify(++j);
@@ -739,9 +753,9 @@ function StartSeasonsMetaImport(type)
                     });
                 }
                 $.when(currentStep).done(function(){
-                    //console.log("All steps done.");
+                    //console.log("All steps done.");                
                     deferred.resolve();
-                }).fail(function(){
+                }).fail(function(){               
                     deferred.reject();
                 });  
             }
@@ -750,7 +764,7 @@ function StartSeasonsMetaImport(type)
             }
 
         } // End succes.    
-    }); // End Ajax.    
+    }); // End Ajax 1.
     
     return deferred.promise();    
 }
@@ -1265,4 +1279,30 @@ function LogImportCounter(media, finish)
             }
         } // End Success.
     }); // End Ajax;   
+}
+
+/*
+ * Function:	GetXbmcMediaLimits
+ *
+ * Created on Jul 22, 2013
+ * Updated on Feb 14, 2014
+ *
+ * Description: Get the XBMC media limits (start and end values).
+ *
+ * In:	media
+ * Out:	counter
+ *
+ */
+function GetXbmcMediaLimits(media) 
+{
+    $.ajax({
+        url: 'jsonmanage.php?action=counter&media=' + media,
+        async: false,
+        dataType: 'json',
+        success: function(json) 
+        {           
+            gTRIGGER.START = Number(json.xbmc.start);
+            gTRIGGER.END   = Number(json.xbmc.end);
+        } // End Success.        
+    }); // End Ajax;
 }

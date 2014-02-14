@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 14, 2014
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -495,32 +495,6 @@ function LogEvent(type, event)
             
         } // End succes.
   }); // End Ajax.
-}
-
-/*
- * Function:	GetXbmcMediaLimits
- *
- * Created on Jul 22, 2013
- * Updated on Nov 21, 2013
- *
- * Description: Get the XBMC media limits (start and end values).
- *
- * In:	media
- * Out:	counter
- *
- */
-function GetXbmcMediaLimits(media) 
-{
-    $.ajax({
-        url: 'jsonmanage.php?action=counter&media=' + media,
-        async: false,
-        dataType: 'json',
-        success: function(json) 
-        {           
-            gTRIGGER.START = Number(json.xbmc.start);
-            gTRIGGER.END   = Number(json.xbmc.end);
-        } // End Success.        
-    }); // End Ajax;
 }
 
 /*
