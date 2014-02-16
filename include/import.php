@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 16, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -159,16 +159,6 @@ function ProcessDataFromXbmc($db, $aData)
         // libTVShows Refresh -> library id = 13.
         case 13 : RefreshTVShow($db, $aData["error"], $aData["poster"], $aData["fanart"], $aData["result"], $aData["fargoid"]);
                   break;
-             
-        // libTVShowSeasonsCounter -> library id = 14. Note TV Seasons uses the same counter as TV Shows.
-        //case 14 : UpdateMediaEndValue($db, $aData["error"], "TVShowsSeasons", $aData["start"]["tvshows"][0]["tvshowid"], $aData["result"]["tvshows"][0]["tvshowid"]);
-                  //UpdateStatus($db, "XbmcTVShowsSeasonsEnd", $aData["result"]["tvshows"][0]["tvshowid"]);   
-        //          break;
-              
-        // libSeasonsCounter -> library id = 15.
-        //case 15 : UpdateMediaEndValue($db, $aData["error"], "Seasons", 0, $aData["result"]["limits"]["total"]);
-                  //UpdateStatus($db, "XbmcSeasonsEnd", $aData["result"]["limits"]["total"]);
-        //          break;   
               
         // libTVShowSeasons Import -> library id = 16.
         case 16 : ImportTVShowSeason($db, $aData["error"], $aData["poster"], $aData["result"]);
@@ -206,33 +196,6 @@ function ProcessDataFromXbmc($db, $aData)
 }
 
 /*
- * Function:	UpdateMediaEndValue
- *
- * Created on Jan 07, 2014
- * Updated on Jan 09, 2014
- *
- * Description: Update the media end value. 
- *
- * In:  $db, $aError, $end, $value
- * Out: -
- *
- */
-/*function UpdateMediaEndValue($db, $aError, $type, $start, $end) // Obsolete
-{
-    if (empty($aError)) 
-    {
-        if ($start > GetStatus($db, "Xbmc".$type."Start")) {
-            UpdateStatus($db, "Xbmc".$type."Start", $start);
-        }
-        
-        UpdateStatus($db, "Xbmc".$type."End", $end);
-    }
-    else {
-        UpdateStatus($db, $end, 0);
-    }
-}*/
-
-/*
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
@@ -251,17 +214,18 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
         $aGenres = $aResult["moviedetails"]["genre"]; //$aMovie["genre"];
         $aMovie  = ConvertMovie($aResult["moviedetails"]);
         
-            
-        ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175); //200, 280          
-        $id = InsertMovie($db, $aMovie);  
-        ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 450, 280); //562, 350 //675, 420         
-        
-        InsertGenres($db, $aGenres, "movies"); 
-        InsertGenreToMedia($db, $aGenres, $id, "movies");
-    
+        list($dkey, $id) = InsertMovie($db, $aMovie);    
+        if (!$dkey) // No dublicate key found.
+        {    
+            ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175); //200, 280          
+            InsertGenres($db, $aGenres, "movies"); 
+            InsertGenreToMedia($db, $aGenres, $id, "movies");
+            ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 450, 280); //562, 350 //675, 420         
+           
+            IncrementStatus($db, "ImportCounter", 1);
+            UpdateStatus($db, "ImportStatus", -100);
+        }
         IncrementStatus($db, "XbmcMoviesStart", 1);
-        IncrementStatus($db, "ImportCounter", 1);
-        UpdateStatus($db, "ImportStatus", -100);
     }
     else if ($aError["code"] == -32602) {
         UpdateStatus($db, "ImportStatus", -200); // Not found, not used yet, only for refresh.

@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 12, 2014
+ * Updated on Feb 16, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -69,7 +69,7 @@ function SetStartMoviesImportHandler(step, retry)
         case 3 : // Import Movies.
                  StartImportHandler("movies", "movies", 4, 1);
                  break;
-                                             
+                                           
         case 4 : StartOnlineHandler("movies", "sets", 5, false, retry);
                  break;
                 
@@ -83,7 +83,7 @@ function SetStartMoviesImportHandler(step, retry)
              
         case 7 : ShowFinished(true);
                  //console.log("Import finished."); // Debug.
-                 break;          
+                 break;   
     }
 }
 
@@ -268,7 +268,7 @@ function StartOnlineCheck(type)
  * Function:	StartMetaImportHandler
  *
  * Created on Jan 12, 2014
- * Updated on Feb 01, 2014
+ * Updated on Feb 16, 2014
  *
  * Description:  Start the meta import handler.
  * 
@@ -302,7 +302,11 @@ function StartMetaImportHandler(media, type, next)
         }); 
             
         meta.done (function() {
-            if (!gTRIGGER.CANCEL) {
+            if (!gTRIGGER.CANCEL) 
+            {        
+                // Returns gTRIGGER.START and gTRIGGER.END.
+                GetXbmcMediaLimits(type);                
+                
                 SetStartImportHandler(media, next, false); // Continue with the next step.
             }
         }).fail (function() {

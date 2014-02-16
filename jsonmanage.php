@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Feb 14, 2014
+ * Updated on Feb 16, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -512,7 +512,7 @@ function ResetStatus($media)
  * Function:	GetCountersStatus
  *
  * Created on Jan 03, 2014
- * Updated on Feb 14, 2014
+ * Updated on Feb 16, 2014
  *
  * Description: Get status counter
  *
@@ -559,8 +559,9 @@ function GetCountersStatus($media)
     $id = GetStatus($db, "ImportStart");
     
     $sql = "SELECT id+1 AS id FROM $meta WHERE $name = $id";
-    $aJson['xbmc']['start'] = GetItemFromDatabase($db, "id", $sql); //GetStatus($db, "Xbmc".$media."Start");
+    $start = GetItemFromDatabase($db, "id", $sql);
     
+    $aJson['xbmc']['start'] = !empty($start)?$start:GetStatus($db, "Xbmc".$media."Start")-1;
     $aJson['xbmc']['end']   = GetStatus($db, "Xbmc".$media."End");
     $aJson['import']        = GetStatus($db, "ImportCounter");
     

@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Jan 10, 2014
+ * Updated on Feb 16, 2014
  *
  * Description: Fargo's settings page.
  *
@@ -43,3 +43,6 @@ define("cANIDB", "http://anidb.net/a");
 define("cMediaRow", "3");
 define("cMediaColumn", "5");
 define("cMediaEpisodeColumn", "3");
+
+// Error codes
+define("cMYSQL_DUPLICATE_KEY_ENTRY", 1062);

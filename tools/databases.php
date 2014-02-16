@@ -155,33 +155,39 @@ function AddEscapeStrings($db, $aItems)
  * Function:	QueryDatabase
  *
  * Created on May 10, 2013
- * Updated on Jan 02, 2014
+ * Updated on Feb 16, 2014
  *
  * Description:  Execute a sql query.
  *
  * In:	$db, $sql
- * Out:	Executed sql query
+ * Out:	$dkey, Executed sql query
  *
  * Note:  The database connection must exist.
  * 
  */
 function QueryDatabase($db, $sql)
 {        
+    $dkey = false;
+    
     $stmt = $db->prepare($sql);
     if($stmt)
     {
         if(!$stmt->execute())
     	{
-            die("Ececution of query \"$sql\" failed: </br><b>".mysqli_error($db)."</b>");
-   	    // Foutpagina maken, doorgeven fout met session variabele.
+            if (mysqli_errno($db) == cMYSQL_DUPLICATE_KEY_ENTRY) {
+                $dkey = true; // Dublicate key error.
+            }
+            else {
+                die("Ececution of query \"$sql\" failed: </br><b>".mysqli_error($db)."</b>");
+            }
     	}
     	$stmt->close();
     }
-    else
-    {
+    else {
         die("Invalid query: $sql</br><b>".mysqli_error($db)."</b>");
-   	// Foutpagina maken, doorgeven fout met session variabele.
     }
+    
+    return $dkey;
 }
 
 /*

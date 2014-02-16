@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 16, 2014
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -21,17 +21,16 @@
  * Function:	InsertMovie
  *
  * Created on Mar 09, 2013
- * Updated on Jan 02, 2014
+ * Updated on Feb 16, 2014
  *
  * Description: Insert movie in the database.
  *
  * In:  $db, $aMovie
- * Out:	$id, Movie in database table "movies".
+ * Out:	$dkey, $id, Movie in database table "movies".
  *
  */
 function InsertMovie($db, $aMovie)
 {   
-    //$db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aMovie);
     
     $sql = "INSERT INTO movies(xbmcid, title, genre, `year`, rating, director, trailer, tagline, plot,".
@@ -42,13 +41,11 @@ function InsertMovie($db, $aMovie)
            " '$aItems[16]', '$aItems[17]', '$aItems[18]', $aItems[19], '$aItems[20]', '$aItems[21]', '$aItems[22]',". 
            " $aItems[23], '$aItems[24]', '$aItems[25]', $aItems[26], '$aItems[27]')";
 
-    QueryDatabase($db, $sql);
-    
-    //CloseDatabase($db);
+    $dkey = QueryDatabase($db, $sql);
     
     // Get the auto generated id used in the last query.
     $id = mysqli_insert_id($db); 
-    return $id;
+    return array($dkey, $id);
 }
 
 /*
