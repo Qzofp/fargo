@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -360,7 +360,7 @@ function GetTVShowEpisodeInfo($id)
  * Function:	GetAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Dec 31, 2013
+ * Updated on Feb 19, 2014
  *
  * Description: Get the album info from Fargo and return it as Json data. 
  *
@@ -376,7 +376,7 @@ function GetAlbumInfo($id)
     
     $sql = "SELECT xbmcid, title, genre, theme, mood, style, `year`, artist, displayartist, rating,".
            "description, albumlabel ".
-           "FROM music ".
+           "FROM albums ".
            "WHERE id = $id";
     
     $db = OpenDatabase();
@@ -675,7 +675,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetPopupInfo
  *
  * Created on Nov 25, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Get the popup info for the refresh or delete popups from Fargo and return it as Json data. 
  *
@@ -731,7 +731,7 @@ function GetPopupInfo($media, $id)
                       
         case "albums"   : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
                                  //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
-                                 "FROM music WHERE id = $id";
+                                 "FROM albums WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cALBUMSTHUMBS);
                           break;              
                                            
@@ -801,7 +801,7 @@ function GetPopupMediaInfo($sql, $thumb)
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -899,7 +899,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
         case "albums"   : $aParams['thumbs'] = cALBUMSTHUMBS;
                           $aParams['column'] = cMediaColumn;
                           $header = "Music Albums";
-                          $sql    = CreateMediaQuery("music", $title, $genre, $year, $sort, $login);
+                          $sql    = CreateMediaQuery("albums", $title, $genre, $year, $sort, $login);
                           $rows   = CountRowsWithQuery($db, $sql);
                           $max    = cMediaRow * cMediaColumn; 
                           $aMedia = QueryMedia($db, $sql, $page, $max);
@@ -1279,7 +1279,7 @@ function QueryMedia($db, $sql, $page, $end)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on Jan 03, 2013
+ * Updated on Feb 19, 2014
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -1297,7 +1297,7 @@ function GetSystemOptionProperties($name, $login)
         case "statistics" : $html = GetSetting($db, $name);                                
                             $html = str_replace("[movies]", CountMedia($db, "movies", $login), $html);
                             $html = str_replace("[tvshows]", CountMedia($db, "tvshows", $login), $html);
-                            $html = str_replace("[music]", CountMedia($db, "music", $login), $html);
+                            $html = str_replace("[music]", CountMedia($db, "albums", $login), $html);
                             break;
                                        
         case "settings"   : $html = GetSetting($db, $name);

@@ -6,7 +6,7 @@
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	Transfer
  *
  * Created on Jul 13, 2013
- * Updated on Feb 01, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Transfers data from XBMC to Fargo.
  * 
@@ -53,7 +53,7 @@ function Transfer()
         case "episodes" : TransferTVShowEpisode(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
                           break;                         
         
-        case "music"    : TransferAlbum(aRequest.key, aRequest.xbmcid, aRequest.fargoid); 
+        case "albums"    : TransferAlbum(aRequest.key, aRequest.xbmcid, aRequest.fargoid); 
                           break;            
     }
 }
@@ -62,7 +62,7 @@ function Transfer()
  * Function:	TransferMediaCounter
  *
  * Created on Jul 22, 2013
- * Updated on Jan 28, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Transfers media counter (e.g. total number of movies) from XBMC to Fargo.
  * 
@@ -90,7 +90,7 @@ function TransferMediaCounter(key, media)
                           RequestCounter("VideoLibrary.GetEpisodes", 31, key);
                           break;                         
         
-        case "music"    : // libAlbumsCounter -> library id = 21.
+        case "albums"   : // libAlbumsCounter -> library id = 21.
                           RequestCounter("AudioLibrary.GetAlbums", 41, key);
                           break;
     }
@@ -120,32 +120,6 @@ function RequestCounter(library, id, key)
         TransferData(json, cIMPORT);
     }); // End getJSON.         
 }
-
-/*
- * Function:	RequestSeasonCounter
- *
- * Created on Oct 18, 2013
- * Updated on Jan 10, 2014
- *
- * Description: JSON Request XBMC season counter.
- * 
- * In:	library, id, key
- * Out: json
- *
- */
-/*function RequestSeasonCounter(tvshowid, id, key)  // Obsolete
-{
-    var request = '{"jsonrpc":"2.0","method":"VideoLibrary.GetSeasons",' +
-                   '"params":{"tvshowid":'+ tvshowid +',"limits":{"start":0,"end":1}},' +
-                   '"id":"' + id + '"}';
-    
-    // Get season total (counter) from XBMC.
-    $.getJSON("../jsonrpc?request=" + request, function(json)
-    {
-        json.key = key;
-        TransferData(json, cIMPORT);  // Tranfer data to Fargo.               
-    }); // End getJSON.         
-}*/
 
 /*
  * Function:	SearchAndTransferTitle

@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Feb 16, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -142,8 +142,9 @@ switch($action)
                       else {
                          $aJson = LogEvent("Warning", "Unauthorized series (meta data) action call!");
                       }                    
-                      break;      
+                      break;  
                       
+    /*                  
     case "convert" : // Convert TV show id's to season id's for refresh serie.
                      if($login)
                      { 
@@ -154,7 +155,8 @@ switch($action)
                         $aJson = LogEvent("Warning", "Unauthorized convert action call!");
                      }                    
                      break;                      
-                     
+    */ 
+                      
     case "property" : if($login)
                       {
                          $option = GetPageValue('option');
@@ -190,7 +192,7 @@ if (!empty($aJson)) {
  * Function:	HideOrShowMediaInFargo
  *
  * Created on Nov 20, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Hide or show media.
  *
@@ -230,7 +232,7 @@ function HideOrShowMediaInFargo($media, $id, $value)
         case "episodes" : $aJson = HideOrShowMedia($db, "episodes", $id, $value);
                           break;
                       
-        case "albums"   : $aJson = HideOrShowMedia($db, "music", $id, $value);
+        case "albums"   : $aJson = HideOrShowMedia($db, "albums", $id, $value);
                           break;                      
     }
     
@@ -269,7 +271,7 @@ function HideOrShowMedia($db, $table, $id, $value)
  * Function:	RemoveMediaFromFargo
  *
  * Created on Nov 22, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Delete media from Fargo database.
  *
@@ -309,7 +311,7 @@ function RemoveMediaFromFargo($media, $id, $xbmcid)
         case "episodes" : $aJson = DeleteMedia($db, "episodes", $id, $xbmcid);
                           break;
                       
-        case "albums"   : $aJson = DeleteMedia($db, "music", $id, $xbmcid);
+        case "albums"   : $aJson = DeleteMedia($db, "albums", $id, $xbmcid);
                           break;                      
                     
     }
@@ -322,7 +324,7 @@ function RemoveMediaFromFargo($media, $id, $xbmcid)
  * Function:	DeleteMediaQuery
  *
  * Created on Oct 05, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Delete media from Fargo database.
  *
@@ -403,7 +405,7 @@ function DeleteMedia($db, $media, $id, $xbmcid)
                           DeleteFile(cEPISODESTHUMBS."/$xbmcid.jpg");
                           break;                     
                             
-        case "music"    : DeleteMediaQuery($db, "music", $id);
+        case "albums"   : DeleteMediaQuery($db, "albums", $id);
                           DeleteMediaGenreQuery($db, "music", $id);
                           DeleteFile(cALBUMSTHUMBS."/$xbmcid.jpg");
                           DeleteFile(cALBUMSCOVERS."/$xbmcid.jpg");
@@ -462,7 +464,7 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Feb 14, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Reset the status. 
  *
@@ -485,14 +487,14 @@ function ResetStatus($media)
     UpdateStatus($db, "Xbmc".$media."End", -1);
     
     // Get last id media item and set ImportStart.
-    if ($media == "movies" || $media == "tvshows" || $media == "music") {
+    if ($media == "movies" || $media == "tvshows" || $media == "albums") {
         $name = "xbmcid";
     }
     else {
         $name = rtrim($media, 's')."id";
     }  
     $sql = "SELECT $name FROM $media ".
-           "WHERE id = (SELECT MAX(id) FROM $media)";    
+           "WHERE id = (SELECT MAX(id) FROM $media)";
     $lastid = GetItemFromDatabase($db, "id", $sql);
     //$lastid = !empty($lastid)?$lastid:0;
     UpdateStatus($db, "ImportStart", !empty($lastid)?$lastid:0);
@@ -512,7 +514,7 @@ function ResetStatus($media)
  * Function:	GetCountersStatus
  *
  * Created on Jan 03, 2014
- * Updated on Feb 16, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Get status counter
  *
@@ -551,17 +553,21 @@ function GetCountersStatus($media)
                           $name = "episodeid";
                           break;
                       
+        case "albums"   : $meta = "albumsmeta";
+                          $name = "albumid";
+                          break;                         
+                      
         case "music"    : $meta = "albumsmeta";
                           $name = "albumid";
                           break;                
     }
     
-    $id = GetStatus($db, "ImportStart");
+    $xbmcid = GetStatus($db, "ImportStart");  
+    //$sql = "SELECT id+1 AS id FROM $meta WHERE $name <= $xbmcid ".
+    //       "ORDER BY $name DESC LIMIT 0, 1";
+    $sql = "SELECT COUNT(*)+1 AS id FROM $meta WHERE $name <= $xbmcid";
     
-    $sql = "SELECT id+1 AS id FROM $meta WHERE $name = $id";
-    $start = GetItemFromDatabase($db, "id", $sql);
-    
-    $aJson['xbmc']['start'] = !empty($start)?$start:GetStatus($db, "Xbmc".$media."Start")-1;
+    $aJson['xbmc']['start'] = GetItemFromDatabase($db, "id", $sql);
     $aJson['xbmc']['end']   = GetStatus($db, "Xbmc".$media."End");
     $aJson['import']        = GetStatus($db, "ImportCounter");
     
@@ -636,7 +642,7 @@ function ProcessImportMode($mode)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Reports the status of the import media process. 
  *
@@ -666,7 +672,8 @@ function GetMediaStatus($media, $id, $xbmcid)
         case "episodes"       : $aJson = GetSeriesImportStatus($db, "episodes", "episodeid", $id, $xbmcid, cEPISODESTHUMBS);
                                 break;                      
                       
-        case "music"          : $aJson = GetMusicImportStatus($db, $id, $xbmcid);
+        case "albums"         : $aJson = GetImportStatus($db, "albums", "albumid", "xbmcid", $id, $xbmcid, cALBUMSTHUMBS);
+                                //$aJson = GetMusicImportStatus($db, $id, $xbmcid);
                                 break;                      
     }      
  
@@ -678,7 +685,7 @@ function GetMediaStatus($media, $id, $xbmcid)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Jan 31, 2014
+ * Updated on Feb 18, 2014
  *
  * Description: Reports the status of the import process.
  *
@@ -690,8 +697,11 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
 {
     $aJson['thumbs'] = $thumbs;
 
+    //$sql = "SELECT $typeid FROM ".$table."meta ".
+    //       "WHERE id = $id";
+    $id -= 1;
     $sql = "SELECT $typeid FROM ".$table."meta ".
-           "WHERE id = $id";
+           "ORDER BY $typeid LIMIT $id, 1";    
     
     $aJson['xbmcid'] = GetItemFromDatabase($db, $typeid, $sql);
 
@@ -701,7 +711,11 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
     $aJson['title'] = GetItemFromDatabase($db, "title", $sql);
     $aJson['sub']   = "&nbsp;";
     
-    $aJson['status']  = GetStatus($db, "ImportStatus"); // Needed for refresh media.
+    $aJson['status']  = GetStatus($db, "ImportStatus");
+    if ($aJson['status'] == cTRANSFER_READY) {
+        UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
+    }
+    
     $aJson['counter'] = GetStatus($db, "Xbmc".$table."Start");  
     
     return $aJson;
@@ -711,7 +725,7 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
  * Function:	GetMusicImportStatus
  *
  * Created on Jan 18, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Reports the status of the Music import process.
  *
@@ -719,12 +733,16 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
  * Out: $aJson
  *
  */
-function GetMusicImportStatus($db, $id, $xbmcid)
+/*function GetMusicImportStatus($db, $id, $xbmcid)  // Obsolete
 {
     $aJson['thumbs'] = cALBUMSTHUMBS;
 
+    //$sql = "SELECT albumid FROM albumsmeta ".
+    //       "WHERE id = $id";
+    
+    $id -= 1;
     $sql = "SELECT albumid FROM albumsmeta ".
-           "WHERE id = $id";
+           "ORDER BY albumid LIMIT $id, 1";
     
     $aJson['xbmcid'] = GetItemFromDatabase($db, "albumid", $sql);
 
@@ -734,17 +752,21 @@ function GetMusicImportStatus($db, $id, $xbmcid)
     $aJson['title']  = GetItemFromDatabase($db, "title", $sql);
     $aJson['sub']    = "&nbsp;";
     
-    $aJson['status']  = GetStatus($db, "ImportStatus"); // Needed for refresh media.    
-    $aJson['counter'] = GetStatus($db, "XbmcMusicStart");
+    $aJson['status']  = GetStatus($db, "ImportStatus"); 
+    if ($aJson['status'] == cTRANSFER_READY) {
+        UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
+    }    
+    
+    $aJson['counter'] = GetStatus($db, "XbmcAlbumsStart");
     
     return $aJson;
-}
+}*/
 
 /*
  * Function:	GetSeriesImportStatus
  *
  * Created on Jan 20, 2014
- * Updated on Feb 07, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Reports the status of the series (seasons, episodes) import process.
  *
@@ -756,8 +778,12 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
 {
     $aJson['thumbs'] = $thumbs;
 
+    //$sql = "SELECT $typeid FROM ".$table."meta ".
+    //       "WHERE id = $id";  
+
+    $id -= 1;    
     $sql = "SELECT $typeid FROM ".$table."meta ".
-           "WHERE id = $id";    
+           "ORDER BY $typeid LIMIT $id, 1";
     $aJson['xbmcid'] = GetItemFromDatabase($db, $typeid, $sql);
     
     $sql = "SELECT showtitle FROM $table ".
@@ -768,7 +794,11 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
            "WHERE $typeid = $xbmcid";    
     $aJson['sub'] = GetItemFromDatabase($db, "title", $sql);
     
-    $aJson['status']  = GetStatus($db, "ImportStatus"); // Needed for refresh media.    
+    $aJson['status']  = GetStatus($db, "ImportStatus");
+    if ($aJson['status'] == cTRANSFER_READY) {
+        UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
+    }    
+    
     $aJson['counter'] = GetStatus($db, "Xbmc".$table."Start");
     
     return $aJson;
@@ -786,7 +816,7 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
  * Out: $aJson
  *
  */
-function ConvertTVShowToSeasonID($id) // Obsolete?
+/*function ConvertTVShowToSeasonID($id) // Obsolete?
 {
     $db = OpenDatabase();    
     
@@ -797,7 +827,7 @@ function ConvertTVShowToSeasonID($id) // Obsolete?
     CloseDatabase($db); 
     
     return $aJson;
-}
+}*/
 
 //////////////////////////////////////////    Meta Functions    ///////////////////////////////////////////
 
@@ -835,7 +865,7 @@ function InitMeta($type)
  * Function:	CheckMeta
  *
  * Created on Feb 12, 2014
- * Updated on Feb 12, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Initialize meta data (empty meta tables).
  *
@@ -848,14 +878,17 @@ function CheckMeta($type)
     $aJson = null;
     $db = OpenDatabase();
 
+    /*
     if ($type != "music") {
         $total = CountRows($db, $type."meta");
     }
     else {
         $total = CountRows($db, "albumsmeta");
     }    
+    */
     
-    $end = GetStatus($db, "Xbmc".$type."End");
+    $total = CountRows($db, $type."meta");
+    $end   = GetStatus($db, "Xbmc".$type."End");
     
     $aJson['check'] = false;
     if ($total == $end) {
@@ -986,7 +1019,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Jan 20, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Clean the media library. 
  *
@@ -1034,12 +1067,12 @@ function CleanLibrary($number)
                  DeleteFile(cEPISODESTHUMBS."/*.jpg");
                  break;
         
-        case 7 : $aJson['name']    = "music";
-                 $aJson['counter'] = CountRows($db, "music");
-                 EmptyTable($db, "music");
+        case 7 : $aJson['name']    = "albums";
+                 $aJson['counter'] = CountRows($db, "albums");
+                 EmptyTable($db, "albums");
                  EmptyTable($db, "genretomusic");
                  DeleteGenres($db, "music");
-                 UpdateStatus($db, "XbmcMusicStart", 1);
+                 UpdateStatus($db, "XbmcAlbumsStart", 1);
                  DeleteFile(cALBUMSTHUMBS."/*.jpg");
                  DeleteFile(cALBUMSCOVERS."/*.jpg");
                  break;

@@ -7,7 +7,7 @@
  * File:    import_json.php
  *
  * Created on Jul 02, 2013
- * Updated on Feb 16, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -302,7 +302,7 @@ function UpdateTVShowEpisode($db, $id, $aEpisode)
  * Function:	InsertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Jan 02, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Insert music album in the database.
  *
@@ -315,7 +315,7 @@ function InsertAlbum($db, $aAlbum)
     //$db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aAlbum);      
     
-    $sql = "INSERT INTO music(xbmcid, title, description, artist, genre, theme, mood, style, `type`, albumlabel,".
+    $sql = "INSERT INTO albums(xbmcid, title, description, artist, genre, theme, mood, style, `type`, albumlabel,".
            " rating, `year`, mbalbumid, mbalbumartistid, playcount, displayartist, sorttitle) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', '$aItems[4]', '$aItems[5]', '$aItems[6]',".
            " '$aItems[7]', '$aItems[8]', '$aItems[9]', $aItems[10], $aItems[11], '$aItems[12]', '$aItems[13]',".
@@ -333,7 +333,7 @@ function InsertAlbum($db, $aAlbum)
  * Function:	UpdateAlbum
  *
  * Created on Sep 22, 2013
- * Updated on Jan 02, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Update music album in the database.
  *
@@ -346,7 +346,7 @@ function UpdateAlbum($db, $id, $aAlbum)
     //$db = OpenDatabase();
     $aItems = AddEscapeStrings($db, $aAlbum); 
     
-    $sql = "UPDATE music ".
+    $sql = "UPDATE albums ".
            "SET xbmcid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', description = '$aItems[2]',".
            " artist = '$aItems[3]', genre = '$aItems[4]', theme = '$aItems[5]', mood = '$aItems[6]',".
            " style = '$aItems[7]', type = '$aItems[8]', albumlabel = '$aItems[9]', rating = $aItems[10],".

@@ -7,7 +7,7 @@
  * File:    search.php
  *
  * Created on Jan 28, 2014
- * Updated on Feb 07, 2014
+ * Updated on Feb 18, 2014
  *
  * Description: Fargo's search page. This page is called from XBMC which push the data to Fargo.
  *
@@ -85,7 +85,7 @@ function ReceiveSearchResults()
  * Function:	ProcessSearchResults
  *
  * Created on Jan 29, 2014
- * Updated on Feb 07, 2014
+ * Updated on Feb 18, 2014
  *
  * Description: Process search results from XBMC. 
  *
@@ -125,7 +125,7 @@ function ProcessSearchResults($db, $aResults)
         }
     }
     else {
-        UpdateStatus($db, "ImportStatus", -999); // Error.
+        UpdateStatus($db, "ImportStatus", cTRANSFER_ERROR); // Error.
     }
 }
 
@@ -133,7 +133,7 @@ function ProcessSearchResults($db, $aResults)
  * Function:	UpdateSearchResults
  *
  * Created on Jan 29, 2014
- * Updated on Feb 03, 2014
+ * Updated on Feb 18, 2014
  *
  * Description: Update search results for refresh purposes.
  *
@@ -145,7 +145,7 @@ function UpdateSearchResults($db, $aResults, $type, $typeid)
 {
     if (empty($aResults["error"])) 
     {
-        $status = 0; // No match.
+        $status = cTRANSFER_NO_MATCH;
         if ($aResults["result"]["limits"]["total"] > 0)
         {
             for ($i = 0; $i < $aResults["result"]["limits"]["total"]; $i++) 
@@ -166,8 +166,8 @@ function UpdateSearchResults($db, $aResults, $type, $typeid)
             UpdateStatus($db, "ImportStatus", $status); // No match.
         }
     }
-    else if ($aError["code"] == -32602) {  // Not found.
-        UpdateStatus($db, "ImportStatus", -200);
+    else if ($aError["code"] == cTRANSFER_INVALID) {  // Not found.
+        UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND);
     }
 }
 
@@ -175,7 +175,7 @@ function UpdateSearchResults($db, $aResults, $type, $typeid)
  * Function:	CheckAndUpdateResults
  *
  * Created on Feb 03, 2014
- * Updated on Feb 03, 2014
+ * Updated on Feb 18, 2014
  *
  * Description: Check if the id exists and then update the status.
  *
@@ -193,7 +193,7 @@ function CheckAndUpdateResults($db, $aResults, $details, $typeid)
             UpdateStatus($db, "ImportStatus", $aResults["result"][$details][$typeid]);
         }
     }
-    else if ($aError["code"] == -32602) {  // Not found.
-        UpdateStatus($db, "ImportStatus", -200);
+    else if ($aError["code"] == cTRANSFER_INVALID) {  // Not found.
+        UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND);
     }
 }

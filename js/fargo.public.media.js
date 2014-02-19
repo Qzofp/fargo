@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jan 05, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -1254,7 +1254,7 @@ function SetMainKeyHandler(key, event)
  * Function:	ConvertMedia
  *
  * Created on May 10, 2013
- * Updated on Oct 26, 2013
+ * Updated on Feb 19, 2014
  *
  * Description: Convert the media string to a more readable string.
  * 
@@ -1281,7 +1281,10 @@ function ConvertMedia(media)
                     
         case 'episodes': media = "Episodes";
                          break;                     
-                        
+
+        case 'albums'  : media = "Albums";
+                         break;        
+        
         case 'music'   : media = "Music";
                          break;
                         

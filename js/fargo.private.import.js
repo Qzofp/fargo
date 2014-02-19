@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 16, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -69,7 +69,7 @@ function SetStartMoviesImportHandler(step, retry)
         case 3 : // Import Movies.
                  StartImportHandler("movies", "movies", 4, 1);
                  break;
-                                           
+                                  
         case 4 : StartOnlineHandler("movies", "sets", 5, false, retry);
                  break;
                 
@@ -83,7 +83,7 @@ function SetStartMoviesImportHandler(step, retry)
              
         case 7 : ShowFinished(true);
                  //console.log("Import finished."); // Debug.
-                 break;   
+                 break;
     }
 }
 
@@ -120,7 +120,7 @@ function SetStartTVShowsImportHandler(step, retry)
         case 5 : // Import Seasons meta data.
                  StartSeasonsMetaImportHandler("tvshows", "seasons", 6);
                  break;
-                
+              
         case 6 : // Import Seasons.  
                  StartImportHandler("tvshows", "seasons", 7, 0.6);
                  break;
@@ -137,7 +137,7 @@ function SetStartTVShowsImportHandler(step, retry)
                  break;                     
                  
         case 10: ShowFinished(true);
-                 break;     
+                 break;  
     }
 }
 
@@ -145,7 +145,7 @@ function SetStartTVShowsImportHandler(step, retry)
  * Function:	SetStartMusicImportHandler
  *
  * Created on Jan 18, 2014
- * Updated on Jan 24, 2014
+ * Updated on Feb 19, 2014
  *
  * Description:  Start the music import handler.
  * 
@@ -157,15 +157,15 @@ function SetStartMusicImportHandler(step, retry)
 {
     switch (step)
     {
-        case 1 : StartOnlineHandler("music", "music", 2, true, retry);
+        case 1 : StartOnlineHandler("music", "albums", 2, true, retry);
                  break;        
         
         case 2 : // Import Music meta data.
-                 StartMetaImportHandler("music", "music", 3);
+                 StartMetaImportHandler("music", "albums", 3);
                  break;
                  
         case 3 : // Import Music.
-                 StartImportHandler("music", "music", 4, 0.6);
+                 StartImportHandler("music", "albums", 4, 0.6);
                  break;
                  
         case 4 : ShowFinished(true);
@@ -178,7 +178,7 @@ function SetStartMusicImportHandler(step, retry)
  * Function:	StartOnlineHandler
  *
  * Created on Jan 19, 2014
- * Updated on Jan 23, 2014
+ * Updated on Feb 19, 2014
  *
  * Description:  Check if XBMC is online handler.
  * 
@@ -210,7 +210,7 @@ function StartOnlineHandler(media, type, next, online, retry)
         
         SetStartImportHandler(media, next, retry);
     }).fail (function() {
-        ShowOffline(true); 
+        ShowOffline(cSTATUS.OFFLINE);
     }); // End Start.    
 }
 
@@ -268,7 +268,7 @@ function StartOnlineCheck(type)
  * Function:	StartMetaImportHandler
  *
  * Created on Jan 12, 2014
- * Updated on Feb 16, 2014
+ * Updated on Feb 19, 2014
  *
  * Description:  Start the meta import handler.
  * 
@@ -309,8 +309,8 @@ function StartMetaImportHandler(media, type, next)
                 
                 SetStartImportHandler(media, next, false); // Continue with the next step.
             }
-        }).fail (function() {
-            ShowOffline(true);
+        }).fail (function(msg) {
+            ShowOffline(msg);
         });
     }         
 }
@@ -319,7 +319,7 @@ function StartMetaImportHandler(media, type, next)
  * Function:	StartMetaImport
  *
  * Created on Jan 12, 2014
- * Updated on Feb 12, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Control and Import the media meta data transfered from XBMC.
  *
@@ -366,14 +366,14 @@ function StartMetaImport(type, end)
                             deferred.resolve();
                         }
                         else {
-                            deferred.reject();
+                            deferred.reject(cSTATUS.METAERR);
                         }     
                     } // End succes.    
                 }); // End Ajax 2.              
                 
                 //deferred.resolve();
             }).fail(function(){
-                deferred.reject();
+                deferred.reject(cSTATUS.OFFLINE);
             });
  
         } // End succes.    
@@ -428,7 +428,7 @@ function ShowMetaProgress($prg, type, i, end)
  * Function:	StartImportHandler
  *
  * Created on Jan 14, 2014
- * Updated on Jan 26, 2014
+ * Updated on Feb 19, 2014
  *
  * Description:  Start the media import handler.
  * 
@@ -456,9 +456,6 @@ function StartImportHandler(media, type, next, factor)
     }
 
     $prg.progressbar({value : 0 });
-    //$img.removeAttr("src").attr("src", "");
-    //$tit.html("&nbsp;");
-    //$sub.html("&nbsp;");
     $msg.html(cSTATUS.WAIT);
     
     setTimeout(function() {
@@ -486,8 +483,8 @@ function StartImportHandler(media, type, next, factor)
                         SetStartImportHandler(media, next, false);  // Continue with the next step.
                     }, gCONNECT.TIMEOUT);
                 }
-            }).fail (function() {
-                ShowOffline(true); 
+            }).fail (function(msg) {
+                ShowOffline(msg);
             });
         }    
     }, gCONNECT.TIMEOUT); // End setTimeout.
@@ -497,7 +494,7 @@ function StartImportHandler(media, type, next, factor)
  * Function:	StartImport
  *
  * Created on Jan 14, 2014
- * Updated on Jan 27, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
@@ -514,6 +511,7 @@ function StartImport(type, factor)
     var retry = 0;
     var xbmcid = 0;
     var start = gTRIGGER.START;
+    var busy = false;
         
     // Get status (returns gMEDIA and gTRIGGER.COUNTER)
     GetMediaStatus(type, start, xbmcid);
@@ -533,7 +531,7 @@ function StartImport(type, factor)
             if (retry > gTRIGGER.RETRY) 
             {
                 gTRIGGER.CANCEL = true;
-                ShowOffline(false);
+                ShowOffline(cSTATUS.LOST);
                 //console.log("Retry import...");
             }         
             // End status check.
@@ -547,9 +545,37 @@ function StartImport(type, factor)
             // Get status (returns gMEDIA and gTRIGGER.COUNTER).
             GetMediaStatus(type, start, xbmcid);
             
-            if (gMEDIA.TITLE) {            
+            if (gMEDIA.TITLE) {
                 deferred.notify(start, xbmcid);// Show status.  
             }
+            
+            switch (Number(gTRIGGER.STATUS))
+            {
+                case cTRANSFER.ERROR      
+                        : deferred.reject(cSTATUS.LOST); // Failure.
+                          gTRIGGER.CANCEL = true;
+                          break;
+                          
+                case cTRANSFER.DUPLICATE 
+                        : console.log("Duplicate found...");
+                          break;                          
+                            
+                case cTRANSFER.NOTFOUND 
+                        : console.log("Not found...");
+                          deferred.resolve(); // Not found.
+                          gTRIGGER.CANCEL = true;                    
+                          break;
+                            
+                case cTRANSFER.READY
+                        : busy = false;
+                          console.log("Import ready...");
+                          break;                              
+                            
+                case cTRANSFER.WAIT   
+                        : //busy = true;
+                          console.log("Wait...");
+                          break;
+            }            
             
             retry++;
         }
@@ -558,19 +584,17 @@ function StartImport(type, factor)
     // Import media.
     (function setImportTimer() 
     {
-        if (gTRIGGER.CANCEL || start > gTRIGGER.END) 
-        {            
-            //if (start > gTRIGGER.END) {
-                //deferred.resolve(); // Import is ready
-            //}      
+        if (gTRIGGER.CANCEL || start > gTRIGGER.END) {               
             return; // End Import.
-        } 
+        }
         
         //console.log("Import loop..."); //debug
         
-        if (gMEDIA.XBMCID != xbmcid)
+        //if (gMEDIA.XBMCID != xbmcid)
+        if (!busy && gMEDIA.XBMCID != xbmcid)
         {
             xbmcid = gMEDIA.XBMCID;
+            busy = true;
                
             url = GetTransferUrl() + "/fargo/transfer.html?action=" + type + "&xbmcid=" + gMEDIA.XBMCID + "&fargoid=-1" + "&key=" + gCONNECT.KEY;
             ready = ImportData(url, 0);
@@ -580,7 +604,7 @@ function StartImport(type, factor)
             }).fail(function() {
                 console.log("Failure..."); //debug
                 gTRIGGER.CANCEL = true;
-                deferred.reject();
+                deferred.reject(cSTATUS.OFFLINE);
             }); // End Ready.
         }
                
@@ -669,7 +693,7 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
  * Function:	StartSeasonsMetaImportHandler
  *
  * Created on Jan 20, 2014
- * Updated on Jan 26, 2014
+ * Updated on Feb 19, 2014
  *
  * Description:  Start the seasons meta import handler.
  * 
@@ -697,7 +721,7 @@ function StartSeasonsMetaImportHandler(media, type, next)
     {
         var meta = StartSeasonsMetaImport(type);            
         meta.progress(function(i) {
-            ShowMetaProgress($prg, type, i, gTRIGGER.END-1);
+            ShowMetaProgress($prg, type, i, gTRIGGER.END);
             //console.log("Meta Counter: " + i);
         }); 
             
@@ -706,11 +730,12 @@ function StartSeasonsMetaImportHandler(media, type, next)
                 
                 // Returns gTRIGGER.START and gTRIGGER.END.
                 GetXbmcMediaLimits(type);
+                //console.log(type);
                 
                 SetStartImportHandler(media, next, false); // Continue with the next step.
             }
         }).fail (function() {
-            ShowOffline(true); 
+            ShowOffline(cSTATUS.OFFLINE); 
         });
     }         
 }
@@ -719,7 +744,7 @@ function StartSeasonsMetaImportHandler(media, type, next)
  * Function:	StartSeasonsMetaImport
  *
  * Created on Jan 20, 2014
- * Updated on Feb 12, 2014
+ * Updated on Feb 17, 2014
  *
  * Description: Control and Import the seasons media meta data transfered from XBMC.
  *
@@ -746,7 +771,7 @@ function StartSeasonsMetaImport(type)
     
                 deferred.notify(0);
     
-                for(var i = 1; i < gTRIGGER.END; i++)
+                for(var i = 1; i < gTRIGGER.END-1; i++)
                 {
                     currentStep = currentStep.pipe(function(j){
                         if (!gTRIGGER.CANCEL) {
@@ -1098,23 +1123,24 @@ function ShowNoNewMedia(media, callback) // Obsolete
  * Function:	ShowOffline
  *
  * Created on Aug 19, 2013
- * Updated on Jan 27, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Show offline message and add to log event.
  * 
- * In:	offline
+ * In:	msg
  * Out:	-
  *
  */
-function ShowOffline(offline)
+function ShowOffline(msg)
 {
-    if (offline) {
+    /*if (offline) {
         $("#action_box .message").html(cSTATUS.OFFLINE);
     }
     else {
         $("#action_box .message").html(cSTATUS.LOST);
-    }
+    }*/
     
+    $("#action_box .message").html(msg);
     SetState("xbmc", "offline");
     
     $(".cancel").toggleClass("cancel retry");    
@@ -1157,7 +1183,7 @@ function ShowFinished(found)
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Jan 11, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Set the import handler, cancel or finish the import.
  * 
@@ -1171,8 +1197,8 @@ function SetImportCancelHandler()
     var $popup = $(".popup:visible");
     
     // Find media type (Movie, TV Show, Season, Episode, Album) in message and replaces "..." with "s". 
-    var type = $popup.find(".message").text().split(" ")[1].replace(/[.]+/, "s");
-    if (type != "Movies" && type != "Sets" && type != "TV Shows" && type != "Seasons" && type != "Episodes" && type != "Albums") {
+    var type = $popup.find(".message").text().split(" ")[1].replace(/[.]+/, "s").toLowerCase();
+    if (type != "movies" && type != "sets" && type != "tv shows" && type != "seasons" && type != "episodes" && type != "albums") {
         type = GetState("media");
     }
         

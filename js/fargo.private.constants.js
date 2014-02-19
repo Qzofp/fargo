@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Feb 11, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -42,6 +42,18 @@ var gCONNECT = {
     STATUS: "Offline"
 };
 
+// Transfer (Import/Refresh) codes. Must be smaller then or equal to 0.
+// Note: These codes corresponds with the codes from settings.php.
+var cTRANSFER = {
+    INVALID: -32602,
+    ERROR: -999,
+    DUPLICATE: -300,
+    NOTFOUND: -200,
+    READY: -100,
+    WAIT: -1,
+    NOMATCH: 0
+};
+
 // Import constants.
 var cIMPORT = {
     IMPORT:   "Import",
@@ -56,6 +68,7 @@ var cSTATUS = {
     ONLINE:   "XBMC is online.",
     OFFLINE:  "XBMC is offline!",
     LOST:     "XBMC connection lost!",
+    METAERR:  "Search failed! Please retry.", // Meta import error.
     CONNECT:  "Connecting... ",
     WAIT:     "Please wait...",
     RETRY:    "Retry import...",
@@ -68,7 +81,7 @@ var cSTATUS = {
     NOTFOUND: "No new [dummy] found.",
     SLACK:    "Slack detected...",
     SKIP:     "Skipping empty record ",
-    NOMATCH: "Refresh failed! [dummy] cannot be found in XBMC."
+    NOMATCH:  "Refresh failed! [dummy] cannot be found in XBMC."
 };
 
 var cSYSTEM = {

@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,7 +18,7 @@
  * Function:	PrepareRefreshHandler
  *
  * Created on Nov 23, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Prepare the refresh handler, show the refresh popup box and start the refresh.
  * 
@@ -66,7 +66,7 @@ function PrepareRefreshHandler(type, $popup) // May be not necessary and can be 
                           //SetStartRefreshHandler("episodes", id, xbmcid, -1);
                           break;           
         
-        case "albums"   : StartRefreshOnlineHandler("music", "music", $popup);
+        case "albums"   : StartRefreshOnlineHandler("albums", "albums", $popup);
                           //SetStartRefreshHandler("music", id, xbmcid, -1);
                           break;                      
     }
@@ -76,7 +76,7 @@ function PrepareRefreshHandler(type, $popup) // May be not necessary and can be 
  * Function:	StartRefreshOnlineHandler
  *
  * Created on Jan 31, 2014
- * Updated on Feb 05, 2014
+ * Updated on Feb 19, 2014
  *
  * Description:  Check if XBMC is online handler for refresh media.
  * 
@@ -100,7 +100,7 @@ function StartRefreshOnlineHandler(media, type, $popup)
         }, gCONNECT.TIMEOUT);
         
     }).fail (function() {
-        ShowOffline(true); 
+        ShowOffline(ShowOffline); 
     }); // End Start.    
 }
 
@@ -108,7 +108,7 @@ function StartRefreshOnlineHandler(media, type, $popup)
  * Function:	StartRefreshHandler
  *
  * Created on Sep 14, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 19, 2014
  *
  * Description: Set the refresh handler and start the refresh.
  * 
@@ -145,8 +145,8 @@ function StartRefreshHandler(type, $popup)
                    ShowRefreshFinished(type);
                 }, gCONNECT.TIMEOUT);
             }
-        }).fail (function(s) {
-            ShowOffline(s); 
+        }).fail (function(msg) {
+            ShowOffline(msg);
         });
          
     }, gCONNECT.TIMEOUT); // End setTimeout.
@@ -156,7 +156,7 @@ function StartRefreshHandler(type, $popup)
  * Function:	StartRefresh
  *
  * Created on Sep 14, 2013
- * Updated on Feb 07, 2014
+ * Updated on Feb 18, 2014
  *
  * Description: Control and Refresh the media transfered from XBMC.
  *
@@ -184,7 +184,7 @@ function StartRefresh(type, fargoid, xbmcid)
             {
                 gTRIGGER.CANCEL = true;
                 //console.log("Retry..."); // Debug.
-                deferred.reject(false); // Failure.
+                deferred.reject(cSTATUS.LOST); // Failure.
             }
             
             // End status check.
@@ -200,38 +200,32 @@ function StartRefresh(type, fargoid, xbmcid)
 
             switch (Number(gTRIGGER.STATUS))
             {
-                case -999 : // Error.
-                            //console.log("Error!");  // Debug.
-                            deferred.reject(false); // Failure.
-                            gTRIGGER.CANCEL = true;
-                            break;
+                case cTRANSFER.ERROR      
+                        : deferred.reject(cSTATUS.LOST); // Failure.
+                          gTRIGGER.CANCEL = true;
+                          break;
                             
-                case -200 : // Not found.
-                            //console.log("Not Found!");  // Debug.
-                            deferred.resolve(); // Not found.
-                            gTRIGGER.CANCEL = true;                    
-                            break;
+                case cTRANSFER.NOTFOUND 
+                        : deferred.resolve(); // Not found.
+                          gTRIGGER.CANCEL = true;                    
+                          break;
                             
-                case -100 : // Refresh ready
-                            //console.log("Refresh ready");  // Debug.
-                            deferred.resolve(); // Refresh ready.
-                            gTRIGGER.CANCEL = true;
-                            break;                              
+                case cTRANSFER.READY
+                        : deferred.resolve(); // Refresh ready.
+                          gTRIGGER.CANCEL = true;
+                          break;                              
                             
-                case -1   : // Wait
-                            i++;
-                            //console.log("Waiting... " + i);  // Debug.
-                            break;
+                case cTRANSFER.WAIT   
+                        : i++;
+                          break;
                 
-                case 0    : // No match on title, try on id.
-                            i++;
-                            //console.log("Try on id refresh. " + i);  // Debug.
-                            break;
+                case cTRANSFER.NOMATCH
+                        : i++;
+                          break;
                             
-                default   : i++;
-                            xbmcid = gTRIGGER.STATUS;
-                            //console.log("Match start refresh. " + i + " " + xbmcid);  // Debug.
-                            break;
+                default : i++;
+                          xbmcid = gTRIGGER.STATUS;
+                          break;
             }
             
             retry++;
@@ -266,7 +260,7 @@ function StartRefresh(type, fargoid, xbmcid)
             }).fail(function() {
                 //console.log("Failure..."); //debug
                 gTRIGGER.CANCEL = true;
-                deferred.reject(true);  // Failure.
+                deferred.reject(cSTATUS.OFFLINE);  // Failure.
             }); // End Ready.
         }
                
