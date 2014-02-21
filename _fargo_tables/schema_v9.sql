@@ -16,6 +16,41 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`fargo` /*!40100 DEFAULT CHARACTER SET u
 
 USE `fargo`;
 
+/*Table structure for table `albums` */
+
+DROP TABLE IF EXISTS `albums`;
+
+CREATE TABLE `albums` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `xbmcid` int(11) NOT NULL,
+  `hide` tinyint(1) DEFAULT '0',
+  `refresh` smallint(6) DEFAULT '0',
+  `title` text,
+  `artist` text,
+  `description` text,
+  `genre` text,
+  `theme` text,
+  `mood` text,
+  `style` text,
+  `type` text,
+  `albumlabel` text,
+  `rating` decimal(10,0) DEFAULT NULL,
+  `year` smallint(6) DEFAULT NULL,
+  `mbalbumid` text,
+  `mbalbumartistid` text,
+  `playcount` smallint(6) DEFAULT NULL,
+  `genreid` int(11) DEFAULT NULL,
+  `artistid` int(11) DEFAULT NULL,
+  `displayartist` text,
+  `sorttitle` text,
+  `hash` binary(16) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ix_xbmcid` (`xbmcid`),
+  UNIQUE KEY `ix_hash` (`hash`),
+  KEY `ix_sorttitle` (`sorttitle`(10)),
+  KEY `ix_year` (`year`)
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8;
+
 /*Table structure for table `albumsmeta` */
 
 DROP TABLE IF EXISTS `albumsmeta`;
@@ -57,10 +92,12 @@ CREATE TABLE `episodes` (
   `audio` text,
   `video` text,
   `runtime` smallint(6) DEFAULT NULL,
+  `hash` binary(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `ix_episodeid` (`episodeid`),
+  UNIQUE KEY `ix_episodeid` (`episodeid`),
+  UNIQUE KEY `ix_hash` (`hash`),
   KEY `ix_tvshowid` (`tvshowid`)
-) ENGINE=InnoDB AUTO_INCREMENT=309 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=127 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `episodesmeta` */
 
@@ -72,7 +109,7 @@ CREATE TABLE `episodesmeta` (
   `playcount` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_episodeid` (`episodeid`)
-) ENGINE=InnoDB AUTO_INCREMENT=251 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1542 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `genres` */
 
@@ -84,7 +121,7 @@ CREATE TABLE `genres` (
   `genre` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_genre` (`media`,`genre`)
-) ENGINE=InnoDB AUTO_INCREMENT=5575 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=20207 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `genretomovie` */
 
@@ -129,7 +166,7 @@ CREATE TABLE `log` (
   `type` varchar(16) NOT NULL,
   `event` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=862 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=314 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `movies` */
 
@@ -167,8 +204,10 @@ CREATE TABLE `movies` (
   `file` text,
   `dateadded` datetime DEFAULT NULL,
   `genre` text,
+  `hash` binary(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `ix_xbmcid` (`xbmcid`),
+  UNIQUE KEY `ix_xbmcid` (`xbmcid`),
+  UNIQUE KEY `ix_hash` (`hash`),
   KEY `ix_sorttitle` (`sorttitle`(10)),
   KEY `ix_year` (`year`),
   KEY `ix_setid` (`setid`)
@@ -186,57 +225,28 @@ CREATE TABLE `moviesmeta` (
   UNIQUE KEY `ix_movieid` (`movieid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8;
 
-/*Table structure for table `music` */
-
-DROP TABLE IF EXISTS `music`;
-
-CREATE TABLE `music` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `xbmcid` int(11) NOT NULL,
-  `hide` tinyint(1) DEFAULT '0',
-  `refresh` smallint(6) DEFAULT '0',
-  `title` text,
-  `artist` text,
-  `description` text,
-  `genre` text,
-  `theme` text,
-  `mood` text,
-  `style` text,
-  `type` text,
-  `albumlabel` text,
-  `rating` decimal(10,0) DEFAULT NULL,
-  `year` smallint(6) DEFAULT NULL,
-  `mbalbumid` text,
-  `mbalbumartistid` text,
-  `playcount` smallint(6) DEFAULT NULL,
-  `genreid` int(11) DEFAULT NULL,
-  `artistid` int(11) DEFAULT NULL,
-  `displayartist` text,
-  `sorttitle` text,
-  PRIMARY KEY (`id`),
-  KEY `ix_xbmcid` (`xbmcid`),
-  KEY `ix_sorttitle` (`sorttitle`(10)),
-  KEY `ix_year` (`year`)
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8;
-
 /*Table structure for table `seasons` */
 
 DROP TABLE IF EXISTS `seasons`;
 
 CREATE TABLE `seasons` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tvshowid` int(11) DEFAULT NULL,
+  `seasonid` int(11) DEFAULT NULL,
   `hide` tinyint(4) DEFAULT '0',
   `refresh` smallint(6) DEFAULT '0',
   `title` text,
+  `tvshowid` int(11) NOT NULL,
   `showtitle` text,
   `playcount` smallint(6) DEFAULT NULL,
   `season` smallint(6) DEFAULT NULL,
   `episode` smallint(6) DEFAULT NULL,
   `watchedepisodes` smallint(6) DEFAULT NULL,
+  `hash` binary(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `ix_seasonid` (`seasonid`),
+  UNIQUE KEY `ix_hash` (`hash`),
   KEY `ix_tvshowid` (`tvshowid`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `seasonsmeta` */
 
@@ -248,7 +258,7 @@ CREATE TABLE `seasonsmeta` (
   `playcount` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_seasonid` (`seasonid`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `sets` */
 
@@ -262,8 +272,10 @@ CREATE TABLE `sets` (
   `title` text,
   `sorttitle` text,
   `playcount` smallint(6) DEFAULT NULL,
+  `hash` binary(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `ix_setid` (`setid`)
+  UNIQUE KEY `ix_setid` (`setid`),
+  UNIQUE KEY `ix_hash` (`hash`)
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `setsmeta` */
@@ -277,28 +289,6 @@ CREATE TABLE `setsmeta` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_setid` (`setid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
-
-/*Table structure for table `settings` */
-
-DROP TABLE IF EXISTS `settings`;
-
-CREATE TABLE `settings` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `value` text,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
-
-/*Table structure for table `status` */
-
-DROP TABLE IF EXISTS `status`;
-
-CREATE TABLE `status` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) DEFAULT NULL,
-  `value` varchar(32) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `tvshows` */
 
@@ -330,8 +320,10 @@ CREATE TABLE `tvshows` (
   `episodeguide` text,
   `watchedepisodes` smallint(6) DEFAULT NULL,
   `dateadded` datetime DEFAULT NULL,
+  `hash` binary(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `ix_xbmcid` (`xbmcid`),
+  UNIQUE KEY `ix_xbmcid` (`xbmcid`),
+  UNIQUE KEY `ix_hash` (`hash`),
   KEY `ix_sorttitle` (`sorttitle`(10)),
   KEY `ix_year` (`year`)
 ) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
@@ -346,19 +338,7 @@ CREATE TABLE `tvshowsmeta` (
   `playcount` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ix_tvshowid` (`tvshowid`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
-
-/*Table structure for table `users` */
-
-DROP TABLE IF EXISTS `users`;
-
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user` varchar(64) NOT NULL,
-  `password` varchar(64) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `ix_user` (`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

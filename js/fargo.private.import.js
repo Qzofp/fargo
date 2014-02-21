@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 19, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -428,7 +428,7 @@ function ShowMetaProgress($prg, type, i, end)
  * Function:	StartImportHandler
  *
  * Created on Jan 14, 2014
- * Updated on Feb 19, 2014
+ * Updated on Feb 21, 2014
  *
  * Description:  Start the media import handler.
  * 
@@ -460,7 +460,7 @@ function StartImportHandler(media, type, next, factor)
     
     setTimeout(function() {
     
-        if (gTRIGGER.START >= gTRIGGER.END) 
+        if (gTRIGGER.START > gTRIGGER.END) 
         {
            $msg.html(cSTATUS.NOTFOUND.replace("[dummy]", ConvertMedia(type)));
            SetStartImportHandler(media, next, false); // Continue with the next step.
@@ -494,7 +494,7 @@ function StartImportHandler(media, type, next, factor)
  * Function:	StartImport
  *
  * Created on Jan 14, 2014
- * Updated on Feb 19, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
@@ -568,12 +568,12 @@ function StartImport(type, factor)
                             
                 case cTRANSFER.READY
                         : busy = false;
-                          console.log("Import ready...");
+                          //console.log("Import ready...");
                           break;                              
                             
                 case cTRANSFER.WAIT   
                         : //busy = true;
-                          console.log("Wait...");
+                          //console.log("Wait...");
                           break;
             }            
             

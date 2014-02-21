@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Feb 11, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -220,7 +220,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Feb 11, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: Perform action
  * 
@@ -243,19 +243,24 @@ function SetActionHandler(event)
     
     switch($popup.find(".title").text().split(" ")[0])
     {
-        case cIMPORT.REFRESH  : PrepareRefreshHandler(type, $popup);                        
-                                 break;
+        case cIMPORT.REFRESH : PrepareRefreshHandler(type, $popup);                        
+                               break;
+        /*                   
+        case "Remove"        : SetRemoveHandler($popup);
+                               break;
+        */                   
+        case cSYSTEM.REMOVE  : if ($popup.find(".title").text().split(" ")[1] == "library") {
+                                 SetCleanDatabaseHandler();
+                               }
+                               else {
+                                 SetRemoveHandler($popup);  
+                               }                       
+                               break;
                            
-        case "Remove"         : SetRemoveHandler($popup);
-                                 break;
-                           
-        case cSYSTEM.REMOVING : SetCleanDatabaseHandler();
-                                 break;
-                           
-        case cIMPORT.IMPORT   : LockImport(function() {
-                                   SetStartImportHandler(media, step, event.data.retry); 
-                                });
-                                break;           
+        case cIMPORT.IMPORT  : LockImport(function() {
+                                  SetStartImportHandler(media, step, event.data.retry); 
+                               });
+                               break;           
     }
 }
 

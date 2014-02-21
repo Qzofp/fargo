@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Feb 19, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -36,7 +36,7 @@ switch($action)
 {                
     case "info"    : $media = GetPageValue('media');
                      $id    = GetPageValue('id');
-                     $aJson = GetMediaInfo($media, $id);
+                     $aJson = GetMediaInfo($media, $id, $login);
                      break;
                  
     case "popup"   : // Info for Refresh and Delete Popups (Yes/No).
@@ -84,21 +84,21 @@ if (!empty($aJson)) {
  * Function:	GetMediaInfo
  *
  * Created on Jul 05, 2013
- * Updated on Nov 25, 2013
+ * Updated on Feb 20, 2014
  *
  * Description: Get the media info from Fargo and return it as Json data. 
  *
- * In:  $media, $id 
+ * In:  $media, $id, $login 
  * Out: $aJson
  *
  */
-function GetMediaInfo($media, $id)
+function GetMediaInfo($media, $id, $login)
 {
     $aJson = null;
     
     switch($media)
     {
-        case "movies"   : $aJson = GetMovieInfo($id);
+        case "movies"   : $aJson = GetMovieInfo($id, $login);
                           break;
                       
         case "titles"   : $aJson = GetPopupInfo("movies", "xbmc", $id, cMOVIESTHUMBS); // For Refresh and Delete Popups.
@@ -110,7 +110,7 @@ function GetMediaInfo($media, $id)
         case "movieset" : $aJson = GetPopupInfo("movies", "xbmc", $id, cMOVIESTHUMBS); // For Refresh and Delete Popups.
                           break;                      
         
-        case "tvshows"  : $aJson = GetTVShowInfo($id);
+        case "tvshows"  : $aJson = GetTVShowInfo($id, $login);
                           break;
                       
         case "tvtitles" : $aJson = GetPopupInfo("tvshows", "xbmc", $id, cTVSHOWSTHUMBS); // For Refresh and Delete Popups.
@@ -120,7 +120,7 @@ function GetMediaInfo($media, $id)
                           $aJson = GetPopupInfo("tvshows", "xbmc", $aItems[0], cTVSHOWSTHUMBS); // For Refresh and Delete Popups.
                           break;                      
                      
-        case "episodes" : $aJson = GetTVShowEpisodeInfo($id);
+        case "episodes" : $aJson = GetTVShowEpisodeInfo($id, $login);
                           break;                     
         
         case "music"    : $aJson = GetAlbumInfo($id);
@@ -134,15 +134,15 @@ function GetMediaInfo($media, $id)
  * Function:	GetMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Dec 31, 2013
+ * Updated on Feb 20, 2014
  *
  * Description: Get the movie info from Fargo and return it as Json data. 
  *
- * In:  $id 
+ * In:  $id, login 
  * Out: $aJson
  *
  */
-function GetMovieInfo($id)
+function GetMovieInfo($id, $login)
 {
     $aJson   = null;
     $aMedia  = null;
@@ -188,6 +188,10 @@ function GetMovieInfo($id)
             $aMedia["aspect"]   = ConvertToAspectFlag($video, $file);
             $aMedia["imdbnr"]   = ConverToMovieUrl($imdbnr);
             $aMedia["trailer"]  = ConverToMovieUrl($trailer);
+            
+            if ($login) {
+                $aMedia["path"] = $file;
+            }
         }
         else
         {
@@ -216,22 +220,22 @@ function GetMovieInfo($id)
  * Function:	GetTVShowInfo
  *
  * Created on Jul 09, 2013
- * Updated on Dec 31, 2013
+ * Updated on Feb 20, 2014
  *
  * Description: Get the TV show info from Fargo and return it as Json data. 
  *
- * In:  $id 
+ * In:  $id, login 
  * Out: $aJson
  *
  */
-function GetTVShowInfo($id)
+function GetTVShowInfo($id, $login)
 {
     $aJson   = null;
     $aMedia  = null;
     $aParams = null;  
     
     $sql = "SELECT xbmcid, title, studio, genre, `year`, premiered, rating, votes, plot, episode,".
-                  "watchedepisodes, episodeguide, imdbnr ".
+                  "watchedepisodes, episodeguide, imdbnr, file ".
            "FROM tvshows ".
            "WHERE id = $id";
     
@@ -242,7 +246,7 @@ function GetTVShowInfo($id)
         if($stmt->execute())
         {
             $stmt->bind_result($xbmcid, $title, $studio, $genre, $year, $premiered, $rating, $votes, 
-                               $plot, $episode, $watchedepisodes, $episodeguide, $imdbnr);
+                               $plot, $episode, $watchedepisodes, $episodeguide, $imdbnr, $file);
             $stmt->fetch();
             
             $genre = str_replace('"', '', $genre);
@@ -253,14 +257,16 @@ function GetTVShowInfo($id)
             $aMedia["genre"]           = str_replace("|", " / ", $genre);
             $aMedia["year"]            = $year;
             $aMedia["premiered"]       = date( 'd/m/Y', strtotime($premiered));
-            //$aMedia["votes"]           = $votes;
-            //$aMedia["rating"]          = $rating." ($votes votes)";
             $aMedia["rating"]          = strcmp($rating, "0.00")?$rating." ($votes votes)":0;              
             $aMedia["plot"]            = stripslashes($plot);
             $aMedia["episode"]         = $episode;
             $aMedia["watchedepisodes"] = $watchedepisodes;
             //$aMedia["episodeguide"]    = $episodeguide;
             $aMedia["imdbnr"]          = ConverToMovieUrl($imdbnr, $episodeguide); 
+            
+            if ($login) {
+                $aMedia["path"] = $file;
+            }
         }
         else
         {
@@ -289,15 +295,15 @@ function GetTVShowInfo($id)
  * Function:	GetTVShowEpisodeInfo
  *
  * Created on Nov 17, 2013
- * Updated on Dec 31, 2013
+ * Updated on Feb 20, 2014
  *
  * Description: Get the TV show episode info from Fargo and return it as Json data. 
  *
- * In:  $id 
+ * In:  $id, $login 
  * Out: $aJson
  *
  */
-function GetTVShowEpisodeInfo($id)
+function GetTVShowEpisodeInfo($id, $login)
 {
     $aJson   = null;
     $aMedia  = null;
@@ -333,6 +339,10 @@ function GetTVShowEpisodeInfo($id)
             $aMedia["video"]      = ConvertToVideoFlag($video);
             $aMedia["aspect"]     = ConvertToAspectFlag($video, $file);            
             $aMedia["plot"]       = stripslashes($plot);
+            
+            if ($login) {
+                $aMedia["path"] = $file;
+            }            
         }
         else
         {
@@ -364,7 +374,7 @@ function GetTVShowEpisodeInfo($id)
  *
  * Description: Get the album info from Fargo and return it as Json data. 
  *
- * In:  $id 
+ * In:  $id
  * Out: $aJson
  *
  */
@@ -675,7 +685,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetPopupInfo
  *
  * Created on Nov 25, 2013
- * Updated on Feb 19, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: Get the popup info for the refresh or delete popups from Fargo and return it as Json data. 
  *
@@ -703,38 +713,32 @@ function GetPopupInfo($media, $id)
                                  "FROM movies WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMOVIESTHUMBS);
                           break;                      
-
                       
         case "tvtitles" : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
                                  "FROM tvshows WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cTVSHOWSTHUMBS);
                           break;
                       
-        case "series"   : //$aItems = explode("_", $id);
-                          $sql = "SELECT seasonid AS id, t.refresh, t.title, s.title AS sub ".
+        case "series"   : $sql = "SELECT seasonid AS id, t.refresh, t.title, s.title AS sub ".
                                  "FROM tvshows t, seasons s WHERE t.xbmcid = s.tvshowid AND s.id = $id ".
                                  "LIMIT 0, 1";
                           $aJson = GetPopupMediaInfo($sql, cSEASONSTHUMBS);
                           break;
                       
-        case "seasons"  : //$aItems = explode("_", $id);
-                          $sql = "SELECT seasonid AS id, refresh, showtitle, title AS sub ".
+        case "seasons"  : $sql = "SELECT seasonid AS id, refresh, showtitle, title AS sub ".
                                  "FROM seasons WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cSEASONSTHUMBS);
                           break;
                       
-        case "episodes" : $sql = "SELECT episodeid, refresh, showtitle AS title, CONCAT(episode, '. ', title) AS sub ".
-                                 //"IF(LENGTH(title) > 67, CONCAT(episode, '. ', LEFT(title, 66), '...'), CONCAT(episode, '. ', title)) AS title ".
+        case "episodes" : $sql = "SELECT episodeid, refresh, showtitle AS title, CONCAT(episode, '. ', title) AS sub ".                                 
                                  "FROM episodes WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cEPISODESTHUMBS);
                           break;
                       
         case "albums"   : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
-                                 //"IF(LENGTH(title) > 70, CONCAT(LEFT(title, 69),'...'), title) AS title ". 
                                  "FROM albums WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cALBUMSTHUMBS);
-                          break;              
-                                           
+                          break;                                      
     }
     
     return $aJson;

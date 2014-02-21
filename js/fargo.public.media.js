@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Feb 19, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -243,7 +243,7 @@ function ShowMediaZoomIn(type, id)
  * Function:	ShowMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Dec 31, 2013
+ * Updated on Feb 20, 2014
  *
  * Description: Show the movie info.
  * 
@@ -269,7 +269,8 @@ function ShowMovieInfo(id)
                          {left:"Runtime:",  right:json.media.runtime},
                          {left:"Rating:",   right:json.media.rating},
                          {left:"Tagline:",  right:json.media.tagline},
-                         {left:"Country:",  right:json.media.country}];
+                         {left:"Country:",  right:json.media.country},
+                         {left:"Path:",     right:json.media.path}];
             
             // Show info.
             ShowInfoTable(aInfo);
@@ -329,7 +330,7 @@ function ShowMovieInfo(id)
  * Function:	ShowTVShowInfo
  *
  * Created on Jul 09, 2013
- * Updated on Dec 31, 2013
+ * Updated on Feb 20, 2014
  *
  * Description: Show the TV show info.
  * 
@@ -353,7 +354,8 @@ function ShowTVShowInfo(id)
                          {left:"Genre:",    right:json.media.genre},
                          {left:"Studio:",   right:json.media.studio},
                          {left:"Year:",     right:json.media.year},
-                         {left:"Rating:",   right:json.media.rating}];
+                         {left:"Rating:",   right:json.media.rating},
+                         {left:"Path:",     right:json.media.path}];          
             
             // Show info.
             ShowInfoTable(aInfo);
@@ -409,7 +411,7 @@ function ShowTVShowInfo(id)
  * Function:	ShowTVShowEpisodeInfo
  *
  * Created on Nov 17, 2013
- * Updated on Dec 31, 2013
+ * Updated on Feb 20, 2014
  *
  * Description: Show the TV show episode info.
  * 
@@ -427,8 +429,8 @@ function ShowTVShowEpisodeInfo(id)
         success: function(json)
         {   
             //var btnname, pattern;
-            //var buttons = "";            
-            var aInfo = [{left:"TV&nbsp;show:",  right:json.media.showtitle},
+            //var buttons = "";
+            var aInfo = [{left:"TV&nbsp;show:", right:json.media.showtitle},
                          {left:"Season:",   right:json.media.season},
                          {left:"Episode:",  right:json.media.episode},
                          {left:"Aired:",    right:json.media.firstaired},
@@ -436,7 +438,8 @@ function ShowTVShowEpisodeInfo(id)
                          {left:"Writer:",   right:json.media.writer},
                          {left:"Year:",     right:json.media.year},
                          {left:"Runtime:",  right:json.media.runtime},
-                         {left:"Rating:",   right:json.media.rating}];
+                         {left:"Rating:",   right:json.media.rating},
+                         {left:"Path:",     right:json.media.path}];                         
             
             // Show info.
             ShowInfoTable(aInfo);

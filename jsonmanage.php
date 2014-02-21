@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Feb 19, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -766,7 +766,7 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
  * Function:	GetSeriesImportStatus
  *
  * Created on Jan 20, 2014
- * Updated on Feb 19, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: Reports the status of the series (seasons, episodes) import process.
  *
@@ -790,7 +790,12 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
            "WHERE $typeid = $xbmcid";       
     $aJson['title'] = GetItemFromDatabase($db, "showtitle", $sql);
     
-    $sql = "SELECT title FROM $table ".
+    $title = "title";
+    if ($table == "episodes") {
+        $title = "CONCAT(episode, '. ', title) AS title";
+    }
+    
+    $sql = "SELECT $title FROM $table ".
            "WHERE $typeid = $xbmcid";    
     $aJson['sub'] = GetItemFromDatabase($db, "title", $sql);
     

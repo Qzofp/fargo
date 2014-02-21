@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Feb 19, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -246,7 +246,7 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
  * Function:	ImportMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Feb 18, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: Import the movie set. 
  *
@@ -260,12 +260,18 @@ function ImportMovieSet($db, $aError, $poster, $aResult)
     {
         $aMovie = ConvertMovieSet($aResult["setdetails"]);
  
-        ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280    
-        InsertMovieSet($db, $aMovie);         
+        ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280
+        $dkey = InsertMovieSet($db, $aMovie);
+        if (!$dkey) // No dublicate key found.
+        {  
+            IncrementStatus($db, "ImportCounter", 1);
+            UpdateStatus($db, "ImportStatus", cTRANSFER_READY);            
+        }        
+        else {
+            UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
+        }
         
         IncrementStatus($db, "XbmcSetsStart", 1);
-        IncrementStatus($db, "ImportCounter", 1);
-        UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -350,7 +356,7 @@ function RefreshMovieSet($db, $aError, $poster, $aResult, $fargoid)
  * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Feb 18, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: Import the tv show. 
  *
@@ -366,17 +372,22 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
         $aTVShow = ConvertTVShow($aResult["tvshowdetails"]);
      
         ResizeAndSaveImage($aTVShow[0], $poster, "../".cTVSHOWSTHUMBS, 125, 175);
+        list($dkey, $id) = InsertTVShow($db, $aTVShow);
+        if (!$dkey) // No dublicate key found.
+        { 
+            ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 450, 280); //562, 350 //675, 420 
+            
+            InsertGenres($db, $aGenres, "tvshows");
+            InsertGenreToMedia($db, $aGenres, $id, "tvshows");
+            
+            IncrementStatus($db, "ImportCounter", 1);
+            UpdateStatus($db, "ImportStatus", cTRANSFER_READY);            
+        } 
+        else {
+            UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
+        }        
         
-        $id = InsertTVShow($db, $aTVShow);
-        
-        ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 450, 280); //562, 350 //675, 420 
-        
-        InsertGenres($db, $aGenres, "tvshows");
-        InsertGenreToMedia($db, $aGenres, $id, "tvshows");
-    
         IncrementStatus($db, "XbmcTVShowsStart", 1);
-        IncrementStatus($db, "ImportCounter", 1);
-        UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -390,7 +401,7 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
  * Function:	ImportTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Feb 18, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: Import the tv show season. 
  *
@@ -405,12 +416,17 @@ function ImportTVShowSeason($db, $aError, $poster, $aResult)
         $aSeason = ConvertTVShowSeason($aResult["seasondetails"]);
 
         ResizeAndSaveImage($aSeason[0], $poster, "../".cSEASONSTHUMBS, 125, 175);
-
-        InsertTVShowSeason($db, $aSeason);   
+        $dkey = InsertTVShowSeason($db, $aSeason);
+        if (!$dkey) // No dublicate key found.
+        { 
+            IncrementStatus($db, "ImportCounter", 1);
+            UpdateStatus($db, "ImportStatus", cTRANSFER_READY);            
+        }
+        else {
+            UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
+        }        
         
         IncrementStatus($db, "XbmcSeasonsStart", 1);
-        IncrementStatus($db, "ImportCounter", 1);
-        UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -424,7 +440,7 @@ function ImportTVShowSeason($db, $aError, $poster, $aResult)
  * Function:	ImportTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Feb 18, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: Import the TV Show Episode. 
  *
@@ -439,11 +455,17 @@ function ImportTVShowEpisode($db, $aError, $poster, $aResult)
         $aEpisode = ConvertTVShowEpisode($aResult["episodedetails"]);
      
         SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);
-        InsertTVShowEpisode($db, $aEpisode);
-    
+        $dkey = InsertTVShowEpisode($db, $aEpisode);
+        if (!$dkey) // No dublicate key found.
+        { 
+            IncrementStatus($db, "ImportCounter", 1);
+            UpdateStatus($db, "ImportStatus", cTRANSFER_READY);            
+        }        
+        else {
+            UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
+        }    
+        
         IncrementStatus($db, "XbmcEpisodesStart", 1);
-        IncrementStatus($db, "ImportCounter", 1);
-        UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -560,7 +582,7 @@ function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
  * Function:	ImportAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Feb 19, 2014
+ * Updated on Feb 20, 2014
  *
  * Description: Import the music album. 
  *
@@ -576,17 +598,22 @@ function ImportAlbum($db, $aError, $poster, $aResult)
         $aAlbum = ConvertAlbum($aResult["albumdetails"]);
     
         ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSTHUMBS, 125, 125);
-       
-        $id = InsertAlbum($db, $aAlbum);
+        list($dkey, $id) = InsertAlbum($db, $aAlbum);
+        if (!$dkey) // No dublicate key found.
+        { 
+            ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
         
-        ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
+            InsertGenres($db, $aGenres, "music");
+            InsertGenreToMedia($db, $aGenres, $id, "music");
+
+            IncrementStatus($db, "ImportCounter", 1); 
+            UpdateStatus($db, "ImportStatus", cTRANSFER_READY);            
+        }        
+        else {
+            UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
+        }   
         
-        InsertGenres($db, $aGenres, "music");
-        InsertGenreToMedia($db, $aGenres, $id, "music");
-    
         IncrementStatus($db, "XbmcAlbumsStart", 1);
-        IncrementStatus($db, "ImportCounter", 1); 
-        UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.

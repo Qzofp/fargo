@@ -6,7 +6,7 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Feb 11, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -575,7 +575,7 @@ function ActivateProperty()
  * Function:	CleanPopupBox
  *
  * Created on Jun 09, 2013
- * Updated on Feb 11, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: Show removing library popup box. This was known as cleaning library, hence the name.
  *
@@ -594,7 +594,7 @@ function CleanPopupBox(msg)
         ShowPopupBox("#action_box", cSYSTEM.MESSAGE4);
     }
     else{
-        ShowPopupBox("#action_box", cSYSTEM.MESSAGE1);
+        ShowPopupBox("#action_box", cSYSTEM.REMTITLE);
     }
     
     SetState("page", "popup");

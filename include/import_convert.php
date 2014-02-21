@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Jan 20, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -19,7 +19,7 @@
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Jan 06, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -62,7 +62,10 @@ function ConvertMovie($aXbmc)
     $aMovie[24] = !empty($aXbmc["file"])?$aXbmc["file"]:null;      
     $aMovie[25] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
     $aMovie[26] = !empty($aXbmc["setid"])?$aXbmc["setid"]:0;    
-    $aMovie[27] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00";    
+    $aMovie[27] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00";
+    
+    // Hash title and file as unique db entry to prevent dublicates.
+    $aMovie[28] = md5($aXbmc["label"].$aMovie[24]);
     
     //$aMovie[23] = !empty($aXbmc["top250"])?$aXbmc["top250"]:null;  
     //$aMovie["showlink"] = $aXbmc["showlink"];
@@ -79,7 +82,7 @@ function ConvertMovie($aXbmc)
  * Function:	ConvertMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Nov 09, 2013
+ * Updated on Feb 21, 2014
  *
  * Description: Convert xbmc movie set items. For instance to readably URL's.
  *
@@ -94,6 +97,9 @@ function ConvertMovieSet($aXbmc)
     $aMovie[2] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;    
     $aMovie[3] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
     
+    // Hash title as unique db entry to prevent dublicates.
+    $aMovie[4] = md5($aXbmc["label"]); 
+    
     /*$aMovie[3] = EncodeLink($aXbmc["art"], "fanart");
     $aMovie[4] = EncodeLink($aXbmc["art"], "poster");
     $aMovie[5] = EncodeLink($aXbmc, "thumbnail");*/   
@@ -105,7 +111,7 @@ function ConvertMovieSet($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Jan 06, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -150,7 +156,9 @@ function ConvertTVShow($aXbmc)
     $aTVShow[20] = !empty($aXbmc["watchedepisodes"])?$aXbmc["watchedepisodes"]:0; 
     $aTVShow[21] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00"; 
     
-    //
+    // Hash title and file as unique db entry to prevent dublicates.
+    $aTVShow[22] = md5($aXbmc["label"].$aTVShow[15]);
+    
     //$aTVShow["fanart"]  = EncodeLink($aXbmc["art"], "fanart");    
     //$aTVShow["poster"]  = EncodeLink($aXbmc["art"], "poster");
     //$aTVShow["thumb"]   = EncodeLink($aXbmc, "thumbnail");
@@ -163,7 +171,7 @@ function ConvertTVShow($aXbmc)
  * Function:	ConvertTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Jan 20, 2014
+ * Updated on Feb 21, 2014
  *
  * Description: Convert xbmc TV Show Season items. For instance to readably URL's.
  *
@@ -182,6 +190,9 @@ function ConvertTVShowSeason($aXbmc)
     $aSeason[6] = !empty($aXbmc["episode"])?$aXbmc["episode"]:0;
     $aSeason[7] = !empty($aXbmc["watchedepisodes"])?$aXbmc["watchedepisodes"]:0;
     
+    // Hash title and showtitle as unique db entry to prevent dublicates.
+    $aSeason[8] = md5($aXbmc["label"].$aSeason[3]);
+    
     return $aSeason;
 }
 
@@ -189,7 +200,7 @@ function ConvertTVShowSeason($aXbmc)
  * Function:	ConvertTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Jan 06, 2013
+ * Updated on Feb 21, 2014
  *
  * Description: Convert xbmc TV Show Episode items. For instance to readably URL's.
  *
@@ -226,6 +237,9 @@ function ConvertTVShowEpisode($aXbmc)
     
     $aEpisode[20] = $aXbmc["runtime"];
     
+    // Hash title and file as unique db entry to prevent dublicates.
+    $aEpisode[21] = md5($aXbmc["label"].$aEpisode[15]);
+    
     //$aEpisode[3]  = EncodeLink($aXbmc, "thumbnail");
     
     return $aEpisode;
@@ -235,7 +249,7 @@ function ConvertTVShowEpisode($aXbmc)
  * Function:	ConvertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Nov 02, 2013
+ * Updated on Feb 21, 2014
  *
  * Description: Convert XBMC album items. For instance to readably URL's.
  *
@@ -266,6 +280,9 @@ function ConvertAlbum($aXbmc)
     $aAlbum[15] = !empty($aXbmc["displayartist"])?$aXbmc["displayartist"]:null; 
     
     $aAlbum[16] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
+    
+    // Hash title and artist as unique db entry to prevent dublicates.
+    $aAlbum[17] = md5($aXbmc["label"].$aAlbum[3].$aAlbum[11]);
     
     //$aAlbum["fanart"]          = $aXbmc["fanart"];
     //$aAlbum["cover"]           = EncodeLink($aXbmc, "thumbnail");
