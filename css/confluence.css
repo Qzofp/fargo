@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Feb 09, 2014
+ * Updated on Feb 23, 2014
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -42,8 +42,7 @@ margin:0;
 body{
 font-family:Arial, Helvetica, Sans-Serif;
 font-size:62.5%; /* =10px */
-background:url(confluence.jpg);
-/*background-position:center center;*/
+background:url(confluence.jpg) no-repeat;
 }
 
 input{
@@ -118,7 +117,7 @@ left:0px;
 display:none;
 height:100%;
 width:100%;
-background-color:rgba(0,0,0,0.7);
+background:rgba(0,0,0,0.7);
 z-index:1;
 }
 
@@ -849,7 +848,7 @@ color:dodgerblue;
 #state_xbmc,
 #state_row,
 #state_property{
-/*display:none;  // Debug purposses. */
+display:none;  /* Debug purposses. */
 
 /* debug */
 position:absolute;

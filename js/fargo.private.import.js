@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 21, 2014
+ * Updated on Feb 22, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -69,7 +69,7 @@ function SetStartMoviesImportHandler(step, retry)
         case 3 : // Import Movies.
                  StartImportHandler("movies", "movies", 4, 1);
                  break;
-                                  
+                                 
         case 4 : StartOnlineHandler("movies", "sets", 5, false, retry);
                  break;
                 
@@ -494,7 +494,7 @@ function StartImportHandler(media, type, next, factor)
  * Function:	StartImport
  *
  * Created on Jan 14, 2014
- * Updated on Feb 21, 2014
+ * Updated on Feb 22, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
@@ -524,7 +524,11 @@ function StartImport(type, factor)
             if (start > gTRIGGER.END) 
             {
                 GetMediaStatus(type, start, xbmcid);
-                deferred.notify(start, xbmcid);// Show status.
+                
+                //if (gMEDIA.TITLE) {
+                    deferred.notify(start, xbmcid);// Show status.  
+                //}
+                
                 deferred.resolve(); // End Import.
             }
             
@@ -540,14 +544,14 @@ function StartImport(type, factor)
         else
         {
             // Counter confirms that the import succeeded.
-            start = gTRIGGER.COUNTER;
+           start = gTRIGGER.COUNTER;
             
             // Get status (returns gMEDIA and gTRIGGER.COUNTER).
             GetMediaStatus(type, start, xbmcid);
             
-            if (gMEDIA.TITLE) {
+            //if (gMEDIA.TITLE) {
                 deferred.notify(start, xbmcid);// Show status.  
-            }
+            //}
             
             switch (Number(gTRIGGER.STATUS))
             {
@@ -557,7 +561,8 @@ function StartImport(type, factor)
                           break;
                           
                 case cTRANSFER.DUPLICATE 
-                        : console.log("Duplicate found...");
+                        : busy = false;
+                          console.log("Duplicate found...");
                           break;                          
                             
                 case cTRANSFER.NOTFOUND 
@@ -567,7 +572,8 @@ function StartImport(type, factor)
                           break;
                             
                 case cTRANSFER.READY
-                        : busy = false;
+                        : //start = gTRIGGER.COUNTER;
+                          busy = false;
                           //console.log("Import ready...");
                           break;                              
                             
@@ -650,7 +656,7 @@ function GetMediaStatus(type, start, xbmcid)
  * Function:	ShowImportProgress
  *
  * Created on Jan 16, 2014
- * Updated on Feb 01, 2014
+ * Updated on Feb 22, 2014
  *
  * Description: Show the import progress.
  * 
@@ -670,8 +676,9 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
     if ($msg.text() == cSTATUS.WAIT) {
         $msg.html(cSTATUS.IMPORT.replace("[dummy]", ConvertMediaToSingular(type)));
     }
-    else 
-    {    
+   
+    if (gMEDIA.TITLE) 
+    {
         // Preload image.
         var img = new Image();      
         img.src = gMEDIA.THUMBS + '/'+ id +'.jpg';
@@ -683,7 +690,7 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
         });
                     
         $tit.html(gMEDIA.TITLE);
-        $sub.html(gMEDIA.SUB);
+        $sub.html(gMEDIA.SUB);    
     }
 }
 

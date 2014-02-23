@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Feb 14, 2014
+ * Updated on Feb 23, 2014
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -273,7 +273,7 @@ function ShowPopupBox(type, title)
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Dec 13, 2013
+ * Updated on Feb 23, 2013
  *
  * Description: Close import or other popup window.
  * 
@@ -301,8 +301,9 @@ function SetCloseHandler()
                                                  RefreshMediaTable($popup);   
                                                  break;  
                                              
-                                case "Remove"  : //alert("Finish Remove");
-                                                 ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
+                                case "Remove"  : if ($popup.find(".title").text().split(" ")[1] != "library") {
+                                                    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
+                                                 }
                                                  break;
                              }
                              ClearActionBox();
