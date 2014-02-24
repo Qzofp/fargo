@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Feb 21, 2014
+ * Updated on Feb 24, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -220,7 +220,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Feb 21, 2014
+ * Updated on Feb 24, 2014
  *
  * Description: Perform action
  * 
@@ -245,10 +245,7 @@ function SetActionHandler(event)
     {
         case cIMPORT.REFRESH : PrepareRefreshHandler(type, $popup);                        
                                break;
-        /*                   
-        case "Remove"        : SetRemoveHandler($popup);
-                               break;
-        */                   
+                           
         case cSYSTEM.REMOVE  : if ($popup.find(".title").text().split(" ")[1] == "library") {
                                  SetCleanDatabaseHandler();
                                }

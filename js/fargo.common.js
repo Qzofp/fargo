@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Feb 23, 2014
+ * Updated on Feb 24, 2014
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *

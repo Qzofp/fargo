@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Feb 20, 2014
+ * Updated on Feb 24, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -802,7 +802,7 @@ function SetButtonsHandler()
  * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Nov 21, 2013
+ * Updated on Feb 24, 2014
  *
  * Description: Show the sort, genre, years or manage action.
  * 
@@ -869,7 +869,7 @@ function SetShowButtonHandler()
         case "- Show All -" : SetState(state, "");
                               break;
                               
-        case "Import"       : media = GetState("media");
+        case cIMPORT.IMPORT : media = GetState("media");
                               setTimeout(function(){
                                 SetImportPopupHandler(media);
                               }, 500);                      

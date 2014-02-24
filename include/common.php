@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Jan 10, 2014
+ * Updated on Feb 24, 2014
  *
  * Description: The main Fargo functions page.
  *

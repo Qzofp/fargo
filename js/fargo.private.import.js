@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 22, 2014
+ * Updated on Feb 24, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -268,7 +268,7 @@ function StartOnlineCheck(type)
  * Function:	StartMetaImportHandler
  *
  * Created on Jan 12, 2014
- * Updated on Feb 19, 2014
+ * Updated on Feb 24, 2014
  *
  * Description:  Start the meta import handler.
  * 
@@ -288,7 +288,8 @@ function StartMetaImportHandler(media, type, next)
     var $sub = $("#action_sub");
     
     $prg.progressbar({value : 0 });
-    $img.removeAttr("src").attr("src", "");
+    //$img.removeAttr("src").attr("src", "");
+    $img.hide();
     $tit.html("&nbsp;");
     $sub.html("&nbsp;");    
     
@@ -494,7 +495,7 @@ function StartImportHandler(media, type, next, factor)
  * Function:	StartImport
  *
  * Created on Jan 14, 2014
- * Updated on Feb 22, 2014
+ * Updated on Feb 24, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
@@ -524,11 +525,7 @@ function StartImport(type, factor)
             if (start > gTRIGGER.END) 
             {
                 GetMediaStatus(type, start, xbmcid);
-                
-                //if (gMEDIA.TITLE) {
-                    deferred.notify(start, xbmcid);// Show status.  
-                //}
-                
+                deferred.notify(start, xbmcid);// Show status.                
                 deferred.resolve(); // End Import.
             }
             
@@ -548,10 +545,7 @@ function StartImport(type, factor)
             
             // Get status (returns gMEDIA and gTRIGGER.COUNTER).
             GetMediaStatus(type, start, xbmcid);
-            
-            //if (gMEDIA.TITLE) {
-                deferred.notify(start, xbmcid);// Show status.  
-            //}
+            deferred.notify(start, xbmcid);// Show status.
             
             switch (Number(gTRIGGER.STATUS))
             {
@@ -562,7 +556,7 @@ function StartImport(type, factor)
                           
                 case cTRANSFER.DUPLICATE 
                         : busy = false;
-                          console.log("Duplicate found...");
+                          //console.log("Duplicate found...");
                           break;                          
                             
                 case cTRANSFER.NOTFOUND 
@@ -594,9 +588,6 @@ function StartImport(type, factor)
             return; // End Import.
         }
         
-        //console.log("Import loop..."); //debug
-        
-        //if (gMEDIA.XBMCID != xbmcid)
         if (!busy && gMEDIA.XBMCID != xbmcid)
         {
             xbmcid = gMEDIA.XBMCID;
@@ -605,7 +596,6 @@ function StartImport(type, factor)
             url = GetTransferUrl() + "/fargo/transfer.html?action=" + type + "&xbmcid=" + gMEDIA.XBMCID + "&fargoid=-1" + "&key=" + gCONNECT.KEY;
             ready = ImportData(url, 0);
             ready.done(function() {
-                //start++;
                 retry = 0;
             }).fail(function() {
                 console.log("Failure..."); //debug
@@ -688,7 +678,8 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
         $img.error(function(){
             $(this).attr('src', 'images/no_poster.jpg');
         });
-                    
+         
+        $img.show();
         $tit.html(gMEDIA.TITLE);
         $sub.html(gMEDIA.SUB);    
     }
@@ -700,7 +691,7 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
  * Function:	StartSeasonsMetaImportHandler
  *
  * Created on Jan 20, 2014
- * Updated on Feb 19, 2014
+ * Updated on Feb 24, 2014
  *
  * Description:  Start the seasons meta import handler.
  * 
@@ -718,7 +709,8 @@ function StartSeasonsMetaImportHandler(media, type, next)
     var $sub = $("#action_sub");
     
     $prg.progressbar({value : 0 });
-    $img.removeAttr("src").attr("src", "");
+    //$img.removeAttr("src").attr("src", "");
+    $img.hide();
     $tit.html("&nbsp;");
     $sub.html("&nbsp;");     
     
@@ -863,7 +855,7 @@ function UnlockImport(callback)
  * Function:	SetImportHandler
  *
  * Created on Sep 09, 2013
- * Updated on Dec 24, 2013
+ * Updated on Feb 24, 2014
  *
  * Description: Set the import handler, show the import popup box with yes/no buttons.
  * 
@@ -912,6 +904,8 @@ function SetImportPopupHandler(media)
                 $(".yes").hide();
                 $(".no").text("Okay");        
            }    
+    
+           $("#action_thumb img").hide();
     
            // Show popup.
            ShowPopupBox("#action_box", title);

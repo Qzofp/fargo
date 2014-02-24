@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Feb 20, 2014
+ * Updated on Feb 23, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -1466,7 +1466,7 @@ function GetSortList($type, $filter, $media, $login)
  * Function:	GetGenres
  *
  * Created on Jun 27, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 23, 2014
  *
  * Description: Get genres from database table genres. 
  *
@@ -1484,6 +1484,9 @@ function GetGenres($db, $filter, $media, $login)
     $md = "music";
     if ($media != "music") {
         $md = rtrim($media, "s");
+    }
+    else {
+        $media = "albums";
     }
     
     if ($filter)
@@ -1512,7 +1515,7 @@ function GetGenres($db, $filter, $media, $login)
  * Function:	GetYears
  *
  * Created on Jun 30, 2013
- * Updated on Jan 03, 2014
+ * Updated on Feb 23, 2014
  *
  * Description: Get years from database media table. 
  *
@@ -1531,6 +1534,9 @@ function GetYears($db, $filter, $media, $login)
     if ($media != "music") {
         $md = rtrim($media, "s");
     }
+    else {
+        $media = "albums";
+    }    
     
     if ($filter)
     {          
