@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Feb 24, 2014
+ * Updated on Feb 28, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -645,7 +645,7 @@ function SetShowUrlHandler()
  * Function:	SetMediaHandler
  *
  * Created on Apr 13, 2013
- * Updated on Nov 17, 2013
+ * Updated on Feb 28, 2014
  *
  * Description: Set the media and show the media table.
  * 
@@ -670,6 +670,7 @@ function SetMediaHandler(event)
    $('#display_system_left').html(""); 
    $('#display_system_right').html("");   
    $('#display_content').show();
+   $('#bullets').show();
    
    ChangeControlBar(media);
    ChangeSubControlBar(media);
@@ -802,7 +803,7 @@ function SetButtonsHandler()
  * Function:	SetShowButtonHandler
  *
  * Created on Jun 27, 2013
- * Updated on Feb 24, 2014
+ * Updated on Feb 25, 2014
  *
  * Description: Show the sort, genre, years or manage action.
  * 
@@ -869,7 +870,7 @@ function SetShowButtonHandler()
         case "- Show All -" : SetState(state, "");
                               break;
                               
-        case cIMPORT.IMPORT : media = GetState("media");
+        case "Import"       : media = GetState("media");
                               setTimeout(function(){
                                 SetImportPopupHandler(media);
                               }, 500);                      
@@ -1358,7 +1359,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Dec 20, 2013
+ * Updated on Feb 28, 2014
  *
  * Description: Shows the media table.
  *
@@ -1418,9 +1419,15 @@ function ShowMediaTable(page, sort)
                     }
                     
                     img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
+                    
                     html[i]  = '<td class="i' + value.id + hide + '">';                    
-                    html[i] += '<img src="' + img + '"/><div>';
-                    html[i] += value.title + '</div></td>';
+                    html[i] += '<img src="' + img + '"/>';
+                    
+                    if (value.playcount > 0) {
+                        html[i] += '<img class="mark" src="images/watched.png"/>';
+                    }
+                    
+                    html[i] += '<div>' + value.title + '</div></td>';
                     
                     i++; j++;
                 });
@@ -1434,7 +1441,7 @@ function ShowMediaTable(page, sort)
             if (type == "episodes")
             {
                 $("#display_content td").width(250);
-                $("#display_content img").width(220);
+                $("#display_content img").not(".mark").width(220);
                 $("#display_content td div").width(240);
             }  
             
@@ -1445,6 +1452,9 @@ function ShowMediaTable(page, sort)
             
             // Show sort character.
             $('#sort').html(sort);
+            
+            // Show pagination (bullets).
+            ShowBullets(json.params.lastpage, page);
             
             // Change hover color.
             if (mode) {
@@ -1548,4 +1558,21 @@ function ShowNextPrevButtons(lastpage)
         $("#prev").css("visibility", "hidden");
         $("#next").css("visibility", "hidden");            
     }    
+}
+
+/*
+ * Function:	ShowBullets
+ *
+ * Created on Feb 28, 2014
+ * Updated on Feb 28, 2014
+ *
+ * Description: Shows the page bullets.
+ *
+ * In:	lastpage, page
+ * Out:	Bullets
+ *
+ */
+function ShowBullets(lastpage, page)
+{
+    
 }

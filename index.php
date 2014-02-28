@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Feb 23, 2014
+ * Updated on Feb 28, 2014
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -66,7 +66,7 @@ require_once 'include/common.php';
 
 $title = "Fargo: A Media Catalog For XBMC";
 $aCss   = array("<link href='http://fonts.googleapis.com/css?family=Dancing+Script:700' rel='stylesheet' type='text/css'>",
-                "<link href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/start/jquery-ui.css' rel='stylesheet' type='text/css'>",
+                "<link href='http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/start/jquery-ui.css' rel='stylesheet' type='text/css'>",
                 "<link rel=\"stylesheet\" href=\"css/confluence.css\">");
 
 $media = GetPageValue('media');
@@ -100,7 +100,7 @@ echo "   <div id=\"display_right\">\n";
 echo "    <div id=\"next\">&gt;</div>\n";
 echo "   </div>\n";
 
-// Display movie table. This is done by the jQuery functions createMovieTable().
+// Display movie table. This is done by the jQuery functions ShowMovieTable().
 echo "   <div id=\"display_content\">\n";
 echo "   </div>\n";
 
@@ -117,7 +117,22 @@ echo "   </div>\n";
 // Control section.
 echo "   <div id=\"control\">\n";
 
-// Main control bar
+// Control pagination.
+echo "    <div id=\"control_pag\">\n";
+echo "     <div id=\"bullets\">\n";
+echo "      <a class=\"bullet active\" href=\"\">1</a>\n";
+echo "      <a class=\"bullet\" href=\"\">2</a>\n";
+echo "      <a class=\"bullet\" href=\"\">3</a>\n";
+echo "      <a class=\"bullet\" href=\"\">4</a>\n";
+echo "      <a class=\"bullet\" href=\"\">5</a>\n";
+echo "      <a class=\"bullet\" href=\"\">6</a>\n";
+echo "      <a class=\"bullet\" href=\"\">7</a>\n";
+echo "      <a class=\"bullet\" href=\"\">8</a>\n";
+echo "      <a class=\"bullet\" href=\"\">9</a>\n";
+echo "     </div>\n";
+echo "    </div>\n";
+
+// Main control bar.
 echo "    <div id=\"control_bar\">\n";
 echo "     <ul>\n";
 echo "      <li id=\"movies\">MOVIES</li>\n";
@@ -143,9 +158,6 @@ echo "   </div>\n";
 
 PageFooter("https://github.com/Qzofp/Fargo", "Qzofp's Fargo", true);
 
-// Popup section (hidden).
-echo "   <div id=\"mask\"></div>\n";
-
 // Popup section (default hidden).
 if (!$login) {
     ShowHiddenLoginBox();
@@ -156,6 +168,9 @@ else {
 
 ShowHiddenButtonsBox();
 ShowHiddenInfoBox();
+
+// Popup section (hidden).
+echo "   <div id=\"mask\"></div>\n";
 
 // Page States.
 echo "   <div id=\"state_media\">movies</div>\n";  // movies, tvshows, music, system.
