@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Feb 28, 2014
+ * Updated on Mar 01, 2014
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -120,15 +120,6 @@ echo "   <div id=\"control\">\n";
 // Control pagination.
 echo "    <div id=\"control_pag\">\n";
 echo "     <div id=\"bullets\">\n";
-echo "      <a class=\"bullet active\" href=\"\">1</a>\n";
-echo "      <a class=\"bullet\" href=\"\">2</a>\n";
-echo "      <a class=\"bullet\" href=\"\">3</a>\n";
-echo "      <a class=\"bullet\" href=\"\">4</a>\n";
-echo "      <a class=\"bullet\" href=\"\">5</a>\n";
-echo "      <a class=\"bullet\" href=\"\">6</a>\n";
-echo "      <a class=\"bullet\" href=\"\">7</a>\n";
-echo "      <a class=\"bullet\" href=\"\">8</a>\n";
-echo "      <a class=\"bullet\" href=\"\">9</a>\n";
 echo "     </div>\n";
 echo "    </div>\n";
 

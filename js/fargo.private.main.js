@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Feb 24, 2014
+ * Updated on Mar 01, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Jan 19, 2014
+ * Updated on Mar 01, 2014
  *
  * Description: Load the media from Fargo with system.
  *
@@ -92,6 +92,9 @@ function LoadFargoMedia(media)
     // The next/prev page click events.
     $("#next").on("click", {action:"n"}, SetPageHandler);
     $("#prev").on("click", {action:"p"}, SetPageHandler);
+    
+    // Pagination (bullet) click event.
+    $("#bullets").on("click", ".bullet", SetBulletHandler);
             
     // Keyboard events.
     $(document).on("keydown", SetKeyHandler);

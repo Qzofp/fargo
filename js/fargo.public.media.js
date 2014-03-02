@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Feb 28, 2014
+ * Updated on Mar 02, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -1141,6 +1141,27 @@ function SetPageHandler(event)
 } 
 
 /*
+ * Function:	SetBulletHandler
+ *
+ * Created on Mar 01, 2013
+ * Updated on Mar 02, 2013
+ *
+ * Description: Get the page and show the media table.
+ * 
+ * In:	-
+ * Out:	Media
+ *
+ */
+function SetBulletHandler()
+{
+    gSTATE.PAGE = Number($(this).text()) + 1;
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
+    
+    //alert($(this).text());
+  
+}
+
+/*
  * Function:	SetArrowHandler
  *
  * Created on Apr 13, 2013
@@ -1454,7 +1475,7 @@ function ShowMediaTable(page, sort)
             $('#sort').html(sort);
             
             // Show pagination (bullets).
-            ShowBullets(json.params.lastpage, page);
+            ShowBullets(json.params.lastpage, page, 10, 3);
             
             // Change hover color.
             if (mode) {
@@ -1564,15 +1585,114 @@ function ShowNextPrevButtons(lastpage)
  * Function:	ShowBullets
  *
  * Created on Feb 28, 2014
- * Updated on Feb 28, 2014
+ * Updated on Mar 02, 2014
  *
  * Description: Shows the page bullets.
  *
- * In:	lastpage, page
+ * In:	lastpage, page, show, offset
  * Out:	Bullets
  *
  */
-function ShowBullets(lastpage, page)
+function ShowBullets(lastpage, page, show, offset)
 {
+    var html = [];
+
+    if (page <= show)
+    {
+        html = ShowLargeBullets(html, lastpage, page, show);
+        html = ShowSmallBulletsRight(html, lastpage, page, show, offset); 
+    }
+    else 
+    {
+        html = ShowSmallBulletsLeft(html, page, show, offset);
+        html = ShowLargeBullets(html, lastpage, page, show);
+        html = ShowSmallBulletsRight(html, lastpage, page, show, offset);        
+    }
     
+    if (lastpage > 1) {
+        $('#bullets')[0].innerHTML = html.join('');
+    }
+    else {
+        $('#bullets')[0].innerHTML = "";
+    }
+}
+
+/*
+ * Function:	ShowLargeBullets
+ *
+ * Created on Mar 02, 2014
+ * Updated on Mar 02, 2014
+ *
+ * Description: Shows the large bullets.
+ *
+ * In:	html, lastpage, page, show
+ * Out:	html
+ *
+ */
+function ShowLargeBullets(html, lastpage, page, show)
+{
+    var start = html.length;
+    console.log("Start Large: " + start); //debug
+
+    for (var i = start; i < lastpage && i < show + start; i++)
+    {
+        if (i == page - 1){    
+            html[i] = '<div class=\"bullet active\">' + i + '</div>';
+        } 
+        else {
+            html[i] = '<div class=\"bullet\">' + i + '</div>'; 
+        }
+    } 
+    
+    return html;
+}
+
+/*
+ * Function:	ShowSmallBulletsLeft
+ *
+ * Created on Mar 02, 2014
+ * Updated on Mar 02, 2014
+ *
+ * Description: Shows the small bullets on the left side.
+ *
+ * In:	html, page, show, offset
+ * Out:	html
+ *
+ */
+function ShowSmallBulletsLeft(html, page, show, offset)
+{
+    var start = html.length;
+
+    console.log("Start Small Left: " + start); //debug
+
+    for (var i = start; i < page - show && i < offset + start; i++) {
+        html[i] = '<div class=\"bullet small\">' + i + '</div>';
+    }
+    
+    return html;
+}
+
+/*
+ * Function:	ShowSmallBulletsRight
+ *
+ * Created on Mar 02, 2014
+ * Updated on Mar 02, 2014
+ *
+ * Description: Shows the small bullets on the left side.
+ *
+ * In:	html, lastpage, page, show, offset
+ * Out:	html
+ *
+ */
+function ShowSmallBulletsRight(html, lastpage, page, show, offset)
+{
+    var start = html.length;
+
+    console.log("Start Small Right: " + start); //debug
+
+    for (var i = start, j = 0; i < lastpage && j < offset; i++, j++) {
+        html[i] = '<div class=\"bullet small\">' + i + '</div>';
+    }
+    
+    return html;
 }

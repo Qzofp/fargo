@@ -6,7 +6,7 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Feb 28, 2014
+ * Updated on Mar 01, 2014
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Feb 28, 2014
+ * Updated on Mar 01, 2014
  *
  * Description: Show the system page with minimum options.
  * 
@@ -52,6 +52,7 @@ function SetSystemHandler(event)
    
    $('#display_content').hide().html("");
    $('#bullets').hide();
+   $('#bullets')[0].innerHTML = "";
    $('#display_system').show();
    
    if ($('#display_system_left #fargo').length == false) {

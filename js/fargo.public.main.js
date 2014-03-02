@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Dec 31, 2013
+ * Updated on Mar 01, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -81,6 +81,9 @@ function LoadFargoMedia(media)
     // The next/prev page click events.
     $("#next").on("click", {action:"n"}, SetPageHandler);
     $("#prev").on("click", {action:"p"}, SetPageHandler);
+    
+    // Pagination (bullet) click event.
+    $("#bullets").on("click", ".bullet", SetBulletHandler);    
             
     // Keyboard events.
     $(document).on("keydown", SetKeyHandler);

@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Feb 28, 2014
+ * Updated on Mar 01, 2014
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -793,9 +793,10 @@ height:30px;
 padding-top:5px;
 display:table;
 margin: 0 auto;
+cursor:pointer;
 }
 
-#bullets a.bullet{
+#bullets .bullet{
 float:left;
 height:12px;
 width:12px;
@@ -809,11 +810,17 @@ box-shadow:0 0 4px #444444 inset;
 border-radius:6px;    
 }
 
-#bullets a.bullet:hover,
-#bullets a.bullet.active{
+#bullets .bullet:hover,
+#bullets .bullet.active{
 background-color:#2993dd;
 -moz-box-shadow:0 0 6px #0A2436 inset;
 box-shadow:0 0 6px #0A2436 inset;
+}
+
+#bullets .small{
+margin-top:6px;
+height:8px;
+width:8px;
 }
 
 #control_bar{
