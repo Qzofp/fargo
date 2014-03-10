@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Mar 07, 2014
+ * Updated on Mar 10, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -1475,7 +1475,7 @@ function ShowMediaTable(page, sort)
             $('#sort').html(sort);
             
             // Show pagination (bullets).
-            ShowBullets(json.params.lastpage, page, 5, 2);
+            ShowBullets(json.params.lastpage, page, 12, 3);
             
             // Change hover color.
             if (mode) {
@@ -1585,7 +1585,7 @@ function ShowNextPrevButtons(lastpage)
  * Function:	ShowBullets
  *
  * Created on Feb 28, 2014
- * Updated on Mar 07, 2014
+ * Updated on Mar 10, 2014
  *
  * Description: Shows the page bullets.
  *
@@ -1595,26 +1595,107 @@ function ShowNextPrevButtons(lastpage)
  */
 function ShowBullets(lastpage, page, show, offset)
 {
-    var start, end;
+    var start, end, space;
     var html = [];
     
+    // Show the small bullets on the left side.
+    if (page > show)
+    {
+        start = 1;
+        end   = page - show;
+        space = -1;
+        if (end > offset) 
+        {
+            end = offset + 1;
+            space = end;
+        }
+        
+        html = ShowSmallBullets(html, start, end, space);
+    }    
+    
+    // Show the large bullets in the middle.
     if (page <= show) {
         html = ShowLargeBullets(html, page, 1, (lastpage < show)?lastpage:show);
     }
-    else if (page <= show + offset + 1) 
+    else 
+    {   
+        start = page - show - 1;
+        start %= show;
+        start = page - start;
+        end   = start + show - 1;
+        if (end > lastpage) 
+        {
+            start = page - show + 1; 
+            end   = page;
+        }
+        
+        html = ShowLargeBullets(html, page, start, end); 
+        //console.log("Start: " + start + " Page: " + page +  " End: " + end); // debug.
+    }
+    
+    // Show the small bullets on the right side.
+    if (lastpage > show && lastpage > page) 
     {
-        html = ShowSmallBulletsLeft(html, page, show, offset);
+        start = lastpage - offset;
+        space = start;
+        end   = lastpage;
+        if (start <= page) 
+        {
+            start = page + 1;
+            space = -1;
+        }
+        
+        html = ShowSmallBullets(html, start, end, space); 
+    }
+    
+    
+    
+    
+    /*
+    if (page <= show + offset + 1) 
+    {
+        console.log("second");
+        
+        html = ShowSmallBullets(html, 1, page - show, offset);
         
         start = html.length + 1;
         end   = show + html.length;
-        if (page == show + offset + 1) 
-        {
-            start = html.length + 2;
+        if (page == show + offset + 1) {
             end   = page;
         }
         
         html = ShowLargeBullets(html, page, start, end);
     } 
+    else if (page > lastpage - offset - 1)
+    {
+        console.log("third");
+        
+        html = ShowSmallBullets(html, 1, offset + 1, offset);
+        
+        start = lastpage - show + 1;
+        end = lastpage - 1;
+       
+        html = ShowLargeBullets(html, page, start, end);
+        
+        
+    }
+    /*else 
+    {    
+        html = ShowSmallBullets(html, 1, offset + 1, offset);
+        
+        start = page - offset -1;
+        start %= (show + 1);
+        start = page - start;
+        
+        end = start + show;
+        //if (show > lastpage - page) {
+        //    end = lastpage;
+        //}
+        
+        console.log("Start: " + start + " End: " + end);
+        
+        html = ShowLargeBullets(html, page, start, end);
+    }*/
     
     
     
@@ -1628,12 +1709,12 @@ function ShowBullets(lastpage, page, show, offset)
 }
 
 /*
- * Function:	ShowStandardLargeBullets
+ * Function:	ShowLargeBullets
  *
  * Created on Mar 04, 2014
  * Updated on Mar 07, 2014
  *
- * Description: Shows the standard large bullets.
+ * Description: Shows the large bullets.
  *
  * In:	html, html, page, start, end
  * Out:	html
@@ -1641,7 +1722,7 @@ function ShowBullets(lastpage, page, show, offset)
  */
 function ShowLargeBullets(html, page, start, end)
 {  
-    for (var i = html.length, j = start; i < end; i++, j++)
+    for (var i = html.length, j = start; j <= end; i++, j++)
     {
         if (j == page){ 
             html[i] = '<div class=\"bullet active\">' + j + '</div>';
@@ -1653,6 +1734,35 @@ function ShowLargeBullets(html, page, start, end)
     
     return html;
 }
+
+/*
+ * Function:	ShowSmallBullets
+ *
+ * Created on Mar 02, 2014
+ * Updated on Mar 10, 2014
+ *
+ * Description: Shows the small bullets.
+ *
+ * In:	html, start, end, space
+ * Out:	html
+ *
+ */
+function ShowSmallBullets(html, start, end, space)
+{
+    for (var i = html.length, j = start; j <= end; i++, j++) 
+    {
+        if (j == space) {
+            html[i] = '<div class=\"space\">&nbsp;</div>'; 
+        } 
+        else {
+            html[i] = '<div class=\"bullet small\">' + j + '</div>';
+        }    
+    }
+      
+    return html;
+}
+
+
 
 
 
@@ -1674,7 +1784,7 @@ function ShowLargeBullets(html, page, start, end)
  * Out:	Bullets
  *
  */
-function ShowBullets_old(lastpage, page, show, offset)
+/*function ShowBullets_old(lastpage, page, show, offset)
 {
     var html = [];
 
@@ -1707,9 +1817,7 @@ function ShowBullets_old(lastpage, page, show, offset)
     else {
         $('#bullets')[0].innerHTML = "";
     }
-}
-
-
+}*/
 
 /*
  * Function:	ShowRightLargeBullets
@@ -1723,7 +1831,7 @@ function ShowBullets_old(lastpage, page, show, offset)
  * Out:	html
  *
  */
-function ShowRightLargeBullets(html, lastpage, page, show)
+/*function ShowRightLargeBullets(html, lastpage, page, show)
 {
     var start = html.length;
     //console.log("Start Large: " + start + " Page: " + j); //debug
@@ -1739,7 +1847,7 @@ function ShowRightLargeBullets(html, lastpage, page, show)
     }
     
     return html;
-}
+}*/
 
 /*
  * Function:	ShowMiddleLargeBullets
@@ -1753,7 +1861,7 @@ function ShowRightLargeBullets(html, lastpage, page, show)
  * Out:	html
  *
  */
-function ShowMiddleLargeBullets(html, lastpage, page, show, offset)
+/*function ShowMiddleLargeBullets(html, lastpage, page, show, offset)
 {
     var start = html.length;
 
@@ -1772,7 +1880,7 @@ function ShowMiddleLargeBullets(html, lastpage, page, show, offset)
     }
     
     return html;    
-}
+}*/
 
 /*
  * Function:	ShowSmallBulletsLeft
@@ -1786,7 +1894,7 @@ function ShowMiddleLargeBullets(html, lastpage, page, show, offset)
  * Out:	html
  *
  */
-function ShowSmallBulletsLeft(html, page, show, offset)
+/*function ShowSmallBulletsLeft(html, page, show, offset)
 {
     var start = html.length;
 
@@ -1801,7 +1909,7 @@ function ShowSmallBulletsLeft(html, page, show, offset)
     }
     
     return html;
-}
+}*/
 
 /*
  * Function:	ShowSmallBulletsRight
@@ -1815,7 +1923,7 @@ function ShowSmallBulletsLeft(html, page, show, offset)
  * Out:	html
  *
  */
-function ShowSmallBulletsRight(html, lastpage, page, show, offset)
+/*function ShowSmallBulletsRight(html, lastpage, page, show, offset)
 {
     var start = html.length;
     var delta = lastpage - page;
@@ -1838,4 +1946,4 @@ function ShowSmallBulletsRight(html, lastpage, page, show, offset)
     }
 
     return html;
-}
+}*/

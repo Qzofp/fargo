@@ -18,7 +18,7 @@ start berekenen
 10 - 3 = 7
 7%6    = 1
 10 - 1 = 9
-8 [9] 10 11 12
+9 [10] 11 12 13
 
 show	10
 offset	3 (4 met space)
