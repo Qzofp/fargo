@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Mar 10, 2014
+ * Updated on Apr 14, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -1380,7 +1380,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on Feb 28, 2014
+ * Updated on Apr 14, 2014
  *
  * Description: Shows the media table.
  *
@@ -1585,7 +1585,7 @@ function ShowNextPrevButtons(lastpage)
  * Function:	ShowBullets
  *
  * Created on Feb 28, 2014
- * Updated on Mar 10, 2014
+ * Updated on Apr 14, 2014
  *
  * Description: Shows the page bullets.
  *
@@ -1596,13 +1596,15 @@ function ShowNextPrevButtons(lastpage)
 function ShowBullets(lastpage, page, show, offset)
 {
     var start, end, space;
+    var left, right;
     var html = [];
     
     // Show the small bullets on the left side.
-    if (page > show)
+    left = Math.floor((page - 1)/show);
+    if (left)
     {
         start = 1;
-        end   = page - show;
+        end   = left;
         space = -1;
         if (end > offset) 
         {
@@ -1610,103 +1612,53 @@ function ShowBullets(lastpage, page, show, offset)
             space = end;
         }
         
-        html = ShowSmallBullets(html, start, end, space);
-    }    
+        html = ShowSmallBullets(html, start, end, space, show, 0);
+    }     
     
-    // Show the large bullets in the middle.
-    if (page <= show) {
-        html = ShowLargeBullets(html, page, 1, (lastpage < show)?lastpage:show);
+    // Show the middle bullets
+    start = page;
+    start %= show;
+    if (start == 0) 
+    {
+        start = page - show + 1;
+        end   = page; 
     }
     else 
-    {   
-        start = page - show - 1;
-        start %= show;
-        start = page - start;
+    {
+        start = page - start + 1; 
         end   = start + show - 1;
-        if (end > lastpage) 
-        {
-            start = page - show + 1; 
-            end   = page;
-        }
-        
-        html = ShowLargeBullets(html, page, start, end); 
-        //console.log("Start: " + start + " Page: " + page +  " End: " + end); // debug.
     }
+       
+    if (end >= lastpage) {
+        end = lastpage;
+    }   
+    
+    html = ShowLargeBullets(html, page, start, end); 
     
     // Show the small bullets on the right side.
-    if (lastpage > show && lastpage > page) 
+    right = Math.ceil(lastpage/show) - Math.ceil(page/show);
+    if (right)
     {
-        start = lastpage - offset;
-        space = start;
-        end   = lastpage;
-        if (start <= page) 
+        start = 1;
+        end   = right;        
+        space = -1;
+        if (right > offset) 
         {
-            start = page + 1;
-            space = -1;
+            end   = offset + 1;
+            space = start;
         }
         
-        html = ShowSmallBullets(html, start, end, space); 
-    }
-    
-    
-    
-    
-    /*
-    if (page <= show + offset + 1) 
-    {
-        console.log("second");
-        
-        html = ShowSmallBullets(html, 1, page - show, offset);
-        
-        start = html.length + 1;
-        end   = show + html.length;
-        if (page == show + offset + 1) {
-            end   = page;
-        }
-        
-        html = ShowLargeBullets(html, page, start, end);
-    } 
-    else if (page > lastpage - offset - 1)
-    {
-        console.log("third");
-        
-        html = ShowSmallBullets(html, 1, offset + 1, offset);
-        
-        start = lastpage - show + 1;
-        end = lastpage - 1;
-       
-        html = ShowLargeBullets(html, page, start, end);
-        
-        
-    }
-    /*else 
-    {    
-        html = ShowSmallBullets(html, 1, offset + 1, offset);
-        
-        start = page - offset -1;
-        start %= (show + 1);
-        start = page - start;
-        
-        end = start + show;
-        //if (show > lastpage - page) {
-        //    end = lastpage;
-        //}
-        
-        console.log("Start: " + start + " End: " + end);
-        
-        html = ShowLargeBullets(html, page, start, end);
-    }*/
-    
-    
-    
-    
+        html = ShowSmallBullets(html, start, end, space, show, lastpage);        
+    }        
+     
+    // Show bullets on page.
     if (lastpage > 1) {
         $('#bullets')[0].innerHTML = html.join('');
     }
     else {
         $('#bullets')[0].innerHTML = "";
-    }    
-}
+    }     
+}    
 
 /*
  * Function:	ShowLargeBullets
@@ -1739,211 +1691,37 @@ function ShowLargeBullets(html, page, start, end)
  * Function:	ShowSmallBullets
  *
  * Created on Mar 02, 2014
- * Updated on Mar 10, 2014
+ * Updated on Apr 14, 2014
  *
  * Description: Shows the small bullets.
  *
- * In:	html, start, end, space
+ * In:	html, start, end, space, show, last
  * Out:	html
  *
  */
-function ShowSmallBullets(html, start, end, space)
+function ShowSmallBullets(html, start, end, space, show, last)
 {
+    var page;
     for (var i = html.length, j = start; j <= end; i++, j++) 
     {
         if (j == space) {
             html[i] = '<div class=\"space\">&nbsp;</div>'; 
         } 
-        else {
-            html[i] = '<div class=\"bullet small\">' + j + '</div>';
+        else 
+        {
+            if (last) 
+            {
+                page = (Math.ceil(last/show) - end + j) * show;
+                if (page > last) {
+                    page = last;
+                }
+            }
+            else {
+                page = 1 + (j - 1) * show;
+            }
+            html[i] = '<div class=\"bullet small\">' + page + '</div>';
         }    
     }
       
     return html;
 }
-
-
-
-
-
-
-
-
-
-
-
-/*
- * Function:	ShowBullets
- *
- * Created on Feb 28, 2014
- * Updated on Mar 05, 2014
- *
- * Description: Shows the page bullets.
- *
- * In:	lastpage, page, show, offset
- * Out:	Bullets
- *
- */
-/*function ShowBullets_old(lastpage, page, show, offset)
-{
-    var html = [];
-
-    if (page <= show) // Bullets left side.
-    {
-        html = ShowLeftLargeBullets(html, lastpage, page, show);
-        html = ShowSmallBulletsRight(html, lastpage, page, show, offset); 
-        
-        console.log("Left");
-    }
-    else if (page > lastpage - show) // Bullets right side.
-    {
-        html = ShowSmallBulletsLeft(html, page, show, offset);     
-        html = ShowRightLargeBullets(html, lastpage, page, show);
-        
-        console.log("Right");
-    }
-    else // Bullets in the middle.
-    {
-        html = ShowSmallBulletsLeft(html, page, show, offset);   
-        html = ShowMiddleLargeBullets(html, lastpage, page, show, offset);      
-        html = ShowSmallBulletsRight(html, lastpage, page, show, offset); 
-        
-        console.log("Middle");
-    }
-    
-    if (lastpage > 1) {
-        $('#bullets')[0].innerHTML = html.join('');
-    }
-    else {
-        $('#bullets')[0].innerHTML = "";
-    }
-}*/
-
-/*
- * Function:	ShowRightLargeBullets
- *
- * Created on Mar 04, 2014
- * Updated on Mar 04, 2014
- *
- * Description: Shows the right large bullets.
- *
- * In:	html, lastpage, page, show, offset
- * Out:	html
- *
- */
-/*function ShowRightLargeBullets(html, lastpage, page, show)
-{
-    var start = html.length;
-    //console.log("Start Large: " + start + " Page: " + j); //debug
-
-    for (var i = start, j = lastpage - show + 1; i < lastpage && i < show + start; i++, j++)
-    {
-        if (j == page){ 
-            html[i] = '<div class=\"bullet active\">' + j + '</div>';
-        } 
-        else {
-            html[i] = '<div class=\"bullet\">' + j + '</div>'; 
-        }
-    }
-    
-    return html;
-}*/
-
-/*
- * Function:	ShowMiddleLargeBullets
- *
- * Created on Mar 05, 2014
- * Updated on Mar 05, 2014
- *
- * Description: Shows the middle large bullets.
- *
- * In:	html, lastpage, page, show, offset
- * Out:	html
- *
- */
-/*function ShowMiddleLargeBullets(html, lastpage, page, show, offset)
-{
-    var start = html.length;
-
-    var j = page - offset - 1;
-    j %= show;
-    j = page - j;
-
-    for (var i = start; i < show + start; i++, j++)
-    {
-        if (j == page){ 
-            html[i] = '<div class=\"bullet active\">' + j + '</div>';
-        } 
-        else {
-            html[i] = '<div class=\"bullet\">' + j + '</div>'; 
-        }
-    }
-    
-    return html;    
-}*/
-
-/*
- * Function:	ShowSmallBulletsLeft
- *
- * Created on Mar 02, 2014
- * Updated on Mar 03, 2014
- *
- * Description: Shows the small bullets on the left side.
- *
- * In:	html, page, show, offset
- * Out:	html
- *
- */
-/*function ShowSmallBulletsLeft(html, page, show, offset)
-{
-    var start = html.length;
-
-    //console.log("Start Small Left: " + start); //debug
-
-    for (var i = start, j = 1; i < page - show && i < offset + start; i++, j++) {
-        html[i] = '<div class=\"bullet small\">' + j + '</div>';
-    }
-    
-    if (page > show + offset) {
-        html[offset+1] = '<div class=\"space\">&nbsp;</div>';
-    }
-    
-    return html;
-}*/
-
-/*
- * Function:	ShowSmallBulletsRight
- *
- * Created on Mar 02, 2014
- * Updated on Mar 05, 2014
- *
- * Description: Shows the small bullets on the left side.
- *
- * In:	html, lastpage, page, show, offset
- * Out:	html
- *
- */
-/*function ShowSmallBulletsRight(html, lastpage, page, show, offset)
-{
-    var start = html.length;
-    var delta = lastpage - page;
-
-    //console.log("Start Small Right: " + start + " Delta: " + delta); //debug
-
-    if (delta > offset && lastpage > show) 
-    {
-        html[start++] = '<div class=\"space\">&nbsp;</div>';
-        for (var i = start, j = offset - 1; i < offset + start; i++, j--) {
-            html[i] = '<div class=\"bullet small\">' + (lastpage - j) + '</div>';
-        }        
-    }
-    else if (lastpage > show)
-    { 
-        for (var i = start, j = offset - 1, k = page; i < offset + start && k < lastpage - show + 1; i++, j--, k++) {
-            html[i] = '<div class=\"bullet small\">' + (lastpage - j) + '</div>';
-            console.log("counter: " + k);
-        }          
-    }
-
-    return html;
-}*/
