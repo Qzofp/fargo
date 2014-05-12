@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Feb 21, 2014
+ * Updated on May 12, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -74,6 +74,7 @@ var cSTATUS = {
     RETRY:    "Retry import...",
     FINISH:   "Import of [dummy] finished.",
     SEARCH:   "Searching for [dummy]...",
+    EXISTS:   "Duplicate [dummy] found!",
     PROCESS:  "Processing [dummy]...", 
     IMPORT:   "Importing [dummy]...",
     REFRESH:  "Refreshing [dummy]... ",

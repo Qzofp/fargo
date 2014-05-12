@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Feb 28, 2014
+ * Updated on May 07, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -928,7 +928,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
  * Function:	CreateMediaQuery
  *
  * Created on Apr 08, 2013
- * Updated on Feb 27, 2014
+ * Updated on May 07, 2014
  *
  * Description: Create the sql query for the media table. 
  *
@@ -947,15 +947,15 @@ function CreateMediaQuery($table, $metaid, $title, $genre, $year, $sort, $login)
     }
     else
     {
-        $sql = "SELECT t.id, t.xbmcid, m.playcount, t.hide, t.refresh, t.title ".
-               "FROM $table t, ".$table."meta m ".
-               "WHERE t.xbmcid = m.$metaid ";
+        $sql = "SELECT t.id, t.xbmcid, IF (m.playcount IS NULL, -1, m.playcount), t.hide, t.refresh, t.title ".
+               "FROM $table t ".
+               "LEFT JOIN ".$table."meta m ON (t.xbmcid = m.$metaid) ";
         
-        $sql .= CreateQuerySelection("t.", "AND ", $sort, $year, $genre, $login);        
+        $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);        
     }    
     
     $sql .= CreateQuerySortQrder("t.", $title);
-    
+       
     return $sql;
 }
 
@@ -963,7 +963,7 @@ function CreateMediaQuery($table, $metaid, $title, $genre, $year, $sort, $login)
  * Function:	CreateSetsQuery
  *
  * Created on Nov 08, 2013
- * Updated on Feb 28, 2014
+ * Updated on May 03, 2014
  *
  * Description: Create the sql query for the media sets table. 
  *
@@ -983,12 +983,12 @@ function CreateSetsQuery($title, $genre, $year, $sort, $login)
     }
     else
     {
-        $sql = "SELECT DISTINCT s.id AS id, s.setid, sm.playcount, s.hide, s.refresh, s.title AS title ".
+        $sql = "SELECT DISTINCT s.id AS id, s.setid, IF (sm.playcount IS NULL, -1, sm.playcount), s.hide, s.refresh, s.title AS title ".
                "FROM (SELECT setid, MIN(`year`) AS minyear FROM movies GROUP BY setid) ma ".
                "JOIN sets s ON s.setid = ma.setid ".
                "INNER JOIN movies mb ON ma.setid = mb.setid ".
                "INNER JOIN movies mc ON ma.setid = mc.setid AND ma.minyear = mc.year ".
-               "JOIN setsmeta sm ON s.setid = sm.setid ";
+               "LEFT JOIN setsmeta sm ON s.setid = sm.setid ";
     }
     
     $stm = "WHERE";
@@ -1042,7 +1042,7 @@ function CreateSetsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateMoviesSetQuery
  *
  * Created on Nov 08, 2013
- * Updated on Feb 28, 2014
+ * Updated on May 03, 2014
  *
  * Description: Create the sql query for the media movies set table. 
  *
@@ -1060,9 +1060,11 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
     }
     else 
     {
-        $sql = "SELECT m.id, m.xbmcid, sm.playcount, m.hide, m.refresh, m.title ".
-               "FROM sets s, setsmeta sm, movies m ".
-               "WHERE s.setid = sm.setid AND s.setid = m.setid AND s.id = $id ";        
+        $sql = "SELECT m.id, m.xbmcid, IF (sm.playcount IS NULL, -1, sm.playcount), m.hide, m.refresh, m.title ".
+               "FROM sets s ".
+               "LEFT JOIN setsmeta sm ON (s.setid = sm.setid) ".
+               "INNER JOIN movies m ON (s.setid = m.setid) ". 
+               "WHERE s.id = $id ";        
     }
     
     $sql .= CreateQuerySelection("m.", "AND ", $sort, $year, $genre, $login);

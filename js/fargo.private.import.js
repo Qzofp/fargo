@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 24, 2014
+ * Updated on May 12, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -47,7 +47,7 @@ function SetStartImportHandler(media, step, retry)
  * Function:	SetStartMoviesImportHandler
  *
  * Created on Jan 12, 2014
- * Updated on Jan 24, 2014
+ * Updated on May 12, 2014
  *
  * Description:  Start the movies import handler.
  * 
@@ -69,7 +69,7 @@ function SetStartMoviesImportHandler(step, retry)
         case 3 : // Import Movies.
                  StartImportHandler("movies", "movies", 4, 1);
                  break;
-                                 
+                           
         case 4 : StartOnlineHandler("movies", "sets", 5, false, retry);
                  break;
                 
@@ -80,10 +80,9 @@ function SetStartMoviesImportHandler(step, retry)
         case 6 : // Import Movie Sets.
                  StartImportHandler("movies", "sets", 7, 0.6);
                  break;  
-             
+        
         case 7 : ShowFinished(true);
-                 //console.log("Import finished."); // Debug.
-                 break;
+                 break;               
     }
 }
 
@@ -200,7 +199,7 @@ function StartOnlineHandler(media, type, next, online, retry)
         //console.log('STEP 2: ' + next); //debug
     }
     
-    // Returns cCONNECT, gTRIGGER.START and gTRIGGER.END.
+    // Returns gCONNECT, gTRIGGER.START and gTRIGGER.END.
     var start = StartOnlineCheck(type);
     start.done (function() {
         
@@ -223,9 +222,9 @@ function StartOnlineHandler(media, type, next, online, retry)
  * Description:  Check if XBMC is online.
  * 
  * In:	type
- * Out:	Globals cCONNECT, gTRIGGER.START and gTRIGGER.END
+ * Out:	Globals gCONNECT, gTRIGGER.START and gTRIGGER.END
  *
- * Note : Init globals cCONNECT, gTRIGGER.START and gTRIGGER.END.
+ * Note : Init globals gCONNECT, gTRIGGER.START and gTRIGGER.END.
  *
  */
 function StartOnlineCheck(type)
@@ -495,7 +494,7 @@ function StartImportHandler(media, type, next, factor)
  * Function:	StartImport
  *
  * Created on Jan 14, 2014
- * Updated on Feb 24, 2014
+ * Updated on May 04, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
@@ -541,7 +540,7 @@ function StartImport(type, factor)
         else
         {
             // Counter confirms that the import succeeded.
-           start = gTRIGGER.COUNTER;
+            start = gTRIGGER.COUNTER;
             
             // Get status (returns gMEDIA and gTRIGGER.COUNTER).
             GetMediaStatus(type, start, xbmcid);
@@ -556,7 +555,9 @@ function StartImport(type, factor)
                           
                 case cTRANSFER.DUPLICATE 
                         : busy = false;
-                          //console.log("Duplicate found...");
+                        
+                          // debug
+                          console.log("Duplicate found...");
                           break;                          
                             
                 case cTRANSFER.NOTFOUND 
@@ -646,7 +647,7 @@ function GetMediaStatus(type, start, xbmcid)
  * Function:	ShowImportProgress
  *
  * Created on Jan 16, 2014
- * Updated on Feb 22, 2014
+ * Updated on May 12, 2014
  *
  * Description: Show the import progress.
  * 
@@ -663,10 +664,25 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
         value : percent     
     });
     
-    if ($msg.text() == cSTATUS.WAIT) {
+    /*if ($msg.text() == cSTATUS.WAIT) {
         $msg.html(cSTATUS.IMPORT.replace("[dummy]", ConvertMediaToSingular(type)));
-    }
-   
+    }*/
+    
+    switch (Number(gTRIGGER.STATUS))
+    {                          
+        case cTRANSFER.DUPLICATE 
+                :   $msg.html(cSTATUS.EXISTS.replace("[dummy]", ConvertMediaToSingular(type)));
+                    break;
+                                                       
+        case cTRANSFER.READY
+                :   $msg.html(cSTATUS.PROCESS.replace("[dummy]", ConvertMediaToSingular(type)));
+                    break;                              
+                            
+        case cTRANSFER.WAIT   
+                :   $msg.html(cSTATUS.IMPORT.replace("[dummy]", ConvertMediaToSingular(type)));
+                    break;
+    } 
+      
     if (gMEDIA.TITLE) 
     {
         // Preload image.
@@ -803,12 +819,12 @@ function StartSeasonsMetaImport(type)
  * Function:	LockImport
  *
  * Created on Dec 13, 2013
- * Updated on Dec 13, 2013
+ * Updated on May 12, 2014
  *
  * Description: New imports cannot be started during the lock.
  * 
  * In:	-
- * Out:	Set lock (ImportReady = 0 (false))
+ * Out:	Set lock (ImportLock = 0 (false))
  *
  */
 function LockImport(callback)
@@ -829,12 +845,12 @@ function LockImport(callback)
  * Function:	LockImport
  *
  * Created on Dec 13, 2013
- * Updated on Dec 13, 2013
+ * Updated on May 12, 2014
  *
  * Description: New imports cannot be started during the lock.
  * 
  * In:	-
- * Out:	Remove lock (ImportReady = 1(true))
+ * Out:	Remove lock (ImportLock = 1(true))
  *
  */
 function UnlockImport(callback)
@@ -1276,7 +1292,7 @@ function DisplayStatusMessage(str1, str2, end, callback) // Obsolete
  * Function:	LogImportCounter
  *
  * Created on Oct 17, 2013
- * Updated on Nov 21, 2013
+ * Updated on May 12, 2014
  *
  * Description: Get and log import counter.
  *
@@ -1292,15 +1308,20 @@ function LogImportCounter(media, finish)
         dataType: 'json',
         success: function(json) 
         {           
-            var counter = Number(json.import);
+            var counter = Number(json.import) - 1;
             var name    = ConvertMedia(media);
             var msg;
             
-            if (finish) 
+            if (finish && counter > 0) 
             {
                 msg = cSTATUS.FINISH.replace("[dummy]", counter + " " + name); 
                 $("#action_box .message").html(msg);
                 LogEvent("Information", msg); 
+            }
+            else if (counter == 0)
+            {
+                msg = (cSTATUS.NOTFOUND.replace("[dummy]", name));
+                $("#action_box .message").html(msg);
             }
             else if (counter > 0 ){
                 LogEvent("Warning", counter + " " + name + " imported. The import was canceled!");

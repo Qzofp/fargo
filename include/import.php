@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Feb 20, 2014
+ * Updated on May 12, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -199,7 +199,7 @@ function ProcessDataFromXbmc($db, $aData)
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Feb 18, 2014
+ * Updated on May 12, 2014
  *
  * Description: Import the movie. 
  *
@@ -217,22 +217,28 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
         $aMovie  = ConvertMovie($aResult["moviedetails"]);
         
         ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175); //200, 280
-        list($dkey, $id) = InsertMovie($db, $aMovie);    
-        if (!$dkey) // No dublicate key found.
+        list($dkey, $id) = InsertMovie($db, $aMovie);
+        if ($dkey == 1) // No dublicate key found.
         {             
             ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 450, 280); //562, 350 //675, 420  
             
             InsertGenres($db, $aGenres, "movies"); 
             InsertGenreToMedia($db, $aGenres, $id, "movies");
             
-            IncrementStatus($db, "ImportCounter", 1);
+            IncrementStatus($db, "ImportCounter", 1);            
             UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
         }
-        else {
+        else 
+        {   
+            if ($dkey == 2) {
+                ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 450, 280); //562, 350 //675, 420  
+            }
+      
             UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
         }
         
-        IncrementStatus($db, "XbmcMoviesStart", 1);
+        IncrementStatus($db, "ImportStart", 1);
+        UpdateStatus($db, "XbmcMoviesStart", $aMovie[0]);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) {
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -246,7 +252,7 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
  * Function:	ImportMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Feb 20, 2014
+ * Updated on May 12, 2014
  *
  * Description: Import the movie set. 
  *
@@ -262,7 +268,7 @@ function ImportMovieSet($db, $aError, $poster, $aResult)
  
         ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280
         $dkey = InsertMovieSet($db, $aMovie);
-        if (!$dkey) // No dublicate key found.
+        if ($dkey == 1) // No dublicate key found.
         {  
             IncrementStatus($db, "ImportCounter", 1);
             UpdateStatus($db, "ImportStatus", cTRANSFER_READY);            
@@ -271,7 +277,8 @@ function ImportMovieSet($db, $aError, $poster, $aResult)
             UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
         }
         
-        IncrementStatus($db, "XbmcSetsStart", 1);
+        IncrementStatus($db, "ImportStart", 1);
+        UpdateStatus($db, "XbmcSetsStart", $aMovie[0]);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.

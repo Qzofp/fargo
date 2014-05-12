@@ -2,12 +2,12 @@
 /*
  * Title:   Toolbox
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.5
  *
  * File:    databases.php
  *
  * Created on Mar 09, 2013
- * Updated on Jan 09, 2014
+ * Updated on May 11, 2014
  *
  * Description: Database toolbox functions.
  * 

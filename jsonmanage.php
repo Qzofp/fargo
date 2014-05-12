@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Feb 20, 2014
+ * Updated on May 12, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -464,7 +464,7 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Feb 19, 2014
+ * Updated on May 12, 2014
  *
  * Description: Reset the status. 
  *
@@ -483,22 +483,22 @@ function ResetStatus($media)
     }
     
     UpdateStatus($db, "ImportStatus", -1); // Needed for refresh media.   
-    UpdateStatus($db, "ImportCounter", 0);
+    UpdateStatus($db, "ImportCounter", 1); // 0
     UpdateStatus($db, "Xbmc".$media."End", -1);
     
     // Get last id media item and set ImportStart.
-    if ($media == "movies" || $media == "tvshows" || $media == "albums") {
+    /*if ($media == "movies" || $media == "tvshows" || $media == "albums") {
         $name = "xbmcid";
     }
     else {
         $name = rtrim($media, 's')."id";
-    }  
-    $sql = "SELECT $name FROM $media ".
-           "WHERE id = (SELECT MAX(id) FROM $media)";
+    }*/  
+   
+    $sql    = CreateMetaStartQuery($db, $media);
     $lastid = GetItemFromDatabase($db, "id", $sql);
-    //$lastid = !empty($lastid)?$lastid:0;
     UpdateStatus($db, "ImportStart", !empty($lastid)?$lastid:0);
     
+    // Fill json.
     $aJson["connection"] = GetSetting($db, "XBMCconnection");
     $aJson["port"]       = GetSetting($db, "XBMCport");
     $aJson["timeout"]    = GetSetting($db, "Timeout");
@@ -514,7 +514,7 @@ function ResetStatus($media)
  * Function:	GetCountersStatus
  *
  * Created on Jan 03, 2014
- * Updated on Feb 19, 2014
+ * Updated on May 12, 2014
  *
  * Description: Get status counter
  *
@@ -530,6 +530,31 @@ function GetCountersStatus($media)
     if ($media == "tvseasons") {
         $media = "tvshows";
     }
+    
+    $sql = CreateMetaStartQuery($db, $media);
+  
+    $aJson['xbmc']['start'] = GetItemFromDatabase($db, "id", $sql);
+    $aJson['xbmc']['end']   = GetStatus($db, "Xbmc".$media."End");
+    $aJson['import']        = GetStatus($db, "ImportCounter");
+    
+    CloseDatabase($db); 
+    return $aJson;    
+}
+
+/*
+ * Function:	CreateMetaStartQuery
+ *
+ * Created on May 12, 2014
+ * Updated on May 12, 2014
+ *
+ * Description: Create query to get te meta start value.
+ *
+ * In:  $db, $media
+ * Out: $sql
+ *
+ */
+function CreateMetaStartQuery($db, $media)
+{
     
     switch ($media)
     {
@@ -562,24 +587,18 @@ function GetCountersStatus($media)
                           break;                
     }
     
-    $xbmcid = GetStatus($db, "ImportStart");  
-    //$sql = "SELECT id+1 AS id FROM $meta WHERE $name <= $xbmcid ".
-    //       "ORDER BY $name DESC LIMIT 0, 1";
-    $sql = "SELECT COUNT(*)+1 AS id FROM $meta WHERE $name <= $xbmcid";
+    // Get meta import start value.
+    $xbmcid = GetStatus($db, "Xbmc".$media."Start");   
+    $sql = "SELECT COUNT(*)+1 AS id FROM $meta WHERE $name <= $xbmcid";    
     
-    $aJson['xbmc']['start'] = GetItemFromDatabase($db, "id", $sql);
-    $aJson['xbmc']['end']   = GetStatus($db, "Xbmc".$media."End");
-    $aJson['import']        = GetStatus($db, "ImportCounter");
-    
-    CloseDatabase($db); 
-    return $aJson;    
+    return $sql;
 }
 
 /*
- * Function:	InitStatus()
+ * Function:	InitStatus
  *
  * Created on Jan 03, 2014
- * Updated on Jan 03, 2014
+ * Updated on May 12, 2014
  *
  * Description: Initialize import ready status.
  *
@@ -592,9 +611,9 @@ function InitStatus()
     $aJson = null;
     $db = OpenDatabase();
     
-    $aJson['ready'] = GetStatus($db, "ImportReady");
+    $aJson['ready'] = GetStatus($db, "ImportLock");
     if ($aJson['ready'] >= 0) {
-        UpdateStatus($db, "ImportReady", -1);
+        UpdateStatus($db, "ImportLock", -1);
     }
     
     CloseDatabase($db);
@@ -607,7 +626,7 @@ function InitStatus()
  * Function:	ProcessImportMode
  *
  * Created on Dec 13, 2013
- * Updated on Jan 03, 2013
+ * Updated on May 12, 2013
  *
  * Description: Process the import mode (check, lock or unlock import). 
  *
@@ -622,14 +641,14 @@ function ProcessImportMode($mode)
     
     switch($mode)
     {
-        case "check"  : $aJson["check"] = GetStatus($db, "ImportReady");
+        case "check"  : $aJson["check"] = GetStatus($db, "ImportLock");
                          break;
                     
-        case "lock"   : UpdateStatus($db, "ImportReady", 0); // 0 = false.
+        case "lock"   : UpdateStatus($db, "ImportLock", 0); // 0 = false.
                         $aJson["check"] = 0;
                         break;
                    
-        case "unlock" : UpdateStatus($db, "ImportReady", 1); // 1 = true. 
+        case "unlock" : UpdateStatus($db, "ImportLock", 1); // 1 = true. 
                         $aJson["check"] = 1;
                         break;                   
     }
@@ -685,7 +704,7 @@ function GetMediaStatus($media, $id, $xbmcid)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Feb 18, 2014
+ * Updated on May 12, 2014
  *
  * Description: Reports the status of the import process.
  *
@@ -697,8 +716,6 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
 {
     $aJson['thumbs'] = $thumbs;
 
-    //$sql = "SELECT $typeid FROM ".$table."meta ".
-    //       "WHERE id = $id";
     $id -= 1;
     $sql = "SELECT $typeid FROM ".$table."meta ".
            "ORDER BY $typeid LIMIT $id, 1";    
@@ -716,7 +733,7 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
         UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
     }
     
-    $aJson['counter'] = GetStatus($db, "Xbmc".$table."Start");  
+    $aJson['counter'] = GetStatus($db, "ImportStart");
     
     return $aJson;
 }
@@ -1024,7 +1041,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Feb 19, 2014
+ * Updated on May 12, 2014
  *
  * Description: Clean the media library. 
  *
@@ -1046,8 +1063,8 @@ function CleanLibrary($number)
                  EmptyTable($db, "genretomovie");
                  EmptyTable($db, "sets");
                  DeleteGenres($db, "movies");
-                 UpdateStatus($db, "XbmcMoviesStart", 1);
-                 UpdateStatus($db, "XbmcSetsStart", 1);
+                 UpdateStatus($db, "XbmcMoviesStart", 0); // 1
+                 UpdateStatus($db, "XbmcSetsStart", 0); // 1
                  DeleteFile(cMOVIESTHUMBS."/*.jpg");
                  DeleteFile(cMOVIESFANART."/*.jpg");
                  DeleteFile(cSETSTHUMBS."/*.jpg");

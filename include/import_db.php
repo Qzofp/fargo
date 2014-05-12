@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
- * File:    import_json.php
+ * File:    import.php
  *
  * Created on Jul 02, 2013
- * Updated on Feb 21, 2014
+ * Updated on May 12, 2014
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -21,7 +21,7 @@
  * Function:	InsertMovie
  *
  * Created on Mar 09, 2013
- * Updated on Feb 21, 2014
+ * Updated on May 12, 2014
  *
  * Description: Insert movie in the database.
  *
@@ -39,12 +39,14 @@ function InsertMovie($db, $aMovie)
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]', '$aItems[7]',".
            " '$aItems[8]', '$aItems[9]', '$aItems[10]', '$aItems[11]', $aItems[12], '$aItems[13]', '$aItems[14]', '$aItems[15]',".
            " '$aItems[16]', '$aItems[17]', '$aItems[18]', $aItems[19], '$aItems[20]', '$aItems[21]', '$aItems[22]',". 
-           " $aItems[23], '$aItems[24]', '$aItems[25]', $aItems[26], '$aItems[27]', unhex('$aItems[28]'))";
+           " $aItems[23], '$aItems[24]', '$aItems[25]', $aItems[26], '$aItems[27]', unhex('$aItems[28]')) ".
+           "ON DUPLICATE KEY UPDATE xbmcid = $aItems[0]";
 
-    $dkey = QueryDatabase($db, $sql);
+    mysqli_query($db, $sql);
+    $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).
     
     // Get the auto generated id used in the last query.
-    $id = mysqli_insert_id($db); 
+    $id = mysqli_insert_id($db);
     return array($dkey, $id);
 }
 
@@ -82,7 +84,7 @@ function UpdateMovie($db, $id, $aMovie)
  * Function:	InsertMovieSet
  *
  * Created on Oct 14, 2013
- * Updated on Feb 21, 2014
+ * Updated on May 12, 2014
  *
  * Description: Insert movie set in the database.
  *
@@ -95,9 +97,13 @@ function InsertMovieSet($db, $aMovie)
     $aItems = AddEscapeStrings($db, $aMovie);
     
     $sql = "INSERT INTO sets(setid, title, sorttitle, playcount, `hash`) ".
-           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], UNHEX('$aItems[4]'))";
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], UNHEX('$aItems[4]')) ".
+           "ON DUPLICATE KEY UPDATE setid = $aItems[0]";
 
-    $dkey = QueryDatabase($db, $sql);
+    //$dkey = QueryDatabase($db, $sql);
+    mysqli_query($db, $sql);
+    $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).    
+    
     return $dkey;
 }
 
