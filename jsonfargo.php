@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on May 07, 2014
+ * Updated on May 19, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -1077,7 +1077,7 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
  * Function:	CreateSeriesQuery
  *
  * Created on Apr 08, 2013
- * Updated on Feb 28, 2014
+ * Updated on May 19, 2014
  *
  * Description: Create the sql query for the media TV shows table. 
  *
@@ -1096,11 +1096,11 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
     }
     else 
     {
-        $sql = "SELECT DISTINCT  CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, tm.playcount, t.hide, s.refresh, t.title ".
+        $sql = "SELECT DISTINCT  CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, IF (tm.playcount IS NULL, -1, tm.playcount), t.hide, s.refresh, t.title ".
                "FROM (SELECT id, seasonid, hide, refresh, tvshowid, COUNT(season) AS seasons, season FROM seasons ".
                "GROUP BY tvshowid) s ".
                "JOIN tvshows t ON s.tvshowid = t.xbmcid ".
-               "JOIN tvshowsmeta tm ON s.tvshowid = tm.tvshowid ";        
+               "LEFT JOIN tvshowsmeta tm ON s.tvshowid = tm.tvshowid ";        
     }
     
     $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
@@ -1113,7 +1113,7 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateSeasonsQuery
  *
  * Created on Nov 12, 2013
- * Updated on Feb 28, 2014
+ * Updated on May 19, 2014
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -1132,9 +1132,10 @@ function CreateSeasonsQuery($id, $login)
     }
     else
     {
-        $sql = "SELECT CONCAT(s.id, '_', s.season) AS id, s.seasonid AS xbmcid, sm.playcount, s.hide, s.refresh, s.title ".
-               "FROM seasons s, seasonsmeta sm WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
-               "AND s.seasonid = sm.seasonid ".
+        $sql = "SELECT CONCAT(s.id, '_', s.season) AS id, s.seasonid AS xbmcid, IF (sm.playcount IS NULL, -1, sm.playcount), s.hide, s.refresh, s.title ".
+               "FROM seasons s ".
+               "LEFT JOIN seasonsmeta sm ON (s.seasonid = sm.seasonid) ".
+               "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ". 
                "ORDER BY s.season";
     }
     
@@ -1145,7 +1146,7 @@ function CreateSeasonsQuery($id, $login)
  * Function:	 CreateEpisodesQuery
  *
  * Created on Nov 12, 2013
- * Updated on Feb 28, 2014
+ * Updated on May 19, 2014
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -1157,12 +1158,12 @@ function CreateEpisodesQuery($id, $season, $login)
 {   
     if (!$login)
     {
-        if ($season > -1) {
+        if ($season > -1) { // More the 1 season.
             $sql = "SELECT id, episodeid, NULL, hide, refresh, CONCAT(episode, '. ', title) ".
                    "FROM episodes WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
                    "AND season = $season AND hide = 0 ";
         }
-        else {
+        else { // One season.
             $sql = "SELECT id, episodeid, NULL, hide, refresh, CONCAT(episode, '. ', title) ".
                    "FROM episodes WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
                    "AND hide = 0 ";       
@@ -1172,15 +1173,17 @@ function CreateEpisodesQuery($id, $season, $login)
     }
     else
     {
-        if ($season > -1) {
-            $sql = "SELECT e.id, e.episodeid, em.playcount, e.hide, e.refresh, CONCAT(e.episode, '. ', e.title) ".
-                   "FROM episodes e, episodesmeta em WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
-                   "AND e.season = $season AND e.episodeid = em.episodeid ";            
+        if ($season > -1) { // More the 1 season.
+            $sql = "SELECT e.id, e.episodeid, IF (em.playcount IS NULL, -1, em.playcount), e.hide, e.refresh, CONCAT(e.episode, '. ', e.title) ".
+                   "FROM episodes e ".
+                   "LEFT JOIN episodesmeta em ON (e.episodeid = em.episodeid) ".
+                   "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) AND e.season = $season ";            
         }
-        else {
-            $sql = "SELECT e.id, e.episodeid, em.playcount, e.hide, e.refresh, CONCAT(e.episode, '. ', e.title) ".
-                   "FROM episodes e, episodesmeta em WHERE e.tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
-                   "AND e.episodeid = em.episodeid ";                  
+        else { // One season.
+            $sql = "SELECT e.id, e.episodeid, IF (em.playcount IS NULL, -1, em.playcount), e.hide, e.refresh, CONCAT(e.episode, '. ', e.title) ".
+                   "FROM episodes e ".
+                   "LEFT JOIN episodesmeta em ON (e.episodeid = em.episodeid) ".
+                   "WHERE e.tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) "; 
         }
         
         $sql .= "ORDER BY e.episode";

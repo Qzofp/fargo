@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    meta.php
  *
  * Created on Jan 10, 2014
- * Updated on Jan 28, 2014
+ * Updated on May 17, 2014
  *
  * Description: Fargo's meta data import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -154,7 +154,7 @@ function ImportMediaMeta($db, $aData, $type, $id)
  * Function:	ImportSeasonsMeta
  *
  * Created on Jan 10, 2014
- * Updated on Jan 27, 2014
+ * Updated on May 17, 2014
  *
  * Description: Import media meta data. 
  *
@@ -177,6 +177,6 @@ function ImportSeasonsMeta($db, $aData)
         QueryDatabase($db, $sql);
         
         // Update number of seasons (row count).
-        UpdateStatus($db, "XbmcSeasonsEnd", mysqli_insert_id($db));
+        UpdateStatus($db, "XbmcSeasonsEnd", CountRows($db, "seasonsmeta"));
     }
 }

@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 02, 2013
- * Updated on May 12, 2014
+ * Updated on May 17, 2014
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -135,7 +135,7 @@ function UpdateMovieSet($db, $id, $aMovie)
  * Function:	InsertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Feb 21, 2014
+ * Updated on May 17, 2014
  *
  * Description: Insert TV Show in the database.
  *
@@ -153,9 +153,12 @@ function InsertTVShow($db, $aTVShow)
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]',".
            " '$aItems[7]', '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', $aItems[13],".
            " '$aItems[14]', '$aItems[15]', '$aItems[16]', '$aItems[17]', $aItems[18],".
-           " '$aItems[19]', $aItems[20], '$aItems[21]', UNHEX('$aItems[22]'))";
+           " '$aItems[19]', $aItems[20], '$aItems[21]', UNHEX('$aItems[22]')) ".
+           "ON DUPLICATE KEY UPDATE xbmcid = $aItems[0]";
     
-    $dkey = QueryDatabase($db, $sql);
+    //$dkey = QueryDatabase($db, $sql);
+    mysqli_query($db, $sql);
+    $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).    
     
     // Get the auto generated id used in the last query.
     $id = mysqli_insert_id($db); 
@@ -195,7 +198,7 @@ function UpdateTVShow($db, $id, $aTVShow)
  * Function:	InsertTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Feb 21, 2014
+ * Updated on May 17, 2014
  *
  * Description: Insert TV Show Season in the database.
  *
@@ -210,9 +213,13 @@ function InsertTVShowSeason($db, $aSeason)
     $sql = "INSERT INTO seasons(seasonid, title, tvshowid, showtitle, playcount, season, episode,".
            " watchedepisodes, hash) ".
            "VALUES ($aItems[0], '$aItems[1]', $aItems[2], '$aItems[3]', $aItems[4], $aItems[5], $aItems[6],".
-           " $aItems[7], UNHEX('$aItems[8]'))";
+           " $aItems[7], UNHEX('$aItems[8]')) ".
+           "ON DUPLICATE KEY UPDATE seasonid = $aItems[0]";
 
-    $dkey = QueryDatabase($db, $sql);
+    //$dkey = QueryDatabase($db, $sql);
+    mysqli_query($db, $sql);
+    $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).    
+    
     return $dkey;
 }
 
@@ -245,7 +252,7 @@ function UpdateTVShowSeason($db, $id, $aSeason)
  * Function:	InsertTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Feb 21, 2014
+ * Updated on May 17, 2014
  *
  * Description: Insert TV Show Episode in the database.
  *
@@ -263,9 +270,13 @@ function InsertTVShowEpisode($db, $aEpisode)
            "VALUES ($aItems[0], $aItems[1], '$aItems[2]', '$aItems[3]', $aItems[4], '$aItems[5]', '$aItems[6]',".
            " '$aItems[7]', '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', '$aItems[13]',".
            " $aItems[14], '$aItems[15]', '$aItems[16]', $aItems[17], '$aItems[18]', '$aItems[19]',".
-           " $aItems[20], UNHEX('$aItems[21]'))";
+           " $aItems[20], UNHEX('$aItems[21]')) ".
+           "ON DUPLICATE KEY UPDATE episodeid = $aItems[0]"; 
     
-    $dkey = QueryDatabase($db, $sql); 
+    //$dkey = QueryDatabase($db, $sql); 
+    mysqli_query($db, $sql);
+    $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).    
+    
     return $dkey;
 }
 
@@ -301,7 +312,7 @@ function UpdateTVShowEpisode($db, $id, $aEpisode)
  * Function:	InsertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Feb 21, 2014
+ * Updated on May 17, 2014
  *
  * Description: Insert music album in the database.
  *
@@ -317,9 +328,12 @@ function InsertAlbum($db, $aAlbum)
            " rating, `year`, mbalbumid, mbalbumartistid, playcount, displayartist, sorttitle, `hash`) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', '$aItems[4]', '$aItems[5]', '$aItems[6]',".
            " '$aItems[7]', '$aItems[8]', '$aItems[9]', $aItems[10], $aItems[11], '$aItems[12]', '$aItems[13]',".
-           " $aItems[14], '$aItems[15]', '$aItems[16]', UNHEX('$aItems[17]'))";
+           " $aItems[14], '$aItems[15]', '$aItems[16]', UNHEX('$aItems[17]')) ".
+           "ON DUPLICATE KEY UPDATE xbmcid = $aItems[0]";
       
-    $dkey = QueryDatabase($db, $sql); 
+    //$dkey = QueryDatabase($db, $sql); 
+    mysqli_query($db, $sql);
+    $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).        
     
     // Get the auto generated id used in the last query.
     $id = mysqli_insert_id($db); 

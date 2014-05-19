@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on May 12, 2014
+ * Updated on May 17, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -90,7 +90,7 @@ function SetStartMoviesImportHandler(step, retry)
  * Function:	SetStartTVShowsImportHandler
  *
  * Created on Jan 18, 2014
- * Updated on Jan 24, 2014
+ * Updated on May 17, 2014
  *
  * Description:  Start the TV Shows import handler.
  * 
@@ -112,7 +112,7 @@ function SetStartTVShowsImportHandler(step, retry)
         case 3 : // Import TV Shows.
                  StartImportHandler("tvshows", "tvshows", 4, 1);
                  break;
-                
+               
         case 4 : StartOnlineHandler("tvshows", "tvseasons", 5, false, retry);
                  break;
         
@@ -123,7 +123,7 @@ function SetStartTVShowsImportHandler(step, retry)
         case 6 : // Import Seasons.  
                  StartImportHandler("tvshows", "seasons", 7, 0.6);
                  break;
-                 
+                
         case 7 : StartOnlineHandler("tvshows", "episodes", 8, false, retry);
                  break;
             
@@ -759,7 +759,7 @@ function StartSeasonsMetaImportHandler(media, type, next)
  * Function:	StartSeasonsMetaImport
  *
  * Created on Jan 20, 2014
- * Updated on Feb 17, 2014
+ * Updated on May 17, 2014
  *
  * Description: Control and Import the seasons media meta data transfered from XBMC.
  *
@@ -786,7 +786,7 @@ function StartSeasonsMetaImport(type)
     
                 deferred.notify(0);
     
-                for(var i = 1; i < gTRIGGER.END-1; i++)
+                for(var i = 1; i < gTRIGGER.END; i++)
                 {
                     currentStep = currentStep.pipe(function(j){
                         if (!gTRIGGER.CANCEL) {

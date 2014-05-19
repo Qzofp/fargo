@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on May 12, 2014
+ * Updated on May 17, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -718,7 +718,7 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
 
     $id -= 1;
     $sql = "SELECT $typeid FROM ".$table."meta ".
-           "ORDER BY $typeid LIMIT $id, 1";    
+           "ORDER BY $typeid LIMIT $id, 1"; 
     
     $aJson['xbmcid'] = GetItemFromDatabase($db, $typeid, $sql);
 
@@ -739,51 +739,10 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
 }
 
 /*
- * Function:	GetMusicImportStatus
- *
- * Created on Jan 18, 2013
- * Updated on Feb 19, 2014
- *
- * Description: Reports the status of the Music import process.
- *
- * In:  $db, $id, $xbmcid
- * Out: $aJson
- *
- */
-/*function GetMusicImportStatus($db, $id, $xbmcid)  // Obsolete
-{
-    $aJson['thumbs'] = cALBUMSTHUMBS;
-
-    //$sql = "SELECT albumid FROM albumsmeta ".
-    //       "WHERE id = $id";
-    
-    $id -= 1;
-    $sql = "SELECT albumid FROM albumsmeta ".
-           "ORDER BY albumid LIMIT $id, 1";
-    
-    $aJson['xbmcid'] = GetItemFromDatabase($db, "albumid", $sql);
-
-    $sql = "SELECT title FROM music ".
-           "WHERE xbmcid = $xbmcid";
-    
-    $aJson['title']  = GetItemFromDatabase($db, "title", $sql);
-    $aJson['sub']    = "&nbsp;";
-    
-    $aJson['status']  = GetStatus($db, "ImportStatus"); 
-    if ($aJson['status'] == cTRANSFER_READY) {
-        UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
-    }    
-    
-    $aJson['counter'] = GetStatus($db, "XbmcAlbumsStart");
-    
-    return $aJson;
-}*/
-
-/*
  * Function:	GetSeriesImportStatus
  *
  * Created on Jan 20, 2014
- * Updated on Feb 20, 2014
+ * Updated on May 17, 2014
  *
  * Description: Reports the status of the series (seasons, episodes) import process.
  *
@@ -794,9 +753,6 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
 function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
 {
     $aJson['thumbs'] = $thumbs;
-
-    //$sql = "SELECT $typeid FROM ".$table."meta ".
-    //       "WHERE id = $id";  
 
     $id -= 1;    
     $sql = "SELECT $typeid FROM ".$table."meta ".
@@ -821,7 +777,7 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
         UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
     }    
     
-    $aJson['counter'] = GetStatus($db, "Xbmc".$table."Start");
+    $aJson['counter'] =  GetStatus($db, "ImportStart");
     
     return $aJson;
 }
@@ -925,7 +881,7 @@ function CheckMeta($type)
  * Function:	GetTVShowsIds
  *
  * Created on Jan 20, 2014
- * Updated on Jan 20, 2014
+ * Updated on May 17, 2014
  *
  * Description: Get TV Shows id's to retrieve the Seasons meta data.
  *
@@ -942,6 +898,7 @@ function GetTVShowsIds($start, $offset)
     EmptyTable($db, "seasonsmeta");     
     
     $sql = "SELECT tvshowid FROM tvshowsmeta ".
+           "ORDER BY tvshowid ". 
            "LIMIT $start, $offset";
     
     $aJson["tvshowids"] = GetItemsFromDatabase($db, $sql);
@@ -1041,7 +998,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on May 12, 2014
+ * Updated on May 17, 2014
  *
  * Description: Clean the media library. 
  *
@@ -1080,9 +1037,9 @@ function CleanLibrary($number)
                  EmptyTable($db, "seasons");
                  EmptyTable($db, "episodes");
                  DeleteGenres($db, "tvshows");
-                 UpdateStatus($db, "XbmcTVShowsStart", 1);
-                 UpdateStatus($db, "XbmcSeasonsStart", 1);
-                 UpdateStatus($db, "XbmcEpisodesStart", 1);
+                 UpdateStatus($db, "XbmcTVShowsStart", 0); // 1
+                 UpdateStatus($db, "XbmcSeasonsStart", 0); // 1
+                 UpdateStatus($db, "XbmcEpisodesStart", 0); // 1
                  DeleteFile(cTVSHOWSTHUMBS."/*.jpg");
                  DeleteFile(cTVSHOWSFANART."/*.jpg");
                  DeleteFile(cSEASONSTHUMBS."/*.jpg");
@@ -1094,7 +1051,7 @@ function CleanLibrary($number)
                  EmptyTable($db, "albums");
                  EmptyTable($db, "genretomusic");
                  DeleteGenres($db, "music");
-                 UpdateStatus($db, "XbmcAlbumsStart", 1);
+                 UpdateStatus($db, "XbmcAlbumsStart", 0); // 1
                  DeleteFile(cALBUMSTHUMBS."/*.jpg");
                  DeleteFile(cALBUMSCOVERS."/*.jpg");
                  break;
