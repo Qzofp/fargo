@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on May 12, 2014
+ * Updated on May 25, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -87,7 +87,8 @@ var cSTATUS = {
 
 var cSYSTEM = {
     REMOVE:   "Remove",
-    REMTITLE: "Remove library",
+    TITLE1:   "Remove library",
+    TITLE2:   "Remove event log",    
     MESSAGE1: "Removing library",
     MESSAGE2: "Do you want to remove the [dummy]?",
     MESSAGE3: "Library removed!",

@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on May 03, 2014
+ * Updated on May 29, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -1042,6 +1042,42 @@ function ShowMediaTypePage(type, reset)
 }
 
 /*
+ * Function:	SetButtonsScreenHandler
+ *
+ * Created on May 24, 2014
+ * Updated on May 24, 2014
+ *
+ * Description: Set the buttons screen handler and perform the right action.
+ * 
+ * In:	-
+ * Out:	Screen show media in a list or as thumnails.
+ *
+ */
+function SetButtonsScreenHandler()
+{
+    var screen, $control = $("#control_sub");
+    
+    if ($(this).text() == cBUT.LIST) {
+        screen = cBUT.THUMB;
+    }
+    else {
+        screen = cBUT.LIST;  
+    }  
+    
+    // Set state screen (list or thumbnail).
+    gSTATE.SCREEN = screen;
+    
+    // Show media table.
+    ShowMediaTable(gSTATE.PAGE, gSTATE.SORT); 
+    
+    // Change sub control bar.
+    $control.stop().slideUp("slow", function() {
+        $("#screen").text(screen);
+        $control.slideDown("slow");
+    });     
+}
+
+/*
  * Function:	ClearButtonBox
  *
  * Created on Sep 01, 2013
@@ -1380,7 +1416,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on May 03, 2014
+ * Updated on May 25, 2014
  *
  * Description: Shows the media table.
  *
@@ -1410,68 +1446,15 @@ function ShowMediaTable(page, sort)
         {
             // Return gSTATE.LAST.
             gSTATE.LAST = json.params.lastpage;
-            ShowNextPrevButtons(gSTATE.LAST);
-            
-            var i = 0, j = 0;
-            var img, html = [];
-            var hide;
-            
+            ShowNextPrevButtons(gSTATE.LAST);       
             ShowInfoHeader(type, json.params.header, title, genre, year);
             
-            if (json.media[0].id != 0)
-            {
-                html[i++] = '<table class="' + media + '">';
-     
-                $.each(json.media, function(key, value)
-                {                
-                    if (j == 0) {
-                        html[i++] = '<tr>';
-                    }
-                    else if ( j == json.params.column) {
-                        html[i++] = '</tr>';
-                        j = 0;
-                    }                    
-                    
-                    if (value.hide && mode == "Hide/Show") {
-                        hide = " hide";
-                    }
-                    else {
-                        hide = "";
-                    }
-                    
-                    img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
-                    
-                    html[i]  = '<td class="i' + value.id + hide + '">';                    
-                    html[i] += '<img src="' + img + '"/>';
-                    
-                    if (value.playcount > 0) {
-                        html[i] += '<img class="mark" src="images/watched.png"/>';
-                    }
-                    else if (value.playcount < 0) {
-                        html[i] += '<img class="mark" src="images/deleted.png"/>';
-                    }
-                   
-                    html[i] += '<div>' + value.title + '</div></td>';
-                    i++; j++;
-                });
-
-                html[i++] = '</table>';
+            if (gSTATE.SCREEN != cBUT.THUMB) {
+                ShowMediaTableThumbs(json, media, type, mode);
             }
-            
-            $('#display_content')[0].innerHTML = html.join('');
-            
-            // Change table cells and image size.
-            if (type == "episodes")
-            {
-                $("#display_content td").width(250);
-                $("#display_content img").not(".mark").width(220);
-                $("#display_content td div").width(240);
-            }  
-            
-            // If images not found then show no poster.
-            $("#display_content img").error(function(){
-                $(this).attr('src', 'images/no_poster.jpg');
-            });
+            else {
+                ShowMediaTableList(json, media, type, mode);
+            }
             
             // Show sort character.
             $('#sort').html(sort);
@@ -1488,12 +1471,39 @@ function ShowMediaTable(page, sort)
 }
 
 /*
+ * Function:	ShowNextPrevButtons
+ *
+ * Created on Jun 30, 2013
+ * Updated on Jun 30, 2013
+ *
+ * Description: Shows next/prev arrows buttons on page.
+ *
+ * In:	lastpage
+ * Out:	Next/Prev
+ *
+ */
+function ShowNextPrevButtons(lastpage)
+{
+    // Show Prev and Next buttons if there is more than 1 page.
+    if (lastpage > 1)
+    {
+        $("#prev").css("visibility", "visible");
+        $("#next").css("visibility", "visible");
+    }
+        else 
+    {
+        $("#prev").css("visibility", "hidden");
+        $("#next").css("visibility", "hidden");            
+    }    
+}
+
+/*
  * Function:	ShowInfoHeader
  *
  * Created on Jul 01, 2013
  * Updated on Nov 24, 2013
  *
- * Description: Shows to info header.
+ * Description: Shows the info header.
  *
  * In:	type, title, sort, genre, year
  * Out:	Info header.
@@ -1557,30 +1567,189 @@ function ShowInfoHeader(type, title, sort, genre, year)
 }
 
 /*
- * Function:	ShowNextPrevButtons
+ * Function:	ShowMediaTableThumbs
  *
- * Created on Jun 30, 2013
- * Updated on Jun 30, 2013
+ * Created on May 24, 2014
+ * Updated on May 25, 2014
  *
- * Description: Shows next/prev arrows buttons on page.
+ * Description: Shows the media table with media as thumbnails.
  *
- * In:	lastpage
- * Out:	Next/Prev
+ * In:	json, media, type, mode
+ * Out:	Thumbs table
  *
  */
-function ShowNextPrevButtons(lastpage)
+function ShowMediaTableThumbs(json, media, type, mode)
 {
-    // Show Prev and Next buttons if there is more than 1 page.
-    if (lastpage > 1)
+    var i = 0, j = 0;
+    var img, html = [];
+    var hide;
+    
+    // Clear list page.
+    $('#display_list').hide().html("");
+    
+    if (json.media[0].id != 0)
     {
-        $("#prev").css("visibility", "visible");
-        $("#next").css("visibility", "visible");
+        html[i++] = '<table class="' + media + '">';
+     
+        $.each(json.media, function(key, value)
+        {                
+            if (j == 0) {
+                html[i++] = '<tr>';
+            }
+            else if ( j == json.params.column) {
+                html[i++] = '</tr>';
+                j = 0;
+            }                    
+                    
+            if (value.hide && mode == "Hide/Show") {
+                hide = " hide";
+            }
+            else {
+                hide = "";
+            }
+                    
+            img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
+                    
+            html[i]  = '<td class="i' + value.id + hide + '">';                    
+            html[i] += '<img src="' + img + '"/>';
+                    
+            if (value.playcount > 0) {
+                html[i] += '<img class="mark" src="images/watched.png"/>';
+            }
+            else if (value.playcount < 0) {
+                html[i] += '<img class="mark" src="images/deleted.png"/>';
+            }
+                   
+            html[i] += '<div>' + value.title + '</div></td>';
+            i++; j++;
+        });
+
+        html[i++] = '</table>';
     }
-        else 
+            
+    $('#display_thumb')[0].innerHTML = html.join('');
+    $('#display_thumb').show();
+            
+    // Change table cells and image size.
+    if (type == "episodes")
     {
-        $("#prev").css("visibility", "hidden");
-        $("#next").css("visibility", "hidden");            
+        $("#display_thumb td").width(250);
+        $("#display_thumb img").not(".mark").width(220);
+        $("#display_thumb td div").width(240);
+    }  
+            
+    // If images not found then show no poster.
+    $("#display_thumb img").error(function(){
+        $(this).attr('src', 'images/no_poster.jpg');
+    });    
+}
+
+/*
+ * Function:	ShowMediaTableList
+ *
+ * Created on May 25, 2014
+ * Updated on May 29, 2014
+ *
+ * Description: Shows the media table with media in a list.
+ *
+ * In:	json, media, type, mode
+ * Out:	List table
+ *
+ */
+function ShowMediaTableList(json, media, type, mode)
+{
+    var i = 0;
+    var img, html = [];
+    var hide, sub;
+    
+    // Clear thumbnail page.
+    $('#display_thumb').hide().html("");
+    
+    if (json.media[0].id != 0)
+    {
+        html[i++] = '<div class="display_scroll"><table class="' + media + '">';
+     
+        $.each(json.media, function(key, value)
+        {      
+            if (value.hide && mode == "Hide/Show") {
+                hide = " hide";
+            }
+            else {
+                hide = "";
+            }
+            
+            html[i] = '<tr class="i' + value.id + hide + '">';
+                    
+            img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
+                    
+            html[i] += '<td class="poster"><img src="' + img + '"/></td>';                  
+            html[i] += '<td class="title">' + value.title + '</td>';
+            
+            sub = "";
+            switch(type) 
+            {                              
+                case "sets"     : sub = " movie";
+                                  if (value.sub > 1) { sub += "s"; }
+                                  break;
+                                
+                case "tvtitles" : sub = " episode";
+                                  if (value.sub > 1) { sub += "s"; }
+                                  break;
+                              
+                case "series"   : sub = " season";
+                                  if (value.sub > 1) { sub += "s"; }
+                                  break;
+                                  
+                case "seasons"  : sub = " episode";
+                                  if (value.sub > 1) { sub += "s"; }
+                                  break;             
+            }  
+            
+            html[i] += '<td class="sub">' + value.sub + sub + '</td>';
+            
+            if (value.aux) {
+                html[i] += '<td class="aux">' + value.aux + '</td>';
+            } 
+            
+            if (value.playcount > 0) {
+                html[i] += '<td class="mark"><img src="images/watched.png"/>';
+            }
+            else if (value.playcount < 0) {
+                html[i] += '<td class="mark"><img src="images/deleted.png"/>';
+            }      
+            else if (value.playcount == 0) {    
+                html[i] += '<td class="mark">&nbsp;</td>';
+            }
+            
+            html[i] += '</tr>';
+            i++;
+        });
+
+        html[i++] = '</table></div>';
     }    
+    
+    $('#display_list')[0].innerHTML = html.join('');
+    $('#display_list').show();
+    
+    // If images not found then show no poster.
+    $("#display_list img").error(function(){
+        $(this).attr('src', 'images/no_poster.jpg');
+    });
+    
+    // Change table cells and image size.
+    if (type == "episodes") 
+    {
+        $("#display_list .tvshows .poster").width(57);
+        $("#display_list .tvshows .poster img").width(50);
+    }      
+    
+    
+    $("#display_list .display_scroll").slimScroll({
+        width:'100%',
+        height:'auto',
+        alwaysVisible:true,
+        color:'gray'
+    }); 
 }
 
 /*

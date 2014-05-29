@@ -6,7 +6,7 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Mar 01, 2014
+ * Updated on May 26, 2014
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	SetSystemHandler
  *
  * Created on May 04, 2013
- * Updated on Mar 01, 2014
+ * Updated on May 25, 2014
  *
  * Description: Show the system page with minimum options.
  * 
@@ -50,7 +50,9 @@ function SetSystemHandler(event)
    $("#display_left").hide();
    $("#display_right").hide();  
    
-   $('#display_content').hide().html("");
+   $('#display_content').hide();
+   $('#display_thumb').html("");
+   $('#display_list').html("");
    $('#bullets').hide();
    $('#bullets')[0].innerHTML = "";
    $('#display_system').show();
@@ -97,7 +99,7 @@ function SetOptionHandler()
  * Function:	ShowProperty
  *
  * Created on May 20, 2013
- * Updated on Jun 15, 2013
+ * Updated on May 26, 2014
  *
  * Description: Set the option and show the properties.
  * 
@@ -131,7 +133,7 @@ function ShowProperty(name)
                     width:width,
                     height:'auto',
                     alwaysVisible:true,
-                    color:'dodgerblue'
+                    color:'gray'
             });
         } // End Success.        
     }); // End Ajax;    
@@ -593,10 +595,10 @@ function CleanPopupBox(msg)
     $("#action_sub").text("");
     
     if (msg == "event log") {
-        ShowPopupBox("#action_box", cSYSTEM.MESSAGE4);
+        ShowPopupBox("#action_box", cSYSTEM.TITLE2);
     }
     else{
-        ShowPopupBox("#action_box", cSYSTEM.REMTITLE);
+        ShowPopupBox("#action_box", cSYSTEM.TITLE1);
     }
     
     SetState("page", "popup");

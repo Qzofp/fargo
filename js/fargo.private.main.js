@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Mar 01, 2014
+ * Updated on May 25, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on May 04, 2013
- * Updated on Mar 01, 2014
+ * Updated on May 26, 2014
  *
  * Description: Load the media from Fargo with system.
  *
@@ -32,8 +32,8 @@ function LoadFargoMedia(media)
     
     InitStatus();
     
-    //SetState("title", "name_asc");
     SetState("mode", "Information");
+    $("#screen").text(cBUT.LIST);
     
     ChangeControlBar(media);
     ChangeSubControlBar(media);
@@ -45,7 +45,8 @@ function LoadFargoMedia(media)
     $("#info_box").on("mouseenter mouseleave", ".title", SetScrollTitleHandler);
     
     // The media info or zoom in click events.
-    $("#display_content").on("click", "td", SetInfoZoomHandlerWithActions);
+    $("#display_thumb").on("click", "td", SetInfoZoomHandlerWithActions);
+    $("#display_list").on("click", "tr", SetInfoZoomHandlerWithActions);    
     $(".button").on("click", ".url", SetShowUrlHandler);
 
     // The media click events.
@@ -76,6 +77,9 @@ function LoadFargoMedia(media)
     
     // Media type events (titles, sets, series, albums).
     $("#type").on("click", SetButtonsTypeHandler);
+    
+    // Screen events (List or thumbnails view).
+    $("#screen").on("click", SetButtonsScreenHandler);
     
     // Sort (title), Genres or Years click events.   
     $("#title").on("click", SetButtonsHandler);
@@ -166,7 +170,7 @@ function ChangeProperty(number, value)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Nov 21, 2013
+ * Updated on May 25, 2014
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -184,7 +188,7 @@ function ChangeSubControlBar(media)
         case "movies"  : type = "titles";
                          $control.stop().slideUp("slow", function() {
                             $("#logout").hide();
-                            $("#modes, #type, #title, #genres, #years").show();
+                            $("#modes, #type, #screen, #title, #genres, #years").show();
                             $("#type").text(cBUT.SETS);
                             $control.slideDown("slow");
                          });
@@ -193,7 +197,7 @@ function ChangeSubControlBar(media)
         case "tvshows" : type = "tvtitles";
                          $control.stop().slideUp("slow", function() {
                             $("#logout").hide();
-                            $("#modes, #type, #title, #genres, #years").show();
+                            $("#modes, #type, #screen, #title, #genres, #years").show();
                             $("#type").text(cBUT.SERIES);
                             $control.slideDown("slow");
                          });                            
@@ -202,7 +206,7 @@ function ChangeSubControlBar(media)
         case "music"   : type = "albums";
                          $control.stop().slideUp("slow", function() {
                             $("#logout").hide();
-                            $("#modes, #type, #title, #genres, #years").show();
+                            $("#modes, #type, #screen, #title, #genres, #years").show();
                             $("#type").text(cBUT.ALBUMS);
                             $control.slideDown("slow");
                          }); 
@@ -210,7 +214,7 @@ function ChangeSubControlBar(media)
                            
         case "system" : $control.stop().slideUp("slow", function() {
                             $("#logout").show();
-                            $("#modes, #type, #title, #genres, #years").hide(); 
+                            $("#modes, #type, #screen, #title, #genres, #years").hide(); 
                             $control.slideDown("slow");
                         });                        
                         break;
@@ -223,7 +227,7 @@ function ChangeSubControlBar(media)
  * Function:	SetActionHandler
  *
  * Created on Sep 08, 2013
- * Updated on Feb 24, 2014
+ * Updated on May 25, 2014
  *
  * Description: Perform action
  * 
@@ -251,6 +255,9 @@ function SetActionHandler(event)
                            
         case cSYSTEM.REMOVE  : if ($popup.find(".title").text().split(" ")[1] == "library") {
                                  SetCleanDatabaseHandler();
+                               }
+                               else if ($popup.find(".title").text().split(" ")[1] == "event") {
+                                 SetCleanDatabaseHandler();  
                                }
                                else {
                                  SetRemoveHandler($popup);  

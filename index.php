@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Mar 01, 2014
+ * Updated on May 26, 2014
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -20,7 +20,7 @@ if(!isset($_SESSION['LOGIN']))
     $login = false;
     $mode = "&nbsp;";
     $user = "&nbsp;";
-    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js", 
+    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", 
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js",
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js", 
@@ -39,7 +39,7 @@ else
     $login = true;
     $mode = "";
     $user = "Welcome: <span>".$_SESSION['USER']."</span>";
-    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js",
+    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js",
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js",
                          "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
                          "js/jquery.slimscroll.min.js",
@@ -100,8 +100,10 @@ echo "   <div id=\"display_right\">\n";
 echo "    <div id=\"next\">&gt;</div>\n";
 echo "   </div>\n";
 
-// Display movie table. This is done by the jQuery functions ShowMovieTable().
+// Display movie table. This is done by the jQuery function ShowMediaTable.
 echo "   <div id=\"display_content\">\n";
+echo "    <div id=\"display_thumb\"></div>\n";
+echo "    <div id=\"display_list\"></div>\n";
 echo "   </div>\n";
 
 // Display system page.
@@ -138,6 +140,7 @@ echo "    <div id=\"control_sub\">\n";
 echo "     <ul>\n";
 echo "      $li_modes";
 echo "      <li id=\"type\"></li>\n"; // Media type.
+echo "      <li id=\"screen\"></li>\n";  // List or Thumbnail.
 echo "      <li id=\"title\">Sort</li>\n";
 echo "      <li id=\"genres\">Genres</li>\n";
 echo "      <li id=\"years\">Years</li>\n";

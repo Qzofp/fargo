@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Mar 01, 2014
+ * Updated on May 26, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -18,7 +18,7 @@
  * Function:	LoadFargoMedia
  *
  * Created on Apr 06, 2013
- * Updated on Dec 31, 2013
+ * Updated on May 24, 2014
  *
  * Description: Load the media from Fargo with login.
  *
@@ -30,13 +30,12 @@ function LoadFargoMedia(media)
 {    
     var aOptions = ['Statistics', 'Credits', 'About'];
     
-    //SetState("title", "latest");
     SetState("title", "name_asc");
+    $("#screen").text(cBUT.LIST);
     
     ChangeControlBar(media);
     ChangeSubControlBar(media);
 
-    //ShowMediaTable(media, gSTATE.PAGE, gSTATE.SORT);
     ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
     
     // On mouse move media event.
@@ -44,7 +43,8 @@ function LoadFargoMedia(media)
     $("#info_box").on("mouseenter mouseleave", ".title", SetScrollTitleHandler);    
 
     // The media info or zoom in click events.
-    $("#display_content").on("click", "td", SetInfoZoomHandler);
+    $("#display_thumb").on("click", "td", SetInfoZoomHandler);
+    $("#display_list").on("click", "tr", SetInfoZoomHandler);
     $(".button").on("click", ".url", SetShowUrlHandler);
 
     // The media click events.
@@ -61,7 +61,9 @@ function LoadFargoMedia(media)
     
     // Media type events (titles, sets, series, albums).
     $("#type").on("click", SetButtonsTypeHandler);
-    //$(".button").on("click", ".selection", SetShowButtonTypeHandler);
+
+    // Screen events (List or thumbnails view).
+    $("#screen").on("click", SetButtonsScreenHandler);
     
     // Sort (title), Genres or Years click events.
     $("#title").on("click", SetButtonsHandler);
@@ -93,7 +95,7 @@ function LoadFargoMedia(media)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on Nov 16, 2013
+ * Updated on May 25, 2014
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -111,7 +113,7 @@ function ChangeSubControlBar(media)
         case "movies"  : type = "titles";
                          $control.stop().slideUp("slow", function() {
                             $("#login").hide();
-                            $("#type, #title, #genres, #years").show();
+                            $("#type, #screen, #title, #genres, #years").show();
                             $("#type").text(cBUT.SETS);
                             $control.slideDown("slow");
                          });
@@ -120,7 +122,7 @@ function ChangeSubControlBar(media)
         case "tvshows" : type = "tvtitles";
                          $control.stop().slideUp("slow", function() {
                             $("#login").hide();
-                            $("#type, #title, #genres, #years").show();
+                            $("#type, #screen, #title, #genres, #years").show();
                             $("#type").text(cBUT.SERIES);
                             $control.slideDown("slow");
                          });                            
@@ -129,7 +131,7 @@ function ChangeSubControlBar(media)
         case "music"   : type = "albums";
                          $control.stop().slideUp("slow", function() {
                             $("#login").hide();
-                            $("#type, #title, #genres, #years").show();
+                            $("#type, #screen, #title, #genres, #years").show();
                             $("#type").text(cBUT.ALBUMS);
                             $control.slideDown("slow");
                          }); 
@@ -137,7 +139,7 @@ function ChangeSubControlBar(media)
                            
         case "system" : $control.stop().slideUp("slow", function() {
                             $("#login").show();
-                            $("#type, #title, #genres, #years").hide();
+                            $("#type, #screen, #title, #genres, #years").hide();
                             $control.slideDown("slow");
                         });                        
                         break;

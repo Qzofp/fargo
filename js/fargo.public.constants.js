@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.3
+ * Version: 0.5
  *
  * File:    fargo.public.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Dec 20, 2013
+ * Updated on May 24, 2014
  *
  * Description: Fargo's jQuery and Javascript public contants and globals.
  *
@@ -19,7 +19,8 @@ var gSTATE = {
     SORT: "",
     LIST: "",
     SETTING: "",
-    TIMER: ""  // Used for title scroll.
+    TIMER: "",  // Used for title scroll.
+    SCREEN: "List" // List or thumb.
 };
 
 var gTEMP = {
@@ -34,6 +35,8 @@ var gTEMP = {
 
 // Button text constants.
 var cBUT = {
+    LIST: "List",
+    THUMB: "Thumb",
     TITLES: "Titles",
     SETS: "Sets",
     SERIES: "Series",

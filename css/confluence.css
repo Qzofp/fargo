@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Mar 03, 2014
+ * Updated on May 29, 2014
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -274,8 +274,6 @@ margin-bottom:10px;
 /* Begin Info Popup part */
 #info_box{
 top:7%;
-/*width:64%;
-margin-left:-33%;*/
 width:850px;
 margin-left:-440px;
 }
@@ -303,8 +301,6 @@ margin:0 395px 0 10px;  /* 460 */
 }
 
 #info_left table{
-/*border-collapse:separate;*/
-/*border-spacing:10px 5px;*/
 border-spacing:0px;
 font-size:1.3em;
 color:#FFF;
@@ -330,7 +326,6 @@ background-color:rgba(0,0,0,0.2);
 #info_left td.left{
 width:30px;
 text-align:right;
-/*vertical-align:top;*/
 color:dodgerblue;
 }
 
@@ -537,10 +532,14 @@ color:dodgerblue;
 /* Display Media pages */
 #display_content{
 margin:0 120px 0 120px;
-min-height:70%;
+height:70%;
+/*min-height:70%;*/
 }
 
-#display_content table{
+
+
+/* Display Media thumb pages */
+#display_thumb table{
 margin-left:auto; 
 margin-right:auto;   
 border-spacing:15px;
@@ -551,18 +550,18 @@ text-align:center;
 color:#FFF;
 }
 
-#display_content .movies img,
-#display_content .tvshows img{
+#display_thumb .movies img,
+#display_thumb .tvshows img{
 width:100px;
 height:140px;
 }
 
-#display_content .music img{
+#display_thumb .music img{
 width:100px;
 height:100px;
 }
 
-#display_content td{
+#display_thumb td{
 width:150px; 
 height:175px;
 border:1px solid grey;
@@ -570,7 +569,7 @@ border-radius:5px;
 background-color:rgba(0,0,0,0.5);
 }
 
-#display_content td .mark{
+#display_thumb td .mark{
 position:relative; 
 margin-right:-32px;
 border:none;
@@ -580,11 +579,11 @@ top:5px;
 left:-25px;
 }
 
-#display_content td:hover .mark{
+#display_thumb td:hover .mark{
 border:none;
 } 
 
-#display_content td div{
+#display_thumb td div{
 width:140px;
 margin:auto;
 overflow:hidden;
@@ -592,29 +591,128 @@ text-overflow:ellipsis;
 white-space:nowrap;
 }
 
-#display_content td:hover{
+#display_thumb td:hover{
 border:1px solid dodgerblue;
 color:dodgerblue;
 cursor:pointer;
 }
 
-#display_content td:hover img{
+#display_thumb td:hover img{
 border:2px solid dodgerblue;
-}  
+} 
 
-#display_content img{
+#display_thumb img{
 border:1px solid grey;
 border-radius:5px;
 }
 
-#display_content .info,
-#display_content .items{
+#display_thumb .info,
+#display_thumb .items{
 display:none;    
 }
 
-#display_content .hide{
+#display_thumb .hide{
 opacity:0.3;  
 }
+
+/* Display Media list page */
+#display_list{
+display:none;
+margin:15px auto 0 auto;
+width:70%;
+height:565px;
+border:1px solid grey;
+border-radius:10px;
+background-color:rgba(0,0,0,0.5);
+}
+
+#display_list .display_scroll{
+position:absolute;
+padding:0 15px 0 0;
+}
+
+#display_list table{
+border-spacing:0px;
+padding: 15px 15px 0;
+/*margin:12px auto 0 auto;*/
+width:100%;
+font-size:2em;
+color:#FFF;
+/*border:1px solid grey;
+border-radius:10px;
+background-color:rgba(0,0,0,0.5);*/
+}
+
+#display_list td{
+height:42px;
+cursor:pointer;
+}
+
+#display_list tr > td{
+border-top:1px solid rgba(153,153,153,0.2);
+border-bottom:1px solid rgba(153,153,153,0.2);
+}
+
+#display_list tr:hover > td{
+border-top:1px solid rgba(30,144,255,0.4);
+border-bottom:1px solid rgba(30,144,255,0.4);
+background-color:rgba(0,0,0,0.2);
+}
+
+#display_list .movies .poster,
+#display_list .tvshows .poster,
+#display_list .music .poster{
+width:30px;
+}
+
+#display_list .movies .title:hover,
+#display_list .tvshows .title:hover,
+#display_list .music .title:hover{
+color:dodgerblue;    
+}    
+
+#display_list .movies .poster img,
+#display_list .tvshows .poster img{
+vertical-align:top; 
+width:25px;
+height:35px;
+}
+
+#display_list .music img{
+vertical-align:top; 
+width:25px;
+height:25px;
+}
+
+#display_list .sub{
+text-align:right;
+padding-right:10px;
+font-size:0.9em;
+color:lightgray;
+}
+
+#display_list .aux{
+width:40px;
+}    
+
+#display_list .aux img{
+vertical-align:top; 
+width:34px;
+height:25px;
+}
+
+#display_list .mark{
+width:40px;
+}    
+
+#display_list .mark img{
+width:24px;
+height:24px;
+}
+
+
+
+
 
 /* Display System page */
 #display_system{
@@ -632,7 +730,6 @@ width:100%;
 height:65%;
 border:1px solid grey;
 border-radius:10px;
-/*background-color:lightblue;*/
 background-color:rgba(0,0,0,0.5);
 } 
 

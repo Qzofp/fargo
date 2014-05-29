@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on May 19, 2014
+ * Updated on May 29, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -134,7 +134,7 @@ function GetMediaInfo($media, $id, $login)
  * Function:	GetMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Feb 20, 2014
+ * Updated on May 29, 2014
  *
  * Description: Get the movie info from Fargo and return it as Json data. 
  *
@@ -148,7 +148,7 @@ function GetMovieInfo($id, $login)
     $aMedia  = null;
     $aParams = null;
     
-    $sql = "SELECT xbmcid, refresh, title, director, writer, studio, genre, `year`, runtime, rating,". 
+    $sql = "SELECT xbmcid, refresh, title, director, writer, studio, genre, `year`, runtime, ROUND(rating,1),". 
                   "votes, tagline, plot, mpaa, country, trailer, audio, video, file,".
                   "imdbnr, trailer ".
            "FROM movies ".
@@ -220,7 +220,7 @@ function GetMovieInfo($id, $login)
  * Function:	GetTVShowInfo
  *
  * Created on Jul 09, 2013
- * Updated on Feb 20, 2014
+ * Updated on May 29, 2014
  *
  * Description: Get the TV show info from Fargo and return it as Json data. 
  *
@@ -234,7 +234,7 @@ function GetTVShowInfo($id, $login)
     $aMedia  = null;
     $aParams = null;  
     
-    $sql = "SELECT xbmcid, title, studio, genre, `year`, premiered, rating, votes, plot, episode,".
+    $sql = "SELECT xbmcid, title, studio, genre, `year`, premiered, ROUND(rating,1), votes, plot, episode,".
                   "watchedepisodes, episodeguide, imdbnr, file ".
            "FROM tvshows ".
            "WHERE id = $id";
@@ -574,6 +574,49 @@ function ConvertToVideoFlag($video)
 }
 
 /*
+ * Function:	ConvertToListFlag
+ *
+ * Created on May 29, 2014
+ * Updated on May 29, 2014
+ *
+ * Description: Convert to list flag (media flag icons). 
+ *
+ * In:  $video 
+ * Out: $flag
+ *
+ */
+function ConvertToListFlag($video)
+{
+    $flag = "&nbsp;";
+    if ($video != -1)
+    {
+        $aStreams = explode("|", $video);    
+        $aVideo   = explode(":", $aStreams[0]);
+    
+        // Determine resolution (height x width).
+        if ($aVideo[2] <= 480 && $aVideo[3] <= 720) {
+            $res = "480";
+        }
+        elseif ($aVideo[2] <= 544 && $aVideo[3] <= 960) {
+            $res = "540";
+        }        
+        elseif ($aVideo[2] <= 576 && $aVideo[3] <= 768) {
+            $res = "576";
+        }
+        elseif ($aVideo[2] <= 720 && $aVideo[3] <= 1280) {
+            $res = "720";
+        }        
+        else {
+            $res = "1080";
+        }
+        
+        $flag = '<img src="images/flagging/lists/'.$res.'.png">';
+  
+    }    
+    return $flag;
+}
+
+/*
  * Function:	ConvertToAspectFlag
  *
  * Created on Jul 08, 2013
@@ -805,7 +848,7 @@ function GetPopupMediaInfo($sql, $thumb)
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Feb 28, 2014
+ * Updated on May 29, 2014
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -831,7 +874,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
         case "titles"  : $aParams['thumbs'] = cMOVIESTHUMBS;
                          $aParams['column'] = cMediaColumn;
                          $header = "Movie Titles";
-                         $sql    = CreateMediaQuery("movies", "movieid", $title, $genre, $year, $sort, $login);
+                         $sql    = CreateMoviesQuery($title, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($db, $sql);
                          $max    = cMediaRow * cMediaColumn;                             
                          $aMedia = QueryMedia($db, $sql, $page, $max);
@@ -858,7 +901,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
         case "tvtitles": $aParams['thumbs'] = cTVSHOWSTHUMBS;
                          $aParams['column'] = cMediaColumn;
                          $header = "TV Show Titles";
-                         $sql    = CreateMediaQuery("tvshows", "tvshowid", $title, $genre, $year, $sort, $login);
+                         $sql    = CreateTVShowsQuery($title, $genre, $year, $sort, $login);
                          $rows   = CountRowsWithQuery($db, $sql);
                          $max    = cMediaRow * cMediaColumn; 
                          $aMedia = QueryMedia($db, $sql, $page, $max);
@@ -903,7 +946,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
         case "albums"   : $aParams['thumbs'] = cALBUMSTHUMBS;
                           $aParams['column'] = cMediaColumn;
                           $header = "Music Albums";
-                          $sql    = CreateMediaQuery("albums", "albumid", $title, $genre, $year, $sort, $login);
+                          $sql    = CreateAlbumsQuery($title, $genre, $year, $sort, $login);
                           $rows   = CountRowsWithQuery($db, $sql);
                           $max    = cMediaRow * cMediaColumn; 
                           $aMedia = QueryMedia($db, $sql, $page, $max);
@@ -928,7 +971,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
  * Function:	CreateMediaQuery
  *
  * Created on Apr 08, 2013
- * Updated on May 07, 2014
+ * Updated on May 29, 2014
  *
  * Description: Create the sql query for the media table. 
  *
@@ -936,20 +979,59 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
  * Out: $sql
  *
  */
-function CreateMediaQuery($table, $metaid, $title, $genre, $year, $sort, $login)
-{   
+/*function CreateMediaQuery($table, $metaid, $title, $genre, $year, $sort, $login)
+{     
     if (!$login)
     {
-        $sql = "SELECT t.id, t.xbmcid, NULL, t.hide, t.refresh, t.title ".
+        $sql = "SELECT t.id, t.xbmcid, NULL, t.hide, t.refresh, t.title, NULL, NULL ".
                "FROM $table t ";
         
         $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
     }
     else
     {
-        $sql = "SELECT t.id, t.xbmcid, IF (m.playcount IS NULL, -1, m.playcount), t.hide, t.refresh, t.title ".
+        $sql = "SELECT t.id, t.xbmcid, IF (m.playcount IS NULL, -1, m.playcount), t.hide, t.refresh, t.title, NULL, NULL ".
                "FROM $table t ".
                "LEFT JOIN ".$table."meta m ON (t.xbmcid = m.$metaid) ";
+        
+        $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);        
+    }    
+    
+    $sql .= CreateQuerySortQrder("t.", $title);
+       
+    return $sql;
+}*/
+
+/*
+ * Function:	CreateMoviesQuery
+ *
+ * Created on Apr 08, 2013
+ * Updated on May 29, 2014
+ *
+ * Description: Create the sql query for the movie table. 
+ *
+ * In:  $table, $metaid, $title, $genre, $year, $sort, $login
+ * Out: $sql
+ *
+ */
+function CreateMoviesQuery($title, $genre, $year, $sort, $login)
+{   
+    $switch = explode("_", $title);
+    
+    if (!$login)
+    {
+        $sql = "SELECT t.id, t.xbmcid, NULL, t.hide, t.refresh, t.title, IF('$switch[0]' = 'year', t.year, ". 
+               "       IF(t.rating = 0, 0, ROUND(t.rating,1))), IF (t.video = '', -1, t.video) ".
+               "FROM movies t ";
+        
+        $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
+    }
+    else
+    {
+        $sql = "SELECT t.id, t.xbmcid, IF (m.playcount IS NULL, -1, m.playcount), t.hide, t.refresh, t.title, ". 
+               "       IF('$switch[0]' = 'year', t.year, IF(t.rating = 0, 0, ROUND(t.rating,1))), IF (t.video = '', -1, t.video) ".
+               "FROM movies t ".
+               "LEFT JOIN moviesmeta m ON (t.xbmcid = m.movieid) ";
         
         $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);        
     }    
@@ -963,7 +1045,7 @@ function CreateMediaQuery($table, $metaid, $title, $genre, $year, $sort, $login)
  * Function:	CreateSetsQuery
  *
  * Created on Nov 08, 2013
- * Updated on May 03, 2014
+ * Updated on May 29, 2014
  *
  * Description: Create the sql query for the media sets table. 
  *
@@ -975,16 +1057,16 @@ function CreateSetsQuery($title, $genre, $year, $sort, $login)
 {    
     if (!$login)
     {    
-        $sql = "SELECT DISTINCT s.id AS id, s.setid, NULL, s.hide, s.refresh, s.title AS title ".
-               "FROM (SELECT setid, MIN(`year`) AS minyear FROM movies GROUP BY setid) ma ".
+        $sql = "SELECT DISTINCT s.id AS id, s.setid, NULL, s.hide, s.refresh, s.title AS title, ma.total, NULL ".
+               "FROM (SELECT setid, MIN(`year`) AS minyear, COUNT(setid) AS total FROM movies GROUP BY setid) ma ".
                "JOIN sets s ON s.setid = ma.setid ".
                "INNER JOIN movies mb ON ma.setid = mb.setid ".
                "INNER JOIN movies mc ON ma.setid = mc.setid AND ma.minyear = mc.year ";
     }
     else
     {
-        $sql = "SELECT DISTINCT s.id AS id, s.setid, IF (sm.playcount IS NULL, -1, sm.playcount), s.hide, s.refresh, s.title AS title ".
-               "FROM (SELECT setid, MIN(`year`) AS minyear FROM movies GROUP BY setid) ma ".
+        $sql = "SELECT DISTINCT s.id AS id, s.setid, IF (sm.playcount IS NULL, -1, sm.playcount), s.hide, s.refresh, s.title AS title, ma.total, NULL ".
+               "FROM (SELECT setid, MIN(`year`) AS minyear, COUNT(setid) AS total FROM movies GROUP BY setid) ma ".
                "JOIN sets s ON s.setid = ma.setid ".
                "INNER JOIN movies mb ON ma.setid = mb.setid ".
                "INNER JOIN movies mc ON ma.setid = mc.setid AND ma.minyear = mc.year ".
@@ -1042,7 +1124,7 @@ function CreateSetsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateMoviesSetQuery
  *
  * Created on Nov 08, 2013
- * Updated on May 03, 2014
+ * Updated on May 29, 2014
  *
  * Description: Create the sql query for the media movies set table. 
  *
@@ -1052,15 +1134,19 @@ function CreateSetsQuery($title, $genre, $year, $sort, $login)
  */
 function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
 {   
+    $switch = explode("_", $title);
+    
     if (!$login)
     {    
-        $sql = "SELECT m.id, m.xbmcid, NULL, m.hide, m.refresh, m.title ".
+        $sql = "SELECT m.id, m.xbmcid, NULL, m.hide, m.refresh, m.title, IF('$switch[0]' = 'year', m.year, ". 
+               "       IF(m.rating = 0, 0, ROUND(m.rating,1))), IF (m.video = '', -1, m.video) ".
                "FROM sets s, movies m ".
                "WHERE s.setid = m.setid AND s.id = $id ";
     }
     else 
     {
-        $sql = "SELECT m.id, m.xbmcid, IF (sm.playcount IS NULL, -1, sm.playcount), m.hide, m.refresh, m.title ".
+        $sql = "SELECT m.id, m.xbmcid, IF (sm.playcount IS NULL, -1, sm.playcount), m.hide, m.refresh, m.title, ".
+               "       IF('$switch[0]' = 'year', m.year, IF( m.rating = 0, 0, ROUND(m.rating,1))), IF (m.video = '', -1, m.video) ". 
                "FROM sets s ".
                "LEFT JOIN setsmeta sm ON (s.setid = sm.setid) ".
                "INNER JOIN movies m ON (s.setid = m.setid) ". 
@@ -1074,10 +1160,45 @@ function CreateMoviesSetQuery($title, $id, $genre, $year, $sort, $login)
 }
 
 /*
+ * Function:	CreateTVShowsQuery
+ *
+ * Created on May 29, 2014
+ * Updated on May 29, 2014
+ *
+ * Description: Create the sql query for the media table. 
+ *
+ * In:  $table, $metaid, $title, $genre, $year, $sort, $login
+ * Out: $sql
+ *
+ */
+function CreateTVShowsQuery($title, $genre, $year, $sort, $login)
+{     
+    if (!$login)
+    {
+        $sql = "SELECT t.id, t.xbmcid, NULL, t.hide, t.refresh, t.title, t.episode, NULL ".
+               "FROM tvshows t ";
+        
+        $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
+    }
+    else
+    {
+        $sql = "SELECT t.id, t.xbmcid, IF (m.playcount IS NULL, -1, m.playcount), t.hide, t.refresh, t.title, t.episode, NULL ".
+               "FROM tvshows t ".
+               "LEFT JOIN tvshowsmeta m ON (t.xbmcid = m.tvshowid) ";
+        
+        $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);        
+    }    
+    
+    $sql .= CreateQuerySortQrder("t.", $title);
+       
+    return $sql;
+}
+
+/*
  * Function:	CreateSeriesQuery
  *
  * Created on Apr 08, 2013
- * Updated on May 19, 2014
+ * Updated on May 29, 2014
  *
  * Description: Create the sql query for the media TV shows table. 
  *
@@ -1089,15 +1210,16 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
 {   
     if (!$login)
     {
-        $sql = "SELECT DISTINCT  CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, NULL, t.hide, s.refresh, t.title ".
-               "FROM (SELECT id, seasonid, hide, refresh, tvshowid, COUNT(season) AS seasons, season FROM seasons ".
+        $sql = "SELECT DISTINCT  CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, NULL, t.hide, s.refresh, t.title, s.total, NULL ".
+               "FROM (SELECT id, seasonid, hide, refresh, tvshowid, COUNT(season) AS seasons, SUM(IF (season > 0,1,0)) AS total, season FROM seasons ".
                "GROUP BY tvshowid) s ".
                "JOIN tvshows t ON s.tvshowid = t.xbmcid ";
     }
     else 
     {
-        $sql = "SELECT DISTINCT  CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, IF (tm.playcount IS NULL, -1, tm.playcount), t.hide, s.refresh, t.title ".
-               "FROM (SELECT id, seasonid, hide, refresh, tvshowid, COUNT(season) AS seasons, season FROM seasons ".
+        $sql = "SELECT DISTINCT  CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, IF (tm.playcount IS NULL, -1, tm.playcount), ". 
+               "       t.hide, s.refresh, t.title,  s.total, NULL ".
+               "FROM (SELECT id, seasonid, hide, refresh, tvshowid, COUNT(season) AS seasons, SUM(IF (season > 0,1,0)) AS total, season FROM seasons ".
                "GROUP BY tvshowid) s ".
                "JOIN tvshows t ON s.tvshowid = t.xbmcid ".
                "LEFT JOIN tvshowsmeta tm ON s.tvshowid = tm.tvshowid ";        
@@ -1113,7 +1235,7 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateSeasonsQuery
  *
  * Created on Nov 12, 2013
- * Updated on May 19, 2014
+ * Updated on May 29, 2014
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -1125,14 +1247,15 @@ function CreateSeasonsQuery($id, $login)
 {
     if (!$login)
     {    
-        $sql = "SELECT CONCAT(id, '_', season) AS id, seasonid AS xbmcid, NULL, hide, refresh, title ".
+        $sql = "SELECT CONCAT(id, '_', season) AS id, seasonid AS xbmcid, NULL, hide, refresh, title, episode, NULL ".
                "FROM seasons WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
                "AND hide = 0 ".
                "ORDER BY season";    
     }
     else
     {
-        $sql = "SELECT CONCAT(s.id, '_', s.season) AS id, s.seasonid AS xbmcid, IF (sm.playcount IS NULL, -1, sm.playcount), s.hide, s.refresh, s.title ".
+        $sql = "SELECT CONCAT(s.id, '_', s.season) AS id, s.seasonid AS xbmcid, IF (sm.playcount IS NULL, -1, sm.playcount),". 
+               "       s.hide, s.refresh, s.title, s.episode, NULL ".
                "FROM seasons s ".
                "LEFT JOIN seasonsmeta sm ON (s.seasonid = sm.seasonid) ".
                "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ". 
@@ -1146,7 +1269,7 @@ function CreateSeasonsQuery($id, $login)
  * Function:	 CreateEpisodesQuery
  *
  * Created on Nov 12, 2013
- * Updated on May 19, 2014
+ * Updated on May 29, 2014
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -1159,12 +1282,12 @@ function CreateEpisodesQuery($id, $season, $login)
     if (!$login)
     {
         if ($season > -1) { // More the 1 season.
-            $sql = "SELECT id, episodeid, NULL, hide, refresh, CONCAT(episode, '. ', title) ".
+            $sql = "SELECT id, episodeid, NULL, hide, refresh, CONCAT(episode, '. ', title), IF (rating = 0, 0, ROUND(rating,1)), IF (video = '', -1, video) ".
                    "FROM episodes WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
                    "AND season = $season AND hide = 0 ";
         }
         else { // One season.
-            $sql = "SELECT id, episodeid, NULL, hide, refresh, CONCAT(episode, '. ', title) ".
+            $sql = "SELECT id, episodeid, NULL, hide, refresh, CONCAT(episode, '. ', title), IF (rating = 0, 0, ROUND(rating,1)), IF (video = '', -1, video) ".
                    "FROM episodes WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
                    "AND hide = 0 ";       
         }
@@ -1174,13 +1297,15 @@ function CreateEpisodesQuery($id, $season, $login)
     else
     {
         if ($season > -1) { // More the 1 season.
-            $sql = "SELECT e.id, e.episodeid, IF (em.playcount IS NULL, -1, em.playcount), e.hide, e.refresh, CONCAT(e.episode, '. ', e.title) ".
+            $sql = "SELECT e.id, e.episodeid, IF (em.playcount IS NULL, -1, em.playcount), e.hide, e.refresh,".
+                   "       CONCAT(e.episode, '. ', e.title), IF (e.rating = 0, 0, ROUND(e.rating,1)), IF (e.video = '', -1, e.video) ".
                    "FROM episodes e ".
                    "LEFT JOIN episodesmeta em ON (e.episodeid = em.episodeid) ".
-                   "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) AND e.season = $season ";            
+                   "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) AND e.season = $season ";        
         }
         else { // One season.
-            $sql = "SELECT e.id, e.episodeid, IF (em.playcount IS NULL, -1, em.playcount), e.hide, e.refresh, CONCAT(e.episode, '. ', e.title) ".
+            $sql = "SELECT e.id, e.episodeid, IF (em.playcount IS NULL, -1, em.playcount), e.hide, e.refresh,". 
+                   "       CONCAT(e.episode, '. ', e.title), IF (e.rating = 0, 0, ROUND(e.rating,1)), IF (e.video = '', -1, e.video) ".
                    "FROM episodes e ".
                    "LEFT JOIN episodesmeta em ON (e.episodeid = em.episodeid) ".
                    "WHERE e.tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) "; 
@@ -1189,6 +1314,41 @@ function CreateEpisodesQuery($id, $season, $login)
         $sql .= "ORDER BY e.episode";
     }        
     
+    return $sql;
+}
+
+/*
+ * Function:	CreateAlbumsQuery
+ *
+ * Created on May 29, 2014
+ * Updated on May 29, 2014
+ *
+ * Description: Create the sql query for the albums table. 
+ *
+ * In:  $title, $genre, $year, $sort, $login
+ * Out: $sql
+ *
+ */
+function CreateAlbumsQuery($title, $genre, $year, $sort, $login)
+{     
+    if (!$login)
+    {
+        $sql = "SELECT t.id, t.xbmcid, NULL, t.hide, t.refresh, t.title, t.artist, NULL ".
+               "FROM albums t ";
+        
+        $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
+    }
+    else
+    {
+        $sql = "SELECT t.id, t.xbmcid, IF (m.playcount IS NULL, -1, m.playcount), t.hide, t.refresh, t.title, t.artist, NULL ".
+               "FROM albums t ".
+               "LEFT JOIN albumsmeta m ON (t.xbmcid = m.albumid) ";
+        
+        $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);        
+    }    
+    
+    $sql .= CreateQuerySortQrder("t.", $title);
+       
     return $sql;
 }
 
@@ -1277,7 +1437,7 @@ function CreateQuerySortQrder($a, $title)
  * Function:	QueryMedia
  *
  * Created on Apr 03, 2013
- * Updated on Feb 27, 2014
+ * Updated on May 29, 2014
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -1306,7 +1466,7 @@ function QueryMedia($db, $sql, $page, $end)
             {              
                 $i = 0;
                 
-                $stmt->bind_result($id, $xbmcid, $playcount, $hide, $refresh, $title);
+                $stmt->bind_result($id, $xbmcid, $playcount, $hide, $refresh, $title, $sub, $aux);
                 while($stmt->fetch())
                 {                
                     
@@ -1316,7 +1476,8 @@ function QueryMedia($db, $sql, $page, $end)
                     $aMedia[$i]['hide']      = $hide;  
                     $aMedia[$i]['refresh']   = $refresh; 
                     $aMedia[$i]['title']     = stripslashes($title);
-                    
+                    $aMedia[$i]['sub']       = !empty($sub)?stripslashes($sub):"&nbsp;"; 
+                    $aMedia[$i]['aux']       = !empty($aux)?ConvertToListFlag($aux):0;
                     $i++;
                 }                  
             }
@@ -1327,7 +1488,9 @@ function QueryMedia($db, $sql, $page, $end)
                     $aMedia[0]['playcount'] = -1;                      
                     $aMedia[0]['hide']      = -1;  
                     $aMedia[0]['refresh']   = -1;    
-                    $aMedia[0]['title']     = 'empty';               
+                    $aMedia[0]['title']     = 'empty';
+                    $aMedia[0]['sub']      = -1;
+                    $aMedia[0]['aux']      = -1;                                      
             }
         }
         else

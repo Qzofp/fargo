@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Feb 07, 2014
+ * Updated on May 26, 2014
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -56,7 +56,7 @@ function ChangeModeMediaInterface(mode, media)
  * Function:	ChangeMediaTableHoverColor
  *
  * Created on Aug 31, 2013
- * Updated on Aug 31, 2013
+ * Updated on May 26, 2014
  *
  * Description: Change the interface hover color.
  * 
@@ -66,7 +66,7 @@ function ChangeModeMediaInterface(mode, media)
  */
 function ChangeMediaTableHoverColor(color_text, color_border)
 {
-    $("#display_content td").hover(function() {
+    $("#display_thumb td").hover(function() {
             $(this).css({'color':color_text, 'border-color':color_border});
             $(this).children("img").css({'border-color':color_border});
         }, 
