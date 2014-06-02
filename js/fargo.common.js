@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Feb 26, 2014
+ * Updated on Jun 02, 2014
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -326,7 +326,7 @@ function SetCloseHandler()
  * Function:	RefreshMediaTable
  *
  * Created on Sep 22, 2013
- * Updated on Feb 07, 2014
+ * Updated on Jun 02, 2014
  *
  * Description: When refresh media is finished then refresh media thumb on media table.
  * 
@@ -342,28 +342,58 @@ function RefreshMediaTable(popup)
     {
         id   = popup.find(".id").text();                                                   
         $img = $("#action_thumb img").attr("src");
-        
-        //console.log($("#display_content [class^='i" + id + "']").html()); // debug.
-
-        // Refresh image in media table.
-        //$("#display_content .i" + id + " img").attr("src", $img);
-        $("#display_content [class^='i" + id + "'] img").attr("src", $img);
-        
-        switch(GetState("type"))
+           
+        if ($("#screen").text() == cBUT.LIST)
         {
-            case "seasons"  : $title = "<div>" + $("#action_sub").html() + "</div";
-                              break;
+            switch(GetState("type"))
+            {
+                case "seasons"  : $title = "<div>" + $("#action_sub").html() + "</div>";
+                                  break;
                              
-            case "episodes" : $title = '<div style="width: 240px; text-overflow: ellipsis;">' + $("#action_sub").html() + '</div';
-                              break;
+                case "episodes" : $title = '<div style="width: 240px; text-overflow: ellipsis;">' + $("#action_sub").html() + '</div>';
+                                  break;
                               
-            default : $title = "<div>" + $("#action_title").html() + "</div";
-                      break;
-        }
+                default : $title = "<div>" + $("#action_title").html() + "</div>";
+                          break;
+            }              
+            
+            // Refresh image in media thumb table.
+            $("#display_thumb [class^='i" + id + "'] img:first").attr("src", $img);
         
-        // Refresh title in media table.
-        //$("#display_content .i" + id).contents().last().replaceWith($title);
-        $("#display_content [class^='i" + id + "']").contents().last().replaceWith($title);
+            // Refresh title in media table.
+            $("#display_thumb [class^='i" + id + "']").contents().last().replaceWith($title);
+        }
+        else 
+        {
+            switch(GetState("type"))
+            {
+                case "seasons"  : $title = $("#action_sub").html();
+                                  break;
+                             
+                case "episodes" : $title = $("#action_sub").html();
+                                  break;
+                                  
+                case "series"   : $title = $("#action_title").html();
+                                  id += "_";
+                                  break;
+                              
+                default : $title = $("#action_title").html();
+                          break;
+            }  
+            
+            if (GetState("type") == "seasons" || GetState("type") == "episodes") {
+                $title = $("#action_sub").html();
+            }
+            else {
+                $title = $("#action_title").html();
+            }
+            
+            // Refresh image in media list table.
+            $("#display_list [class^='i" + id + "'] .poster img").attr("src", $img);
+            
+            // Refresh title in media list table.
+            $("#display_list [class^='i" + id + "'] .title").text($title);
+        }     
     }
 }
 

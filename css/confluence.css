@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on May 29, 2014
+ * Updated on Jun 02, 2014
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -447,6 +447,7 @@ background:#454647;
 
 #transfer{
 height:0px;
+display:none; 
 }
 
 #transfer iframe{
@@ -533,10 +534,7 @@ color:dodgerblue;
 #display_content{
 margin:0 120px 0 120px;
 height:70%;
-/*min-height:70%;*/
 }
-
-
 
 /* Display Media thumb pages */
 #display_thumb table{
@@ -606,10 +604,12 @@ border:1px solid grey;
 border-radius:5px;
 }
 
+/*
 #display_thumb .info,
 #display_thumb .items{
 display:none;    
-}
+}*/
+
 
 #display_thumb .hide{
 opacity:0.3;  
@@ -632,15 +632,12 @@ padding:0 15px 0 0;
 }
 
 #display_list table{
+table-layout:fixed;
 border-spacing:0px;
 padding: 15px 15px 0;
-/*margin:12px auto 0 auto;*/
 width:100%;
 font-size:2em;
 color:#FFF;
-/*border:1px solid grey;
-border-radius:10px;
-background-color:rgba(0,0,0,0.5);*/
 }
 
 #display_list td{
@@ -659,17 +656,60 @@ border-bottom:1px solid rgba(30,144,255,0.4);
 background-color:rgba(0,0,0,0.2);
 }
 
-#display_list .movies .poster,
-#display_list .tvshows .poster,
-#display_list .music .poster{
-width:30px;
+#display_list .hidden tr:hover > td{
+border-top:1px solid rgba(255, 255, 255, 0.4);
+border-bottom:1px solid rgba(255, 255, 255, 0.4);
 }
 
-#display_list .movies .title:hover,
-#display_list .tvshows .title:hover,
-#display_list .music .title:hover{
-color:dodgerblue;    
-}    
+#display_list .refresh tr:hover > td{
+border-top:1px solid rgba(51, 191, 56, 0.4);
+border-bottom:1px solid rgba(51, 191, 56, 0.4);
+}
+
+#display_list .remove tr:hover > td{
+border-top:1px solid rgba(216, 32, 32, 0.4);
+border-bottom:1px solid rgba(216, 32, 32, 0.4);
+}
+
+/*#display_list .movies .poster,
+#display_list .tvshows .poster,*/
+#display_list .poster{
+width:30px;
+}
+  
+/*#display_list .movies .title div,
+#display_list .tvshows .title div,*/
+#display_list .title div,
+#display_list .music .sub div{ 
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+
+/*
+#display_list .music .sub div{ 
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}*/
+
+/*#display_list .movies .title:hover,
+#display_list .tvshows .title:hover,*/
+#display_list .title:hover{
+color:dodgerblue;
+}   
+
+#display_list .hidden .title:hover{
+color:lightgray;
+}
+
+#display_list .refresh .title:hover{
+color:#33BF38;
+}
+
+#display_list .remove .title:hover{
+color:#D82020;
+}
 
 #display_list .movies .poster img,
 #display_list .tvshows .poster img{
@@ -684,7 +724,17 @@ width:25px;
 height:25px;
 }
 
-#display_list .sub{
+#display_list .movies .sub,
+#display_list .tvshows .sub{
+width:120px;
+}
+
+/*
+#display_list .music .sub{
+width:220px;
+}*/
+
+#display_list .sub{  
 text-align:right;
 padding-right:10px;
 font-size:0.9em;
@@ -710,9 +760,17 @@ width:24px;
 height:24px;
 }
 
+#display_list .hide .title{
+color:rgba(255, 255, 255, 0.3);  
+}
 
+#display_list .hide .title:hover{
+color:rgba(255, 255, 255, 0.4); 
+}
 
-
+#display_list .hide img{
+opacity:0.3;  
+}
 
 /* Display System page */
 #display_system{

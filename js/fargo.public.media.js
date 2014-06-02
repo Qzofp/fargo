@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on May 29, 2014
+ * Updated on Jun 02, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -1416,7 +1416,7 @@ function ConvertMediaToSingular(media)
  * Function:	ShowMediaTable
  *
  * Created on Apr 05, 2013
- * Updated on May 25, 2014
+ * Updated on Jun 01, 2014
  *
  * Description: Shows the media table.
  *
@@ -1466,6 +1466,7 @@ function ShowMediaTable(page, sort)
             if (mode) {
                 ChangeModeMediaInterface(mode, media);
             }
+            
         } // End success.
     }); // End Ajax. 
 }
@@ -1570,7 +1571,7 @@ function ShowInfoHeader(type, title, sort, genre, year)
  * Function:	ShowMediaTableThumbs
  *
  * Created on May 24, 2014
- * Updated on May 25, 2014
+ * Updated on Jun 01, 2014
  *
  * Description: Shows the media table with media as thumbnails.
  *
@@ -1641,14 +1642,14 @@ function ShowMediaTableThumbs(json, media, type, mode)
     // If images not found then show no poster.
     $("#display_thumb img").error(function(){
         $(this).attr('src', 'images/no_poster.jpg');
-    });    
+    });
 }
 
 /*
  * Function:	ShowMediaTableList
  *
  * Created on May 25, 2014
- * Updated on May 29, 2014
+ * Updated on Jun 02, 2014
  *
  * Description: Shows the media table with media in a list.
  *
@@ -1683,7 +1684,7 @@ function ShowMediaTableList(json, media, type, mode)
             img = json.params.thumbs + '/' + value.xbmcid + '.jpg' + "?v=" + value.refresh;
                     
             html[i] += '<td class="poster"><img src="' + img + '"/></td>';                  
-            html[i] += '<td class="title">' + value.title + '</td>';
+            html[i] += '<td class="title"><div>' + value.title + '</div></td>';
             
             sub = "";
             switch(type) 
@@ -1705,7 +1706,7 @@ function ShowMediaTableList(json, media, type, mode)
                                   break;             
             }  
             
-            html[i] += '<td class="sub">' + value.sub + sub + '</td>';
+            html[i] += '<td class="sub"><div>' + value.sub + sub + '</div></td>';
             
             if (value.aux) {
                 html[i] += '<td class="aux">' + value.aux + '</td>';

@@ -18,7 +18,7 @@
  * Function:	ChangeModeMediaInterface
  *
  * Created on Aug 31, 2013
- * Updated on Sep 28, 2013
+ * Updated on Jun 01, 2014
  *
  * Description: Change the interface (hover color and mode notifiction).
  * 
@@ -35,19 +35,23 @@ function ChangeModeMediaInterface(mode, media)
         case "Information" : media = media.substr(0,1).toUpperCase() + media.substr(1);
                              mode = mode.substr(0,1).toLowerCase() + mode.substr(1);
                              $("#header_mode").text(media + " " + mode).css({'color':'dodgerblue'});
-                             ChangeMediaTableHoverColor("dodgerblue", "dodgerblue");                           
+                             ChangeMediaTableHoverColor("dodgerblue", "dodgerblue");   
+                             $("#display_content table").removeClass("hidden refresh remove");
                              break;
                         
         case "Refresh"     : $("#header_mode").text(mode + " " + media).css({'color':'#33BF38'});
                              ChangeMediaTableHoverColor("#33BF38", "#33BF38");
+                             $("#display_content table").removeClass("hidden remove").addClass("refresh");
                              break;
                         
         case "Hide/Show"   : $("#header_mode").text(mode + " " + media).css({'color':'white'});
                              ChangeMediaTableHoverColor("white", "white");
+                             $("#display_content table").removeClass("refresh remove").addClass("hidden");
                              break; 
 
         case "Remove"      : $("#header_mode").text(mode + " " + media).css({'color':'#D82020'});
                              ChangeMediaTableHoverColor("#D82020", "#D82020");
+                             $("#display_content table").removeClass("hidden refresh").addClass("remove");
                              break;                   
     }
 }

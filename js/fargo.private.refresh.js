@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jun 02, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,7 +18,7 @@
  * Function:	PrepareRefreshHandler
  *
  * Created on Nov 23, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jun 02, 2014
  *
  * Description: Prepare the refresh handler, show the refresh popup box and start the refresh.
  * 
@@ -31,43 +31,27 @@ function PrepareRefreshHandler(type, $popup) // May be not necessary and can be 
     switch(type)
     {
         case "titles"   : StartRefreshOnlineHandler("movies", "movies", $popup);
-                          //SetStartRefreshHandler("movies", id, xbmcid, -1);
                           break;
                           
         case "sets"     : StartRefreshOnlineHandler("sets", "sets", $popup);
-                          //SetStartRefreshHandler("sets", id, xbmcid, -1);
                           break;                  
                           
         case "movieset" : StartRefreshOnlineHandler("movies", "movies", $popup);
-                          //SetStartRefreshHandler("movies", id, xbmcid, -1);
                           break;
                       
         case "tvtitles" : StartRefreshOnlineHandler("tvshows", "tvshows", $popup);
-                          //SetStartRefreshHandler("tvshows", id, xbmcid, -1);
                           break;                      
                       
         case "series"   : StartRefreshOnlineHandler("tvshows", "seasons", $popup);
-                          /*var xbmc = xbmcid.split("_")[1];
-                          if (xbmc > 0) {
-                             xbmc--;
-                          }
-                          ConvertAndStartSeriesRefresh(xbmcid, xbmc, xbmcid.split("_")[0]);*/
                           break;  
 
         case "seasons"  : StartRefreshOnlineHandler("tvshows", "seasons", $popup);
-                          /*var xbmc = xbmcid.split("_")[1];
-                          if (xbmc > 0) {
-                             xbmc--;
-                          }
-                          SetStartRefreshHandler("seasons", id.split("_")[0], xbmc, xbmcid.split("_")[0]);*/
                           break;          
         
         case "episodes" : StartRefreshOnlineHandler("episodes", "episodes", $popup);
-                          //SetStartRefreshHandler("episodes", id, xbmcid, -1);
                           break;           
         
         case "albums"   : StartRefreshOnlineHandler("albums", "albums", $popup);
-                          //SetStartRefreshHandler("music", id, xbmcid, -1);
                           break;                      
     }
 }
@@ -275,7 +259,7 @@ function StartRefresh(type, fargoid, xbmcid)
  * Function:	ShowRefreshProgress
  *
  * Created on Feb 01, 2014
- * Updated on Feb 05, 2014
+ * Updated on Jun 02, 2014
  *
  * Description: Show the import progress.
  * 
@@ -317,8 +301,9 @@ function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i, id)
         else 
         {    
             // Preload image.
-            var img = new Image();      
-            img.src = gMEDIA.THUMBS + '/'+ id +'.jpg';
+            var img = new Image();
+            var version = 10000 + Math.floor(Math.random() * 9999);
+            img.src = gMEDIA.THUMBS + '/'+ id +'.jpg?v=' + version;
             $img.attr('src', img.src);
                                 
             // If images not found then show no poster.
