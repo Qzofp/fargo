@@ -1198,7 +1198,7 @@ function CreateTVShowsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateSeriesQuery
  *
  * Created on Apr 08, 2013
- * Updated on May 29, 2014
+ * Updated on Jun 08, 2014
  *
  * Description: Create the sql query for the media TV shows table. 
  *
@@ -1213,7 +1213,7 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
         $sql = "SELECT DISTINCT  CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, NULL, t.hide, s.refresh, t.title, s.total, NULL ".
                "FROM (SELECT id, seasonid, hide, refresh, tvshowid, COUNT(season) AS seasons, SUM(IF (season > 0,1,0)) AS total, season FROM seasons ".
                "GROUP BY tvshowid) s ".
-               "JOIN tvshows t ON s.tvshowid = t.xbmcid ";
+               "JOIN tvshows t ON s.tvshowid = t.id ";
     }
     else 
     {
@@ -1221,8 +1221,8 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
                "       t.hide, s.refresh, t.title,  s.total, NULL ".
                "FROM (SELECT id, seasonid, hide, refresh, tvshowid, COUNT(season) AS seasons, SUM(IF (season > 0,1,0)) AS total, season FROM seasons ".
                "GROUP BY tvshowid) s ".
-               "JOIN tvshows t ON s.tvshowid = t.xbmcid ".
-               "LEFT JOIN tvshowsmeta tm ON s.tvshowid = tm.tvshowid ";        
+               "JOIN tvshows t ON s.tvshowid = t.id ".
+               "LEFT JOIN tvshowsmeta tm ON t.xbmcid = tm.tvshowid ";        
     }
     
     $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);

@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo Transfer
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -62,7 +62,7 @@ function Transfer()
  * Function:	TransferMediaCounter
  *
  * Created on Jul 22, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Transfers media counter (e.g. total number of movies) from XBMC to Fargo.
  * 
@@ -74,24 +74,24 @@ function TransferMediaCounter(key, media)
 {
     switch (media)
     {
-        case "movies"   : // libMoviesCounter -> library id = 1.
+        case "movies"   : // libMediaCounter -> library id = 1.
                           RequestCounter("VideoLibrary.GetMovies", 1, key);
                           break;
 
-        case "sets"     : // libMovieSetsCounter -> library id = 4.
-                          RequestCounter("VideoLibrary.GetMovieSets", 4, key);         
+        case "sets"     : // libMediaCounter -> library id = 1.
+                          RequestCounter("VideoLibrary.GetMovieSets", 1, key);         
                           break;        
             
-        case "tvshows"  : // libTVShowsCounter -> library id = 11.
-                          RequestCounter("VideoLibrary.GetTVShows", 11, key);
+        case "tvshows"  : // libMediaCounter -> library id = 1.
+                          RequestCounter("VideoLibrary.GetTVShows", 1, key);
                           break;
                                  
-        case "episodes" : // libTVShowEpisodesCounter -> library id = 31.
-                          RequestCounter("VideoLibrary.GetEpisodes", 31, key);
+        case "episodes" : // libMediaCounter -> library id = 1.
+                          RequestCounter("VideoLibrary.GetEpisodes", 1, key);
                           break;                         
         
-        case "albums"   : // libAlbumsCounter -> library id = 21.
-                          RequestCounter("AudioLibrary.GetAlbums", 41, key);
+        case "albums"   : // libMediaCounter -> library id = 1.
+                          RequestCounter("AudioLibrary.GetAlbums", 1, key);
                           break;
     }
 }

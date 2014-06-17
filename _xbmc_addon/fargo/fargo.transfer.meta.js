@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo Transfer
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    fargo.transfer.meta.js
  *
  * Created on Jan 10, 2014
- * Updated on Feb 19, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Fargo Transfer Meta Data jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	TransferMeta
  *
  * Created on Jan 10, 2014
- * Updated on Feb 19, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Transfers meta data from XBMC to Fargo.
  * 
@@ -33,27 +33,27 @@ function TransferMeta()
     switch(aRequest.action)
     {
         case "movies"   : // libMovies -> library id = 1. 
-                          TransferMediaMeta(aRequest.key, aRequest.counter, "VideoLibrary.GetMovies", 1);
+                          TransferMediaMeta(aRequest.key, aRequest.counter, 'VideoLibrary.GetMovies', '"playcount","file"', 1);
                           break;
             
         case "sets"     : // libMovieSets -> library id = 2.
-                          TransferMediaMeta(aRequest.key, aRequest.counter, "VideoLibrary.GetMovieSets", 2);
+                          TransferMediaMeta(aRequest.key, aRequest.counter, 'VideoLibrary.GetMovieSets', '"playcount"', 2);
                           break;  
             
         case "tvshows"  : // libTVShows -> library id = 3.
-                          TransferMediaMeta(aRequest.key, aRequest.counter, "VideoLibrary.GetTVShows", 3);
+                          TransferMediaMeta(aRequest.key, aRequest.counter, 'VideoLibrary.GetTVShows', '"playcount","file"', 3);
                           break;
                          
         case "seasons"  : // libTVShowSeasons -> library id = 4.
-                          TransferSeasonsMeta(aRequest.key, aRequest.tvshowid, "VideoLibrary.GetSeasons", 4);
+                          TransferSeasonsMeta(aRequest.key, aRequest.tvshowid, 'VideoLibrary.GetSeasons', '"playcount","showtitle"', 4);
                           break;
                          
         case "episodes" : // libTVShowEpisodes -> library id = 5.
-                          TransferMediaMeta(aRequest.key, aRequest.counter, "VideoLibrary.GetEpisodes", 5);
+                          TransferMediaMeta(aRequest.key, aRequest.counter, 'VideoLibrary.GetEpisodes', '"title","playcount","file"', 5);
                           break;                         
         
         case "albums"   : // libAlbums -> library id = 6.
-                          TransferMediaMeta(aRequest.key, aRequest.counter, "AudioLibrary.GetAlbums", 6);
+                          TransferMediaMeta(aRequest.key, aRequest.counter, 'AudioLibrary.GetAlbums', '"playcount","artist","year"', 6);
                           break;         
     }
 }
@@ -62,20 +62,20 @@ function TransferMeta()
  * Function:	TransferMediaMeta
  *
  * Created on Jan 10, 2014
- * Updated on Jan 11, 2014
+ * Updated on Jun 09, 2014
  *
  * Description: Transfer media meta data from XBMC to Fargo.
  * 
- * In:	key, counter, media, id
+ * In:	key, counter, media, properties, id
  * Out:	Transfered media meta data.
  *
  */
-function TransferMediaMeta(key, counter, media, id)
+function TransferMediaMeta(key, counter, media, properties, id)
 {
     var start = counter * Number(cBULKMAX);
     var end   = ++counter * Number(cBULKMAX);
     
-    var request = '{"jsonrpc":"2.0","method":"'+ media +'","params":{"properties":["playcount"],'+
+    var request = '{"jsonrpc":"2.0","method":"'+ media +'","params":{"properties":['+ properties +'],'+
                   '"limits":{"end":'+ end +',"start":'+ start +'}},"id":'+ id +'}';
     
     $.ajax({
@@ -117,20 +117,20 @@ function TransferMediaMeta(key, counter, media, id)
  * Function:	TransferSeasonsMeta
  *
  * Created on Jan 11, 2014
- * Updated on Jan 11, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Transfer seasons meta data from XBMC to Fargo.
  * 
- * In:	key, counter, media, id
+ * In:	key, tvshowid, seasons, properties, id
  * Out:	Transfered media meta data.
  *
  * Note: This function works only if there are no more no 250 seasons for each TV Show.
  *
  */
-function TransferSeasonsMeta(key, tvshowid, seasons, id)
+function TransferSeasonsMeta(key, tvshowid, seasons, properties, id)
 {    
     var request = '{"jsonrpc":"2.0","method":"'+ seasons +'","params":{"tvshowid":'+ tvshowid +
-                  ',"properties":["playcount"]},"id":'+ id +'}';
+                  ',"properties":['+ properties +']},"id":'+ id +'}';
     
     $.ajax({
         url: '../jsonrpc?request=' + request,

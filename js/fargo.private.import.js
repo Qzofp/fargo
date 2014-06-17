@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on May 17, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -759,7 +759,7 @@ function StartSeasonsMetaImportHandler(media, type, next)
  * Function:	StartSeasonsMetaImport
  *
  * Created on Jan 20, 2014
- * Updated on May 17, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Control and Import the seasons media meta data transfered from XBMC.
  *
@@ -797,8 +797,22 @@ function StartSeasonsMetaImport(type)
                     });
                 }
                 $.when(currentStep).done(function(){
-                    //console.log("All steps done.");                
-                    deferred.resolve();
+                    //console.log("All steps done.");   
+                    $.ajax({ // Begin Ajax 2.
+                        url: 'jsonmanage.php?action=chkmeta&type=' + type,
+                        async: false,
+                        dataType: 'json',
+                        success: function(json)
+                        {                  
+                            if (json.check) {
+                                deferred.resolve();
+                            }
+                            else {
+                                deferred.reject(cSTATUS.METAERR);
+                            }     
+                        } // End succes.    
+                    }); // End Ajax 2.                     
+                    //deferred.resolve();
                 }).fail(function(){               
                     deferred.reject();
                 });  

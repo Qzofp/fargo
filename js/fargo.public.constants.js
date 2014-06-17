@@ -6,7 +6,7 @@
  * File:    fargo.public.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on May 24, 2014
+ * Updated on Jun 09, 2014
  *
  * Description: Fargo's jQuery and Javascript public contants and globals.
  *
@@ -43,7 +43,7 @@ var cBUT = {
     SEASONS: "Seasons",
     EPISODES: "Episodes",
     ALBUMS: "Albums",
-    BACK: "Return to "    
+    BACK: ".. "
 };
 
 var cSORT = {

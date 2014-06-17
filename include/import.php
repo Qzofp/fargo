@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on May 17, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -112,7 +112,7 @@ function ReceiveDataFromXbmc()
  * Function:	ProcessDataFromXbmc
  *
  * Created on Jul 15, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jun 15, 2014
  *
  * Description: Process data from XBMC. 
  *
@@ -124,8 +124,9 @@ function ProcessDataFromXbmc($db, $aData)
 {    
     switch($aData["id"])
     {
-        // libMoviesCounter -> library id = 1.
-        case 1  : UpdateStatus($db, "XbmcMoviesEnd", $aData["result"]["limits"]["total"]);
+        // libMediaCounter -> library id = 1.
+        case 1  : //UpdateStatus($db, "XbmcMoviesEnd", $aData["result"]["limits"]["total"]); // Obsolete?
+                  UpdateStatus($db, "ImportEnd", $aData["result"]["limits"]["total"]);
                   break;
              
         // libMovies Import -> library id = 2.                   
@@ -137,8 +138,8 @@ function ProcessDataFromXbmc($db, $aData)
                   break;
         
         // libMovieSetsCounter -> library id = 4.    
-        case 4  : UpdateStatus($db, "XbmcSetsEnd", $aData["result"]["limits"]["total"]);
-                  break;
+        //case 4  : UpdateStatus($db, "XbmcSetsEnd", $aData["result"]["limits"]["total"]);
+        //          break;
               
         // libMovieSets Import -> library id = 5.                   
         case 5  : ImportMovieSet($db, $aData["error"], $aData["poster"], $aData["result"]);
@@ -182,8 +183,8 @@ function ProcessDataFromXbmc($db, $aData)
                   break;         
                             
         // libAlbumsCounter -> library id = 41.  
-        case 41 : UpdateStatus($db, "XbmcAlbumsEnd", $aData["result"]["limits"]["total"]);
-                  break;
+        //case 41 : UpdateStatus($db, "XbmcAlbumsEnd", $aData["result"]["limits"]["total"]);
+        //          break;
         
         // libAlbums Import -> library id = 42.
         case 42 : ImportAlbum($db, $aData["error"], $aData["poster"], $aData["result"]);
@@ -199,7 +200,7 @@ function ProcessDataFromXbmc($db, $aData)
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on May 12, 2014
+ * Updated on Jun 10, 2014
  *
  * Description: Import the movie. 
  *
@@ -238,7 +239,7 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
         }
         
         IncrementStatus($db, "ImportStart", 1);
-        UpdateStatus($db, "XbmcMoviesStart", $aMovie[0]);
+        //UpdateStatus($db, "XbmcMoviesStart", $aMovie[0]); // Obsolete.
     }
     else if ($aError["code"] == cTRANSFER_INVALID) {
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -252,7 +253,7 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
  * Function:	ImportMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on May 12, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Import the movie set. 
  *
@@ -278,7 +279,7 @@ function ImportMovieSet($db, $aError, $poster, $aResult)
         }
         
         IncrementStatus($db, "ImportStart", 1);
-        UpdateStatus($db, "XbmcSetsStart", $aMovie[0]);
+        //UpdateStatus($db, "XbmcSetsStart", $aMovie[0]);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -363,7 +364,7 @@ function RefreshMovieSet($db, $aError, $poster, $aResult, $fargoid)
  * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on May 17, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Import the tv show. 
  *
@@ -399,7 +400,7 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
         }        
         
         IncrementStatus($db, "ImportStart", 1);
-        UpdateStatus($db, "XbmcTVShowsStart", $aTVShow[0]);
+        //UpdateStatus($db, "XbmcTVShowsStart", $aTVShow[0]);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -413,7 +414,7 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
  * Function:	ImportTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on May 17, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Import the tv show season. 
  *
@@ -425,7 +426,7 @@ function ImportTVShowSeason($db, $aError, $poster, $aResult)
 {      
     if (empty($aError))
     {    
-        $aSeason = ConvertTVShowSeason($aResult["seasondetails"]);
+        $aSeason = ConvertTVShowSeason($db, $aResult["seasondetails"]);
 
         ResizeAndSaveImage($aSeason[0], $poster, "../".cSEASONSTHUMBS, 125, 175);
         $dkey = InsertTVShowSeason($db, $aSeason);
@@ -439,7 +440,7 @@ function ImportTVShowSeason($db, $aError, $poster, $aResult)
         }        
         
         IncrementStatus($db, "ImportStart", 1);
-        UpdateStatus($db, "XbmcSeasonsStart", $aSeason[0]); 
+        //UpdateStatus($db, "XbmcSeasonsStart", $aSeason[0]); 
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -453,7 +454,7 @@ function ImportTVShowSeason($db, $aError, $poster, $aResult)
  * Function:	ImportTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on May 17, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Import the TV Show Episode. 
  *
@@ -465,7 +466,7 @@ function ImportTVShowEpisode($db, $aError, $poster, $aResult)
 {   
     if (empty($aError))
     {
-        $aEpisode = ConvertTVShowEpisode($aResult["episodedetails"]);
+        $aEpisode = ConvertTVShowEpisode($db, $aResult["episodedetails"]);
      
         SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);
         $dkey = InsertTVShowEpisode($db, $aEpisode);
@@ -479,7 +480,7 @@ function ImportTVShowEpisode($db, $aError, $poster, $aResult)
         }    
 
         IncrementStatus($db, "ImportStart", 1);
-        UpdateStatus($db, "XbmcEpisodesStart", $aEpisode[0]);
+        //UpdateStatus($db, "XbmcEpisodesStart", $aEpisode[0]);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
@@ -596,7 +597,7 @@ function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
  * Function:	ImportAlbum
  *
  * Created on Aug 24, 2013
- * Updated on May 17, 2014
+ * Updated on Jun 16, 2014
  *
  * Description: Import the music album. 
  *
@@ -632,7 +633,7 @@ function ImportAlbum($db, $aError, $poster, $aResult)
         }   
         
         IncrementStatus($db, "ImportStart", 1);
-        UpdateStatus($db, "XbmcAlbumsStart", $aAlbum[0]);
+        //UpdateStatus($db, "XbmcAlbumsStart", $aAlbum[0]);
     }
     else if ($aError["code"] == cTRANSFER_INVALID) { 
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.

@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Feb 21, 2014
+ * Updated on Jun 08, 2014
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -171,19 +171,22 @@ function ConvertTVShow($aXbmc)
  * Function:	ConvertTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Feb 21, 2014
+ * Updated on Jun 08, 2014
  *
  * Description: Convert xbmc TV Show Season items. For instance to readably URL's.
  *
- * In:  $aXbmc
+ * In:  $db, $aXbmc
  * Out: $aSeason
  *
  */
-function ConvertTVShowSeason($aXbmc)
+function ConvertTVShowSeason($db, $aXbmc)
 {
     $aSeason[0] = $aXbmc["seasonid"];
     $aSeason[1] = $aXbmc["label"]; // title
-    $aSeason[2] = $aXbmc["tvshowid"];
+    
+    //$aSeason[2] = $aXbmc["tvshowid"];
+    $aSeason[2] = GetTVShowFargoId($db, $aXbmc["tvshowid"]);
+    
     $aSeason[3] = !empty($aXbmc["showtitle"])?$aXbmc["showtitle"]:null;    
     $aSeason[4] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
     $aSeason[5] = !empty($aXbmc["season"])?$aXbmc["season"]:0;
@@ -200,18 +203,21 @@ function ConvertTVShowSeason($aXbmc)
  * Function:	ConvertTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Feb 21, 2014
+ * Updated on Jun 08, 2014
  *
  * Description: Convert xbmc TV Show Episode items. For instance to readably URL's.
  *
- * In:  $aXbmc
+ * In:  $db, $aXbmc
  * Out: $aSeason
  *
  */
-function ConvertTVShowEpisode($aXbmc)
+function ConvertTVShowEpisode($db, $aXbmc)
 {
     $aEpisode[0]  = $aXbmc["episodeid"];
-    $aEpisode[1]  = $aXbmc["tvshowid"]; 
+    
+    //$aEpisode[1]  = $aXbmc["tvshowid"]; 
+    $aEpisode[1]  =  GetTVShowFargoId($db, $aXbmc["tvshowid"]);
+    
     $aEpisode[2]  = $aXbmc["label"]; // title
     $aEpisode[3]  = !empty($aXbmc["originaltitle"])?$aXbmc["originaltitle"]:null;
     
@@ -239,11 +245,33 @@ function ConvertTVShowEpisode($aXbmc)
     
     // Hash title and file as unique db entry to prevent dublicates.
     $aEpisode[21] = md5($aXbmc["label"].$aEpisode[15]);
+   
+    //echo $aXbmc["label"].$aEpisode[15]; //debug
     
     //$aEpisode[3]  = EncodeLink($aXbmc, "thumbnail");
     
     return $aEpisode;
 }
+
+/*
+ * Function:	GetTVShowFargoId
+ *
+ * Created on Jun 08, 2014
+ * Updated on Jun 08, 2014
+ *
+ * Description: Get the TV Show's Fargo Id.
+ *
+ * In:  $db, $tvshowid
+ * Out: $id
+ *
+ */
+function GetTVShowFargoId($db, $tvshowid)
+{
+    $sql = "SELECT id FROM tvshows WHERE xbmcid = $tvshowid";
+    $id = GetItemFromDatabase($db, "id", $sql);
+    
+    return $id;
+}        
 
 /*
  * Function:	ConvertAlbum
@@ -281,7 +309,7 @@ function ConvertAlbum($aXbmc)
     
     $aAlbum[16] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
     
-    // Hash title and artist as unique db entry to prevent dublicates.
+    // Hash title, artist and year as unique db entry to prevent dublicates.
     $aAlbum[17] = md5($aXbmc["label"].$aAlbum[3].$aAlbum[11]);
     
     //$aAlbum["fanart"]          = $aXbmc["fanart"];

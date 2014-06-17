@@ -3,6 +3,7 @@ XBMC Fargo "Addon"
 To import the data from XBMC to Fargo you need to copy the fargo folder to the XBMC web server, i.e.:
 
 Windows - C:\Program Files\XBMC\addons\webinterface.default\
+OpenElec - ~/usr/share/xbmc/addons/webinterface.default/
 Raspbmc - /opt/xbmc-bcm/xbmc-bin/share/xbmc/addons/webinterface.default/
 or 
 Raspbmc - /home/pi/.upgrade/[build]/xbmc-bcm/xbmc-bin/share/xbmc/addons/webinterface.default/
