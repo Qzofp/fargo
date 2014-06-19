@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on May 25, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -37,6 +37,7 @@ var gMEDIA = {
 var gCONNECT = {
     CONNECTION : "",
     PORT : 0,
+    PATH : "addons/webinterface.fargo/",
     TIMEOUT : 0,
     KEY : "",
     STATUS: "Offline"

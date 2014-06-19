@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jun 16, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -217,7 +217,7 @@ function StartOnlineHandler(media, type, next, online, retry)
  * Function:	StartOnlineCheck
  *
  * Created on Jul 14, 2013
- * Updated on Jan 27, 2014
+ * Updated on Jun 17, 2014
  *
  * Description:  Check if XBMC is online.
  * 
@@ -245,7 +245,7 @@ function StartOnlineCheck(type)
             gCONNECT.KEY = json.key;
             gCONNECT.STATUS = json.status;
             
-            var url = GetTransferUrl() + "/fargo/transfer.html?action=counter&media=" + type + "&key=" + gCONNECT.KEY;
+            var url = GetTransferUrl() + "transfer.html?action=counter&media=" + type + "&key=" + gCONNECT.KEY;        
             var ready = ImportData(url, 0);
             ready.done(function() {
                 //console.log("Iframe is ready"); // debug 
@@ -319,7 +319,7 @@ function StartMetaImportHandler(media, type, next)
  * Function:	StartMetaImport
  *
  * Created on Jan 12, 2014
- * Updated on Feb 19, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Control and Import the media meta data transfered from XBMC.
  *
@@ -337,7 +337,7 @@ function StartMetaImport(type, end)
         dataType: 'json',
         success: function(json)
         {      
-            var url = GetTransferUrl() + "/fargo/meta.html?action=" + type + "&counter=" + 0 + "&key=" + gCONNECT.KEY;
+            var url = GetTransferUrl() + "meta.html?action=" + type + "&counter=" + 0 + "&key=" + gCONNECT.KEY;
             var currentStep = ImportData(url, 0);  
     
             deferred.notify(0);
@@ -349,7 +349,7 @@ function StartMetaImport(type, end)
                     if (!gTRIGGER.CANCEL) 
                     {
                         deferred.notify(++j);
-                        url = GetTransferUrl() + "/fargo/meta.html?action=" + type + "&counter=" + j + "&key=" + gCONNECT.KEY;
+                        url = GetTransferUrl() + "meta.html?action=" + type + "&counter=" + j + "&key=" + gCONNECT.KEY;
                         return ImportData(url, j);
                     }
                 });
@@ -494,7 +494,7 @@ function StartImportHandler(media, type, next, factor)
  * Function:	StartImport
  *
  * Created on Jan 14, 2014
- * Updated on May 04, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
@@ -594,7 +594,7 @@ function StartImport(type, factor)
             xbmcid = gMEDIA.XBMCID;
             busy = true;
                
-            url = GetTransferUrl() + "/fargo/transfer.html?action=" + type + "&xbmcid=" + gMEDIA.XBMCID + "&fargoid=-1" + "&key=" + gCONNECT.KEY;
+            url = GetTransferUrl() + "transfer.html?action=" + type + "&xbmcid=" + gMEDIA.XBMCID + "&fargoid=-1" + "&key=" + gCONNECT.KEY;
             ready = ImportData(url, 0);
             ready.done(function() {
                 retry = 0;
@@ -759,7 +759,7 @@ function StartSeasonsMetaImportHandler(media, type, next)
  * Function:	StartSeasonsMetaImport
  *
  * Created on Jan 20, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Control and Import the seasons media meta data transfered from XBMC.
  *
@@ -781,7 +781,7 @@ function StartSeasonsMetaImport(type)
         {                 
             if (json.tvshowids) 
             {
-                var url = GetTransferUrl() + "/fargo/meta.html?action=" + type + "&tvshowid=" + json.tvshowids[0] + "&key=" + gCONNECT.KEY;
+                var url = GetTransferUrl() + "meta.html?action=" + type + "&tvshowid=" + json.tvshowids[0] + "&key=" + gCONNECT.KEY;
                 var currentStep = ImportData(url, 0);
     
                 deferred.notify(0);
@@ -791,7 +791,7 @@ function StartSeasonsMetaImport(type)
                     currentStep = currentStep.pipe(function(j){
                         if (!gTRIGGER.CANCEL) {
                             deferred.notify(++j);
-                            url = GetTransferUrl() + "/fargo/meta.html?action=" + type + "&tvshowid=" + json.tvshowids[j] + "&key=" + gCONNECT.KEY;
+                            url = GetTransferUrl() + "meta.html?action=" + type + "&tvshowid=" + json.tvshowids[j] + "&key=" + gCONNECT.KEY;
                             return ImportData(url, j);
                         }
                     });
@@ -998,7 +998,7 @@ function ImportData(url, counter)
  * Function:	GetTransferUrl
  *
  * Created on Jan 13, 2014
- * Updated on Jan 18, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Get first of the part transfer url.
  * 
@@ -1011,7 +1011,10 @@ function GetTransferUrl()
     var url = "http://" + gCONNECT.CONNECTION;
     if (gCONNECT.PORT) {
         url = "http://" + gCONNECT.CONNECTION + ":" + gCONNECT.PORT;
-    }  
+    }
+    
+    url += "/" + gCONNECT.PATH;
+    
     return url;
 }
 

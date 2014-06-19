@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="webinterface.fargo"
+  version="0.1.4"
+  name="Fargo"
+  provider-name="Qzofp">
+  <requires>
+    <import addon="xbmc.json" version="6.0.0" />
+  </requires>
+  <extension
+    point="xbmc.gui.webinterface"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">Fargo Transfer Addon</summary>
+    <description lang="en">This addon is needed to transfer the data from XBMC to the Fargo web site. Only install this addon. Don't use it for the Web Interface!</description>
+    <platform>all</platform>
+    <language>en</language>
+    <forum></forum>
+    <website>http://fargo.qzofp.nl/</website>
+    <source>https://github.com/Qzofp/Fargo</source>
+  </extension>
+</addon>

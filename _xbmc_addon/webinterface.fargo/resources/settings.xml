@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <!--General-->
+    <category label="30110">
+        <setting id="website" type="text" default="" label="30111" /> 
+        <setting label="30112" type="action" option="close" action="RunScript($CWD/resources/lib/fargo.py, config)"/>      
+    </category>
+</settings>

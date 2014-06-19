@@ -6,7 +6,7 @@
  * File:    fargo.transfer.meta.js
  *
  * Created on Jan 10, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Fargo Transfer Meta Data jQuery and Javascript functions page.
  *
@@ -62,7 +62,7 @@ function TransferMeta()
  * Function:	TransferMediaMeta
  *
  * Created on Jan 10, 2014
- * Updated on Jun 09, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Transfer media meta data from XBMC to Fargo.
  * 
@@ -79,7 +79,7 @@ function TransferMediaMeta(key, counter, media, properties, id)
                   '"limits":{"end":'+ end +',"start":'+ start +'}},"id":'+ id +'}';
     
     $.ajax({
-        url: '../jsonrpc?request=' + request,
+        url: '../../jsonrpc?request=' + request,
         type: 'get',
         dataType: 'json',
         timeout: 1000,
@@ -117,7 +117,7 @@ function TransferMediaMeta(key, counter, media, properties, id)
  * Function:	TransferSeasonsMeta
  *
  * Created on Jan 11, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Transfer seasons meta data from XBMC to Fargo.
  * 
@@ -133,7 +133,7 @@ function TransferSeasonsMeta(key, tvshowid, seasons, properties, id)
                   ',"properties":['+ properties +']},"id":'+ id +'}';
     
     $.ajax({
-        url: '../jsonrpc?request=' + request,
+        url: '../../jsonrpc?request=' + request,
         type: 'get',
         dataType: 'json',
         timeout: 1000,

@@ -6,7 +6,7 @@
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Jun 16, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -100,7 +100,7 @@ function TransferMediaCounter(key, media)
  * Function:	RequestCounter
  *
  * Created on Oct 06, 2013
- * Updated on Jan 28, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: JSON Request XBMC media counter and the media highest id.
  * 
@@ -114,7 +114,7 @@ function RequestCounter(library, id, key)
                       '"params":{"limits":{"start":0,"end":1}},"id":"' + id + '"}';
     
     // Get media total (counter) from XBMC.
-    $.getJSON("../jsonrpc?request=" + counter_req, function(json)
+    $.getJSON("../../jsonrpc?request=" + counter_req, function(json)
     {
         json.key = key;
         TransferData(json, cIMPORT);
@@ -161,7 +161,7 @@ function SearchAndTransferTitle(key, media, xbmcid, title)
  * Function:	TransferTitle
  *
  * Created on Jan 28, 2014
- * Updated on Feb 07, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: JSON Request XBMC media title and transfer title to Fargo.
  * 
@@ -176,7 +176,7 @@ function TransferTitle(key, field, library, xbmcid, title, id)
                      '"method": "' + library + '", "id": "'+ id +'"}';
     
     // Get media total (counter) from XBMC.
-    $.getJSON("../jsonrpc?request=" + search_req, function(json)
+    $.getJSON("../../jsonrpc?request=" + search_req, function(json)
     {
         json.key = key;
         json.xbmcid = xbmcid;
@@ -188,7 +188,7 @@ function TransferTitle(key, field, library, xbmcid, title, id)
  * Function:	TransferTitleId
  *
  * Created on Feb 03, 2014
- * Updated on Feb 03, 2014
+ * Updated on Jun 14, 2014
  *
  * Description: JSON Request XBMC media title and transfer the title id to Fargo.
  * 
@@ -203,7 +203,7 @@ function TransferTitleId(key, library, typeid, xbmcid, id)
     var search_req = '{"jsonrpc":"2.0","method":"' + library + '","params":{"'+ typeid +'":'+ xbmcid +'},"id":'+ id +'}';  
     
     // Get media total (counter) from XBMC.
-    $.getJSON("../jsonrpc?request=" + search_req, function(json)
+    $.getJSON("../../jsonrpc?request=" + search_req, function(json)
     {
         json.key = key;
         //json.xbmcid = xbmcid;
@@ -215,7 +215,7 @@ function TransferTitleId(key, library, typeid, xbmcid, id)
  * Function:	TransferMovie
  *
  * Created on Oct 07, 2013
- * Updated on Jan 17, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Transfer movie from XBMC to Fargo.
  * 
@@ -244,7 +244,7 @@ function TransferMovie(key, xbmcid, fargoid)
                    '"thumbnail","file","sorttitle","resume","setid","dateadded","tag","art"]},"id":'+ id +'}'; 
     
     $.ajax({
-        url: '../jsonrpc?request=' + request,
+        url: '../../jsonrpc?request=' + request,
         type: 'get',
         dataType: 'json',
         timeout: 1000,
@@ -310,7 +310,7 @@ function TransferMovie(key, xbmcid, fargoid)
  * Function:	TransferMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Jan 10, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Transfer movie set from XBMC to Fargo.
  * 
@@ -336,7 +336,7 @@ function TransferMovieSet(key, xbmcid, fargoid)
                    '"properties":["title","playcount","art","thumbnail"]},"id":'+ id +'}';
     
     $.ajax({
-        url: '../jsonrpc?request=' + request,
+        url: '../../jsonrpc?request=' + request,
         type: 'get',
         dataType: 'json',
         timeout: 1000,
@@ -402,7 +402,7 @@ function TransferMovieSet(key, xbmcid, fargoid)
  * Function:	TransferTVShow
  *
  * Created on Oct 07, 2013
- * Updated on Jan 10, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Transfer TV Show from XBMC to Fargo.
  * 
@@ -431,7 +431,7 @@ function TransferTVShow(key, xbmcid, fargoid)
                    '"tag","art"]},"id":'+ id +'}';
     
     $.ajax({
-        url: '../jsonrpc?request=' + request,
+        url: '../../jsonrpc?request=' + request,
         type: 'get',
         dataType: 'json',
         timeout: 1000,
@@ -498,7 +498,7 @@ function TransferTVShow(key, xbmcid, fargoid)
  * Function:	TransferTVShowSeason
  *
  * Created on Oct 18, 2013
- * Updated on Jan 20, 2013
+ * Updated on Jun 17, 2013
  *
  * Description: Transfer TV Show Season from XBMC to Fargo.
  * 
@@ -526,7 +526,7 @@ function TransferTVShowSeason(key, xbmcid, fargoid)
                   '"playcount","thumbnail"]},"id":' + id + '}';
     
     $.ajax({
-        url: '../jsonrpc?request=' + request,
+        url: '../../jsonrpc?request=' + request,
         type: 'get',
         dataType: 'json',
         timeout: 1000,
@@ -595,7 +595,7 @@ function TransferTVShowSeason(key, xbmcid, fargoid)
  * Function:	TransferTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Jan 10, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Transfer TV Show Episode from XBMC to Fargo.
  * 
@@ -624,7 +624,7 @@ function TransferTVShowEpisode(key, xbmcid, fargoid)
                    '"writer","director","art"]},"id":'+ id +'}';
     
     $.ajax({
-        url: '../jsonrpc?request=' + request,
+        url: '../../jsonrpc?request=' + request,
         type: 'get',
         dataType: 'json',
         timeout: 1000,
@@ -691,7 +691,7 @@ function TransferTVShowEpisode(key, xbmcid, fargoid)
  * Function:	TransferAlbum
  *
  * Created on Jul 13, 2013
- * Updated on Jan 10, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Transfer music album from XBMC to Fargo.
  * 
@@ -719,7 +719,7 @@ function TransferAlbum(key, xbmcid, fargoid)
                    '"thumbnail","playcount","genreid","artistid","displayartist"]},"id":'+ id +'}';
     
     $.ajax({
-        url: '../jsonrpc?request=' + request,
+        url: '../../jsonrpc?request=' + request,
         type: 'get',
         dataType: 'json',
         timeout: 1000,

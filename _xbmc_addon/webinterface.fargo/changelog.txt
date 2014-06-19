@@ -1,0 +1,12 @@
+Version 0.1.4:
+- Export web site setting to config file script created.
+- Same small updates.
+
+Version 0.1.3:
+- Added Fargo Web Site setting.
+
+Version 0.1.2:
+- Updated icon and text.
+
+Version 0.1.1:
+- Initial version.

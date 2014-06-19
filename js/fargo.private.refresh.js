@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Jun 02, 2014
+ * Updated on Jun 17, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -228,13 +228,13 @@ function StartRefresh(type, fargoid, xbmcid)
             if (enter == 1) 
             {
                 enter = 2;
-                url = GetTransferUrl() + "/fargo/transfer.html?action=search&media=" + type + "&xbmcid=" + xbmcid 
+                url = GetTransferUrl() + "transfer.html?action=search&media=" + type + "&xbmcid=" + xbmcid 
                                        + "&title=" + gMEDIA.TITLE + "&key=" + gCONNECT.KEY;
             }
             else if (enter == 2)
             {
                 enter = 999;    
-                url = GetTransferUrl() + "/fargo/transfer.html?action=" + type + "&xbmcid=" + xbmcid + "&fargoid=" + 
+                url = GetTransferUrl() + "transfer.html?action=" + type + "&xbmcid=" + xbmcid + "&fargoid=" + 
                                        + fargoid + "&key=" + gCONNECT.KEY;                
             }
             
