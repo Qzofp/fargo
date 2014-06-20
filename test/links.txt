@@ -1,1 +1,0 @@
-http://tutorialzine.com/2010/05/sweet-pages-a-jquery-pagination-solution/
