@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 02, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -199,7 +199,7 @@ function isDecimal(n){
  * Function:	HashPassword
  *
  * Created on Jun 09, 2013
- * Updated on Oct 31, 2013
+ * Updated on Jun 21, 2014
  *
  * Description: Hash password.
  * 
@@ -214,7 +214,7 @@ function HashPassword(string)
     if ($.trim(string).length)
     {    
         GetFargoSetting("Hash"); //Returns gSTATE.SETTING
-        password = CryptoJS.MD5(CryptoJS.MD5(string) + gSTATE.SETTING);
+        password = CryptoJS.SHA256(CryptoJS.SHA256(string) + gSTATE.SETTING);
     }
     
     return password;

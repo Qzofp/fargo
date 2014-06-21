@@ -7,7 +7,7 @@
  * File:    meta.php
  *
  * Created on Jan 10, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: Fargo's meta data import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -133,7 +133,7 @@ function ProcessMetaData($db, $aData)
  * Function:	CreateMediaHash
  *
  * Created on Jun 09, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: Create media hash. 
  *
@@ -155,28 +155,28 @@ function CreateMediaHash($aData, $type)
             switch ($type)
             {
                 case "movies"   : $file      = !empty($aData["result"][$type][$i]["file"])?$aData["result"][$type][$i]["file"]:null; 
-                                  $aHash[$i] = md5($aData["result"][$type][$i]["label"].$file);
+                                  $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"].$file);
                                   break;
                           
-                case "sets"     : $aHash[$i] = md5($aData["result"][$type][$i]["label"]);
+                case "sets"     : $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"]);
                                   break;
                 
                 case "tvshows"  : $file      = !empty($aData["result"][$type][$i]["file"])?$aData["result"][$type][$i]["file"]:null; 
-                                  $aHash[$i] = md5($aData["result"][$type][$i]["label"].$file);
+                                  $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"].$file);
                                   break;
                               
                 case "seasons"  : $showtitle = !empty($aData["result"][$type][$i]["showtitle"])?$aData["result"][$type][$i]["showtitle"]:null;
-                                  $aHash[$i] = md5($aData["result"][$type][$i]["label"].$showtitle);
+                                  $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"].$showtitle);
                                   break;
                 
-                case "episodes" : $file      = !empty($aData["result"][$type][$i]["file"])?$aData["result"][$type][$i]["file"]:null; 
-                                  $aHash[$i] = md5($aData["result"][$type][$i]["title"].$file);
-                                  //echo $aData["result"][$type][$i]["label"].$file."\n"; // debug
+                case "episodes" : $episode   = !empty($aData["result"][$type][$i]["episode"])?$aData["result"][$type][$i]["episode"]:0;
+                                  $file      = !empty($aData["result"][$type][$i]["file"])?$aData["result"][$type][$i]["file"]:null; 
+                                  $aHash[$i] = hash("sha256", $episode.$file);
                                   break;
                               
                 case "albums"   : $artist    = !empty($aData["result"][$type][$i]["artist"])?implode("|", $aData["result"][$type][$i]["artist"]):null;
                                   $year      = !empty($aData["result"][$type][$i]["year"])?$aData["result"][$type][$i]["year"]:0;
-                                  $aHash[$i] = md5($aData["result"][$type][$i]["label"].$artist.$year);
+                                  $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"].$artist.$year);
                                   break;
             }     
         }
@@ -208,44 +208,12 @@ function ImportMediaMeta($db, $aData, $aHash, $type, $id)
            $sql .= "(".$aData["result"][$type][$i][$id].", '".$aData["result"][$type][$i]['playcount']."', unhex('$aHash[$i]')),"; 
         }
 
-        $sql .= "(".$aData["result"][$type][$i][$id].", '".$aData["result"][$type][$i]['playcount']."', unhex('$aHash[$i]'))";          
+        $sql .= "(".$aData["result"][$type][$i][$id].", '".$aData["result"][$type][$i]['playcount']."', unhex('$aHash[$i]'))";
+        
         QueryDatabase($db, $sql);
     }
     
     if ($type == "seasons") {
         UpdateStatus($db, "ImportEnd", CountRows($db, "seasonsmeta"));
     }
-}  
-
-/*
- * Function:	ImportSeasonsMeta
- *
- * Created on Jan 10, 2014
- * Updated on Jun 15, 2014
- *
- * Description: Import media meta data. 
- *
- * In:  $db, $aData
- * Out: -
- *
- */
-/*function ImportSeasonsMeta($db, $aData) // Obsolete?
-{       
-    if (empty($aData["error"]) && !empty($aData["result"]))
-    {
-        $max = count($aData["result"]["seasons"]);
-        $sql = "INSERT INTO seasonsmeta(seasonid, playcount) VALUES";
-                
-        for ($i = 0; $i < $max - 1; $i++) {
-           $sql .= "(".$aData["result"]["seasons"][$i]["seasonid"].", '".$aData["result"]["seasons"][$i]['playcount']."'),"; 
-        }
-
-        $sql .= "(".$aData["result"]["seasons"][$i]["seasonid"].", '".$aData["result"]["seasons"][$i]['playcount']."')"; 
-        QueryDatabase($db, $sql);
-        
-        // Update number of seasons (row count).
-        UpdateStatus($db, "XbmcSeasonsEnd", CountRows($db, "seasonsmeta"));
-    
-        //QueryDatabase($db, $sql);
-    }
-}*/
+}

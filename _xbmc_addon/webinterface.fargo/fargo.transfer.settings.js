@@ -6,7 +6,7 @@
  * File:    fargo.transfer.settings.js
  *
  * Created on Jul 14, 2013
- * Updated on Jun 19, 2014
+ * Updated on Jun 20, 2014
  *
  * Description: Fargo Transfer jQuery and Javascript settings page.
  * 
@@ -26,4 +26,4 @@ var cMETA   = "meta.php";
 var cSEARCH = "search.php";
 
 // Constants.
-var cBULKMAX = 25; // 250; // Max. items imported.
+var cBULKMAX = 125; // 250; // Max. items imported.

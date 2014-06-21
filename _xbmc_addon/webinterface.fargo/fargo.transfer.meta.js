@@ -6,7 +6,7 @@
  * File:    fargo.transfer.meta.js
  *
  * Created on Jan 10, 2014
- * Updated on Jun 17, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: Fargo Transfer Meta Data jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	TransferMeta
  *
  * Created on Jan 10, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: Transfers meta data from XBMC to Fargo.
  * 
@@ -49,7 +49,7 @@ function TransferMeta()
                           break;
                          
         case "episodes" : // libTVShowEpisodes -> library id = 5.
-                          TransferMediaMeta(aRequest.key, aRequest.counter, 'VideoLibrary.GetEpisodes', '"title","playcount","file"', 5);
+                          TransferMediaMeta(aRequest.key, aRequest.counter, 'VideoLibrary.GetEpisodes', '"playcount","episode","file"', 5);
                           break;                         
         
         case "albums"   : // libAlbums -> library id = 6.

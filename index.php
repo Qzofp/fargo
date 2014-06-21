@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on May 26, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -22,7 +22,7 @@ if(!isset($_SESSION['LOGIN']))
     $user = "&nbsp;";
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", 
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js",
-                         "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
+                         "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js",
                          "js/jquery.slimscroll.min.js", 
                          "js/fargo.public.constants.js",
                          "js/fargo.common.js", 
@@ -41,7 +41,7 @@ else
     $user = "Welcome: <span>".$_SESSION['USER']."</span>";
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js",
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js",
-                         "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js",
+                         "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js",
                          "js/jquery.slimscroll.min.js",
                          "js/fargo.public.constants.js",
                          "js/fargo.private.constants.js",

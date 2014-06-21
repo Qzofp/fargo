@@ -6,7 +6,7 @@
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Jun 17, 2014
+ * Updated on Jun 20, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -22,7 +22,7 @@ var gTRIGGER = {
     STEP2: 2,
     READY: false,
     CANCEL: false,
-    BULK: 25, // 250; // Max. items imported.
+    BULK: 125, // 250; // Max. items imported.
     STATUS : -1    
 };
 

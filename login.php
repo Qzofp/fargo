@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.1
+ * Version: 0.5
  *
  * File:    login.php
  *
  * Created on May 04, 2013
- * Updated on May 04, 2013
+ * Updated on Jun 21, 2014
  *
  * Description: Fargo's login page. 
  *
@@ -56,5 +56,3 @@ if ($rows > 0)
 else {
     echo false;
 }
-
-?>

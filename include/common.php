@@ -7,7 +7,7 @@
  * File:    common.php
  *
  * Created on Mar 03, 2013
- * Updated on Feb 24, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: The main Fargo functions page.
  *
@@ -176,7 +176,7 @@ function ShowHiddenActionBox()
  * Function:	GenerateKey
  *
  * Created on Sep 28, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: Generate key and store it in the database status table.
  *
@@ -186,7 +186,7 @@ function ShowHiddenActionBox()
  */
 function GenerateKey($db)
 {
-    $key = str_shuffle(md5(time()));    
+    $key = str_shuffle(hash("sha256", (time())));  
     UpdateStatus($db, "ImportKey", $key);
     
     return $key;
@@ -289,7 +289,7 @@ function UpdateStatus($db, $name, $value)
  * Function:	IncrementStatus
  *
  * Created on Sep 16, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: Increment value in the status table.
  *
@@ -300,7 +300,7 @@ function UpdateStatus($db, $name, $value)
 function IncrementStatus($db, $name, $incr)
 {
     $sql = "UPDATE status ".
-           "SET `value`= `value` + $incr ".
+           "SET `value` = `value` + $incr ".
            "WHERE `name` = '$name'";
     
     QueryDatabase($db, $sql);    

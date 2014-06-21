@@ -1653,7 +1653,7 @@ function ProcessSetting($name)
     $value = GetSetting($db, $name);
     
     if ($name == "Hash") {
-        $value = md5($value);
+        $value = hash("sha512", $value);
     }
     
     $aJson["value"] = $value;
