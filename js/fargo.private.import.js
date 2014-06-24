@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jun 17, 2014
+ * Updated on Jun 24, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -428,7 +428,7 @@ function ShowMetaProgress($prg, type, i, end)
  * Function:	StartImportHandler
  *
  * Created on Jan 14, 2014
- * Updated on Feb 21, 2014
+ * Updated on Jun 24, 2014
  *
  * Description:  Start the media import handler.
  * 
@@ -448,12 +448,7 @@ function StartImportHandler(media, type, next, factor)
     
     var delta = gTRIGGER.END - gTRIGGER.START;     
     
-    if (type == "seasons") {
-        gTRIGGER.STEP2 = next - 2;
-    }
-    else {
-        gTRIGGER.STEP2 = next - 1;
-    }
+    gTRIGGER.STEP2 = next - 2;
 
     $prg.progressbar({value : 0 });
     $msg.html(cSTATUS.WAIT);

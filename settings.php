@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Feb 18, 2014
+ * Updated on Jun 21, 2014
  *
  * Description: Fargo's settings page.
  *
@@ -17,7 +17,7 @@
 define("cHOST",  "127.0.0.1");
 define("cDBASE", "fargo");
 define("cUSER",  "fargo_dbo");
-define("cPASS",  "Mime1276"); 
+define("cPASS",  "fargo");
 
 // Path settings.
 define("cMOVIESTHUMBS", "images/movies/thumbs");

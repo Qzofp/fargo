@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jun 17, 2014
+ * Updated on Jun 24, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -84,8 +84,8 @@ switch($action)
                       else {
                           $aJson = LogEvent("Warning", "Unauthorized init action call!");
                       }
-                      break;            
-    
+                      break;    
+                          
     case "import"   : if($login)
                       {
                           $mode  = GetPageValue('mode');
@@ -142,20 +142,7 @@ switch($action)
                          $aJson = LogEvent("Warning", "Unauthorized series (meta data) action call!");
                       }                    
                       break;  
-                      
-    /*                  
-    case "convert" : // Convert TV show id's to season id's for refresh serie.
-                     if($login)
-                     { 
-                        $id    = GetPageValue('id');
-                        $aJson = ConvertTVShowToSeasonID($id);
-                     }
-                     else {
-                        $aJson = LogEvent("Warning", "Unauthorized convert action call!");
-                     }                    
-                     break;                      
-    */ 
-                      
+                                            
     case "property" : if($login)
                       {
                          $option = GetPageValue('option');
@@ -509,7 +496,7 @@ function ResetStatus($media)
  * Function:	GetCountersStatus
  *
  * Created on Jan 03, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 24, 2014
  *
  * Description: Get status counter
  *
@@ -525,16 +512,11 @@ function GetCountersStatus($media)
     $aJson['xbmc']['start'] = GetStatus($db, "ImportStart");
     
     if ($media == "tvseasons") {
-        $aJson['xbmc']['end'] = CountRows($db, "tvshows"); 
+        $aJson['xbmc']['end'] = CountRows($db, "tvshows");
     }
     else {
-        $aJson['xbmc']['end'] = GetStatus($db, "ImportEnd");   
+        $aJson['xbmc']['end'] = GetStatus($db, "ImportEnd");
     }
-    
-    //$sql = CreateMetaStartQuery($db, $media);
-  
-    //$aJson['xbmc']['start'] = GetItemFromDatabase($db, "id", $sql);
-    //$aJson['xbmc']['end']   = GetStatus($db, "Xbmc".$media."End");
      
     $aJson['import']        = GetStatus($db, "ImportCounter");
     
@@ -662,7 +644,7 @@ function ProcessImportMode($mode)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jun 24, 2014
  *
  * Description: Reports the status of the import media process. 
  *
@@ -693,7 +675,6 @@ function GetMediaStatus($media, $id, $xbmcid)
                                 break;                      
                       
         case "albums"         : $aJson = GetImportStatus($db, "albums", "albumid", "xbmcid", $id, $xbmcid, cALBUMSTHUMBS);
-                                //$aJson = GetMusicImportStatus($db, $id, $xbmcid);
                                 break;                      
     }      
  
@@ -705,7 +686,7 @@ function GetMediaStatus($media, $id, $xbmcid)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Jun 15, 2014
+ * Updated on Jun 24, 2014
  *
  * Description: Reports the status of the import process.
  *
@@ -716,15 +697,9 @@ function GetMediaStatus($media, $id, $xbmcid)
 function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
 {
     $aJson['thumbs'] = $thumbs;
-
-    //$id -= 1;
-    
-    //$sql = "SELECT $typeid FROM ".$table."meta ".
-    //       "ORDER BY $typeid LIMIT $id, 1"; 
     
     $sql = "SELECT mediaid FROM tmp_import ".
            "WHERE id = $id"; 
-       //  "ORDER BY mediaid LIMIT $id, 1"; 
     
     $aJson['xbmcid'] = GetItemFromDatabase($db, $typeid, $sql);
 
@@ -748,7 +723,7 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
  * Function:	GetSeriesImportStatus
  *
  * Created on Jan 20, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 24, 2014
  *
  * Description: Reports the status of the series (seasons, episodes) import process.
  *
@@ -759,12 +734,6 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
 function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
 {
     $aJson['thumbs'] = $thumbs;
-
-    /*
-    $id -= 1;    
-    $sql = "SELECT $typeid FROM ".$table."meta ".
-           "ORDER BY $typeid LIMIT $id, 1";
-    */
     
     $sql = "SELECT mediaid FROM tmp_import ".
            "WHERE id = $id"; 
@@ -858,7 +827,7 @@ function InitMeta($type)
  * Function:	CheckMeta
  *
  * Created on Feb 12, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 24, 2014
  *
  * Description: Initialize meta data (empty meta tables).
  *
@@ -871,20 +840,7 @@ function CheckMeta($type)
     $aJson = null;
     $db = OpenDatabase();
 
-    /*
-    if ($type != "music") {
-        $total = CountRows($db, $type."meta");
-    }
-    else {
-        $total = CountRows($db, "albumsmeta");
-    }    
-    */
-    
-    $aJson['total']  = CountRows($db, $type."meta");
-    
-    //$aJson['import'] = CountRows($db, "tmp_import");
-    //$end   = GetStatus($db, "Xbmc".$type."End");
-    
+    $aJson['total'] = CountRows($db, $type."meta");    
     $end = GetStatus($db, "ImportEnd");
     
     $aJson['check'] = false;
