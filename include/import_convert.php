@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Jun 20, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -203,7 +203,7 @@ function ConvertTVShowSeason($db, $aXbmc)
  * Function:	ConvertTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Jun 21, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Convert xbmc TV Show Episode items. For instance to readably URL's.
  *
@@ -214,7 +214,7 @@ function ConvertTVShowSeason($db, $aXbmc)
 function ConvertTVShowEpisode($db, $aXbmc)
 {
     $aEpisode[0]  = $aXbmc["episodeid"];
-    $aEpisode[1]  =  GetTVShowFargoId($db, $aXbmc["tvshowid"]);   
+    $aEpisode[1]  = GetTVShowFargoId($db, $aXbmc["tvshowid"]);   
     $aEpisode[2]  = $aXbmc["label"]; // title
     $aEpisode[3]  = !empty($aXbmc["originaltitle"])?$aXbmc["originaltitle"]:null;
     

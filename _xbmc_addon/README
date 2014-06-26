@@ -1,9 +1,13 @@
-XBMC Fargo "Addon" 
-------------------
+XBMC Fargo Addon
+----------------
 To import the data from XBMC to Fargo you need to install the Fargo addon in XBMC.
 Use this zip in the repo to install it.
 
+Configure Fargo Addon
+---------------------
+Fill in the Fargo web site address. This is the address (url) where Fargo is hosted.
+Click "Export Web Site Address to config file." and you're done.
 
-Config Fargo "Addon" 
---------------------
-Open the fargo.settings.js file and enter your Fargo web site URL.
+i.e.:
+Web Site Address: fargo.qzofp.nl
+Export Web Site Address to config file.

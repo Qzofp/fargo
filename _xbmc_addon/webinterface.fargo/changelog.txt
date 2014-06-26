@@ -1,3 +1,7 @@
+Version 0.1.5:
+- Changed bulk import from 25 to 125.
+- Bug fixes.
+
 Version 0.1.4:
 - Export web site setting to config file script created.
 - Same small updates.

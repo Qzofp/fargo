@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jun 16, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -531,7 +531,7 @@ function RefreshTVShow($db, $aError, $poster, $fanart, $aResult, $id)
  * Function:	RefreshTVShowSeason
  *
  * Created on Dec 02, 2013
- * Updated on Feb 18, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Refresh the tv show season. 
  *
@@ -543,7 +543,7 @@ function RefreshTVShowSeason($db, $aError, $poster, $aResult, $id)
 {
     if (empty($aError))
     {
-        $aSeason = ConvertTVShowSeason($aResult["seasondetails"]);
+        $aSeason = ConvertTVShowSeason($db, $aResult["seasondetails"]);
         
         DeleteFile("../".cSEASONSTHUMBS."/".$aSeason[0].".jpg");
 
@@ -564,7 +564,7 @@ function RefreshTVShowSeason($db, $aError, $poster, $aResult, $id)
  * Function:	RefreshTVShowEpisode
  *
  * Created on Nov 29, 2013
- * Updated on Feb 18, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Refresh the tv show episode. 
  *
@@ -576,7 +576,7 @@ function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
 {   
     if (empty($aError))
     {
-        $aEpisode = ConvertTVShowEpisode($aResult["episodedetails"]);
+        $aEpisode = ConvertTVShowEpisode($db, $aResult["episodedetails"]);
     
         DeleteFile("../".cEPISODESTHUMBS."/".$aEpisode[0].".jpg");  
         

@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.5
  *
  * File:    search.php
  *
  * Created on Jan 28, 2014
- * Updated on Feb 18, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Fargo's search page. This page is called from XBMC which push the data to Fargo.
  *
@@ -85,7 +85,7 @@ function ReceiveSearchResults()
  * Function:	ProcessSearchResults
  *
  * Created on Jan 29, 2014
- * Updated on Feb 18, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Process search results from XBMC. 
  *
@@ -95,7 +95,7 @@ function ReceiveSearchResults()
  */
 function ProcessSearchResults($db, $aResults)
 {
-    if (!empty($aResults["result"]))
+    if (!empty($aResults))
     {    
         switch($aResults["id"])
         {
@@ -133,7 +133,7 @@ function ProcessSearchResults($db, $aResults)
  * Function:	UpdateSearchResults
  *
  * Created on Jan 29, 2014
- * Updated on Feb 18, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Update search results for refresh purposes.
  *
@@ -166,7 +166,7 @@ function UpdateSearchResults($db, $aResults, $type, $typeid)
             UpdateStatus($db, "ImportStatus", $status); // No match.
         }
     }
-    else if ($aError["code"] == cTRANSFER_INVALID) {  // Not found.
+    else if ($aResults["error"]["code"] == cTRANSFER_INVALID) {  // Not found.
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND);
     }
 }
@@ -175,7 +175,7 @@ function UpdateSearchResults($db, $aResults, $type, $typeid)
  * Function:	CheckAndUpdateResults
  *
  * Created on Feb 03, 2014
- * Updated on Feb 18, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Check if the id exists and then update the status.
  *
@@ -193,7 +193,7 @@ function CheckAndUpdateResults($db, $aResults, $details, $typeid)
             UpdateStatus($db, "ImportStatus", $aResults["result"][$details][$typeid]);
         }
     }
-    else if ($aError["code"] == cTRANSFER_INVALID) {  // Not found.
+    else if ($aResults["error"]["code"] == cTRANSFER_INVALID) {  // Not found.
         UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND);
     }
 }
