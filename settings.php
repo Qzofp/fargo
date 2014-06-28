@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Jun 21, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: Fargo's settings page.
  *
@@ -32,6 +32,8 @@ define("cEPISODESTHUMBS", "images/episodes/thumbs");
 //define("cEPISODESSFANART", "images/episodes/fanart");
 define("cALBUMSTHUMBS", "images/albums/thumbs");
 define("cALBUMSCOVERS", "images/albums/covers");
+define("cSONGSTHUMBS", "images/songs/thumbs");
+define("cSONGSCOVERS", "images/songs/covers");
 
 // URL settings.
 define("cIMDB", "http://www.imdb.com/title/");

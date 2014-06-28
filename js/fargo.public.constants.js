@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.public.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Jun 21, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Fargo's jQuery and Javascript public contants and globals.
  *
@@ -43,6 +43,7 @@ var cBUT = {
     SEASONS: "Seasons",
     EPISODES: "Episodes",
     ALBUMS: "Albums",
+    SONGS: "Songs",
     BACK: "Back to "
 };
 
@@ -53,8 +54,8 @@ var cSORT = {
     DESC: "Descending",
     NEW: "Latest Additions",
     OLD: "Oldest Additions",
-    SEASON: "Season",
-    EPISODE: "Episode"
+    SEASON: "Seasons",
+    EPISODE: "Episodes"
 };
 
 // Text constants.

@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    meta.php
  *
  * Created on Jan 10, 2014
- * Updated on Jun 21, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Fargo's meta data import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -84,7 +84,7 @@ function ReceiveMetaData()
  * Function:	ProcessMetaData
  *
  * Created on Jan 10, 2014
- * Updated on Jun 16, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Process bulk data from XBMC. 
  *
@@ -125,7 +125,12 @@ function ProcessMetaData($db, $aData)
         // libAlbums -> library id = 6.
         case 6: $aHash = CreateMediaHash($aData, "albums");
                 ImportMediaMeta($db, $aData, $aHash, "albums", "albumid");
-                break;            
+                break;
+            
+        // libSongs -> library id = 7.
+        case 7: $aHash = CreateMediaHash($aData, "songs");
+                ImportMediaMeta($db, $aData, $aHash, "songs", "songid");
+                break;              
     }
 }
 
@@ -133,7 +138,7 @@ function ProcessMetaData($db, $aData)
  * Function:	CreateMediaHash
  *
  * Created on Jun 09, 2014
- * Updated on Jun 21, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Create media hash. 
  *
@@ -178,6 +183,11 @@ function CreateMediaHash($aData, $type)
                                   $year      = !empty($aData["result"][$type][$i]["year"])?$aData["result"][$type][$i]["year"]:0;
                                   $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"].$artist.$year);
                                   break;
+                              
+                case "songs"    : $track     = !empty($aData["result"][$type][$i]["track"])?$aData["result"][$type][$i]["track"]:0;
+                                  $file      = !empty($aData["result"][$type][$i]["file"])?$aData["result"][$type][$i]["file"]:null; 
+                                  $aHash[$i] = hash("sha256", $track.$aData["result"][$type][$i]["label"].$file);
+                                  break;                              
             }     
         }
     }    

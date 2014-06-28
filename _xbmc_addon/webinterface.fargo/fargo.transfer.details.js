@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo Transfer
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Jun 17, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	Transfer
  *
  * Created on Jul 13, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Transfers data from XBMC to Fargo.
  * 
@@ -53,8 +53,11 @@ function Transfer()
         case "episodes" : TransferTVShowEpisode(aRequest.key, aRequest.xbmcid, aRequest.fargoid);
                           break;                         
         
-        case "albums"    : TransferAlbum(aRequest.key, aRequest.xbmcid, aRequest.fargoid); 
-                          break;            
+        case "albums"   : TransferAlbum(aRequest.key, aRequest.xbmcid, aRequest.fargoid); 
+                          break;
+        
+        case "songs"    : TransferSong(aRequest.key, aRequest.xbmcid, aRequest.fargoid); 
+                          break;                          
     }
 }
 
@@ -62,7 +65,7 @@ function Transfer()
  * Function:	TransferMediaCounter
  *
  * Created on Jul 22, 2013
- * Updated on Jun 16, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Transfers media counter (e.g. total number of movies) from XBMC to Fargo.
  * 
@@ -93,6 +96,10 @@ function TransferMediaCounter(key, media)
         case "albums"   : // libMediaCounter -> library id = 1.
                           RequestCounter("AudioLibrary.GetAlbums", 1, key);
                           break;
+                          
+        case "songs"    : // libMediaCounter -> library id = 1.
+                          RequestCounter("AudioLibrary.GetSongs", 1, key);
+                          break;                          
     }
 }
 
@@ -735,6 +742,101 @@ function TransferAlbum(key, xbmcid, fargoid)
         
                 // Show title.
                 $("#info").text(json.result.albumdetails.label);
+        
+                // Draw image on canvas and wait until it's doen.
+                a = DrawImageOnCanvas("poster", poster);
+                b = DrawImageOnCanvas("fanart", fanart);
+
+                // Check if image loaded successfully.
+                a.done( function(a_check) { a_chk = a_check; });
+                b.done( function(b_check) { b_chk = b_check; });
+        
+                // Wait until DrawImageOnCanvas functions are ready.
+                $.when(a, b).done(function()
+                { 
+                    json.fargoid = fargoid;
+                    json.poster  = GetImageFromCanvas(a_chk, poster, "poster", 0.7);
+                    //json.fanart  = GetImageFromCanvas(b_chk, fanart, "fanart", 0.7);
+                    
+                    TransferData(json, cIMPORT); // Transfer the data with Ajax.
+                }); // End when.         
+            }
+            else if (json.error.code == -32602) { // TV Show not found.
+                TransferData(json, cIMPORT);
+            }
+        }, // End success.
+        error: function(xhr, textStatus, errorThrown ) {
+            if (textStatus == 'timeout') 
+            {
+                this.tryCount++;
+                if (this.tryCount <= this.retryLimit) 
+                {
+                    //try again
+                    $.ajax(this);
+                    return;
+                }
+                console.log('We have tried ' + this.retryLimit + ' times and it is still not working. We give in. Sorry.');
+                return;
+            }
+            if (xhr.status == 500) {
+                console.log('Oops! There seems to be a server problem, please try again later.');
+            } 
+            else {
+                console.log('Oops! There was a problem, sorry.');
+            }
+        } // End error.
+    }); // End Ajax.    
+}
+
+/*
+ * Function:	TransferSong
+ *
+ * Created on Jun 27, 2014
+ * Updated on Jun 28, 2014
+ *
+ * Description: Transfer music song from XBMC to Fargo.
+ * 
+ * In:	key, xbmcid, fargoid
+ * Out:	Transfered music song.
+ *
+ */
+function TransferSong(key, xbmcid, fargoid)
+{
+    var a, b, a_chk, b_chk;
+    var id, poster, fanart;
+    
+    if (fargoid < 0) {
+        id = 52; // Import song.
+    }
+    else {
+        id = 53; // Refresh song.
+    }    
+    
+    // libSongs -> library id = 52 or 53.
+    var request = '{"jsonrpc":"2.0","method":"AudioLibrary.GetSongDetails","params":' +
+                   '{"songid":' + xbmcid + ',' +
+                   '"properties":["title","artist","artistid","album","albumid","albumartist","albumartistid","genre",' + 
+                   '"year","rating","track","duration","comment","lyrics","musicbrainztrackid","musicbrainzartistid",' + 
+                   '"musicbrainzalbumid","musicbrainzalbumartistid","fanart","thumbnail","playcount","file",' + 
+                   '"lastplayed","disc","genreid","displayartist"]},"id":'+ id +'}';  
+    
+    $.ajax({
+        url: '../../jsonrpc?request=' + request,
+        type: 'get',
+        dataType: 'json',
+        timeout: 1000,
+        tryCount: 0,
+        retryLimit: 3,
+        success: function(json) 
+        {            
+            json.key = key; 
+            if (json.result && json.result.songdetails)
+            {
+                poster = CreateImageUrl(json.result.songdetails.thumbnail);
+                fanart = ""; //CreateImageUrl(json.result.songdetails.fanart);
+        
+                // Show title.
+                $("#info").text(json.result.songdetails.label);
         
                 // Draw image on canvas and wait until it's doen.
                 a = DrawImageOnCanvas("poster", poster);

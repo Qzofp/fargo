@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on May 29, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -968,41 +968,6 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
 }
 
 /*
- * Function:	CreateMediaQuery
- *
- * Created on Apr 08, 2013
- * Updated on May 29, 2014
- *
- * Description: Create the sql query for the media table. 
- *
- * In:  $table, $metaid, $title, $genre, $year, $sort, $login
- * Out: $sql
- *
- */
-/*function CreateMediaQuery($table, $metaid, $title, $genre, $year, $sort, $login)
-{     
-    if (!$login)
-    {
-        $sql = "SELECT t.id, t.xbmcid, NULL, t.hide, t.refresh, t.title, NULL, NULL ".
-               "FROM $table t ";
-        
-        $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
-    }
-    else
-    {
-        $sql = "SELECT t.id, t.xbmcid, IF (m.playcount IS NULL, -1, m.playcount), t.hide, t.refresh, t.title, NULL, NULL ".
-               "FROM $table t ".
-               "LEFT JOIN ".$table."meta m ON (t.xbmcid = m.$metaid) ";
-        
-        $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);        
-    }    
-    
-    $sql .= CreateQuerySortQrder("t.", $title);
-       
-    return $sql;
-}*/
-
-/*
  * Function:	CreateMoviesQuery
  *
  * Created on Apr 08, 2013
@@ -1513,7 +1478,7 @@ function QueryMedia($db, $sql, $page, $end)
  * Function:	GetSystemOptionProperties
  *
  * Created on May 20, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: Get the system option properties page from the database table settings. 
  *
@@ -1528,10 +1493,14 @@ function GetSystemOptionProperties($name, $login)
     
     switch(strtolower($name))
     {
-        case "statistics" : $html = GetSetting($db, $name);                                
+        case "statistics" : $html = GetSetting($db, $name);                             
                             $html = str_replace("[movies]", CountMedia($db, "movies", $login), $html);
+                            $html = str_replace("[sets]", CountMedia($db, "sets", $login), $html);
                             $html = str_replace("[tvshows]", CountMedia($db, "tvshows", $login), $html);
-                            $html = str_replace("[music]", CountMedia($db, "albums", $login), $html);
+                            $html = str_replace("[seasons]", CountMedia($db, "seasons", $login), $html);
+                            $html = str_replace("[episodes]", CountMedia($db, "episodes", $login), $html);
+                            $html = str_replace("[albums]", CountMedia($db, "albums", $login), $html);
+                            $html = str_replace("[songs]", CountMedia($db, "songs", $login), $html);
                             break;
                                        
         case "settings"   : $html = GetSetting($db, $name);

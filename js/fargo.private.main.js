@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on May 25, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -170,7 +170,7 @@ function ChangeProperty(number, value)
  * Function:	ChangeSubControlBar
  *
  * Created on May 09, 2013
- * Updated on May 25, 2014
+ * Updated on Jun 26, 2014
  *
  * Description: Change the sub control bar for Movies, TV Shows, Music or System.
  *
@@ -207,7 +207,7 @@ function ChangeSubControlBar(media)
                          $control.stop().slideUp("slow", function() {
                             $("#logout").hide();
                             $("#modes, #type, #screen, #title, #genres, #years").show();
-                            $("#type").text(cBUT.ALBUMS);
+                            $("#type").text(cBUT.SONGS);
                             $control.slideDown("slow");
                          }); 
                          break;

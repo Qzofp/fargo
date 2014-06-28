@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo Transfer
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.transfer.meta.js
  *
  * Created on Jan 10, 2014
- * Updated on Jun 21, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Fargo Transfer Meta Data jQuery and Javascript functions page.
  *
@@ -18,7 +18,7 @@
  * Function:	TransferMeta
  *
  * Created on Jan 10, 2014
- * Updated on Jun 21, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Transfers meta data from XBMC to Fargo.
  * 
@@ -54,7 +54,11 @@ function TransferMeta()
         
         case "albums"   : // libAlbums -> library id = 6.
                           TransferMediaMeta(aRequest.key, aRequest.counter, 'AudioLibrary.GetAlbums', '"playcount","artist","year"', 6);
-                          break;         
+                          break;
+                      
+        case "songs"    : // libSongs -> library id = 7.
+                          TransferMediaMeta(aRequest.key, aRequest.counter, 'AudioLibrary.GetSongs', '"playcount","file","track"', 7);
+                          break;                        
     }
 }
 

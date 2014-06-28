@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Jun 26, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -111,7 +111,7 @@ function ConvertMovieSet($aXbmc)
  * Function:	ConvertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on Jun 20, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: Convert xbmc TV Show items. For instance to readably URL's.
  *
@@ -130,7 +130,7 @@ function ConvertTVShow($aXbmc)
     
     $aTVShow[0]  = $aXbmc["tvshowid"];
     $aTVShow[1]  = $aXbmc["label"]; // title
-    $aTVShow[2]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"], "tvshows"):null;
+    $aTVShow[2]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"]):null;
     $aTVShow[3]  = $aYear[0];
     
     $aTVShow[4]  = !empty($aXbmc["rating"])?round($aXbmc["rating"], 2):0;
@@ -171,7 +171,7 @@ function ConvertTVShow($aXbmc)
  * Function:	ConvertTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Jun 20, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: Convert xbmc TV Show Season items. For instance to readably URL's.
  *
@@ -183,11 +183,9 @@ function ConvertTVShowSeason($db, $aXbmc)
 {
     $aSeason[0] = $aXbmc["seasonid"];
     $aSeason[1] = $aXbmc["label"]; // title
-    
-    //$aSeason[2] = $aXbmc["tvshowid"];
-    $aSeason[2] = GetTVShowFargoId($db, $aXbmc["tvshowid"]);
-    
+    $aSeason[2] = GetMediaFargoId($db, "tvshows", "xbmcid", $aXbmc["tvshowid"]);
     $aSeason[3] = !empty($aXbmc["showtitle"])?$aXbmc["showtitle"]:null;    
+    
     $aSeason[4] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0;
     $aSeason[5] = !empty($aXbmc["season"])?$aXbmc["season"]:0;
     $aSeason[6] = !empty($aXbmc["episode"])?$aXbmc["episode"]:0;
@@ -214,7 +212,7 @@ function ConvertTVShowSeason($db, $aXbmc)
 function ConvertTVShowEpisode($db, $aXbmc)
 {
     $aEpisode[0]  = $aXbmc["episodeid"];
-    $aEpisode[1]  = GetTVShowFargoId($db, $aXbmc["tvshowid"]);   
+    $aEpisode[1]  = GetMediaFargoId($db, "tvshows", "xbmcid", $aXbmc["tvshowid"]);   
     $aEpisode[2]  = $aXbmc["label"]; // title
     $aEpisode[3]  = !empty($aXbmc["originaltitle"])?$aXbmc["originaltitle"]:null;
     
@@ -244,33 +242,13 @@ function ConvertTVShowEpisode($db, $aXbmc)
     $aEpisode[21] = hash("sha256", $aEpisode[10].$aEpisode[15]);
     
     return $aEpisode;
-}
-
-/*
- * Function:	GetTVShowFargoId
- *
- * Created on Jun 08, 2014
- * Updated on Jun 08, 2014
- *
- * Description: Get the TV Show's Fargo Id.
- *
- * In:  $db, $tvshowid
- * Out: $id
- *
- */
-function GetTVShowFargoId($db, $tvshowid)
-{
-    $sql = "SELECT id FROM tvshows WHERE xbmcid = $tvshowid";
-    $id = GetItemFromDatabase($db, "id", $sql);
-    
-    return $id;
-}        
+}    
 
 /*
  * Function:	ConvertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Jun 20, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: Convert XBMC album items. For instance to readably URL's.
  *
@@ -281,11 +259,11 @@ function GetTVShowFargoId($db, $tvshowid)
 function ConvertAlbum($aXbmc)
 {
     $aAlbum[0]  = $aXbmc["albumid"];
-    $aAlbum[1]  = $aXbmc["label"];
+    $aAlbum[1]  = $aXbmc["label"]; // title
     $aAlbum[2]  = !empty($aXbmc["description"])?$aXbmc["description"]:null;    
     $aAlbum[3]  = !empty($aXbmc["artist"])?implode("|", $aXbmc["artist"]):null;
 
-    $aAlbum[4]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"], "music"):null;
+    $aAlbum[4]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"]):null;
     $aAlbum[5]  = !empty($aXbmc["theme"])?implode("|", $aXbmc["theme"]):null;
     $aAlbum[6]  = !empty($aXbmc["mood"])?implode("|", $aXbmc["mood"]):null;
     $aAlbum[7]  = !empty($aXbmc["style"])?implode("|", $aXbmc["style"]):null;
@@ -311,6 +289,61 @@ function ConvertAlbum($aXbmc)
     //$aAlbum["artistid"]      = $aXbmc["artistid"];
     
     return $aAlbum;
+}
+
+/*
+ * Function:	ConvertSong
+ *
+ * Created on Jun 28, 2014
+ * Updated on Jun 28, 2014
+ *
+ * Description: Convert XBMC song items. For instance to readably URL's.
+ *
+ * In:  $db, $aXbmc
+ * Out: $aSong
+ *
+ */
+function ConvertSong($db, $aXbmc)
+{   
+    $aSong[0]  = $aXbmc["songid"];
+    $aSong[1]  = $aXbmc["label"]; // title
+    $aSong[2]  = !empty($aXbmc["artist"])?implode("|", $aXbmc["artist"]):null;
+    $aSong[3]  = GetMediaFargoId($db, "albums", "xbmcid", $aXbmc["albumid"]); // Fargo id as albumid.
+    
+    $aSong[4]  = !empty($aXbmc["album"])?$aXbmc["album"]:null;
+    $aSong[5]  = !empty($aXbmc["albumartist"])?implode("|", $aXbmc["albumartist"]):null;
+    $aSong[6]  = !empty($aXbmc["genre"])?ConvertGenre($aXbmc["genre"]):null;    
+    $aSong[7]  = !empty($aXbmc["year"])?$aXbmc["year"]:0;
+    
+    $aSong[8]  = !empty($aXbmc["rating"])?$aXbmc["rating"]:0;
+    $aSong[9]  = !empty($aXbmc["track"])?$aXbmc["track"]:0;
+    $aSong[10] = !empty($aXbmc["duration"])?$aXbmc["duration"]:0; 
+    $aSong[11] = !empty($aXbmc["comment"])?$aXbmc["comment"]:null;
+    
+    $aSong[12] = !empty($aXbmc["lyrics"])?$aXbmc["lyrics"]:null;
+    $aSong[13] = !empty($aXbmc["musicbrainztrackid"])?$aXbmc["musicbrainztrackid"]:null;  
+    $aSong[14] = !empty($aXbmc["musicbrainzartistid"])?$aXbmc["musicbrainzartistid"]:null;
+    $aSong[15] = !empty($aXbmc["musicbrainzalbumid"])?$aXbmc["musicbrainzalbumid"]:null; 
+    
+    $aSong[16] = !empty($aXbmc["musicbrainzalbumartistid"])?$aXbmc["musicbrainzalbumartistid"]:null;
+    $aSong[17] = !empty($aXbmc["playcount"])?$aXbmc["playcount"]:0; 
+    $aSong[18] = !empty($aXbmc["file"])?$aXbmc["file"]:null;
+    $aSong[19] = !empty($aXbmc["lastplayed"])?$aXbmc["lastplayed"]:"0000-00-00 00:00:00";
+    
+    $aSong[20] = !empty($aXbmc["disc"])?$aXbmc["disc"]:0;
+    $aSong[21] = !empty($aXbmc["displayartist"])?$aXbmc["displayartist"]:null; 
+    $aSong[22] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
+    
+    // Hash track, title and file as unique db entry to prevent dublicates.
+    $aSong[23] = hash("sha256", $aSong[9].$aXbmc["label"].$aSong[18]);
+    
+    //$aSong["artistid"]    = $aXbmc["artistid"];
+    //$aSong[albumartistid] = !empty($aXbmc["albumartistid"])?implode("|", $aXbmc["albumartistid"]):null;  
+    //$aSongs["fanart"]     = $aXbmc["fanart"];
+    //$aSong["cover"]       = EncodeLink($aXbmc, "thumbnail");
+    //$aSong["genreid"]     = $aXbmc["genreid"]; 
+    
+    return $aSong;
 }
 
 /*
@@ -460,6 +493,26 @@ function ConvertVideo($aVideo)
     
     return $video;
 }
+
+/*
+ * Function:	GetMediaFargoId
+ *
+ * Created on Jun 08, 2014
+ * Updated on Jun 28, 2014
+ *
+ * Description: Get the TV Show's Fargo Id.
+ *
+ * In:  $db, $media, $mediaid, $id
+ * Out: $id
+ *
+ */
+function GetMediaFargoId($db, $media, $mediaid, $id)
+{
+    $sql = "SELECT id FROM $media WHERE $mediaid = $id";
+    $id = GetItemFromDatabase($db, "id", $sql);
+    
+    return $id;
+}   
 
 /*
  * Function:	CreateSortTitle

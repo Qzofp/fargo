@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 02, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -896,7 +896,7 @@ function SetShowButtonHandler()
  * Function:	SetButtonsTypeHandler
  *
  * Created on Nov 03, 2013
- * Updated on Dec 23, 2013
+ * Updated on Jun 26, 2014
  *
  * Description: Set the buttons type handler and perform the right action.
  * 
@@ -926,11 +926,7 @@ function SetButtonsTypeHandler()
         case cBUT.BACK + 
              cBUT.SETS   : BackToMedia("sets");
                            break;
-                       
-        /*case "tvtitles"  : SetState("type", "tvtitles");
-                           ShowMediaTypePage();
-                           break;   
-        */               
+                                   
         case cBUT.SERIES : SetState("type", "series");
                            ShowMediaTypePage(cBUT.TITLES, false);
                            break;                         
@@ -944,8 +940,12 @@ function SetButtonsTypeHandler()
                            break;    
                            
         case cBUT.ALBUMS : SetState("type", "albums");
+                           ShowMediaTypePage(cBUT.SONGS, true);
+                           break;  
+                       
+        case cBUT.SONGS  : SetState("type", "songs");
                            ShowMediaTypePage(cBUT.ALBUMS, true);
-                           break;                       
+                           break;                         
     }
 }
 
@@ -1315,7 +1315,7 @@ function SetMainKeyHandler(key, event)
  * Function:	ConvertMedia
  *
  * Created on May 10, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Convert the media string to a more readable string.
  * 
@@ -1344,7 +1344,10 @@ function ConvertMedia(media)
                          break;                     
 
         case 'albums'  : media = "Albums";
-                         break;        
+                         break;  
+                     
+        case 'songs'   : media = "Songs";
+                         break;                         
         
         case 'music'   : media = "Music";
                          break;
@@ -1406,7 +1409,10 @@ function ConvertMediaToSingular(media)
                           break;
                           
         case 'albums'   : media = "Album";
-                          break;                          
+                          break;   
+                      
+        case 'songs'    : media = "Song";
+                          break;                      
     }
     
     return media;

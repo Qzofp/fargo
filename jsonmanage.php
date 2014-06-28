@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jun 24, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -448,7 +448,7 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jun 15, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Reset the status. 
  *
@@ -466,18 +466,8 @@ function ResetStatus($media)
         $media = "seasons";
     }
     
-    //UpdateStatus($db, "MetaEnd", -1);
-    
     UpdateStatus($db, "ImportStatus", -1); // Needed for refresh media.   
-    UpdateStatus($db, "ImportCounter", 1); // 0
-    //UpdateStatus($db, "Xbmc".$media."End", -1); // Obsolete
-    
-    // Obsolete begin
-    //$sql    = CreateMetaStartQuery($db, $media);
-    //$lastid = GetItemFromDatabase($db, "id", $sql);
-    //UpdateStatus($db, "ImportStart", !empty($lastid)?$lastid:0);
-    // Obsolete end
-    
+    UpdateStatus($db, "ImportCounter", 1);   
     UpdateStatus($db, "ImportStart", 1);
     
     // Fill json.
@@ -496,7 +486,7 @@ function ResetStatus($media)
  * Function:	GetCountersStatus
  *
  * Created on Jan 03, 2014
- * Updated on Jun 24, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Get status counter
  *
@@ -518,7 +508,7 @@ function GetCountersStatus($media)
         $aJson['xbmc']['end'] = GetStatus($db, "ImportEnd");
     }
      
-    $aJson['import']        = GetStatus($db, "ImportCounter");
+    $aJson['import'] = GetStatus($db, "ImportCounter");
     
     CloseDatabase($db); 
     return $aJson;    
@@ -644,7 +634,7 @@ function ProcessImportMode($mode)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Jun 24, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: Reports the status of the import media process. 
  *
@@ -659,23 +649,26 @@ function GetMediaStatus($media, $id, $xbmcid)
     
     switch ($media)    
     {   
-        case "movies"         : $aJson = GetImportStatus($db, "movies", "movieid", "xbmcid", $id, $xbmcid, cMOVIESTHUMBS);
-                                break;
+        case "movies"   : $aJson = GetImportStatus($db, "movies", "movieid", "xbmcid", $id, $xbmcid, cMOVIESTHUMBS);
+                          break;
                       
-        case "sets"           : $aJson = GetImportStatus($db, "sets", "setid", "setid", $id, $xbmcid, cSETSTHUMBS);
-                                break;                      
+        case "sets"     : $aJson = GetImportStatus($db, "sets", "setid", "setid", $id, $xbmcid, cSETSTHUMBS);
+                          break;                      
     
-        case "tvshows"        : $aJson = GetImportStatus($db, "tvshows", "tvshowid", "xbmcid", $id, $xbmcid, cTVSHOWSTHUMBS);
-                                break;
+        case "tvshows"  : $aJson = GetImportStatus($db, "tvshows", "tvshowid", "xbmcid", $id, $xbmcid, cTVSHOWSTHUMBS);
+                          break;
                                             
-        case "seasons"        : $aJson = GetSeriesImportStatus($db, "seasons", "seasonid", $id, $xbmcid, cSEASONSTHUMBS);
-                                break;
+        case "seasons"  : $aJson = GetSeriesImportStatus($db, "seasons", "seasonid", $id, $xbmcid, cSEASONSTHUMBS);
+                           break;
                       
-        case "episodes"       : $aJson = GetSeriesImportStatus($db, "episodes", "episodeid", $id, $xbmcid, cEPISODESTHUMBS);
-                                break;                      
+        case "episodes" : $aJson = GetSeriesImportStatus($db, "episodes", "episodeid", $id, $xbmcid, cEPISODESTHUMBS);
+                          break;                      
                       
-        case "albums"         : $aJson = GetImportStatus($db, "albums", "albumid", "xbmcid", $id, $xbmcid, cALBUMSTHUMBS);
-                                break;                      
+        case "albums"   : $aJson = GetImportStatus($db, "albums", "albumid", "xbmcid", $id, $xbmcid, cALBUMSTHUMBS);
+                          break;
+                            
+        case "songs"    : $aJson = GetSongsImportStatus($db, $id, $xbmcid, cSONGSTHUMBS);
+                          break;                            
     }      
  
     CloseDatabase($db);
@@ -764,6 +757,45 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
 }
 
 /*
+ * Function:	GetSongsImportStatus
+ *
+ * Created on Jun 28, 2014
+ * Updated on Jun 28, 2014
+ *
+ * Description: Reports the status of the songs import process.
+ *
+ * In:  $db, $id, $xbmcid, $thumbs
+ * Out: $aJson
+ *
+ */
+function GetSongsImportStatus($db, $id, $xbmcid, $thumbs)
+{
+    $aJson['thumbs'] = $thumbs;
+    
+    $sql = "SELECT mediaid FROM tmp_import ".
+           "WHERE id = $id"; 
+    
+    $aJson['xbmcid'] = GetItemFromDatabase($db, "songid", $sql);
+
+    $sql = "SELECT album FROM songs ".
+           "WHERE songid = $xbmcid";  
+    $aJson['title'] = GetItemFromDatabase($db, "album", $sql);
+    
+    $sql = "SELECT title FROM songs ".
+           "WHERE songid = $xbmcid";     
+    $aJson['sub'] = GetItemFromDatabase($db, "title", $sql);
+    
+    $aJson['status']  = GetStatus($db, "ImportStatus");
+    if ($aJson['status'] == cTRANSFER_READY) {
+        UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
+    }
+    
+    $aJson['counter'] = GetStatus($db, "ImportStart");
+    
+    return $aJson;
+}
+
+/*
  * Function:	ConvertTVShowToSeasonID
  *
  * Created on Dec 10, 2013
@@ -794,7 +826,7 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
  * Function:	InitMeta
  *
  * Created on Jan 27, 2014
- * Updated on Jun 09, 2014
+ * Updated on Jun 27, 2014
  *
  * Description: Initialize meta data (empty meta tables).
  *
@@ -810,12 +842,12 @@ function InitMeta($type)
     // Empty the temporary import table.
     EmptyTable($db, "tmp_import");
     
-    if ($type != "music") {
-        EmptyTable($db, $type."meta");
-    }
-    else {
-        EmptyTable($db, "albumsmeta"); 
-    }    
+    //if ($type != "music") {
+    EmptyTable($db, $type."meta");
+    //}
+    //else {
+    //    EmptyTable($db, "albumsmeta"); 
+    //}    
 
     $aJson['status'] = "ready";
     

@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    import.php
  *
  * Created on Jul 02, 2013
- * Updated on May 17, 2014
+ * Updated on Jun 28, 2014
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -366,6 +366,42 @@ function UpdateAlbum($db, $id, $aAlbum)
            "WHERE id = $id";
             
     QueryDatabase($db, $sql);
+}
+
+/*
+ * Function:	InsertSong
+ *
+ * Created on Jun 28, 2014
+ * Updated on Jun 28, 2014
+ *
+ * Description: Insert music song in the database.
+ *
+ * In:  $db, $aSong
+ * Out:	$dkey, $id, Music songin database table "songs".
+ *
+ */
+function InsertSong($db, $aSong)
+{
+    $aItems = AddEscapeStrings($db, $aSong);      
+    
+    $sql = "INSERT INTO songs(songid, title, artist, albumid, album, albumartist, genre, `year`, rating, track,".
+           " duration, comment, lyrics, mbtrackid, mbartistid, mbalbumid, mbalbumartistid, playcount, `file`,".
+           "lastplayed, disc, displayartist, sorttitle, `hash`) ".
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], '$aItems[4]', '$aItems[5]', '$aItems[6]',".
+           " $aItems[7], $aItems[8], $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', '$aItems[13]',".
+           " '$aItems[14]', '$aItems[15]', '$aItems[16]', $aItems[17], '$aItems[18]', '$aItems[19]', $aItems[20],".
+           " '$aItems[21]', '$aItems[22]', UNHEX('$aItems[23]')) ".
+           "ON DUPLICATE KEY UPDATE songid = $aItems[0]";
+    
+    echo $sql; // debug
+      
+    //$dkey = QueryDatabase($db, $sql); 
+    mysqli_query($db, $sql);
+    $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).        
+    
+    // Get the auto generated id used in the last query.
+    $id = mysqli_insert_id($db); 
+    return array($dkey, $id);
 }
 
 /*
