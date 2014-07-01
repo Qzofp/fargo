@@ -1720,7 +1720,12 @@ function ShowMediaTableThumbs(json, media, type, mode)
                     
             html[i]  = '<td class="i' + value.id + hide + '">';                    
             html[i] += '<img src="' + img + '"/>';
-                    
+            
+            // If songs then label covers.
+            if (type == "sets" || type == "series" || type == "songs") {
+                html[i] += '<img class="label" src="images/' + type + '.png"/>';
+            }
+            
             if (value.playcount > 0) {
                 html[i] += '<img class="mark" src="images/watched.png"/>';
             }
@@ -1745,7 +1750,7 @@ function ShowMediaTableThumbs(json, media, type, mode)
         $("#display_thumb img").not(".mark").width(220);
         $("#display_thumb td div").width(240);
     }  
-            
+    
     // If images not found then show no poster.
     $("#display_thumb img").error(function()
     {
