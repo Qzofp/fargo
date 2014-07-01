@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -718,7 +718,42 @@ function ImportSong($db, $aError, $poster, $aResult)
     }   
 }
 
-
+/*
+ * Function:	RefreshSong
+ *
+ * Created on Jun 30, 2014
+ * Updated on Jun 30, 2014
+ *
+ * Description: Refresh the music song details. 
+ *
+ * In:  $db, $aError, $poster, $aResult, $id
+ * Out: -
+ *
+ */
+function RefreshSong($db, $aError, $poster, $aResult, $id)
+{ 
+    if (empty($aError))
+    {    
+        $aGenres = $aResult["songdetails"]["genre"]; 
+        $aSong = ConvertSong($db, $aResult["songdetails"]);
+    
+        DeleteFile("../".cSONGSTHUMBS."/".$aSong[0].".jpg");
+        DeleteFile("../".cSONGSCOVERS."/".$aSong[0].".jpg");
+              
+        ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSTHUMBS, 125, 125);
+        UpdateSong($db, $id, $aSong);
+        ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSCOVERS, 300, 300);
+        InsertGenres($db, $aGenres, "music");
+    
+        UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
+    }
+    else if ($aError["code"] == cTRANSFER_INVALID) { 
+        UpdateStatus($db, "ImportStatus", cTRANSFER_NOT_FOUND); // Not found, not used yet, only for refresh.
+    } 
+    else {
+        UpdateStatus($db, "ImportStatus", cTRANSFER_ERROR); // Error, not used yet, only for refresh.
+    }    
+}
 
 /*
  * Function:	SaveImage

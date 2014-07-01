@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 02, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -227,7 +227,7 @@ function InsertTVShowSeason($db, $aSeason)
  * Function:	UpdateTVShowSeason
  *
  * Created on Dec 02, 2013
- * Updated on Feb 21, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: Update TV Show Season in the database.
  *
@@ -242,7 +242,7 @@ function UpdateTVShowSeason($db, $id, $aSeason)
     $sql = "UPDATE seasons ".
            "SET seasonid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', tvshowid = $aItems[2],".
            " showtitle = '$aItems[3]', playcount = $aItems[4], season = $aItems[5], episode = $aItems[6],".
-           "watchedepisodes = $aItems[7], `hash` = UNHEX('$aItems[22]') ".
+           "watchedepisodes = $aItems[7], `hash` = UNHEX('$aItems[8]') ".
            "WHERE id = $id";
 
     QueryDatabase($db, $sql); 
@@ -372,12 +372,12 @@ function UpdateAlbum($db, $id, $aAlbum)
  * Function:	InsertSong
  *
  * Created on Jun 28, 2014
- * Updated on Jun 28, 2014
+ * Updated on Jun 29, 2014
  *
  * Description: Insert music song in the database.
  *
  * In:  $db, $aSong
- * Out:	$dkey, $id, Music songin database table "songs".
+ * Out:	$dkey, $id, Music song in database table "songs".
  *
  */
 function InsertSong($db, $aSong)
@@ -385,7 +385,7 @@ function InsertSong($db, $aSong)
     $aItems = AddEscapeStrings($db, $aSong);      
     
     $sql = "INSERT INTO songs(songid, title, artist, albumid, album, albumartist, genre, `year`, rating, track,".
-           " duration, comment, lyrics, mbtrackid, mbartistid, mbalbumid, mbalbumartistid, playcount, `file`,".
+           " duration, `comment`, lyrics, mbtrackid, mbartistid, mbalbumid, mbalbumartistid, playcount, `file`,".
            "lastplayed, disc, displayartist, sorttitle, `hash`) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], '$aItems[4]', '$aItems[5]', '$aItems[6]',".
            " $aItems[7], $aItems[8], $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', '$aItems[13]',".
@@ -402,6 +402,36 @@ function InsertSong($db, $aSong)
     // Get the auto generated id used in the last query.
     $id = mysqli_insert_id($db); 
     return array($dkey, $id);
+}
+
+/*
+ * Function:	UpdateSong
+ *
+ * Created on Jun 30, 2014
+ * Updated on Jun 30, 2014
+ *
+ * Description: Update music song in the database.
+ *
+ * In:  $db, $id, $aSong
+ * Out:	Music song in database table "songs".
+ *
+ */
+function UpdateSong($db, $id, $aSong)
+{
+    $aItems = AddEscapeStrings($db, $aSong); 
+    
+    $sql = "UPDATE songs ".
+           "SET songid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', artist = '$aItems[2]',".
+           " albumid = $aItems[3], album = '$aItems[4]', albumartist = '$aItems[5]', genre = '$aItems[6]',".
+           " `year` = $aItems[7], rating = $aItems[8], track = $aItems[9], duration = $aItems[10],".
+           " `comment` = '$aItems[11]', lyrics = '$aItems[12]', mbtrackid = '$aItems[13]',".
+           " mbartistid = '$aItems[14]', mbalbumid = '$aItems[15]', mbalbumartistid = '$aItems[16]',".
+           " playcount = $aItems[17], `file` = '$aItems[18]', lastplayed = '$aItems[19]', disc = $aItems[20],".
+           " displayartist = '$aItems[21]', sorttitle = '$aItems[22]',". 
+           " `hash` = UNHEX('$aItems[23]') ".
+           "WHERE id = $id";
+            
+    QueryDatabase($db, $sql);
 }
 
 /*

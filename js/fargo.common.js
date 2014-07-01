@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 21, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -326,7 +326,7 @@ function SetCloseHandler()
  * Function:	RefreshMediaTable
  *
  * Created on Sep 22, 2013
- * Updated on Jun 02, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: When refresh media is finished then refresh media thumb on media table.
  * 
@@ -351,6 +351,9 @@ function RefreshMediaTable(popup)
                                   break;
                              
                 case "episodes" : $title = '<div style="width: 240px; text-overflow: ellipsis;">' + $("#action_sub").html() + '</div>';
+                                  break;
+                                  
+                case "tracks"   : $title = "<div>" + $("#action_sub").html() + "</div>";
                                   break;
                               
                 default : $title = "<div>" + $("#action_title").html() + "</div>";

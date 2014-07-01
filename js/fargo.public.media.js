@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 27, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -100,7 +100,7 @@ function SetInfoZoomHandler()
  * Function:	SetInfoZoomHandler
  *
  * Created on Nov 09, 2013
- * Updated on Nov 24, 2013
+ * Updated on Jun 29, 2014
  *
  * Description: Show the media info or zoom in on movie sets, episodes media.
  * 
@@ -110,7 +110,7 @@ function SetInfoZoomHandler()
  */
 function ShowInfoZoomMedia(media, type, id)
 {
-    if (type != "sets" && type != "series" && type != "seasons") {
+    if (type != "sets" && type != "series" && type != "seasons" && type != "songs") {
         ShowMediaInfo(media, type, id);
     }
     else {
@@ -122,7 +122,7 @@ function ShowInfoZoomMedia(media, type, id)
  * Function:	ShowMediaInfo
  *
  * Created on Aug 31, 2013
- * Updated on Nov 24, 2013
+ * Updated on Jun 29, 2014
  *
  * Description: Show the media info.
  * 
@@ -131,7 +131,7 @@ function ShowInfoZoomMedia(media, type, id)
  *
  */
 function ShowMediaInfo(media, type, id)
-{   
+{       
     switch(media)
     {
         case "movies"  : ShowMovieInfo(id);
@@ -145,7 +145,12 @@ function ShowMediaInfo(media, type, id)
                          }
                          break;
                     
-        case "music"   : ShowAlbumInfo(id);
+        case "music"   : if (type != "tracks") {
+                            ShowAlbumInfo(id);
+                         }
+                         else {
+                            ShowSongInfo(id);
+                         }
                          break;        
     } 
 }
@@ -154,7 +159,7 @@ function ShowMediaInfo(media, type, id)
  * Function:	ShowMediaZoomIn
  *
  * Created on Nov 09, 2013
- * Updated on Nov 25, 2013
+ * Updated on Jun 29, 2014
  *
  * Description: Show the media zoom in for movie sets, seasons, episodes.
  * 
@@ -226,7 +231,20 @@ function ShowMediaZoomIn(type, id)
                               $("#type").text(cBUT.BACK + cBUT.SERIES);
                               $control.slideDown("slow");
                           });                      
-                          break;                        
+                          break;
+                      
+        case "songs"    : type = "tracks";
+                          gTEMP.TITLE = GetState("title");
+                          gTEMP.PAGE  = gSTATE.PAGE;
+                          gTEMP.SORT  = gSTATE.SORT;
+                          gTEMP.LEVEL = id;
+                          SetState("title", "track");                        
+                          $control.stop().slideUp("slow", function() {
+                              $("#title, #genres, #years").hide();
+                              $("#type").text(cBUT.BACK + cBUT.SONGS);
+                              $control.slideDown("slow");
+                          });           
+                          break;  
    }
    
    // Reset page and sort globals;
@@ -482,7 +500,7 @@ function ShowTVShowEpisodeInfo(id)
  * Function:	ShowAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Dec 31, 2013
+ * Updated on Jun 29, 2014
  *
  * Description: Show the album info.
  * 
@@ -494,7 +512,7 @@ function ShowAlbumInfo(id)
 {
     $.ajax
     ({
-        url: 'jsonfargo.php?action=info&media=music' + '&id=' + id,
+        url: 'jsonfargo.php?action=info&media=albums' + '&id=' + id,
         async: false,
         dataType: 'json',
         success: function(json)
@@ -526,6 +544,70 @@ function ShowAlbumInfo(id)
             // Show plot.
             $("#info_plot").text("Description");
             $("#info_plot_text").html(json.media.description).slimScroll({
+                height:'120px',
+                color:'gray',
+                alwaysVisible:true
+            });
+            
+            // Show buttons close button.
+            $("#info_box .close").show();            
+            
+            // Show popup.
+            ShowPopupBox("#info_box",  "<div>" + json.media.title + "</div>");
+            SetState("page", "popup");    
+        } // End succes.
+    }); // End Ajax.        
+}
+
+/*
+ * Function:	ShowSongInfo
+ *
+ * Created on Jun 29, 2014
+ * Updated on Jun 29, 2014
+ *
+ * Description: Show the song info.
+ * 
+ * In:	id
+ * Out:	Song Info
+ *
+ */
+function ShowSongInfo(id)
+{
+    $.ajax
+    ({
+        url: 'jsonfargo.php?action=info&media=songs' + '&id=' + id,
+        async: false,
+        dataType: 'json',
+        success: function(json)
+        {              
+            var aInfo = [{left:"Artist:",   right:json.media.artist},
+                         {left:"Album:",    right:json.media.album},
+                         {left:"Genre:",    right:json.media.genre},
+                         {left:"Year:",     right:json.media.year},
+                         {left:"Disc:",     right:json.media.disc}, 
+                         {left:"Track:",    right:json.media.track},
+                         {left:"Duration:", right:json.media.duration},
+                         {left:"Rating:",   right:json.media.rating},
+                         {left:"Path:",     right:json.media.path}];
+            
+            // Show info.
+            ShowInfoTable(aInfo);
+            
+            // Change space size for album info and cover.
+            $("#info_left").css("margin-right", 270); // 290
+            $("#info_left td div").css("width", 400);
+            $("#info_right").toggleClass("fanart_space", false).toggleClass("cover_space", true);
+            
+            // Show fanart.
+            $("#info_fanart img").error(function(){
+                $(this).attr('src', 'images/no_fanart.jpg');
+            })
+            .attr('src', json.params.covers + '/' + json.media.xbmcid + '.jpg')
+            .css("width", 260); // 280
+  
+            // Show plot.
+            $("#info_plot").text("Comment");
+            $("#info_plot_text").html(json.media.comment).slimScroll({
                 height:'120px',
                 color:'gray',
                 alwaysVisible:true
@@ -896,7 +978,7 @@ function SetShowButtonHandler()
  * Function:	SetButtonsTypeHandler
  *
  * Created on Nov 03, 2013
- * Updated on Jun 26, 2014
+ * Updated on Jun 29, 2014
  *
  * Description: Set the buttons type handler and perform the right action.
  * 
@@ -945,7 +1027,11 @@ function SetButtonsTypeHandler()
                        
         case cBUT.SONGS  : SetState("type", "songs");
                            ShowMediaTypePage(cBUT.ALBUMS, true);
-                           break;                         
+                           break;  
+                       
+        case cBUT.BACK +
+             cBUT.SONGS  : BackToMedia("songs");
+                           break;                      
     }
 }
 
@@ -953,7 +1039,7 @@ function SetButtonsTypeHandler()
  * Function:	BackToMedia
  *
  * Created on Nov 09, 2013
- * Updated on Nov 24, 2013
+ * Updated on Jun 29, 2014
  *
  * Description: Go back to media, one level up. E.g. from set movies to sets.
  * 
@@ -998,6 +1084,15 @@ function BackToMedia(type)
                             $control.slideDown("slow");
                          });             
                          break;
+                         
+        case "songs"   : gSTATE.PAGE = gTEMP.PAGE;
+                         gSTATE.SORT = gTEMP.SORT;   
+                         SetState("title", gTEMP.TITLE);
+                         $control.stop().slideUp("slow", function() {
+                            $("#title, #genres, #years").show();
+                            $("#type").text(cBUT.ALBUMS);
+                            $control.slideDown("slow");
+                         });
     }
    
     if (gSTATE.SORT) {
@@ -1365,7 +1460,7 @@ function ConvertMedia(media)
  * Function:	ConvertMediaToSingular
  *
  * Created on Sep 07, 2013
- * Updated on Feb 05, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: Convert the media string to a singular string.
  * 
@@ -1412,7 +1507,10 @@ function ConvertMediaToSingular(media)
                           break;   
                       
         case 'songs'    : media = "Song";
-                          break;                      
+                          break; 
+                      
+        case 'tracks'   : media = "Track";
+                          break;                        
     }
     
     return media;
@@ -1508,7 +1606,7 @@ function ShowNextPrevButtons(lastpage)
  * Function:	ShowInfoHeader
  *
  * Created on Jul 01, 2013
- * Updated on Nov 24, 2013
+ * Updated on Jun 29, 2014
  *
  * Description: Shows the info header.
  *
@@ -1566,7 +1664,10 @@ function ShowInfoHeader(type, title, sort, genre, year)
                            break;
                            
         case "episode"   : info2 = cSORT.EPISODE; 
-                           break;                  
+                           break;
+                       
+        case "track"     : info2 = cSORT.TRACK; 
+                           break;                      
     }
         
     $("#header_info").html(info1).show();
@@ -1577,7 +1678,7 @@ function ShowInfoHeader(type, title, sort, genre, year)
  * Function:	ShowMediaTableThumbs
  *
  * Created on May 24, 2014
- * Updated on Jun 01, 2014
+ * Updated on Jun 29, 2014
  *
  * Description: Shows the media table with media as thumbnails.
  *
@@ -1646,8 +1747,14 @@ function ShowMediaTableThumbs(json, media, type, mode)
     }  
             
     // If images not found then show no poster.
-    $("#display_thumb img").error(function(){
-        $(this).attr('src', 'images/no_poster.jpg');
+    $("#display_thumb img").error(function()
+    {
+        if (media != "music") {
+            $(this).attr('src', 'images/no_poster.jpg');
+        }
+        else {
+            $(this).attr('src', 'images/no_cover.jpg');
+        }
     });
 }
 
@@ -1655,7 +1762,7 @@ function ShowMediaTableThumbs(json, media, type, mode)
  * Function:	ShowMediaTableList
  *
  * Created on May 25, 2014
- * Updated on Jun 02, 2014
+ * Updated on Jun 29, 2014
  *
  * Description: Shows the media table with media in a list.
  *
@@ -1709,7 +1816,11 @@ function ShowMediaTableList(json, media, type, mode)
                                   
                 case "seasons"  : sub = " episode";
                                   if (value.sub > 1) { sub += "s"; }
-                                  break;             
+                                  break;
+                              
+                case "songs"    : sub = " track";
+                                  if (value.sub > 1) { sub += "s"; }
+                                  break;                              
             }  
             
             html[i] += '<td class="sub"><div>' + value.sub + sub + '</div></td>';
@@ -1740,7 +1851,12 @@ function ShowMediaTableList(json, media, type, mode)
     
     // If images not found then show no poster.
     $("#display_list img").error(function(){
-        $(this).attr('src', 'images/no_poster.jpg');
+        if (media != "music") {
+            $(this).attr('src', 'images/no_poster.jpg');
+        }
+        else {
+            $(this).attr('src', 'images/no_cover.jpg');
+        }
     });
     
     // Change table cells and image size.

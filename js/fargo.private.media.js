@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on May 26, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -127,7 +127,7 @@ function SetInfoZoomHandlerWithActions()
  * Function:	ShowModePopup
  *
  * Created on Sep 07, 2013
- * Updated on Dec 23, 2013
+ * Updated on Jun 30, 2014
  *
  * Description: Show the action popup with the yes/no buttons.
  * 
@@ -158,11 +158,8 @@ function ShowModePopup(mode, media, id)
             if (json.media.sub) {
                 $("#action_sub").html(json.media.sub);
             }
-            /*else {
-                $("#action_sub").html("&nbsp;");
-            }*/
 
-            if (media == "albums") 
+            if (media == "albums" || media == "songs" || media == "tracks") 
             {
                 $("#action_wrapper").height(116);
                 $("#action_thumb").height(100);

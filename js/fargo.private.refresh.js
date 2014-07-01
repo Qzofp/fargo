@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Jun 17, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -18,7 +18,7 @@
  * Function:	PrepareRefreshHandler
  *
  * Created on Nov 23, 2013
- * Updated on Jun 02, 2014
+ * Updated on Jun 30, 2014
  *
  * Description: Prepare the refresh handler, show the refresh popup box and start the refresh.
  * 
@@ -52,7 +52,13 @@ function PrepareRefreshHandler(type, $popup) // May be not necessary and can be 
                           break;           
         
         case "albums"   : StartRefreshOnlineHandler("albums", "albums", $popup);
-                          break;                      
+                          break;
+                      
+        case "songs"    : StartRefreshOnlineHandler("songs", "songs", $popup);
+                          break;
+                          
+        case "tracks"   : StartRefreshOnlineHandler("songs", "songs", $popup);
+                          break;        
     }
 }
 

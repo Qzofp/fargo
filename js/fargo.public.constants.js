@@ -6,7 +6,7 @@
  * File:    fargo.public.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Jun 26, 2014
+ * Updated on Jun 29, 2014
  *
  * Description: Fargo's jQuery and Javascript public contants and globals.
  *
@@ -55,7 +55,8 @@ var cSORT = {
     NEW: "Latest Additions",
     OLD: "Oldest Additions",
     SEASON: "Seasons",
-    EPISODE: "Episodes"
+    EPISODE: "Episodes",
+    TRACK: "Tracks"
 };
 
 // Text constants.
