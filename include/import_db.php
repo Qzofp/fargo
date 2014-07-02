@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 02, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -21,7 +21,7 @@
  * Function:	InsertMovie
  *
  * Created on Mar 09, 2013
- * Updated on May 12, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: Insert movie in the database.
  *
@@ -35,11 +35,13 @@ function InsertMovie($db, $aMovie)
     
     $sql = "INSERT INTO movies(xbmcid, title, genre, `year`, rating, director, trailer, tagline, plot,".
            " plotoutline, originaltitle, lastplayed, playcount, writer, studio, mpaa, `cast`, country,".
-           " imdbnr, runtime, `set`, audio, video, votes, `file`, sorttitle, setid, dateadded, `hash`) ".
+           " imdbnr, runtime, `set`, audio, video, votes, `file`, sorttitle, setid, dateadded,".
+           " poster, fanart, `hash`) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]', '$aItems[7]',".
            " '$aItems[8]', '$aItems[9]', '$aItems[10]', '$aItems[11]', $aItems[12], '$aItems[13]', '$aItems[14]', '$aItems[15]',".
            " '$aItems[16]', '$aItems[17]', '$aItems[18]', $aItems[19], '$aItems[20]', '$aItems[21]', '$aItems[22]',". 
-           " $aItems[23], '$aItems[24]', '$aItems[25]', $aItems[26], '$aItems[27]', unhex('$aItems[28]')) ".
+           " $aItems[23], '$aItems[24]', '$aItems[25]', $aItems[26], '$aItems[27]', unhex('$aItems[28]'),".
+           " unhex('$aItems[29]'), unhex('$aItems[30]')) ".
            "ON DUPLICATE KEY UPDATE xbmcid = $aItems[0]";
 
     mysqli_query($db, $sql);

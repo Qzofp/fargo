@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -978,7 +978,7 @@ function SetShowButtonHandler()
  * Function:	SetButtonsTypeHandler
  *
  * Created on Nov 03, 2013
- * Updated on Jun 29, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: Set the buttons type handler and perform the right action.
  * 
@@ -1022,11 +1022,11 @@ function SetButtonsTypeHandler()
                            break;    
                            
         case cBUT.ALBUMS : SetState("type", "albums");
-                           ShowMediaTypePage(cBUT.SONGS, true);
+                           ShowMediaTypePage(cBUT.SONGS, false);
                            break;  
                        
         case cBUT.SONGS  : SetState("type", "songs");
-                           ShowMediaTypePage(cBUT.ALBUMS, true);
+                           ShowMediaTypePage(cBUT.ALBUMS, false);
                            break;  
                        
         case cBUT.BACK +

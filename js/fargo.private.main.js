@@ -75,7 +75,7 @@ function LoadFargoMedia(media)
     // Manage (Show, Refresh, Import, Hide and Remove) click events.
     $("#modes").on("click", SetButtonsHandler);
     
-    // Media type events (titles, sets, series, albums).
+    // Media type events (titles, sets, series, albums, songs).
     $("#type").on("click", SetButtonsTypeHandler);
     
     // Screen events (List or thumbnails view).

@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: Fargo's settings page.
  *
@@ -20,6 +20,9 @@ define("cUSER",  "fargo_dbo");
 define("cPASS",  "fargo");
 
 // Path settings.
+define("cMOVIESART", "images/movies");
+
+
 define("cMOVIESTHUMBS", "images/movies/thumbs");
 define("cMOVIESFANART", "images/movies/fanart");
 define("cSETSTHUMBS", "images/sets/thumbs");

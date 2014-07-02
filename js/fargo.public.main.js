@@ -6,7 +6,7 @@
  * File:    fargo.public.main.js
  *
  * Created on Apr 05, 2013
- * Updated on Jun 26, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged out.
  *
@@ -59,7 +59,7 @@ function LoadFargoMedia(media)
     // Properties event.
     $("#display_system_right").on("mouseenter mouseleave", ".property", SetPropertyMouseHandler);
     
-    // Media type events (titles, sets, series, albums).
+    // Media type events (titles, sets, series, albums, songs).
     $("#type").on("click", SetButtonsTypeHandler);
 
     // Screen events (List or thumbnails view).

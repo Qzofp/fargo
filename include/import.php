@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -198,7 +198,7 @@ function ProcessDataFromXbmc($db, $aData)
  * Function:	ImportMovie
  *
  * Created on Jul 15, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: Import the movie. 
  *
@@ -210,14 +210,14 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
 {   
     if (empty($aError))
     {        
-        $aGenres = $aResult["moviedetails"]["genre"]; //$aMovie["genre"];
+        $aGenres = $aResult["moviedetails"]["genre"]; 
         $aMovie  = ConvertMovie($aResult["moviedetails"]);
         
-        ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175); //200, 280
+        ResizeAndSaveImage($aMovie[28], $poster, "../".cMOVIESART, 125, 175);
         list($dkey, $id) = InsertMovie($db, $aMovie);
         if ($dkey == 1) // No dublicate key found.
         {             
-            ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 450, 280); //562, 350 //675, 420  
+            ResizeAndSaveImage($aMovie[29], $fanart, "../".cMOVIESART, 450, 280); 
             
             InsertGenres($db, $aGenres, "movies"); 
             InsertGenreToMedia($db, $aGenres, $id, "movies");
@@ -228,7 +228,7 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
         else 
         {   
             if ($dkey == 2) {
-                ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART, 450, 280); //562, 350 //675, 420  
+                ResizeAndSaveImage($aMovie[29], $fanart, "../".cMOVIESART, 450, 280);  
             }
       
             UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
@@ -780,7 +780,7 @@ function SaveImage($id, $image, $path)
  * Function:	ResizeAndSaveImage
  *
  * Created on Aug 17, 2013
- * Updated on Sep 02, 2013
+ * Updated on Jul 01, 2014
  *
  * Description: Resize and save image as jpg.
  *
@@ -790,7 +790,15 @@ function SaveImage($id, $image, $path)
  */
 function ResizeAndSaveImage($id, $image, $path, $w, $h)
 {
-    if ($image) {
-        ResizeJpegImage($image, $w, $h, $path."/".$id.".jpg");
+    // Create hex directories (0, 1, 2, 3... a, b, c, d, e, f).
+    $dir = $path."/".$id[0];
+    if (!file_exists($dir)) {
+        mkdir($dir, 0777);
+    }
+    
+    // Resize and save image.
+    $file = $dir."/".$id.".jpg";
+    if ($image && !file_exists($file)) {
+        ResizeJpegImage($image, $w, $h, $file);
     }    
 }

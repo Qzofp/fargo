@@ -7,7 +7,7 @@
  * File:    import_convert.php
  *
  * Created on Jul 15, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: This page contains functions for converting media from XBMC (used by import.php).
  *
@@ -19,7 +19,7 @@
  * Function:	ConvertMovie
  *
  * Created on Mar 11, 2013
- * Updated on Jun 20, 2014
+ * Updated on Jul 01, 2014
  *
  * Description: Convert xbmc movie items. For instance to readably URL's.
  *
@@ -64,8 +64,11 @@ function ConvertMovie($aXbmc)
     $aMovie[26] = !empty($aXbmc["setid"])?$aXbmc["setid"]:0;    
     $aMovie[27] = !empty($aXbmc["dateadded"])?$aXbmc["dateadded"]:"0000-00-00 00:00:00";
     
+    $aMovie[28] = !empty($aXbmc["art"]["poster"])?hash("crc32", $aXbmc["art"]["poster"]):null;
+    $aMovie[29] = !empty($aXbmc["art"]["fanart"])?hash("crc32", $aXbmc["art"]["fanart"]):null;
+    
     // Hash title and file as unique db entry to prevent dublicates.
-    $aMovie[28] = hash("sha256", $aXbmc["label"].$aMovie[24]);
+    $aMovie[30] = hash("sha256", $aXbmc["label"].$aMovie[24]);
     
     //$aMovie[23] = !empty($aXbmc["top250"])?$aXbmc["top250"]:null;  
     //$aMovie["showlink"] = $aXbmc["showlink"];
