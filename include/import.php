@@ -587,7 +587,7 @@ function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
  * Function:	ImportAlbum
  *
  * Created on Aug 24, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Import the music album. 
  *
@@ -602,11 +602,11 @@ function ImportAlbum($db, $aError, $poster, $aResult)
         $aGenres = $aResult["albumdetails"]["genre"]; 
         $aAlbum = ConvertAlbum($aResult["albumdetails"]);
     
-        ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSTHUMBS, 125, 125);
+        ResizeAndSaveImage($aAlbum[17], $poster, "../".cMUSICART, 300, 300); // 125, 125
         list($dkey, $id) = InsertAlbum($db, $aAlbum);
         if ($dkey == 1) // No dublicate key found.
         { 
-            ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
+            //ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
         
             InsertGenres($db, $aGenres, "music");
             InsertGenreToMedia($db, $aGenres, $id, "music");
@@ -616,9 +616,9 @@ function ImportAlbum($db, $aError, $poster, $aResult)
         }        
         else 
         {
-            if ($dkey == 2) {
-                ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
-            }
+            //if ($dkey == 2) {
+            //    ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
+            //}
             UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
         }   
         
@@ -673,7 +673,7 @@ function RefreshAlbum($db, $aError, $poster, $aResult, $id)
  * Function:	ImportSong
  *
  * Created on Jun 28, 2014
- * Updated on Jun 28, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Import the music album. 
  *
@@ -688,11 +688,11 @@ function ImportSong($db, $aError, $poster, $aResult)
         $aGenres = $aResult["songdetails"]["genre"]; 
         $aSong = ConvertSong($db, $aResult["songdetails"]);
     
-        ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSTHUMBS, 125, 125);
+        ResizeAndSaveImage($aSong[23], $poster, "../".cMUSICART, 300, 300); // 125, 125
         list($dkey, $id) = InsertSong($db, $aSong);
         if ($dkey == 1) // No dublicate key found.
         { 
-            ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSCOVERS, 300, 300);
+            //ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSCOVERS, 300, 300);
         
             InsertGenres($db, $aGenres, "music");
             InsertGenreToMedia($db, $aGenres, $id, "music");
@@ -702,9 +702,9 @@ function ImportSong($db, $aError, $poster, $aResult)
         }        
         else 
         {
-            if ($dkey == 2) {
-                ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSCOVERS, 300, 300);
-            }
+            //if ($dkey == 2) {
+            //    ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSCOVERS, 300, 300);
+            //}
             UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
         }   
         

@@ -498,7 +498,7 @@ function ShowTVShowEpisodeInfo(id)
  * Function:	ShowAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Jun 29, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Show the album info.
  * 
@@ -528,7 +528,7 @@ function ShowAlbumInfo(id)
             ShowInfoTable(aInfo);
             
             // Change space size for album info and cover.
-            $("#info_left").css("margin-right", 270); // 290
+            $("#info_left").css("margin-right", 270);
             $("#info_left td div").css("width", 400);
             $("#info_right").toggleClass("fanart_space", false).toggleClass("cover_space", true);
             
@@ -536,8 +536,8 @@ function ShowAlbumInfo(id)
             $("#info_fanart img").error(function(){
                 $(this).attr('src', 'images/no_fanart.jpg');
             })
-            .attr('src', json.params.covers + '/' + json.media.xbmcid + '.jpg')
-            .css("width", 260); // 280
+            .attr('src', json.params.covers + '/' + json.media.fanart + '.jpg')
+            .css("width", 260); 
   
             // Show plot.
             $("#info_plot").text("Description");
@@ -561,7 +561,7 @@ function ShowAlbumInfo(id)
  * Function:	ShowSongInfo
  *
  * Created on Jun 29, 2014
- * Updated on Jun 29, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Show the song info.
  * 
@@ -592,7 +592,7 @@ function ShowSongInfo(id)
             ShowInfoTable(aInfo);
             
             // Change space size for album info and cover.
-            $("#info_left").css("margin-right", 270); // 290
+            $("#info_left").css("margin-right", 270);
             $("#info_left td div").css("width", 400);
             $("#info_right").toggleClass("fanart_space", false).toggleClass("cover_space", true);
             
@@ -600,8 +600,8 @@ function ShowSongInfo(id)
             $("#info_fanart img").error(function(){
                 $(this).attr('src', 'images/no_fanart.jpg');
             })
-            .attr('src', json.params.covers + '/' + json.media.xbmcid + '.jpg')
-            .css("width", 260); // 280
+            .attr('src', json.params.covers + '/' + json.media.fanart + '.jpg')
+            .css("width", 260);
   
             // Show plot.
             $("#info_plot").text("Comment");

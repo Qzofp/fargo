@@ -258,7 +258,7 @@ function ConvertTVShowEpisode($db, $aXbmc)
  * Function:	ConvertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Convert XBMC album items. For instance to readably URL's.
  *
@@ -289,9 +289,10 @@ function ConvertAlbum($aXbmc)
     $aAlbum[15] = !empty($aXbmc["displayartist"])?$aXbmc["displayartist"]:null; 
     
     $aAlbum[16] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
-    
+    $aAlbum[17] = !empty($aXbmc["thumbnail"])?hash("crc32", $aXbmc["thumbnail"]):"gggggggg";
+            
     // Hash title, artist and year as unique db entry to prevent dublicates.
-    $aAlbum[17] = hash("sha256", $aXbmc["label"].$aAlbum[3].$aAlbum[11]);
+    $aAlbum[18] = hash("sha256", $aXbmc["label"].$aAlbum[3].$aAlbum[11]);
     
     //$aAlbum["fanart"]          = $aXbmc["fanart"];
     //$aAlbum["cover"]           = EncodeLink($aXbmc, "thumbnail");
@@ -305,7 +306,7 @@ function ConvertAlbum($aXbmc)
  * Function:	ConvertSong
  *
  * Created on Jun 28, 2014
- * Updated on Jun 28, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Convert XBMC song items. For instance to readably URL's.
  *
@@ -343,9 +344,10 @@ function ConvertSong($db, $aXbmc)
     $aSong[20] = !empty($aXbmc["disc"])?$aXbmc["disc"]:0;
     $aSong[21] = !empty($aXbmc["displayartist"])?$aXbmc["displayartist"]:null; 
     $aSong[22] = !empty($aXbmc["label"])?CreateSortTitle($aXbmc["label"]):null;
+    $aSong[23] = !empty($aXbmc["thumbnail"])?hash("crc32", $aXbmc["thumbnail"]):"gggggggg";
     
     // Hash track, title and file as unique db entry to prevent dublicates.
-    $aSong[23] = hash("sha256", $aSong[9].$aXbmc["label"].$aSong[18]);
+    $aSong[24] = hash("sha256", $aSong[9].$aXbmc["label"].$aSong[18]);
     
     //$aSong["artistid"]    = $aXbmc["artistid"];
     //$aSong[albumartistid] = !empty($aXbmc["albumartistid"])?implode("|", $aXbmc["albumartistid"]):null;  

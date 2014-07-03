@@ -311,7 +311,7 @@ function UpdateTVShowEpisode($db, $id, $aEpisode)
  * Function:	InsertAlbum
  *
  * Created on Apr 20, 2013
- * Updated on May 17, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Insert music album in the database.
  *
@@ -324,13 +324,12 @@ function InsertAlbum($db, $aAlbum)
     $aItems = AddEscapeStrings($db, $aAlbum);      
     
     $sql = "INSERT INTO albums(xbmcid, title, description, artist, genre, theme, mood, style, `type`, albumlabel,".
-           " rating, `year`, mbalbumid, mbalbumartistid, playcount, displayartist, sorttitle, `hash`) ".
+           " rating, `year`, mbalbumid, mbalbumartistid, playcount, displayartist, sorttitle, poster, `hash`) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', '$aItems[3]', '$aItems[4]', '$aItems[5]', '$aItems[6]',".
            " '$aItems[7]', '$aItems[8]', '$aItems[9]', $aItems[10], $aItems[11], '$aItems[12]', '$aItems[13]',".
-           " $aItems[14], '$aItems[15]', '$aItems[16]', UNHEX('$aItems[17]')) ".
+           " $aItems[14], '$aItems[15]', '$aItems[16]', UNHEX('$aItems[17]'), UNHEX('$aItems[18]')) ".
            "ON DUPLICATE KEY UPDATE xbmcid = $aItems[0]";
-      
-    //$dkey = QueryDatabase($db, $sql); 
+    
     mysqli_query($db, $sql);
     $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).        
     
@@ -371,7 +370,7 @@ function UpdateAlbum($db, $id, $aAlbum)
  * Function:	InsertSong
  *
  * Created on Jun 28, 2014
- * Updated on Jun 29, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Insert music song in the database.
  *
@@ -385,11 +384,11 @@ function InsertSong($db, $aSong)
     
     $sql = "INSERT INTO songs(songid, title, artist, albumid, album, albumartist, genre, `year`, rating, track,".
            " duration, `comment`, lyrics, mbtrackid, mbartistid, mbalbumid, mbalbumartistid, playcount, `file`,".
-           "lastplayed, disc, displayartist, sorttitle, `hash`) ".
+           "lastplayed, disc, displayartist, sorttitle, poster, `hash`) ".
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], '$aItems[4]', '$aItems[5]', '$aItems[6]',".
            " $aItems[7], $aItems[8], $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', '$aItems[13]',".
            " '$aItems[14]', '$aItems[15]', '$aItems[16]', $aItems[17], '$aItems[18]', '$aItems[19]', $aItems[20],".
-           " '$aItems[21]', '$aItems[22]', UNHEX('$aItems[23]')) ".
+           " '$aItems[21]', '$aItems[22]', UNHEX('$aItems[23]'), UNHEX('$aItems[24]')) ".
            "ON DUPLICATE KEY UPDATE songid = $aItems[0]";
     
     echo $sql; // debug

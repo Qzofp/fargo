@@ -682,10 +682,10 @@ function GetMediaStatus($media, $id, $xbmcid)
         case "episodes" : $aJson = GetSeriesImportStatus($db, "episodes", "episodeid", $id, $xbmcid, cTVSHOWSART);
                           break;                      
                       
-        case "albums"   : $aJson = GetImportStatus($db, "albums", "albumid", "xbmcid", $id, $xbmcid, cALBUMSTHUMBS);
+        case "albums"   : $aJson = GetImportStatus($db, "albums", "albumid", "xbmcid", $id, $xbmcid, cMUSICART);
                           break;
                             
-        case "songs"    : $aJson = GetSongsImportStatus($db, $id, $xbmcid, cSONGSTHUMBS);
+        case "songs"    : $aJson = GetSongsImportStatus($db, $id, $xbmcid, cMUSICART);
                           break;                            
     }      
  
@@ -761,8 +761,7 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
     $title = "title";
     if ($table == "episodes") {
         $title = "CONCAT(episode, '. ', title) AS title";
-    }
-    
+    }    
     $sql = "SELECT $title FROM $table ".
            "WHERE $typeid = $xbmcid";    
     $aJson['sub'] = GetItemFromDatabase($db, "title", $sql);
@@ -799,8 +798,7 @@ function GetSongsImportStatus($db, $id, $xbmcid, $thumbs)
     $aJson['thumbs'] = $thumbs;
     
     $sql = "SELECT mediaid FROM tmp_import ".
-           "WHERE id = $id"; 
-    
+           "WHERE id = $id";  
     $aJson['xbmcid'] = GetItemFromDatabase($db, "songid", $sql);
 
     $sql = "SELECT album FROM songs ".
@@ -810,6 +808,11 @@ function GetSongsImportStatus($db, $id, $xbmcid, $thumbs)
     $sql = "SELECT CONCAT(track, '. ', title) FROM songs ".
            "WHERE songid = $xbmcid";     
     $aJson['sub'] = GetItemFromDatabase($db, "title", $sql);
+    
+    $sql = "SELECT HEX(poster) FROM songs ".
+           "WHERE songid = $xbmcid";
+    $poster = GetItemFromDatabase($db, "poster", $sql); 
+    $aJson['poster'] = !empty($poster)?$poster[0]."/".$poster:0;
     
     $aJson['status']  = GetStatus($db, "ImportStatus");
     if ($aJson['status'] == cTRANSFER_READY) {

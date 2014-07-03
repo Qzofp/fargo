@@ -374,7 +374,7 @@ function GetTVShowEpisodeInfo($id, $login)
  * Function:	GetAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Get the album info from Fargo and return it as Json data. 
  *
@@ -388,8 +388,8 @@ function GetAlbumInfo($id)
     $aMedia  = null;
     $aParams = null;  
     
-    $sql = "SELECT xbmcid, title, genre, theme, mood, style, `year`, artist, displayartist, rating,".
-           "description, albumlabel ".
+    $sql = "SELECT xbmcid, title, genre, theme, mood, style, HEX(poster) AS fanart, `year`, artist, displayartist,".
+           " rating, description, albumlabel ".
            "FROM albums ".
            "WHERE id = $id";
     
@@ -399,7 +399,7 @@ function GetAlbumInfo($id)
     {
         if($stmt->execute())
         {
-            $stmt->bind_result($xbmcid, $title, $genre, $theme, $mood, $style, $year, $artist, $displayartist,
+            $stmt->bind_result($xbmcid, $title, $genre, $theme, $mood, $style, $fanart, $year, $artist, $displayartist,
                                $rating, $description, $albumlabel);
             $stmt->fetch();
             
@@ -418,7 +418,8 @@ function GetAlbumInfo($id)
             $aMedia["genre"]         = str_replace("|", " / ", $genre);
             $aMedia["theme"]         = str_replace("|", " / ", $theme);
             $aMedia["mood"]          = str_replace("|", " / ", $mood);
-            $aMedia["style"]         = str_replace("|", " / ", $style);            
+            $aMedia["style"]         = str_replace("|", " / ", $style);    
+            $aMedia["fanart"]        = !empty($fanart)?$fanart[0]."/".$fanart:0; 
             $aMedia["year"]          = $year;
             $aMedia["artist"]        = $artist;
             $aMedia["displayartist"] = $displayartist;
@@ -439,8 +440,8 @@ function GetAlbumInfo($id)
     CloseDatabase($db);     
 
     // Fill parameters.
-    $aParams['thumbs'] = cALBUMSTHUMBS;
-    $aParams['covers'] = cALBUMSCOVERS;
+    //$aParams['thumbs'] = cALBUMSTHUMBS;
+    $aParams['covers'] = cMUSICART;
     
     // Fill Json.
     $aJson['params']   = $aParams;
@@ -453,7 +454,7 @@ function GetAlbumInfo($id)
  * Function:	GetSongInfo
  *
  * Created on Jun 29, 2014
- * Updated on Jun 29, 2014
+ * Updated on Jun 03, 2014
  *
  * Description: Get the song info from Fargo and return it as Json data. 
  *
@@ -467,7 +468,7 @@ function GetSongInfo($id, $login)
     $aMedia  = null;
     $aParams = null;  
     
-    $sql = "SELECT songid, title, artist, album, genre, `year`, disc, track, ".
+    $sql = "SELECT songid, title, artist, album, genre, HEX(poster) AS fanart, `year`, disc, track, ".
            " TRIM(LEADING '00:' FROM SEC_TO_TIME(duration)) AS duration, rating, `comment`, `file` ".
            "FROM songs ".
            "WHERE id = $id";
@@ -478,7 +479,7 @@ function GetSongInfo($id, $login)
     {
         if($stmt->execute())
         {
-            $stmt->bind_result($xbmcid, $title, $artist, $album, $genre, $year, $disc, $track, $duration, $rating, $comment, $file);
+            $stmt->bind_result($xbmcid, $title, $artist, $album, $genre, $fanart, $year, $disc, $track, $duration, $rating, $comment, $file);
             $stmt->fetch();
             
             $genre = str_replace('"', '', $genre);
@@ -495,7 +496,8 @@ function GetSongInfo($id, $login)
             $aMedia["title"]    = stripslashes($title);
             $aMedia["artist"]   = stripslashes($artist);
             $aMedia["album"]    = stripslashes($album);
-            $aMedia["genre"]    = str_replace("|", " / ", $genre);         
+            $aMedia["genre"]    = str_replace("|", " / ", $genre);   
+            $aMedia["fanart"]   = !empty($fanart)?$fanart[0]."/".$fanart:0;             
             $aMedia["year"]     = $year;
             $aMedia["disc"]     = $disc;
             $aMedia["track"]    = $track;
@@ -520,8 +522,8 @@ function GetSongInfo($id, $login)
     CloseDatabase($db);     
 
     // Fill parameters.
-    $aParams['thumbs'] = cSONGSTHUMBS;
-    $aParams['covers'] = cSONGSCOVERS;
+    //$aParams['thumbs'] = cSONGSTHUMBS;
+    $aParams['covers'] = cMUSICART;
     
     // Fill Json.
     $aJson['params']   = $aParams;
@@ -1037,7 +1039,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                           $aMedia = QueryMedia($db, $sql, $page, $max);
                           break;                      
                       
-        case "albums"   : $aParams['thumbs'] = cALBUMSTHUMBS;
+        case "albums"   : $aParams['thumbs'] = cMUSICART;
                           $aParams['column'] = cMediaColumn;
                           $header = "Music Albums";
                           $sql    = CreateAlbumsQuery($title, $genre, $year, $sort, $login);
@@ -1046,7 +1048,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                           $aMedia = QueryMedia($db, $sql, $page, $max);
                           break; 
                       
-        case "songs"    : $aParams['thumbs'] = cSONGSTHUMBS;
+        case "songs"    : $aParams['thumbs'] = cMUSICART;
                           $aParams['column'] = cMediaColumn;
                           $header = "Music Songs";
                           $sql    = CreateSongsQuery($title, $genre, $year, $sort, $login);
@@ -1055,7 +1057,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                           $aMedia = QueryMedia($db, $sql, $page, $max);
                           break;
                       
-        case "tracks"   : $aParams['thumbs'] = cSONGSTHUMBS;
+        case "tracks"   : $aParams['thumbs'] = cMUSICART;
                           $aParams['column'] = cMediaColumn;
                           $header = GetItemFromDatabase($db, "album", "SELECT album FROM songs WHERE id = $level");
                           $sql    = CreateTracksQuery($level, $login);
@@ -1408,7 +1410,7 @@ function CreateEpisodesQuery($id, $season, $login)
  * Function:	CreateAlbumsQuery
  *
  * Created on May 29, 2014
- * Updated on May 29, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Create the sql query for the albums table. 
  *
@@ -1420,14 +1422,15 @@ function CreateAlbumsQuery($title, $genre, $year, $sort, $login)
 {     
     if (!$login)
     {
-        $sql = "SELECT t.id, t.xbmcid, NULL, t.hide, t.refresh, t.title, t.artist, NULL ".
+        $sql = "SELECT t.id, t.xbmcid, NULL, t.hide, t.refresh, t.title, HEX(t.poster), t.artist, NULL ".
                "FROM albums t ";
         
         $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
     }
     else
     {
-        $sql = "SELECT t.id, t.xbmcid, IF (m.playcount IS NULL, -1, m.playcount), t.hide, t.refresh, t.title, t.artist, NULL ".
+        $sql = "SELECT t.id, t.xbmcid, IF (m.playcount IS NULL, -1, m.playcount), t.hide, t.refresh, t.title,". 
+               " HEX(t.poster), t.artist, NULL ".
                "FROM albums t ".
                "LEFT JOIN albumsmeta m ON (t.xbmcid = m.albumid) ";
         
@@ -1443,7 +1446,7 @@ function CreateAlbumsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateSongsQuery
  *
  * Created on Jun 29, 2014
- * Updated on Jun 30, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Create the sql query for the songs table. 
  *
@@ -1455,8 +1458,8 @@ function CreateSongsQuery($title, $genre, $year, $sort, $login)
 {     
     if (!$login)
     {
-        $sql = "SELECT s.id, s.songid, NULL, a.hide, s.refresh, a.title, s.tracks, NULL ".
-               "FROM (SELECT id, songid, refresh, albumid, COUNT(track) AS tracks FROM songs ".
+        $sql = "SELECT s.id, s.songid, NULL, a.hide, s.refresh, a.title, s.poster, s.tracks, NULL ".
+               "FROM (SELECT id, songid, refresh, albumid, HEX(poster) AS poster, COUNT(track) AS tracks FROM songs ".
                "GROUP BY albumid) s ".
                "JOIN albums a ON s.albumid = a.id ";
         
@@ -1464,8 +1467,9 @@ function CreateSongsQuery($title, $genre, $year, $sort, $login)
     }
     else
     {
-        $sql = "SELECT s.id, s.songid, IF(am.playcount IS NULL, -1, am.playcount) AS playcount, a.hide, s.refresh, a.title, s.tracks, NULL ".
-               "FROM (SELECT id, songid, refresh, albumid, COUNT(track) AS tracks FROM songs ".
+        $sql = "SELECT s.id, s.songid, IF(am.playcount IS NULL, -1, am.playcount) AS playcount, a.hide, s.refresh,".
+               " a.title, s.poster, s.tracks, NULL ".
+               "FROM (SELECT id, songid, refresh, albumid, HEX(poster) AS poster, COUNT(track) AS tracks FROM songs ".
                "GROUP BY albumid) s ".
                "JOIN albums a ON s.albumid = a.id ".
                "LEFT JOIN albumsmeta am ON a.xbmcid = am.albumid ";
@@ -1482,7 +1486,7 @@ function CreateSongsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateTracksQuery
  *
  * Created on Jun 29, 2014
- * Updated on Jun 30, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Create the sql query for the album tracks table. 
  *
@@ -1494,14 +1498,15 @@ function CreateTracksQuery($level, $login)
 {     
     if (!$login)
     {
-        $sql = "SELECT id, songid, NULL, hide, refresh, CONCAT(track, '. ', title), TRIM(LEADING '00:' FROM SEC_TO_TIME(duration)), NULL ".
+        $sql = "SELECT id, songid, NULL, hide, refresh, CONCAT(track, '. ', title), HEX(poster),".
+               " TRIM(LEADING '00:' FROM SEC_TO_TIME(duration)), NULL ".
                "FROM songs ".
                "WHERE albumid = (SELECT albumid FROM songs WHERE id = $level) AND hide = 0 ";
     }
     else
     {
         $sql = "SELECT s.id, s.songid, IF(sm.playcount IS NULL, -1, sm.playcount) AS playcount, s.hide, s.refresh,".
-               " CONCAT(s.track, '. ', s.title), TRIM(LEADING '00:' FROM SEC_TO_TIME(s.duration)), NULL ".
+               " CONCAT(s.track, '. ', s.title), HEX(s.poster), TRIM(LEADING '00:' FROM SEC_TO_TIME(s.duration)), NULL ".
                "FROM songs s ".
                "LEFT JOIN songsmeta sm ON s.songid = sm.songid ".
                "WHERE s.albumid = (SELECT albumid FROM songs WHERE id = $level) ";    
