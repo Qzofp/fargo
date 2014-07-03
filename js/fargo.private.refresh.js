@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -98,7 +98,7 @@ function StartRefreshOnlineHandler(media, type, $popup)
  * Function:	StartRefreshHandler
  *
  * Created on Sep 14, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Set the refresh handler and start the refresh.
  * 
@@ -124,8 +124,8 @@ function StartRefreshHandler(type, $popup)
     setTimeout(function() {
 
         var start = StartRefresh(type, fargoid, xbmcid);
-        start.progress(function(i, id) {
-            ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i, id);
+        start.progress(function(i) {
+            ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i);
         });
             
         start.done (function() {
@@ -146,7 +146,7 @@ function StartRefreshHandler(type, $popup)
  * Function:	StartRefresh
  *
  * Created on Sep 14, 2013
- * Updated on Feb 18, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Control and Refresh the media transfered from XBMC.
  *
@@ -186,7 +186,7 @@ function StartRefresh(type, fargoid, xbmcid)
             GetMediaStatus(type, fargoid, xbmcid);
     
             // Show status.
-            deferred.notify(retry, xbmcid);
+            deferred.notify(retry);
 
             switch (Number(gTRIGGER.STATUS))
             {
@@ -265,15 +265,15 @@ function StartRefresh(type, fargoid, xbmcid)
  * Function:	ShowRefreshProgress
  *
  * Created on Feb 01, 2014
- * Updated on Jun 02, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Show the import progress.
  * 
- * In:	$msg, $prg, $img, $tit, $sub, type, i, id
+ * In:	$msg, $prg, $img, $tit, $sub, type, i
  * Out:	-
  *
  */
-function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i, id)
+function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i)
 {   
 
     var percent;
@@ -308,14 +308,18 @@ function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i, id)
         {    
             // Preload image.
             var img = new Image();
-            var version = 10000 + Math.floor(Math.random() * 9999);
-            img.src = gMEDIA.THUMBS + '/'+ id +'.jpg?v=' + version;
+            if (gMEDIA.POSTER) {
+                img.src = gMEDIA.THUMBS + '/' + gMEDIA.POSTER + '.jpg';
+            }
+            else {
+                img.src = 'images/no_poster.jpg';
+            }
             $img.attr('src', img.src);
                                 
             // If images not found then show no poster.
-            $img.error(function(){
+            /*$img.error(function(){
                 $(this).attr('src', 'images/no_poster.jpg');
-            });
+            });*/
                     
             $tit.html(gMEDIA.TITLE);
             $sub.html(gMEDIA.SUB);

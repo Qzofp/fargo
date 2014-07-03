@@ -815,7 +815,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetPopupInfo
  *
  * Created on Nov 25, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Get the popup info for the refresh or delete popups from Fargo and return it as Json data. 
  *
@@ -829,55 +829,56 @@ function GetPopupInfo($media, $id)
     
     switch($media)
     {                      
-        case "titles"   : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
+        case "titles"   : $sql = "SELECT xbmcid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM movies WHERE id = $id";
-                          $aJson = GetPopupMediaInfo($sql, cMOVIESTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cMOVIESART);
                           break;
                       
-        case "sets"     : $sql = "SELECT setid, refresh, title, NULL AS sub ".
+        case "sets"     : $sql = "SELECT setid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM sets WHERE id = $id";
-                          $aJson = GetPopupMediaInfo($sql, cSETSTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cMOVIESART);
                           break;   
                       
-        case "movieset" : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
+        case "movieset" : $sql = "SELECT xbmcid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM movies WHERE id = $id";
-                          $aJson = GetPopupMediaInfo($sql, cMOVIESTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cMOVIESART);
                           break;                      
                       
-        case "tvtitles" : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
+        case "tvtitles" : $sql = "SELECT xbmcid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM tvshows WHERE id = $id";
-                          $aJson = GetPopupMediaInfo($sql, cTVSHOWSTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cTVSHOWSART);
                           break;
                       
-        case "series"   : $sql = "SELECT seasonid AS id, t.refresh, t.title, s.title AS sub ".
+        case "series"   : $sql = "SELECT seasonid AS id, t.refresh, t.title, HEX(s.poster), s.title AS sub ".
                                  "FROM tvshows t, seasons s WHERE t.id = s.tvshowid AND s.id = $id ".
                                  "LIMIT 0, 1";
-                          $aJson = GetPopupMediaInfo($sql, cSEASONSTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cTVSHOWSART);
                           break;
                       
-        case "seasons"  : $sql = "SELECT seasonid AS id, refresh, showtitle, title AS sub ".
+        case "seasons"  : $sql = "SELECT seasonid AS id, refresh, showtitle, HEX(poster), title AS sub ".
                                  "FROM seasons WHERE id = $id";
-                          $aJson = GetPopupMediaInfo($sql, cSEASONSTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cTVSHOWSART);
                           break;
                       
-        case "episodes" : $sql = "SELECT episodeid, refresh, showtitle AS title, CONCAT(episode, '. ', title) AS sub ".                                 
+        case "episodes" : $sql = "SELECT episodeid, refresh, showtitle AS title, HEX(poster),".
+                                 " CONCAT(episode, '. ', title) AS sub ".                                 
                                  "FROM episodes WHERE id = $id";
-                          $aJson = GetPopupMediaInfo($sql, cEPISODESTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cTVSHOWSART);
                           break;
                       
-        case "albums"   : $sql = "SELECT xbmcid, refresh, title, NULL AS sub ".
+        case "albums"   : $sql = "SELECT xbmcid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM albums WHERE id = $id";
-                          $aJson = GetPopupMediaInfo($sql, cALBUMSTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cMUSICART);
                           break;    
                       
-        case "songs"    : $sql = "SELECT songid, refresh, album, CONCAT(track, '. ', title) AS sub ".
+        case "songs"    : $sql = "SELECT songid, refresh, album, HEX(poster), CONCAT(track, '. ', title) AS sub ".
                                  "FROM songs WHERE id = $id";
-                          $aJson = GetPopupMediaInfo($sql, cSONGSTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cMUSICART);
                           break;
                       
-        case "tracks"   : $sql = "SELECT songid, refresh, album AS title, CONCAT(track, '. ', title) AS sub ".
+        case "tracks"   : $sql = "SELECT songid, refresh, album AS title, HEX(poster), CONCAT(track, '. ', title) AS sub ".
                                  "FROM songs WHERE id = $id";
-                          $aJson = GetPopupMediaInfo($sql, cSONGSTHUMBS);
+                          $aJson = GetPopupMediaInfo($sql, cMUSICART);
                           break;             
     }
     
@@ -888,7 +889,7 @@ function GetPopupInfo($media, $id)
  * Function:	GetPopupMediaInfo
  *
  * Created on Nov 22, 2013
- * Updated on Dec 23, 2013
+ * Updated on Jul 03, 2014
  *
  * Description: Get the media info popups from Fargo and return it as Json data. 
  *
@@ -908,12 +909,13 @@ function GetPopupMediaInfo($sql, $thumb)
     {
         if($stmt->execute())
         {
-            $stmt->bind_result($xbmcid, $refresh, $title, $sub);
+            $stmt->bind_result($xbmcid, $refresh, $title, $poster, $sub);
             $stmt->fetch();
             
             $aMedia["xbmcid"]   = $xbmcid;
             $aMedia["refresh"]  = $refresh;
             $aMedia["title"]    = stripslashes($title);
+            $aMedia["poster"]   = !empty($poster)?$poster[0]."/".$poster:0;
             $aMedia["sub"]      = stripslashes($sub);
         }
         else

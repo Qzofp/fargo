@@ -50,8 +50,8 @@ switch($action)
                       {
                          $media  = GetPageValue('media'); 
                          $id     = GetPageValue('id');
-                         $xbmcid = GetPageValue('xbmcid');
-                         $aJson  = RemoveMediaFromFargo($media, $id, $xbmcid);
+                         //$xbmcid = GetPageValue('xbmcid');
+                         $aJson  = RemoveMediaFromFargo($media, $id);
                       }
                       else {
                          $aJson = LogEvent("Warning", "Unauthorized delete action call!");
@@ -263,49 +263,49 @@ function HideOrShowMedia($db, $table, $id, $value)
  * Function:	RemoveMediaFromFargo
  *
  * Created on Nov 22, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Delete media from Fargo database.
  *
- * In:  $media, $id, $xbmcid
+ * In:  $media, $id
  * Out:	Deleted media
  * 
  */
-function RemoveMediaFromFargo($media, $id, $xbmcid)
+function RemoveMediaFromFargo($media, $id)
 {   
     $aJson = null;
     $db = OpenDatabase();    
     
     switch ($media)
     {
-        case "titles"   : $aJson = DeleteMedia($db, "movies", $id, $xbmcid);
+        case "titles"   : $aJson = DeleteMedia($db, "movies", $id);
                           break;
         
-        case "sets"     : $aJson = DeleteMedia($db, "sets", $id, $xbmcid);
+        case "sets"     : $aJson = DeleteMedia($db, "sets", $id);
                           break;
                     
-        case "movieset" : $aJson = DeleteMedia($db, "movies", $id, $xbmcid);
+        case "movieset" : $aJson = DeleteMedia($db, "movies", $id);
                           break;
                       
-        case "tvtitles" : $aJson = DeleteMedia($db, "tvshows", $id, $xbmcid); // TV Show + Seasons + Episodes.
+        case "tvtitles" : $aJson = DeleteMedia($db, "tvshows", $id); // TV Show + Seasons + Episodes.
                           break;
                       
-        case "series"   : $aJson = DeleteMedia($db, "seasons", $id, $xbmcid); // Seasons + Episodes.
+        case "series"   : $aJson = DeleteMedia($db, "seasons", $id); // Seasons + Episodes.
                           break;  
                       
-        case "seasons"  : $aJson = DeleteMedia($db, "seasons", $id, $xbmcid); // Season + Episodes.
+        case "seasons"  : $aJson = DeleteMedia($db, "seasons", $id); // Season + Episodes.
                           break;                      
                       
-        case "episodes" : $aJson = DeleteMedia($db, "episodes", $id, $xbmcid);
+        case "episodes" : $aJson = DeleteMedia($db, "episodes", $id);
                           break;
                       
-        case "albums"   : $aJson = DeleteMedia($db, "albums", $id, $xbmcid); // Album + Songs.
+        case "albums"   : $aJson = DeleteMedia($db, "albums", $id); // Album + Songs.
                           break;
                       
-        case "songs"    : $aJson = DeleteMedia($db, "songs", $id, $xbmcid);
+        case "songs"    : $aJson = DeleteMedia($db, "songs", $id);
                           break; 
                       
-        case "tracks"   : $aJson = DeleteMedia($db, "songs", $id, $xbmcid);
+        case "tracks"   : $aJson = DeleteMedia($db, "songs", $id);
                           break;                    
     }
     
@@ -317,15 +317,15 @@ function RemoveMediaFromFargo($media, $id, $xbmcid)
  * Function:	DeleteMedia
  *
  * Created on Oct 05, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Delete media from Fargo database.
  *
- * In:  $db, $media, $id, $xbmcid
+ * In:  $db, $media, $id
  * Out:	Deleted media
  * 
  */
-function DeleteMedia($db, $media, $id, $xbmcid)
+function DeleteMedia($db, $media, $id)
 {
     $aJson = null;
     
@@ -333,29 +333,29 @@ function DeleteMedia($db, $media, $id, $xbmcid)
     {
         case "movies"   : DeleteMediaQuery($db, "movies", $id);
                           DeleteMediaGenreQuery($db, "movie", $id);
-                          DeleteFile(cMOVIESTHUMBS."/$xbmcid.jpg");
-                          DeleteFile(cMOVIESFANART."/$xbmcid.jpg");
+                          //DeleteFile(cMOVIESTHUMBS."/$xbmcid.jpg");
+                          //DeleteFile(cMOVIESFANART."/$xbmcid.jpg");
                           break;
                      
         case "sets"     : // Won't delete the movies in the set. Maybe in the future releases.
                           DeleteMediaQuery($db, "sets", $id);
-                          DeleteFile(cSETSTHUMBS."/$xbmcid.jpg");
+                          //DeleteFile(cSETSTHUMBS."/$xbmcid.jpg");
                           break;
                             
         case "tvshows"  : // Delete episodes.
-                          $sql = "SELECT CONCAT(episodeid, '.jpg') AS thumb FROM episodes WHERE ".
-                                 "tvshowid = (SELECT xbmcid FROM tvshows WHERE id = $id)";
-                          $aThumbs = GetItemsFromDatabase($db, $sql);
-                          DeleteMultipleFiles(cEPISODESTHUMBS, $aThumbs);
+                          //$sql = "SELECT CONCAT(episodeid, '.jpg') AS thumb FROM episodes WHERE ".
+                          //       "tvshowid = (SELECT xbmcid FROM tvshows WHERE id = $id)";
+                          //$aThumbs = GetItemsFromDatabase($db, $sql);
+                          //DeleteMultipleFiles(cEPISODESTHUMBS, $aThumbs);
                           
                           $sql = "DELETE FROM episodes WHERE tvshowid = $id";
                           QueryDatabase($db, $sql);
                           
                           // Delete seasons.
-                          $sql = "SELECT CONCAT(tvshowid, '_', season, '.jpg') AS xbmcid FROM seasons ".
-                                 "WHERE tvshowid = (SELECT xbmcid FROM tvshows WHERE id = $id)";
-                          $aThumbs = GetItemsFromDatabase($db, $sql);
-                          DeleteMultipleFiles(cSEASONSTHUMBS, $aThumbs);
+                          //$sql = "SELECT CONCAT(tvshowid, '_', season, '.jpg') AS xbmcid FROM seasons ".
+                          //       "WHERE tvshowid = (SELECT xbmcid FROM tvshows WHERE id = $id)";
+                          //$aThumbs = GetItemsFromDatabase($db, $sql);
+                          //DeleteMultipleFiles(cSEASONSTHUMBS, $aThumbs);
                           
                           $sql = "DELETE FROM seasons WHERE tvshowid = $id";
                           QueryDatabase($db, $sql);
@@ -364,16 +364,16 @@ function DeleteMedia($db, $media, $id, $xbmcid)
                           DeleteMediaQuery($db, "tvshows", $id);
                           DeleteMediaGenreQuery($db, "tvshow", $id);
 
-                          DeleteFile(cTVSHOWSTHUMBS."/$xbmcid.jpg");
-                          DeleteFile(cTVSHOWSFANART."/$xbmcid.jpg");
+                          //DeleteFile(cTVSHOWSTHUMBS."/$xbmcid.jpg");
+                          //DeleteFile(cTVSHOWSFANART."/$xbmcid.jpg");
                           break;
                      
         case "seasons"  : // Delete episodes.
-                          $sql = "SELECT CONCAT(episodeid, '.jpg') AS thumb FROM episodes ".
-                                 "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
-                                 "AND season = (SELECT season FROM seasons WHERE id = $id)";
-                          $aThumbs = GetItemsFromDatabase($db, $sql);
-                          DeleteMultipleFiles(cEPISODESTHUMBS, $aThumbs);
+                          //$sql = "SELECT CONCAT(episodeid, '.jpg') AS thumb FROM episodes ".
+                          //       "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
+                          //       "AND season = (SELECT season FROM seasons WHERE id = $id)";
+                          //$aThumbs = GetItemsFromDatabase($db, $sql);
+                          //DeleteMultipleFiles(cEPISODESTHUMBS, $aThumbs);
                           
                           $sql = "DELETE FROM episodes ".
                                  "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
@@ -381,22 +381,22 @@ function DeleteMedia($db, $media, $id, $xbmcid)
                           QueryDatabase($db, $sql);
                          
                           // Delete seasons.
-                          $sql = "SELECT seasonid AS xbmcid FROM seasons WHERE id = $id";
-                          $xbmcid = GetItemFromDatabase($db, "xbmcid", $sql);
-                          DeleteFile(cSEASONSTHUMBS."/$xbmcid.jpg");
+                          //$sql = "SELECT seasonid AS xbmcid FROM seasons WHERE id = $id";
+                          //$xbmcid = GetItemFromDatabase($db, "xbmcid", $sql);
+                          //DeleteFile(cSEASONSTHUMBS."/$xbmcid.jpg");
 
                           DeleteMediaQuery($db, "seasons", $id);  
                           break;
                      
         case "episodes" : DeleteMediaQuery($db, "episodes", $id);
-                          DeleteFile(cEPISODESTHUMBS."/$xbmcid.jpg");
+                          //DeleteFile(cEPISODESTHUMBS."/$xbmcid.jpg");
                           break;                     
                             
         case "albums"   : // Delete songs.
-                          $sql = "SELECT CONCAT(songid,'.jpg') FROM songs WHERE albumid = $id";
-                          $aThumbs = GetItemsFromDatabase($db, $sql);
-                          DeleteMultipleFiles(cSONGSCOVERS, $aThumbs);
-                          DeleteMultipleFiles(cSONGSTHUMBS, $aThumbs);
+                          //$sql = "SELECT CONCAT(songid,'.jpg') FROM songs WHERE albumid = $id";
+                          //$aThumbs = GetItemsFromDatabase($db, $sql);
+                          //DeleteMultipleFiles(cSONGSCOVERS, $aThumbs);
+                          //DeleteMultipleFiles(cSONGSTHUMBS, $aThumbs);
                           
                           $sql = "DELETE FROM songs WHERE albumid = $id";
                           QueryDatabase($db, $sql);
@@ -404,14 +404,14 @@ function DeleteMedia($db, $media, $id, $xbmcid)
                           // Delete Album.
                           DeleteMediaQuery($db, "albums", $id);
                           DeleteMediaGenreQuery($db, "music", $id);
-                          DeleteFile(cALBUMSTHUMBS."/$xbmcid.jpg");
-                          DeleteFile(cALBUMSCOVERS."/$xbmcid.jpg");
+                          //DeleteFile(cALBUMSTHUMBS."/$xbmcid.jpg");
+                          //DeleteFile(cALBUMSCOVERS."/$xbmcid.jpg");
                           break;  
                       
         case "songs"    : DeleteMediaQuery($db, "songs", $id);
                           DeleteMediaGenreQuery($db, "music", $id);
-                          DeleteFile(cSONGSTHUMBS."/$xbmcid.jpg");
-                          DeleteFile(cSONGSCOVERS."/$xbmcid.jpg");
+                          //DeleteFile(cSONGSTHUMBS."/$xbmcid.jpg");
+                          //DeleteFile(cSONGSCOVERS."/$xbmcid.jpg");
                           break;              
     } 
                           
@@ -1098,10 +1098,10 @@ function CleanLibrary($number)
                  DeleteGenres($db, "movies");
                 /* UpdateStatus($db, "XbmcMoviesStart", 0); // 1
                  UpdateStatus($db, "XbmcSetsStart", 0); // 1 */
-                 DeleteFile(cMOVIESTHUMBS."/*.jpg");
+                 /*DeleteFile(cMOVIESTHUMBS."/*.jpg");
                  DeleteFile(cMOVIESFANART."/*.jpg");
                  DeleteFile(cSETSTHUMBS."/*.jpg");
-                 DeleteFile(cSETSFANART."/*.jpg");
+                 DeleteFile(cSETSFANART."/*.jpg");*/
                  break;
         
         case 4 : $aJson['name']    = "tvshows";
@@ -1119,10 +1119,10 @@ function CleanLibrary($number)
                /*  UpdateStatus($db, "XbmcTVShowsStart", 0); // 1
                  UpdateStatus($db, "XbmcSeasonsStart", 0); // 1
                  UpdateStatus($db, "XbmcEpisodesStart", 0); // 1 */
-                 DeleteFile(cTVSHOWSTHUMBS."/*.jpg");
+                 /*DeleteFile(cTVSHOWSTHUMBS."/*.jpg");
                  DeleteFile(cTVSHOWSFANART."/*.jpg");
                  DeleteFile(cSEASONSTHUMBS."/*.jpg");
-                 DeleteFile(cEPISODESTHUMBS."/*.jpg");
+                 DeleteFile(cEPISODESTHUMBS."/*.jpg");*/
                  break;
         
         case 7 : $aJson['name']    = "albums";
@@ -1133,8 +1133,8 @@ function CleanLibrary($number)
                  DeleteGenres($db, "music");
                  EmptyTable($db, "songs");
                  EmptyTable($db, "songsmeta");
-                 DeleteFile(cALBUMSTHUMBS."/*.jpg");
-                 DeleteFile(cALBUMSCOVERS."/*.jpg");
+                 /*DeleteFile(cALBUMSTHUMBS."/*.jpg");
+                 DeleteFile(cALBUMSCOVERS."/*.jpg");*/
                  break;
     }
     
@@ -1147,7 +1147,7 @@ function CleanLibrary($number)
  * Function:	DeleteGenres
  *
  * Created on Jul 04, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Delete media genres.
  *
@@ -1161,7 +1161,6 @@ function DeleteGenres($db, $media)
            "WHERE media = '$media'";
     
     QueryDatabase($db, $sql);
-    //ExecuteQuery($sql);
 }
 
 /*

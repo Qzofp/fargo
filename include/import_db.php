@@ -56,7 +56,7 @@ function InsertMovie($db, $aMovie)
  * Function:	UpdateMovie
  *
  * Created on Sep 15, 2013
- * Updated on Feb 21, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Update movie in the database.
  *
@@ -75,8 +75,9 @@ function UpdateMovie($db, $id, $aMovie)
            " lastplayed = '$aItems[11]', playcount = $aItems[12], writer = '$aItems[13]', studio = '$aItems[14]',".
            " mpaa = '$aItems[15]', `cast` = '$aItems[16]', country = '$aItems[17]', imdbnr = '$aItems[18]',".
            " runtime = $aItems[19], `set` = '$aItems[20]', audio = '$aItems[21]', video = '$aItems[22]',".
-           " votes = $aItems[23], `file` = '$aItems[24]', sorttitle = '$aItems[25]',".
-           " setid = $aItems[26], dateadded = '$aItems[27]', `hash` = UNHEX('$aItems[28]')".
+           " votes = $aItems[23], `file` = '$aItems[24]', sorttitle = '$aItems[25]', setid = $aItems[26],".
+           " dateadded = '$aItems[27]', poster = UNHEX('$aItems[28]'), fanart = UNHEX('$aItems[29]'),". 
+           " `hash` = UNHEX('$aItems[30]')".
            "WHERE id = $id"; 
     
     QueryDatabase($db, $sql);
@@ -109,10 +110,10 @@ function InsertMovieSet($db, $aMovie)
 }
 
 /*
- * Function:	InsertMovieSet
+ * Function:	UpdateMovieSet
  *
  * Created on Nov 23, 2013
- * Updated on Feb 21, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Update movie set in the database.
  *
@@ -126,7 +127,7 @@ function UpdateMovieSet($db, $id, $aMovie)
         
     $sql = "UPDATE sets ".
            "SET setid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', sorttitle = '$aItems[2]',".
-           " playcount = $aItems[3], `hash` = UNHEX('$aItems[4]') ".
+           " playcount = $aItems[3], poster = UNHEX('$aItems[4]') , `hash` = UNHEX('$aItems[5]') ".
            "WHERE id = $id";
 
     QueryDatabase($db, $sql); 
@@ -169,7 +170,7 @@ function InsertTVShow($db, $aTVShow)
  * Function:	UpdateTVShow
  *
  * Created on Sep 22, 2013
- * Updated on Feb 22, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Update TV Show in the database.
  *
@@ -188,7 +189,7 @@ function UpdateTVShow($db, $id, $aTVShow)
            " imdbnr = '$aItems[11]', premiered = '$aItems[12]', votes = $aItems[13], lastplayed = '$aItems[14]',".
            " `file` = '$aItems[15]', originaltitle = '$aItems[16]', sorttitle = '$aItems[17]', season = $aItems[18],".
            " episodeguide = '$aItems[19]', watchedepisodes = $aItems[20], dateadded = '$aItems[21]',".
-           " `hash` = UNHEX('$aItems[22]') ".
+           " poster = UNHEX('$aItems[22]'), fanart = UNHEX('$aItems[23]'), `hash` = UNHEX('$aItems[24]') ".
            "WHERE id = $id";
       
     QueryDatabase($db, $sql);
@@ -226,7 +227,7 @@ function InsertTVShowSeason($db, $aSeason)
  * Function:	UpdateTVShowSeason
  *
  * Created on Dec 02, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Update TV Show Season in the database.
  *
@@ -241,7 +242,7 @@ function UpdateTVShowSeason($db, $id, $aSeason)
     $sql = "UPDATE seasons ".
            "SET seasonid = $aItems[0], refresh = refresh + 1, title = '$aItems[1]', tvshowid = $aItems[2],".
            " showtitle = '$aItems[3]', playcount = $aItems[4], season = $aItems[5], episode = $aItems[6],".
-           "watchedepisodes = $aItems[7], `hash` = UNHEX('$aItems[8]') ".
+           "watchedepisodes = $aItems[7], poster = UNHEX('$aItems[8]') , `hash` = UNHEX('$aItems[9]') ".
            "WHERE id = $id";
 
     QueryDatabase($db, $sql); 
@@ -272,7 +273,6 @@ function InsertTVShowEpisode($db, $aEpisode)
            " $aItems[20], UNHEX('$aItems[21]'), UNHEX('$aItems[22]')) ".
            "ON DUPLICATE KEY UPDATE episodeid = $aItems[0]"; 
     
-    //$dkey = QueryDatabase($db, $sql); 
     mysqli_query($db, $sql);
     $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).    
     
@@ -283,7 +283,7 @@ function InsertTVShowEpisode($db, $aEpisode)
  * Function:	UpdateTVShowEpisode
  *
  * Created on Nov 29, 2013
- * Updated on Feb 21, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Refresh TV Show Episode in the database.
  *
@@ -301,7 +301,7 @@ function UpdateTVShowEpisode($db, $id, $aEpisode)
            " `cast` = '$aItems[7]', plot = '$aItems[8]', playcount = $aItems[9], episode = $aItems[10],".
            " firstaired = '$aItems[11]', lastplayed = '$aItems[12]', dateadded = '$aItems[13]', votes = $aItems[14],".
            " `file` = '$aItems[15]', showtitle = '$aItems[16]', season = $aItems[17], audio = '$aItems[18]',".
-           " video = '$aItems[19]', runtime = $aItems[20], `hash` = UNHEX('$aItems[21]') ".
+           " video = '$aItems[19]', runtime = $aItems[20], poster = UNHEX('$aItems[21]'), `hash` = UNHEX('$aItems[22]') ".
            "WHERE id = $id";
     
     QueryDatabase($db, $sql);
@@ -342,7 +342,7 @@ function InsertAlbum($db, $aAlbum)
  * Function:	UpdateAlbum
  *
  * Created on Sep 22, 2013
- * Updated on Feb 21, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Update music album in the database.
  *
@@ -360,7 +360,7 @@ function UpdateAlbum($db, $id, $aAlbum)
            " style = '$aItems[7]', type = '$aItems[8]', albumlabel = '$aItems[9]', rating = $aItems[10],".
            " `year` = $aItems[11], mbalbumid = '$aItems[12]', mbalbumartistid = '$aItems[13]',".
            " playcount = $aItems[14], displayartist = '$aItems[15]', sorttitle = '$aItems[16]',".
-           " `hash` = UNHEX('$aItems[17]') ". 
+           " poster = UNHEX('$aItems[17]'), `hash` = UNHEX('$aItems[18]') ". 
            "WHERE id = $id";
             
     QueryDatabase($db, $sql);
@@ -392,8 +392,7 @@ function InsertSong($db, $aSong)
            "ON DUPLICATE KEY UPDATE songid = $aItems[0]";
     
     echo $sql; // debug
-      
-    //$dkey = QueryDatabase($db, $sql); 
+       
     mysqli_query($db, $sql);
     $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).        
     
@@ -406,7 +405,7 @@ function InsertSong($db, $aSong)
  * Function:	UpdateSong
  *
  * Created on Jun 30, 2014
- * Updated on Jun 30, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Update music song in the database.
  *
@@ -426,7 +425,7 @@ function UpdateSong($db, $id, $aSong)
            " mbartistid = '$aItems[14]', mbalbumid = '$aItems[15]', mbalbumartistid = '$aItems[16]',".
            " playcount = $aItems[17], `file` = '$aItems[18]', lastplayed = '$aItems[19]', disc = $aItems[20],".
            " displayartist = '$aItems[21]', sorttitle = '$aItems[22]',". 
-           " `hash` = UNHEX('$aItems[23]') ".
+           " poster = UNHEX('$aItems[23]'), `hash` = UNHEX('$aItems[24]') ".
            "WHERE id = $id";
             
     QueryDatabase($db, $sql);

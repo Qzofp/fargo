@@ -275,7 +275,7 @@ function SetActionHandler(event)
  * Function:	SetRemoveHandler
  *
  * Created on Oct 05, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Remove media from Frago handler.
  * 
@@ -289,7 +289,7 @@ function SetRemoveHandler($popup)
     var media, type, title;
     
     var fargoid = $popup.find(".id").text();
-    var xbmcid  = $popup.find(".xbmcid").text();
+    //var xbmcid  = $popup.find(".xbmcid").text();
     
     finish = 3 + Math.floor(Math.random() * 3);
     media  = GetState("media");
@@ -301,7 +301,7 @@ function SetRemoveHandler($popup)
     $remove.show();  
     
     // Remove media from Fargo.
-    RemoveMediaFromFargo(type, fargoid, xbmcid);
+    RemoveMediaFromFargo(type, fargoid);
     
     media = ConvertMediaToSingular(type);
     DisplayCleaningMessage("Removing " + media + "...", media + " removed!", $remove, ".no", finish);

@@ -287,7 +287,7 @@ function ImportMovieSet($db, $aError, $poster, $aResult)
  * Function:	RefreshMovie
  *
  * Created on Sep 08, 2013
- * Updated on Feb 18, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Refresh the movie. 
  *
@@ -302,12 +302,12 @@ function RefreshMovie($db, $aError, $poster, $fanart, $aResult, $fargoid)
         $aGenres = $aResult["moviedetails"]["genre"]; 
         $aMovie  = ConvertMovie($aResult["moviedetails"]);
     
-        DeleteFile("../".cMOVIESTHUMBS."/".$aMovie[0].".jpg");
-        DeleteFile("../".cMOVIESFANART."/".$aMovie[0].".jpg");
+        //DeleteFile("../".cMOVIESTHUMBS."/".$aMovie[0].".jpg");
+        //DeleteFile("../".cMOVIESFANART."/".$aMovie[0].".jpg");
         
-        ResizeAndSaveImage($aMovie[0], $poster, "../".cMOVIESTHUMBS, 125, 175);  //200, 280
+        ResizeAndSaveImage($aMovie[28], $poster, "../".cMOVIESART, 125, 175);
         UpdateMovie($db, $fargoid, $aMovie);   
-        ResizeAndSaveImage($aMovie[0], $fanart, "../".cMOVIESFANART,  450, 280); //562, 350 //675, 420  
+        ResizeAndSaveImage($aMovie[29], $fanart, "../".cMOVIESART,  450, 280);
         InsertGenres($db, $aGenres, "movies");
         
         UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
@@ -324,7 +324,7 @@ function RefreshMovie($db, $aError, $poster, $fanart, $aResult, $fargoid)
  * Function:	RefreshMovieSet
  *
  * Created on Nov 23, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Refresh the movie set. 
  *
@@ -338,10 +338,10 @@ function RefreshMovieSet($db, $aError, $poster, $aResult, $fargoid)
     {  
         $aMovie = ConvertMovieSet($aResult["setdetails"]);
     
-        DeleteFile("../".cSETSTHUMBS."/".$aMovie[0].".jpg");
+        //DeleteFile("../".cSETSTHUMBS."/".$aMovie[0].".jpg");
     
         UpdateMovieSet($db, $fargoid, $aMovie);   
-        ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280  
+        ResizeAndSaveImage($aMovie[4], $poster, "../".cMOVIESART, 125, 175);
 
         UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
     } 
@@ -484,7 +484,7 @@ function ImportTVShowEpisode($db, $aError, $poster, $aResult)
  * Function:	RefreshTVShow
  *
  * Created on Sep 09, 2013
- * Updated on Feb 18, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Refresh the tv show. 
  *
@@ -499,12 +499,12 @@ function RefreshTVShow($db, $aError, $poster, $fanart, $aResult, $id)
         $aGenres = $aResult["tvshowdetails"]["genre"];
         $aTVShow = ConvertTVShow($aResult["tvshowdetails"]);
     
-        DeleteFile("../".cTVSHOWSTHUMBS."/".$aTVShow[0].".jpg");
-        DeleteFile("../".cTVSHOWSFANART."/".$aTVShow[0].".jpg");
+        //DeleteFile("../".cTVSHOWSTHUMBS."/".$aTVShow[0].".jpg");
+        //DeleteFile("../".cTVSHOWSFANART."/".$aTVShow[0].".jpg");
         
-        ResizeAndSaveImage($aTVShow[0], $poster, "../".cTVSHOWSTHUMBS, 125, 175);    
+        ResizeAndSaveImage($aTVShow[22], $poster, "../".cTVSHOWSART, 125, 175);    
         UpdateTVShow($db, $id, $aTVShow);
-        ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 450, 280); //562, 350 //675, 420 
+        ResizeAndSaveImage($aTVShow[23], $fanart, "../".cTVSHOWSART, 450, 280);
         InsertGenres($db, $aGenres, "tvshows");
     
         UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
@@ -521,7 +521,7 @@ function RefreshTVShow($db, $aError, $poster, $fanart, $aResult, $id)
  * Function:	RefreshTVShowSeason
  *
  * Created on Dec 02, 2013
- * Updated on Jun 26, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Refresh the tv show season. 
  *
@@ -535,9 +535,9 @@ function RefreshTVShowSeason($db, $aError, $poster, $aResult, $id)
     {
         $aSeason = ConvertTVShowSeason($db, $aResult["seasondetails"]);
         
-        DeleteFile("../".cSEASONSTHUMBS."/".$aSeason[0].".jpg");
+        //DeleteFile("../".cSEASONSTHUMBS."/".$aSeason[0].".jpg");
 
-        ResizeAndSaveImage($aSeason[0], $poster, "../".cSEASONSTHUMBS, 125, 175);
+        ResizeAndSaveImage($aSeason[8], $poster, "../".cTVSHOWSART, 125, 175);
         UpdateTVShowSeason($db, $id, $aSeason);
         
         UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
@@ -554,7 +554,7 @@ function RefreshTVShowSeason($db, $aError, $poster, $aResult, $id)
  * Function:	RefreshTVShowEpisode
  *
  * Created on Nov 29, 2013
- * Updated on Jun 26, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Refresh the tv show episode. 
  *
@@ -568,9 +568,9 @@ function RefreshTVShowEpisode($db, $aError, $poster, $aResult, $id)
     {
         $aEpisode = ConvertTVShowEpisode($db, $aResult["episodedetails"]);
     
-        DeleteFile("../".cEPISODESTHUMBS."/".$aEpisode[0].".jpg");  
+        //DeleteFile("../".cEPISODESTHUMBS."/".$aEpisode[0].".jpg");  
         
-        SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);        
+        SaveImage($aEpisode[21], $poster, "../".cEPISODESTHUMBS); 
         UpdateTVShowEpisode($db, $id, $aEpisode);
     
         UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
@@ -636,7 +636,7 @@ function ImportAlbum($db, $aError, $poster, $aResult)
  * Function:	RefreshAlbum
  *
  * Created on Sep 09, 2013
- * Updated on Feb 18, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Refresh the music album details. 
  *
@@ -651,12 +651,12 @@ function RefreshAlbum($db, $aError, $poster, $aResult, $id)
         $aGenres = $aResult["albumdetails"]["genre"]; 
         $aAlbum = ConvertAlbum($aResult["albumdetails"]);
     
-        DeleteFile("../".cALBUMSTHUMBS."/".$aAlbum[0].".jpg");
-        DeleteFile("../".cALBUMSCOVERS."/".$aAlbum[0].".jpg");
+        //DeleteFile("../".cALBUMSTHUMBS."/".$aAlbum[0].".jpg");
+        //DeleteFile("../".cALBUMSCOVERS."/".$aAlbum[0].".jpg");
               
-        ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSTHUMBS, 125, 125);
+        ResizeAndSaveImage($aAlbum[17], $poster, "../".cMUSICART, 300, 300); // 125, 125
         UpdateAlbum($db, $id, $aAlbum);
-        ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
+        //ResizeAndSaveImage($aAlbum[0], $poster, "../".cALBUMSCOVERS, 300, 300);
         InsertGenres($db, $aGenres, "music");
     
         UpdateStatus($db, "ImportStatus", cTRANSFER_READY);
@@ -722,7 +722,7 @@ function ImportSong($db, $aError, $poster, $aResult)
  * Function:	RefreshSong
  *
  * Created on Jun 30, 2014
- * Updated on Jun 30, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Refresh the music song details. 
  *
@@ -737,12 +737,12 @@ function RefreshSong($db, $aError, $poster, $aResult, $id)
         $aGenres = $aResult["songdetails"]["genre"]; 
         $aSong = ConvertSong($db, $aResult["songdetails"]);
     
-        DeleteFile("../".cSONGSTHUMBS."/".$aSong[0].".jpg");
-        DeleteFile("../".cSONGSCOVERS."/".$aSong[0].".jpg");
+        //DeleteFile("../".cSONGSTHUMBS."/".$aSong[0].".jpg");
+        //DeleteFile("../".cSONGSCOVERS."/".$aSong[0].".jpg");
               
-        ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSTHUMBS, 125, 125);
+        ResizeAndSaveImage($aSong[23], $poster, "../".cMUSICART, 300, 300); // 125, 125
         UpdateSong($db, $id, $aSong);
-        ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSCOVERS, 300, 300);
+        //ResizeAndSaveImage($aSong[0], $poster, "../".cSONGSCOVERS, 300, 300);
         InsertGenres($db, $aGenres, "music");
     
         UpdateStatus($db, "ImportStatus", cTRANSFER_READY);

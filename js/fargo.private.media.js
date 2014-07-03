@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -127,7 +127,7 @@ function SetInfoZoomHandlerWithActions()
  * Function:	ShowModePopup
  *
  * Created on Sep 07, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Show the action popup with the yes/no buttons.
  * 
@@ -152,7 +152,7 @@ function ShowModePopup(mode, media, id)
             $("#action_thumb img").error(function(){
                 $(this).attr('src', 'images/no_poster.jpg');
             })
-            .attr('src', json.params.thumbs + '/' + json.media.xbmcid + '.jpg' + '?v=' + json.media.refresh);
+            .attr('src', json.params.thumbs + '/' + json.media.poster + '.jpg' + '?v=' + json.media.refresh);
     
             $("#action_title").html(json.media.title);
             if (json.media.sub) {
@@ -241,19 +241,19 @@ function HideOrShowMediaInFargo(media, id, value)
  * Function:	RemoveMediaFromFargo
  *
  * Created on Oct 05, 2013
- * Updated on Nov 24, 2013
+ * Updated on Jul 03, 2014
  *
  * Description: Remove media from Frago.
  * 
- * In:	media, id, xbmcid
+ * In:	media, id
  * Out:	Removed media
  *
  */
-function RemoveMediaFromFargo(media, id, xbmcid)
+function RemoveMediaFromFargo(media, id)
 {    
     $.ajax
     ({
-        url: 'jsonmanage.php?action=delete&media=' + media + '&id=' + id + '&xbmcid=' + xbmcid,
+        url: 'jsonmanage.php?action=delete&media=' + media + '&id=' + id,
         async: false,
         dataType: 'json',
         success: function(json) {

@@ -1676,7 +1676,7 @@ function ShowInfoHeader(type, title, sort, genre, year)
  * Function:	ShowMediaTableThumbs
  *
  * Created on May 24, 2014
- * Updated on Jul 02, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Shows the media table with media as thumbnails.
  *
@@ -1762,7 +1762,7 @@ function ShowMediaTableThumbs(json, media, type, mode)
     }  
     
     // If images not found then show no poster.
-    /*$("#display_thumb img").error(function()
+    $("#display_thumb img").error(function()
     {
         if (media != "music") {
             $(this).attr('src', 'images/no_poster.jpg');
@@ -1770,14 +1770,14 @@ function ShowMediaTableThumbs(json, media, type, mode)
         else {
             $(this).attr('src', 'images/no_cover.jpg');
         }
-    });*/
+    });
 }
 
 /*
  * Function:	ShowMediaTableList
  *
  * Created on May 25, 2014
- * Updated on Jul 02, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Shows the media table with media in a list.
  *
@@ -1877,14 +1877,14 @@ function ShowMediaTableList(json, media, type, mode)
     $('#display_list').show();
     
     // If images not found then show no poster.
-    /*$("#display_list img").error(function(){
+    $("#display_list img").error(function(){
         if (media != "music") {
             $(this).attr('src', 'images/no_poster.jpg');
         }
         else {
             $(this).attr('src', 'images/no_cover.jpg');
         }
-    });*/
+    });
     
     // Change table cells and image size.
     if (type == "episodes") 
