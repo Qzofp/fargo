@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Fargo's settings page.
  *
@@ -21,12 +21,14 @@ define("cPASS",  "fargo");
 
 // Path settings.
 define("cMOVIESART", "images/movies");
+define("cTVSHOWSART", "images/tvshows");
+define("cMUSICART", "images/music");
 
-
-define("cMOVIESTHUMBS", "images/movies/thumbs");
-define("cMOVIESFANART", "images/movies/fanart");
-define("cSETSTHUMBS", "images/sets/thumbs");
-define("cSETSFANART", "images/sets/fanart");
+/* OBSOLETE
+define("cMOVIESTHUMBS", "images/movies/thumbs");  // Obsolete
+define("cMOVIESFANART", "images/movies/fanart");  // Obsolete
+define("cSETSTHUMBS", "images/sets/thumbs"); // Obsolete
+define("cSETSFANART", "images/sets/fanart"); // Obsolete
 define("cTVSHOWSTHUMBS", "images/tvshows/thumbs");
 define("cTVSHOWSFANART", "images/tvshows/fanart");
 define("cSEASONSTHUMBS", "images/seasons/thumbs");
@@ -37,6 +39,7 @@ define("cALBUMSTHUMBS", "images/albums/thumbs");
 define("cALBUMSCOVERS", "images/albums/covers");
 define("cSONGSTHUMBS", "images/songs/thumbs");
 define("cSONGSCOVERS", "images/songs/covers");
+*/
 
 // URL settings.
 define("cIMDB", "http://www.imdb.com/title/");

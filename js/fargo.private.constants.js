@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.private.constants.js
  *
  * Created on Oct 23, 2013
- * Updated on Jun 20, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Fargo's jQuery and Javascript private contants and globals.
  *
@@ -30,6 +30,7 @@ var gMEDIA = {
     TITLE: "",
     SUB: "",
     THUMBS : "",
+    POSTER : "",
     XBMCID : 0
 };
 

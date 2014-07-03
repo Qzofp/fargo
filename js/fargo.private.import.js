@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -437,7 +437,7 @@ function ShowMetaProgress($prg, type, i, end)
  * Function:	StartImportHandler
  *
  * Created on Jan 14, 2014
- * Updated on Jun 27, 2014
+ * Updated on Jul 02, 2014
  *
  * Description:  Start the media import handler.
  * 
@@ -473,8 +473,8 @@ function StartImportHandler(media, type, next, factor)
             LogEvent("Information", "Import " + ConvertMedia(type) + " started.");
             
             var start = StartImport(type, factor);     
-            start.progress(function(i, id) {
-                ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta);
+            start.progress(function(i) {
+                ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, delta);
             });
             
             start.done (function() {
@@ -526,7 +526,7 @@ function StartImport(type, factor)
             if (start > gTRIGGER.END) 
             {
                 GetMediaStatus(type, start, xbmcid);
-                deferred.notify(start, xbmcid);// Show status.                
+                deferred.notify(start);// Show status.                
                 deferred.resolve(); // End Import.
             }
             
@@ -545,7 +545,7 @@ function StartImport(type, factor)
             
             // Get status (returns gMEDIA and gTRIGGER.COUNTER).
             GetMediaStatus(type, start, xbmcid);
-            deferred.notify(start, xbmcid);// Show status.
+            deferred.notify(start);// Show status.
             
             switch (Number(gTRIGGER.STATUS))
             {
@@ -609,12 +609,12 @@ function StartImport(type, factor)
  * Function:	GetMediaStatus
  *
  * Created on Jan 14, 2014
- * Updated on Jan 31, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
  * In:	type, start, xbmcid
- * Out:	Global gMEDIA (xbmcid, title, subtitle, thumbs)
+ * Out:	Global gMEDIA (xbmcid, title, subtitle, thumbs, poster)
  *
  */
 function GetMediaStatus(type, start, xbmcid)
@@ -628,6 +628,7 @@ function GetMediaStatus(type, start, xbmcid)
             gMEDIA.TITLE  = json.title;
             gMEDIA.SUB    = json.sub;
             gMEDIA.THUMBS = json.thumbs;
+            gMEDIA.POSTER = json.poster;
             gMEDIA.XBMCID = json.xbmcid;
             
             gTRIGGER.STATUS  = json.status;
@@ -640,15 +641,15 @@ function GetMediaStatus(type, start, xbmcid)
  * Function:	ShowImportProgress
  *
  * Created on Jan 16, 2014
- * Updated on Jun 27, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Show the import progress.
  * 
- * In:	$msg, $prg, $img, $tit, $sub, type, i, id, delta
+ * In:	$msg, $prg, $img, $tit, $sub, type, i, delta
  * Out:	-
  *
  */
-function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
+function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, delta)
 {   
     var percent = i - (gTRIGGER.END+1 - delta);
     percent = Math.ceil(percent/delta * 100);
@@ -675,14 +676,19 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, id, delta)
     if (gMEDIA.TITLE) 
     {
         // Preload image.
-        var img = new Image();      
-        img.src = gMEDIA.THUMBS + '/'+ id +'.jpg';
+        var img = new Image();
+        if (gMEDIA.POSTER) {
+            img.src = gMEDIA.THUMBS + '/' + gMEDIA.POSTER + '.jpg';
+        }
+        else {
+            img.src = 'images/no_poster.jpg';
+        }
         $img.attr('src', img.src);
                                 
         // If images not found then show no poster.
-        $img.error(function(){
+        /*$img.error(function(){
             $(this).attr('src', 'images/no_poster.jpg');
-        });
+        });*/
          
         $img.show();
         $tit.html(gMEDIA.TITLE);

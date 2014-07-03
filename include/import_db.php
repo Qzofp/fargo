@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 02, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: The XBMC import database functions page. 
  * 
@@ -86,7 +86,7 @@ function UpdateMovie($db, $id, $aMovie)
  * Function:	InsertMovieSet
  *
  * Created on Oct 14, 2013
- * Updated on May 12, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Insert movie set in the database.
  *
@@ -98,11 +98,10 @@ function InsertMovieSet($db, $aMovie)
 {   
     $aItems = AddEscapeStrings($db, $aMovie);
     
-    $sql = "INSERT INTO sets(setid, title, sorttitle, playcount, `hash`) ".
-           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], UNHEX('$aItems[4]')) ".
+    $sql = "INSERT INTO sets(setid, title, sorttitle, playcount, poster, `hash`) ".
+           "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], UNHEX('$aItems[4]'), UNHEX('$aItems[5]')) ".
            "ON DUPLICATE KEY UPDATE setid = $aItems[0]";
 
-    //$dkey = QueryDatabase($db, $sql);
     mysqli_query($db, $sql);
     $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).    
     
@@ -137,7 +136,7 @@ function UpdateMovieSet($db, $id, $aMovie)
  * Function:	InsertTVShow
  *
  * Created on Apr 19, 2013
- * Updated on May 17, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Insert TV Show in the database.
  *
@@ -150,15 +149,14 @@ function InsertTVShow($db, $aTVShow)
     $aItems = AddEscapeStrings($db, $aTVShow);
     
     $sql = "INSERT INTO tvshows(xbmcid, title, genre, `year`, rating, plot, studio, mpaa, `cast`,".
-           " playcount, episode, imdbnr, premiered, votes, lastplayed, `file`,".
-           " originaltitle, sorttitle, season, episodeguide, watchedepisodes, dateadded, `hash`) ". 
+           " playcount, episode, imdbnr, premiered, votes, lastplayed, `file`, originaltitle, sorttitle, ".
+           " season, episodeguide, watchedepisodes, dateadded, poster, fanart, `hash`) ". 
            "VALUES ($aItems[0], '$aItems[1]', '$aItems[2]', $aItems[3], $aItems[4], '$aItems[5]', '$aItems[6]',".
            " '$aItems[7]', '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', $aItems[13],".
-           " '$aItems[14]', '$aItems[15]', '$aItems[16]', '$aItems[17]', $aItems[18],".
-           " '$aItems[19]', $aItems[20], '$aItems[21]', UNHEX('$aItems[22]')) ".
+           " '$aItems[14]', '$aItems[15]', '$aItems[16]', '$aItems[17]', $aItems[18], '$aItems[19]', $aItems[20],".
+           " '$aItems[21]', UNHEX('$aItems[22]'), UNHEX('$aItems[23]'), UNHEX('$aItems[24]')) ".
            "ON DUPLICATE KEY UPDATE xbmcid = $aItems[0]";
     
-    //$dkey = QueryDatabase($db, $sql);
     mysqli_query($db, $sql);
     $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).    
     
@@ -200,7 +198,7 @@ function UpdateTVShow($db, $id, $aTVShow)
  * Function:	InsertTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on May 17, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Insert TV Show Season in the database.
  *
@@ -213,12 +211,11 @@ function InsertTVShowSeason($db, $aSeason)
     $aItems = AddEscapeStrings($db, $aSeason);
     
     $sql = "INSERT INTO seasons(seasonid, title, tvshowid, showtitle, playcount, season, episode,".
-           " watchedepisodes, hash) ".
+           " watchedepisodes, poster, hash) ".
            "VALUES ($aItems[0], '$aItems[1]', $aItems[2], '$aItems[3]', $aItems[4], $aItems[5], $aItems[6],".
-           " $aItems[7], UNHEX('$aItems[8]')) ".
+           " $aItems[7], UNHEX('$aItems[8]'), UNHEX('$aItems[9]')) ".
            "ON DUPLICATE KEY UPDATE seasonid = $aItems[0]";
 
-    //$dkey = QueryDatabase($db, $sql);
     mysqli_query($db, $sql);
     $dkey = mysqli_affected_rows($db); // 0 = No changes, 1 = Insert, 2 = Update (0 and 2 = duplicate found).    
     
@@ -254,7 +251,7 @@ function UpdateTVShowSeason($db, $id, $aSeason)
  * Function:	InsertTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on May 17, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Insert TV Show Episode in the database.
  *
@@ -268,11 +265,11 @@ function InsertTVShowEpisode($db, $aEpisode)
     
     $sql = "INSERT INTO episodes(episodeid, tvshowid, title, originaltitle, rating, writer, director, `cast`,".
            " plot, playcount, episode, firstaired, lastplayed, dateadded, votes, `file`, showtitle, season, audio,".
-           " video, runtime, `hash`) ".
+           " video, runtime, poster, `hash`) ".
            "VALUES ($aItems[0], $aItems[1], '$aItems[2]', '$aItems[3]', $aItems[4], '$aItems[5]', '$aItems[6]',".
            " '$aItems[7]', '$aItems[8]', $aItems[9], $aItems[10], '$aItems[11]', '$aItems[12]', '$aItems[13]',".
            " $aItems[14], '$aItems[15]', '$aItems[16]', $aItems[17], '$aItems[18]', '$aItems[19]',".
-           " $aItems[20], UNHEX('$aItems[21]')) ".
+           " $aItems[20], UNHEX('$aItems[21]'), UNHEX('$aItems[22]')) ".
            "ON DUPLICATE KEY UPDATE episodeid = $aItems[0]"; 
     
     //$dkey = QueryDatabase($db, $sql); 

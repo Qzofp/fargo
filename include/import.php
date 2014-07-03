@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -248,7 +248,7 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
  * Function:	ImportMovieSet
  *
  * Created on Oct 13, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Import the movie set. 
  *
@@ -262,7 +262,7 @@ function ImportMovieSet($db, $aError, $poster, $aResult)
     {
         $aMovie = ConvertMovieSet($aResult["setdetails"]);
  
-        ResizeAndSaveImage($aMovie[0], $poster, "../".cSETSTHUMBS, 125, 175); //200, 280
+        ResizeAndSaveImage($aMovie[4], $poster, "../".cMOVIESART, 125, 175);
         $dkey = InsertMovieSet($db, $aMovie);
         if ($dkey == 1) // No dublicate key found.
         {  
@@ -357,7 +357,7 @@ function RefreshMovieSet($db, $aError, $poster, $aResult, $fargoid)
  * Function:	ImportTVShow
  *
  * Created on Aug 24, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Import the tv show. 
  *
@@ -372,11 +372,11 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
         $aGenres = $aResult["tvshowdetails"]["genre"];
         $aTVShow = ConvertTVShow($aResult["tvshowdetails"]);
      
-        ResizeAndSaveImage($aTVShow[0], $poster, "../".cTVSHOWSTHUMBS, 125, 175);
+        ResizeAndSaveImage($aTVShow[22], $poster, "../".cTVSHOWSART, 125, 175);
         list($dkey, $id) = InsertTVShow($db, $aTVShow);
         if ($dkey == 1) // No dublicate key found.
         { 
-            ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 450, 280); //562, 350 //675, 420 
+            ResizeAndSaveImage($aTVShow[23], $fanart, "../".cTVSHOWSART, 450, 280);
             
             InsertGenres($db, $aGenres, "tvshows");
             InsertGenreToMedia($db, $aGenres, $id, "tvshows");
@@ -387,7 +387,7 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
         else 
         {
             if ($dkey == 2) {
-                ResizeAndSaveImage($aTVShow[0], $fanart, "../".cTVSHOWSFANART, 450, 280); //562, 350 //675, 420
+                ResizeAndSaveImage($aTVShow[23], $fanart, "../".cTVSHOWART, 450, 280);
             }
             UpdateStatus($db, "ImportStatus", cTRANSFER_DUPLICATE);
         }        
@@ -406,7 +406,7 @@ function ImportTVShow($db, $aError, $poster, $fanart, $aResult)
  * Function:	ImportTVShowSeason
  *
  * Created on Oct 20, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Import the tv show season. 
  *
@@ -420,7 +420,7 @@ function ImportTVShowSeason($db, $aError, $poster, $aResult)
     {    
         $aSeason = ConvertTVShowSeason($db, $aResult["seasondetails"]);
 
-        ResizeAndSaveImage($aSeason[0], $poster, "../".cSEASONSTHUMBS, 125, 175);
+        ResizeAndSaveImage($aSeason[8], $poster, "../".cTVSHOWSART, 125, 175);
         $dkey = InsertTVShowSeason($db, $aSeason);
         if ($dkey == 1) // No dublicate key found.
         { 
@@ -445,7 +445,7 @@ function ImportTVShowSeason($db, $aError, $poster, $aResult)
  * Function:	ImportTVShowEpisode
  *
  * Created on Oct 26, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Import the TV Show Episode. 
  *
@@ -459,7 +459,7 @@ function ImportTVShowEpisode($db, $aError, $poster, $aResult)
     {
         $aEpisode = ConvertTVShowEpisode($db, $aResult["episodedetails"]);
      
-        SaveImage($aEpisode[0], $poster, "../".cEPISODESTHUMBS);
+        SaveImage($aEpisode[21], $poster, "../".cTVSHOWSART);
         $dkey = InsertTVShowEpisode($db, $aEpisode);
         if ($dkey == 1) // No dublicate key found.
         { 
@@ -759,7 +759,7 @@ function RefreshSong($db, $aError, $poster, $aResult, $id)
  * Function:	SaveImage
  *
  * Created on Aug 11, 2013
- * Updated on Aug 11, 2013
+ * Updated on Jul 03, 2014
  *
  * Description: Save image.
  *
@@ -769,10 +769,18 @@ function RefreshSong($db, $aError, $poster, $aResult, $id)
  */
 function SaveImage($id, $image, $path)
 {
-    if ($image) 
+    // Create hex directories (0, 1, 2, 3... a, b, c, d, e, f).
+    $dir = $path."/".$id[0];
+    if (!file_exists($dir) && $id[0] <= 'f') {
+        mkdir($dir, 0777);
+    }    
+    
+    // Resize and save image.
+    $file = $dir."/".$id.".jpg";
+    if ($image && !file_exists($file)) 
     {
         $image = explode('base64,',$image); 
-        file_put_contents($path.'/'.$id.'.jpg', base64_decode($image[1]));
+        file_put_contents($file, base64_decode($image[1]));
     }    
 }
 
@@ -780,7 +788,7 @@ function SaveImage($id, $image, $path)
  * Function:	ResizeAndSaveImage
  *
  * Created on Aug 17, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Resize and save image as jpg.
  *
@@ -792,7 +800,7 @@ function ResizeAndSaveImage($id, $image, $path, $w, $h)
 {
     // Create hex directories (0, 1, 2, 3... a, b, c, d, e, f).
     $dir = $path."/".$id[0];
-    if (!file_exists($dir)) {
+    if (!file_exists($dir) && $id[0] <= 'f') {
         mkdir($dir, 0777);
     }
     

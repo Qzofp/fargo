@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -99,11 +99,9 @@ switch($action)
     case "status"   : if($login)
                       {
                          $media  = GetPageValue('media');
-                         //$mode  = GetPageValue('mode');
                          $id     = GetPageValue('id');
                          $xbmcid = GetPageValue('xbmcid');
                         
-                         //$aJson = GetMediaStatus($mode, $media, $id);
                          $aJson = GetMediaStatus($media, $id, $xbmcid);
                       }
                       else {
@@ -654,7 +652,7 @@ function ProcessImportMode($mode)
  * Function:	GetMediaStatus
  *
  * Created on May 18, 2013
- * Updated on Jun 28, 2014
+ * Updated on JuL 02, 2014
  *
  * Description: Reports the status of the import media process. 
  *
@@ -669,19 +667,19 @@ function GetMediaStatus($media, $id, $xbmcid)
     
     switch ($media)    
     {   
-        case "movies"   : $aJson = GetImportStatus($db, "movies", "movieid", "xbmcid", $id, $xbmcid, cMOVIESTHUMBS);
+        case "movies"   : $aJson = GetImportStatus($db, "movies", "movieid", "xbmcid", $id, $xbmcid, cMOVIESART);
                           break;
                       
-        case "sets"     : $aJson = GetImportStatus($db, "sets", "setid", "setid", $id, $xbmcid, cSETSTHUMBS);
+        case "sets"     : $aJson = GetImportStatus($db, "sets", "setid", "setid", $id, $xbmcid, cMOVIESART);
                           break;                      
     
-        case "tvshows"  : $aJson = GetImportStatus($db, "tvshows", "tvshowid", "xbmcid", $id, $xbmcid, cTVSHOWSTHUMBS);
+        case "tvshows"  : $aJson = GetImportStatus($db, "tvshows", "tvshowid", "xbmcid", $id, $xbmcid, cTVSHOWSART);
                           break;
                                             
-        case "seasons"  : $aJson = GetSeriesImportStatus($db, "seasons", "seasonid", $id, $xbmcid, cSEASONSTHUMBS);
+        case "seasons"  : $aJson = GetSeriesImportStatus($db, "seasons", "seasonid", $id, $xbmcid, cTVSHOWSART);
                            break;
                       
-        case "episodes" : $aJson = GetSeriesImportStatus($db, "episodes", "episodeid", $id, $xbmcid, cEPISODESTHUMBS);
+        case "episodes" : $aJson = GetSeriesImportStatus($db, "episodes", "episodeid", $id, $xbmcid, cTVSHOWSART);
                           break;                      
                       
         case "albums"   : $aJson = GetImportStatus($db, "albums", "albumid", "xbmcid", $id, $xbmcid, cALBUMSTHUMBS);
@@ -699,7 +697,7 @@ function GetMediaStatus($media, $id, $xbmcid)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Jun 24, 2014
+ * Updated on Jul 02, 2014
  *
  * Description: Reports the status of the import process.
  *
@@ -713,14 +711,17 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
     
     $sql = "SELECT mediaid FROM tmp_import ".
            "WHERE id = $id"; 
-    
     $aJson['xbmcid'] = GetItemFromDatabase($db, $typeid, $sql);
 
     $sql = "SELECT title FROM $table ".
            "WHERE $nameid = $xbmcid";
-    
     $aJson['title'] = GetItemFromDatabase($db, "title", $sql);
     $aJson['sub']   = "&nbsp;";
+    
+    $sql = "SELECT HEX(poster) FROM $table ".
+           "WHERE $nameid = $xbmcid";
+    $poster = GetItemFromDatabase($db, "poster", $sql); 
+    $aJson['poster'] = !empty($poster)?$poster[0]."/".$poster:0;
     
     $aJson['status']  = GetStatus($db, "ImportStatus");
     if ($aJson['status'] == cTRANSFER_READY) {
@@ -736,7 +737,7 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
  * Function:	GetSeriesImportStatus
  *
  * Created on Jan 20, 2014
- * Updated on Jun 24, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Reports the status of the series (seasons, episodes) import process.
  *
@@ -765,6 +766,11 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
     $sql = "SELECT $title FROM $table ".
            "WHERE $typeid = $xbmcid";    
     $aJson['sub'] = GetItemFromDatabase($db, "title", $sql);
+    
+    $sql = "SELECT HEX(poster) FROM $table ".
+           "WHERE $typeid = $xbmcid";
+    $poster = GetItemFromDatabase($db, "poster", $sql); 
+    $aJson['poster'] = !empty($poster)?$poster[0]."/".$poster:0;
     
     $aJson['status']  = GetStatus($db, "ImportStatus");
     if ($aJson['status'] == cTRANSFER_READY) {
@@ -1063,7 +1069,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Jun 17, 2014
+ * Updated on Jul 03, 2014
  *
  * Description: Clean the media library. 
  *
@@ -1122,7 +1128,8 @@ function CleanLibrary($number)
                  EmptyTable($db, "albumsmeta");
                  EmptyTable($db, "genretomusic");
                  DeleteGenres($db, "music");
-               /*  UpdateStatus($db, "XbmcAlbumsStart", 0); // 1*/
+                 EmptyTable($db, "songs");
+                 EmptyTable($db, "songsmeta");
                  DeleteFile(cALBUMSTHUMBS."/*.jpg");
                  DeleteFile(cALBUMSCOVERS."/*.jpg");
                  break;
