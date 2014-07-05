@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -273,7 +273,7 @@ function ShowPopupBox(type, title)
  * Function:	SetCloseHandler
  *
  * Created on Jun 09, 2013
- * Updated on Feb 23, 2013
+ * Updated on Jul 04, 2014
  *
  * Description: Close import or other popup window.
  * 
@@ -297,8 +297,7 @@ function SetCloseHandler()
                                 case "Import"  : SetImportCancelHandler(); //Finish or abort import.
                                                  break;
                                                  
-                                case "Refresh" : //alert("Finish Refresh"); 
-                                                 RefreshMediaTable($popup);   
+                                case "Refresh" : RefreshMediaTable($popup);   
                                                  break;  
                                              
                                 case "Remove"  : if ($popup.find(".title").text().split(" ")[1] != "library") {
@@ -427,7 +426,7 @@ function ShortenString(string, length)
  * Function:	SetMaskHandler
  *
  * Created on Apr 28, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jul 04, 2014
  *
  * Description: Remove mask en popup.
  * 
@@ -437,7 +436,9 @@ function ShortenString(string, length)
  */
 function SetMaskHandler()
 { 
-    var media = GetState("media");
+    //var media = GetState("media");
+    var media  = $("#control_bar").find(".on").attr('id');
+    
     SetState("page", media);
     
     $(".popup").fadeOut("300");    

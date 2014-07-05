@@ -7,7 +7,7 @@
  * File:    meta.php
  *
  * Created on Jan 10, 2014
- * Updated on Jun 27, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Fargo's meta data import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -138,7 +138,7 @@ function ProcessMetaData($db, $aData)
  * Function:	CreateMediaHash
  *
  * Created on Jun 09, 2014
- * Updated on Jun 27, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Create media hash. 
  *
@@ -160,33 +160,33 @@ function CreateMediaHash($aData, $type)
             switch ($type)
             {
                 case "movies"   : $file      = !empty($aData["result"][$type][$i]["file"])?$aData["result"][$type][$i]["file"]:null; 
-                                  $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"].$file);
+                                  $aHash[$i] = hash("md5", $aData["result"][$type][$i]["label"].$file);
                                   break;
                           
-                case "sets"     : $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"]);
+                case "sets"     : $aHash[$i] = hash("md5", $aData["result"][$type][$i]["label"]);
                                   break;
                 
                 case "tvshows"  : $file      = !empty($aData["result"][$type][$i]["file"])?$aData["result"][$type][$i]["file"]:null; 
-                                  $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"].$file);
+                                  $aHash[$i] = hash("md5", $aData["result"][$type][$i]["label"].$file);
                                   break;
                               
                 case "seasons"  : $showtitle = !empty($aData["result"][$type][$i]["showtitle"])?$aData["result"][$type][$i]["showtitle"]:null;
-                                  $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"].$showtitle);
+                                  $aHash[$i] = hash("md5", $aData["result"][$type][$i]["label"].$showtitle);
                                   break;
                 
                 case "episodes" : $episode   = !empty($aData["result"][$type][$i]["episode"])?$aData["result"][$type][$i]["episode"]:0;
                                   $file      = !empty($aData["result"][$type][$i]["file"])?$aData["result"][$type][$i]["file"]:null; 
-                                  $aHash[$i] = hash("sha256", $episode.$file);
+                                  $aHash[$i] = hash("md5", $episode.$file);
                                   break;
                               
                 case "albums"   : $artist    = !empty($aData["result"][$type][$i]["artist"])?implode("|", $aData["result"][$type][$i]["artist"]):null;
                                   $year      = !empty($aData["result"][$type][$i]["year"])?$aData["result"][$type][$i]["year"]:0;
-                                  $aHash[$i] = hash("sha256", $aData["result"][$type][$i]["label"].$artist.$year);
+                                  $aHash[$i] = hash("md5", $aData["result"][$type][$i]["label"].$artist.$year);
                                   break;
                               
                 case "songs"    : $track     = !empty($aData["result"][$type][$i]["track"])?$aData["result"][$type][$i]["track"]:0;
                                   $file      = !empty($aData["result"][$type][$i]["file"])?$aData["result"][$type][$i]["file"]:null; 
-                                  $aHash[$i] = hash("sha256", $track.$aData["result"][$type][$i]["label"].$file);
+                                  $aHash[$i] = hash("md5", $track.$aData["result"][$type][$i]["label"].$file);
                                   break;                              
             }     
         }

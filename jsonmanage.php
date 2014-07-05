@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -236,7 +236,7 @@ function HideOrShowMediaInFargo($media, $id, $value)
  * Function:	HideOrShowMedia
  *
  * Created on Sep 23, 2013
- * Updated on Feb 09, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Update hide media hide column.
  *
@@ -253,7 +253,6 @@ function HideOrShowMedia($db, $table, $id, $value)
            "WHERE id = $id";
       
     QueryDatabase($db, $sql);
-    //ExecuteQuery($sql);
     
     $aJson["ready"] = true;
     return $aJson;
@@ -697,7 +696,7 @@ function GetMediaStatus($media, $id, $xbmcid)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Jul 02, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Reports the status of the import process.
  *
@@ -707,12 +706,9 @@ function GetMediaStatus($media, $id, $xbmcid)
  */
 function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
 {
-    $aJson['thumbs'] = $thumbs;
+    $aJson = null;
     
-    $sql = "SELECT mediaid FROM tmp_import ".
-           "WHERE id = $id"; 
-    $aJson['xbmcid'] = GetItemFromDatabase($db, $typeid, $sql);
-
+    /*
     $sql = "SELECT title FROM $table ".
            "WHERE $nameid = $xbmcid";
     $aJson['title'] = GetItemFromDatabase($db, "title", $sql);
@@ -722,12 +718,25 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
            "WHERE $nameid = $xbmcid";
     $poster = GetItemFromDatabase($db, "poster", $sql); 
     $aJson['poster'] = !empty($poster)?$poster[0]."/".$poster:0;
+    */
     
+    // Get mediaid from temporary import table.
+    $sql = "SELECT mediaid FROM tmp_import ".
+           "WHERE id = $id"; 
+    $aJson['xbmcid'] = GetItemFromDatabase($db, $typeid, $sql);  
+    
+    // Get title, sub and poster from media table.
+    $sql = "SELECT title, NULL, HEX(poster) AS poster FROM $table ".
+           "WHERE $nameid = $xbmcid";
+    $aJson = GetStatusItems($db, $sql, $aJson);
+        
+    // Get the import status.
     $aJson['status']  = GetStatus($db, "ImportStatus");
     if ($aJson['status'] == cTRANSFER_READY) {
         UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
     }
     
+    $aJson['thumbs'] = $thumbs;
     $aJson['counter'] = GetStatus($db, "ImportStart");
     
     return $aJson;
@@ -737,7 +746,7 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
  * Function:	GetSeriesImportStatus
  *
  * Created on Jan 20, 2014
- * Updated on Jul 03, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Reports the status of the series (seasons, episodes) import process.
  *
@@ -747,13 +756,14 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
  */
 function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
 {
-    $aJson['thumbs'] = $thumbs;
-    
+    $aJson = null;
+   
+    // Get mediaid from temporary import table.
     $sql = "SELECT mediaid FROM tmp_import ".
            "WHERE id = $id"; 
-    
     $aJson['xbmcid'] = GetItemFromDatabase($db, $typeid, $sql);
     
+    /*
     $sql = "SELECT showtitle FROM $table ".
            "WHERE $typeid = $xbmcid";       
     $aJson['title'] = GetItemFromDatabase($db, "showtitle", $sql);
@@ -770,12 +780,25 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
            "WHERE $typeid = $xbmcid";
     $poster = GetItemFromDatabase($db, "poster", $sql); 
     $aJson['poster'] = !empty($poster)?$poster[0]."/".$poster:0;
+    */
     
+    // Get title, sub and poster from media table.
+    $sub = "title";
+    if ($table == "episodes") {
+        $sub = "CONCAT(episode, '. ', title) AS title";
+    }      
+    
+    $sql = "SELECT showtitle, $sub, HEX(poster) AS poster FROM $table ".
+           "WHERE $typeid = $xbmcid";
+    $aJson = GetStatusItems($db, $sql, $aJson);    
+    
+    // Get the import status.
     $aJson['status']  = GetStatus($db, "ImportStatus");
     if ($aJson['status'] == cTRANSFER_READY) {
         UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
     }    
     
+    $aJson['thumbs'] = $thumbs;
     $aJson['counter'] =  GetStatus($db, "ImportStart");
     
     return $aJson;
@@ -785,7 +808,7 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
  * Function:	GetSongsImportStatus
  *
  * Created on Jun 28, 2014
- * Updated on Jun 30, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Reports the status of the songs import process.
  *
@@ -795,12 +818,14 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
  */
 function GetSongsImportStatus($db, $id, $xbmcid, $thumbs)
 {
-    $aJson['thumbs'] = $thumbs;
-    
+    $aJson = null;
+   
+    // Get mediaid from temporary import table.      
     $sql = "SELECT mediaid FROM tmp_import ".
            "WHERE id = $id";  
     $aJson['xbmcid'] = GetItemFromDatabase($db, "songid", $sql);
 
+    /*
     $sql = "SELECT album FROM songs ".
            "WHERE songid = $xbmcid";  
     $aJson['title'] = GetItemFromDatabase($db, "album", $sql);
@@ -813,41 +838,64 @@ function GetSongsImportStatus($db, $id, $xbmcid, $thumbs)
            "WHERE songid = $xbmcid";
     $poster = GetItemFromDatabase($db, "poster", $sql); 
     $aJson['poster'] = !empty($poster)?$poster[0]."/".$poster:0;
+    */
     
+    // Get title, sub and poster from media table.
+    $sql = "SELECT album, CONCAT(track, '. ', title) AS sub, HEX(poster) AS poster FROM songs ".
+           "WHERE songid = $xbmcid";
+    $aJson = GetStatusItems($db, $sql, $aJson);    
+        
+    // Get the import status.
     $aJson['status']  = GetStatus($db, "ImportStatus");
     if ($aJson['status'] == cTRANSFER_READY) {
         UpdateStatus($db, "ImportStatus", cTRANSFER_WAIT);
     }
     
+    $aJson['thumbs'] = $thumbs;
     $aJson['counter'] = GetStatus($db, "ImportStart");
     
     return $aJson;
 }
 
 /*
- * Function:	ConvertTVShowToSeasonID
+ * Function:	GetStatusItems
  *
- * Created on Dec 10, 2013
- * Updated on Jan 02, 2014
+ * Created on Jul 04, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Convert TV show id's to season id for serie (season 1) refresh. 
  *
- * In:  $id
- * Out: $aJson
+ * In:  $db, $sql, $aStatus
+ * Out: $aStatus
  *
  */
-/*function ConvertTVShowToSeasonID($id) // Obsolete?
-{
-    $db = OpenDatabase();    
+function GetStatusItems($db, $sql, $aStatus)
+{    
+    $stmt = $db->prepare($sql);
+    if($stmt)
+    {
+        if($stmt->execute())
+        {
+            $stmt->bind_result($title, $sub, $poster);
+            $stmt->fetch();
+            
+            $aStatus["title"]  = stripslashes($title);
+            $aStatus["sub"]    = !empty($sub)?stripslashes($sub):"&nbsp;";
+            $aStatus["poster"] = !empty($poster)?$poster[0]."/".$poster:0;
+        }
+        else
+        {
+            die('Ececution query failed: '.mysqli_error($db));
+        }
+        $stmt->close();
+    }
+    else
+    {
+        die('Invalid query: '.mysqli_error($db));
+    }   
     
-    $aItems = explode("_", $id);    
-    $sql = "SELECT id FROM seasons WHERE tvshowid = $aItems[0] AND season = $aItems[1]"; 
-    $aJson['id'] = GetItemFromDatabase($db, "id", $sql);
-    
-    CloseDatabase($db); 
-    
-    return $aJson;
-}*/
+    return $aStatus;
+}        
 
 //////////////////////////////////////////    Meta Functions    ///////////////////////////////////////////
 
@@ -855,7 +903,7 @@ function GetSongsImportStatus($db, $id, $xbmcid, $thumbs)
  * Function:	InitMeta
  *
  * Created on Jan 27, 2014
- * Updated on Jun 27, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Initialize meta data (empty meta tables).
  *
@@ -870,13 +918,7 @@ function InitMeta($type)
     
     // Empty the temporary import table.
     EmptyTable($db, "tmp_import");
-    
-    //if ($type != "music") {
     EmptyTable($db, $type."meta");
-    //}
-    //else {
-    //    EmptyTable($db, "albumsmeta"); 
-    //}    
 
     $aJson['status'] = "ready";
     
@@ -987,7 +1029,7 @@ function GetTVShowsIds($start, $offset)
  * Function:	SetSystemProperty
  *
  * Created on May 27, 2013
- * Updated on Jun 15, 2013
+ * Updated on Jul 05, 2014
  *
  * Description: Set the system property. 
  *
@@ -1004,7 +1046,7 @@ function SetSystemProperty($option, $number, $value)
         case "settings"  : $aJson = SetSettingProperty($number, $value);            
                            break;
                     
-        case "library"   : $aJson = CleanLibrary($number);
+        case "library"   : $aJson = CleanLibrary($number, $value);
                            break;
                       
         case "event log" : $aJson = CleanEventLog();            
@@ -1072,7 +1114,7 @@ function SetSettingProperty($number, $value)
  * Function:	CleanLibrary
  *
  * Created on Jun 10, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 05, 2014
  *
  * Description: Clean the media library. 
  *
@@ -1080,14 +1122,14 @@ function SetSettingProperty($number, $value)
  * Out: $aJson
  *
  */
-function CleanLibrary($number)
+function CleanLibrary($number, $value)
 {
     $aJson = null;
     $db = OpenDatabase();
     
     switch($number)
     {
-        case 1 : $aJson['name']    = "movies";
+        case 1 : $aJson['name']     = "movies";
                  $aJson['counter']  = CountRows($db, "movies");
                  $aJson['counter'] += CountRows($db, "sets");
                  EmptyTable($db, "movies");
@@ -1096,6 +1138,12 @@ function CleanLibrary($number)
                  EmptyTable($db, "sets");
                  EmptyTable($db, "setsmeta");
                  DeleteGenres($db, "movies");
+                 
+                 // Remove posters and fanart files
+                 if ($value) {
+                     RemoveArtDirectories(cMOVIESART);
+                 }
+                 
                 /* UpdateStatus($db, "XbmcMoviesStart", 0); // 1
                  UpdateStatus($db, "XbmcSetsStart", 0); // 1 */
                  /*DeleteFile(cMOVIESTHUMBS."/*.jpg");
@@ -1104,7 +1152,7 @@ function CleanLibrary($number)
                  DeleteFile(cSETSFANART."/*.jpg");*/
                  break;
         
-        case 4 : $aJson['name']    = "tvshows";
+        case 5 : $aJson['name']     = "tvshows";
                  $aJson['counter']  = CountRows($db, "tvshows");
                  $aJson['counter'] += CountRows($db, "seasons");
                  $aJson['counter'] += CountRows($db, "episodes");
@@ -1116,6 +1164,12 @@ function CleanLibrary($number)
                  EmptyTable($db, "episodes");
                  EmptyTable($db, "episodesmeta");
                  DeleteGenres($db, "tvshows");
+                 
+                 // Remove posters and fanart files
+                 if ($value) {
+                     RemoveArtDirectories(cTVSHOWSART);
+                 }                 
+                 
                /*  UpdateStatus($db, "XbmcTVShowsStart", 0); // 1
                  UpdateStatus($db, "XbmcSeasonsStart", 0); // 1
                  UpdateStatus($db, "XbmcEpisodesStart", 0); // 1 */
@@ -1125,14 +1179,21 @@ function CleanLibrary($number)
                  DeleteFile(cEPISODESTHUMBS."/*.jpg");*/
                  break;
         
-        case 7 : $aJson['name']    = "albums";
-                 $aJson['counter'] = CountRows($db, "albums");
+        case 9 : $aJson['name']     = "albums";
+                 $aJson['counter']  = CountRows($db, "albums");
+                 $aJson['counter'] += CountRows($db, "songs");
                  EmptyTable($db, "albums");
                  EmptyTable($db, "albumsmeta");
                  EmptyTable($db, "genretomusic");
                  DeleteGenres($db, "music");
                  EmptyTable($db, "songs");
                  EmptyTable($db, "songsmeta");
+                 
+                 // Remove posters and fanart files
+                 if ($value) {
+                     RemoveArtDirectories(cMUSICART);
+                 }                 
+                 
                  /*DeleteFile(cALBUMSTHUMBS."/*.jpg");
                  DeleteFile(cALBUMSCOVERS."/*.jpg");*/
                  break;
@@ -1161,6 +1222,25 @@ function DeleteGenres($db, $media)
            "WHERE media = '$media'";
     
     QueryDatabase($db, $sql);
+}
+
+/*
+ * Function:	RemoveArtDirectories
+ *
+ * Created on Jul 05, 2014
+ * Updated on Jul 05, 2014
+ *
+ * Description: Delete media genres.
+ *
+ * In:  $artdir
+ * Out: Removed art directories (0 to f)
+ *
+ */
+function RemoveArtDirectories($artdir)
+{
+    for ($i = 0; $i <= 16; $i++) {
+        RemoveDirectory($artdir."/".dechex($i));
+    }
 }
 
 /*

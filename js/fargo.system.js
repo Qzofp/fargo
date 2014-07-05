@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on May 26, 2014
+ * Updated on Jul 05, 2014
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -143,7 +143,7 @@ function ShowProperty(name)
  * Function:	SetSystemKeyHandler
  *
  * Created on May 20, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jul 04, 2014
  *
  * Description: Set the key from the keyboard. Perform action on the system page.
  * 
@@ -169,6 +169,7 @@ function SetSystemKeyHandler(key, event)
                   break;
         
         case 40 : // Down arrow.
+                  event.preventDefault();
                   SelectOptionProperty("down");
                   break;
                   
@@ -507,7 +508,7 @@ function SetPropertyMouseHandler(event)
  * Function:	SetPropertyClickHandler
  *
  * Created on Jun 09, 2013
- * Updated on Dec 11, 2013
+ * Updated on Jul 05, 2014
  *
  * Description: Handle clicked property event.
  *
@@ -520,35 +521,49 @@ function SetPropertyClickHandler()
     var option = $("#display_system_left .dim").text();
     var number = $(".property.on").closest("tr").index();
     
+    //console.log(number);
+    
     if (option == "Library") 
     {
         switch(number)
         {
-            case 1: //Clean Movies library...
+            case 1: //Remove Movies library...
                     CleanPopupBox(ConvertMedia("movies") + " library");
                     break;
                     
-            case 2: //Import Movies library.
+            case 2: //Turn Movies "Remove library... with posters & fanart" on or off.
+                    $(".property.on .xradio").toggleClass( "on" );
+                    break;
+                    
+            case 3: //Import Movies library.
                     SetState("media", "movies");
                     SetImportPopupHandler("movies");
                     break;
                     
-            case 4: //Clean TV Shows library...
+            case 5: //Remove TV Shows library...
                     CleanPopupBox(ConvertMedia("tvshows") + " library");
                     break;
                     
-            case 5: //Import TV Shows library.
+            case 6: //Turn TV Shows "Remove library... with posters & fanart" on or off.
+                    $(".property.on .xradio").toggleClass( "on" );
+                    break;                    
+                    
+            case 7: //Import TV Shows library.
                     SetState("media", "tvshows");
                     SetImportPopupHandler("tvshows");               
                     break;
                     
-            case 7: //Clean Music library...
+            case 9: //Remove Music library...
                     CleanPopupBox(ConvertMedia("music") + " library");
                     break;
                     
-            case 8: //Import Music library.
+            case 10: //Turn Music "Remove library... with covers" on or off.
+                    $(".property.on .xradio").toggleClass( "on" );
+                    break;                    
+                    
+            case 11: //Import Music library.
                     SetState("media", "music");
-                    SetImportPopupHandler("music");              
+                    SetImportPopupHandler("music");           
                     break;                
         }
     }
@@ -591,7 +606,7 @@ function CleanPopupBox(msg)
 {       
     $("#action_box .message").text(cSYSTEM.MESSAGE2.replace("[dummy]", msg));
     $("#action_wrapper").hide();
-    $("#action_title").text("");
+    $("#action_title").html("&nbsp;");
     $("#action_sub").text("");
     
     if (msg == "event log") {

@@ -7,7 +7,7 @@
  * File:    files.php
  *
  * Created on Mar 04, 2013
- * Updated on Nov 28, 2013
+ * Updated on Jul 05, 2014
  *
  * Description: Files and I/O toolbox functions.
  *
@@ -164,3 +164,35 @@ function DeleteMultipleFiles($path, $aFiles)
         }
     }        
 }   
+
+/*
+ * Function:	RemoveDirectory
+ *
+ * Created on Jul 05, 2014
+ * Updated on Jul 05, 2014
+ *
+ * Description: Remove all directory, sub directory and files. 
+ *
+ * In:	$dir
+ * Out:	Removed dir, sub dirs and files.
+ *
+ * From: http://php.net/manual/en/function.rmdir.php
+ * 
+ */
+function RemoveDirectory($dir) 
+{
+    if (is_dir($dir)) 
+    {
+        $objects = scandir($dir);
+        foreach ($objects as $object) 
+        {
+            if ($object != "." && $object != "..") {
+                if (filetype($dir."/".$object) == "dir") 
+                    rrmdir($dir."/".$object); 
+                else unlink($dir."/".$object);
+            }
+        }
+        reset($objects);
+        rmdir($dir);
+    }
+ }

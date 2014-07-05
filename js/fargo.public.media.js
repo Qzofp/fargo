@@ -6,7 +6,7 @@
  * File:    fargo.public.media.js
  *
  * Created on Jun 08, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Fargo's jQuery and Javascript common media functions page.
  *
@@ -1676,7 +1676,7 @@ function ShowInfoHeader(type, title, sort, genre, year)
  * Function:	ShowMediaTableThumbs
  *
  * Created on May 24, 2014
- * Updated on Jul 03, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Shows the media table with media as thumbnails.
  *
@@ -1731,7 +1731,7 @@ function ShowMediaTableThumbs(json, media, type, mode)
             html[i]  = '<td class="i' + value.id + hide + '">';                    
             html[i] += '<img src="' + img + '"/>';
             
-            // If songs then label covers.
+            // If sets, series or songs then label covers.
             if (type == "sets" || type == "series" || type == "songs") {
                 html[i] += '<img class="label" src="images/' + type + '.png"/>';
             }
@@ -1777,7 +1777,7 @@ function ShowMediaTableThumbs(json, media, type, mode)
  * Function:	ShowMediaTableList
  *
  * Created on May 25, 2014
- * Updated on Jul 03, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Shows the media table with media in a list.
  *
@@ -1789,7 +1789,7 @@ function ShowMediaTableList(json, media, type, mode)
 {
     var i = 0;
     var img, html = [];
-    var hide, sub;
+    var hide, sub, noposter, label;
     
     // Clear thumbnail page.
     $('#display_thumb').hide().html("");
@@ -1822,8 +1822,16 @@ function ShowMediaTableList(json, media, type, mode)
             else {
                 img = noposter;
             }
-                    
-            html[i] += '<td class="poster"><img src="' + img + '"/></td>';                  
+              
+            // If sets, series or songs then label covers.
+            if (type == "sets" || type == "series" || type == "songs") {
+                label = '<img class="label" src="images/' + type + '.png"/>';
+            }
+            else {
+                label = "";
+            }
+            
+            html[i] += '<td class="poster"><img src="' + img + '"/>' + label + '</td>';                  
             html[i] += '<td class="title"><div>' + value.title + '</div></td>';
             
             sub = "";

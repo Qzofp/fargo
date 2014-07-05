@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -686,8 +686,25 @@ border-top:1px solid rgba(216, 32, 32, 0.4);
 border-bottom:1px solid rgba(216, 32, 32, 0.4);
 }
 
+#display_list .movies td .label,
+#display_list .tvshows td .label{
+position:relative; 
+border:none;
+width:10px; 
+height:10px; 
+left:-25px;    
+}
+
+#display_list .music td .label{
+position:relative; 
+border:none;
+width:10px; 
+height:10px; 
+left:-25px;   
+}
+
 #display_list .poster{
-width:30px;
+width:35px;
 }
 
 #display_list .title div,
@@ -713,8 +730,8 @@ color:#33BF38;
 color:#D82020;
 }
 
-#display_list .movies .poster img,
-#display_list .tvshows .poster img{
+#display_list .movies img,
+#display_list .tvshows img{
 vertical-align:top; 
 width:25px;
 height:35px;
@@ -800,9 +817,9 @@ border-radius:10px 0 0 10px;
 background-color:rgba(0,0,0,0.3);
 }
 
-#fargo {
+#fargo{
 margin:15px 0 15px 0;
-font-family: 'Dancing Script', cursive;
+font-family:'Dancing Script', cursive;
 font-size:38px;
 color:#999;
 text-align:center;
@@ -912,6 +929,27 @@ color:#fff;
 #display_system_right td.on, 
 #display_system_right th.on{
 border-bottom-color:rgba(30,144,255,0.5);
+}
+
+#display_system_right table .xradio{
+float:right;
+height:13px;
+width:13px;
+margin:4px 3px;
+text-indent:-9999px;
+border: 2px solid #929292;
+background-color:grey;
+-moz-box-shadow:0 0 2px #444444 inset;
+box-shadow:0 0 2px #444444 inset;
+-moz-border-radius:9px;
+-webkit-border-radius:9px;
+border-radius:9px; 
+}
+
+#display_system_right table .xradio.on{
+background-color:#1B82CA;
+-moz-box-shadow:0 0 3px #0A2436 inset;
+box-shadow:0 0 3px #0A2436 inset;
 }
 
 #display_system_right .log{

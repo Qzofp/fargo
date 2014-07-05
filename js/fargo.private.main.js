@@ -6,7 +6,7 @@
  * File:    fargo.private.main.js
  *
  * Created on May 04, 2013
- * Updated on Jul 01, 2014
+ * Updated on Jul 05, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page when the user is logged in.
  *
@@ -275,7 +275,7 @@ function SetActionHandler(event)
  * Function:	SetRemoveHandler
  *
  * Created on Oct 05, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 05, 2014
  *
  * Description: Remove media from Frago handler.
  * 
@@ -287,9 +287,7 @@ function SetRemoveHandler($popup)
 {
     var $remove, finish;
     var media, type, title;
-    
     var fargoid = $popup.find(".id").text();
-    //var xbmcid  = $popup.find(".xbmcid").text();
     
     finish = 3 + Math.floor(Math.random() * 3);
     media  = GetState("media");
@@ -310,8 +308,8 @@ function SetRemoveHandler($popup)
         
         if (type == "tracks" || type == "songs") 
         {
-          title = $("#action_sub").html(); 
-          media = "Track";
+           title = $("#action_sub").html(); 
+           media = "Track";
         }
         else {
            title = $("#action_title").html().replace("<br>", " ");  
@@ -328,7 +326,7 @@ function SetRemoveHandler($popup)
  * Function:	SetCleanDatabaseHandler
  *
  * Created on Jun 10, 2013
- * Updated on Feb 11, 2014
+ * Updated on Jul 05, 2014
  *
  * Description: Clean a database table (Library or Event Log).
  * 
@@ -338,13 +336,17 @@ function SetRemoveHandler($popup)
  */
 function SetCleanDatabaseHandler()
 {
-    var option, number,finish;
+    var option, number, finish, art;
     var $clean;
     
     // Get option.
     option = $('#display_system_left .dim').text();
+    
     // Get active row number.
-    number = $(".property .on").closest("tr").index();
+    number = $(".property.on").closest("tr").index();  
+    
+    // Get art radio box. If box is on then remove art files from disc.
+    art = $(".property.on").closest(".property").next().find(".xradio.on").length;
     
     $clean = $("#action_box .progress");
     finish = 5 + Math.floor(Math.random() * 5);
@@ -354,7 +356,7 @@ function SetCleanDatabaseHandler()
     $clean.show();
     
     // Truncate table and delete pictures (posters, fanart and thumbs).
-    ChangeProperty(number, "");
+    ChangeProperty(number, art);
     
     if (option == "Library")
     {

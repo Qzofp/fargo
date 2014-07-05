@@ -880,7 +880,7 @@ function UnlockImport(callback)
  * Function:	SetImportHandler
  *
  * Created on Sep 09, 2013
- * Updated on Feb 24, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Set the import handler, show the import popup box with yes/no buttons.
  * 
@@ -900,6 +900,11 @@ function SetImportPopupHandler(media)
            
            if (Number(json.check))
            {
+               
+               $("#action_wrapper").show();
+               //$("#action_title").html("&nbsp;");
+               $("#action_sub").html("&nbsp;");
+               
                $("#action_box .message").text(cIMPORT.START.replace("[dummy]", ConvertMedia(media)));
                title = cIMPORT.IMPORT + " " + ConvertMedia(media); 
                
@@ -1212,7 +1217,7 @@ function ShowFinished(found)
  * Function:	SetImportCancelHandler
  *
  * Created on May 09, 2013
- * Updated on Feb 19, 2014
+ * Updated on Jul 04, 2014
  *
  * Description: Set the import handler, cancel or finish the import.
  * 
@@ -1224,10 +1229,10 @@ function SetImportCancelHandler()
 {    
     var media  = $("#control_bar").find(".on").attr('id');
     var $popup = $(".popup:visible");
-    
-    // Find media type (Movie, TV Show, Season, Episode, Album) in message and replaces "..." with "s". 
+       
+    // Find media type (Movie, TV Show, Season, Episode, Album, Song) in message and replaces "..." with "s". 
     var type = $popup.find(".message").text().split(" ")[1].replace(/[.]+/, "s").toLowerCase();
-    if (type != "movies" && type != "sets" && type != "tv shows" && type != "seasons" && type != "episodes" && type != "albums") {
+    if (type != "movies" && type != "sets" && type != "tv shows" && type != "seasons" && type != "episodes" && type != "albums" && type != "songs") {
         type = GetState("media");
     }
         
