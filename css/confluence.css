@@ -7,7 +7,7 @@
  * File:    confluence.css
  *
  * Created on Mar 30, 2013
- * Updated on Jul 04, 2014
+ * Updated on Jul 05, 2014
  *
  * Description: The confluence css page. This css is based on the XMBC Confluence theme.
  *
@@ -971,7 +971,7 @@ color:#999;
 position:absolute;
 bottom:0;
 width:100%;
-height:28.5%;  //24% 25%
+height:28.5%;
 }
 
 #control_pag{

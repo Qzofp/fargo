@@ -1,12 +1,12 @@
 /*
  * Title:   Fargo Transfer
  * Author:  Qzofp Productions
- * Version: 0.4
+ * Version: 0.6
  *
  * File:    fargo.common.js
  *
  * Created on Jan 10, 2014
- * Updated on Jan 17, 2014
+ * Updated on Jul 06, 2014
  *
  * Description: Fargo Transfer jQuery and Javascript common functions page.
  *
@@ -49,7 +49,7 @@ function GetUrlParameters()
  * Function:	TransferData
  *
  * Created on Jul 14, 2013
- * Updated on Jan 17, 2014
+ * Updated on Jul 06, 2014
  *
  * Description: Call ajax and transfers the data from XBMC to Fargo.
  * 
@@ -59,7 +59,7 @@ function GetUrlParameters()
  */
 function TransferData(data, file)
 {
-   var url = "http://" + cFARGOSITE + "/include/" + file + "/?"+Math.random();
+   var url = "http://" + cFARGOSITE + "/include/" + file + "?"+Math.random();
     
     // Send the images to PHP to save it on the server.
    var request = $.ajax({

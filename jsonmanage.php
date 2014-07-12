@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jul 04, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -442,7 +442,7 @@ function DeleteMediaQuery($db, $table, $id)
  * Function:	DeleteMediaGenreQuery
  *
  * Created on Nov 22, 2013
- * Updated on Jan 03, 2013
+ * Updated on Jul 07, 2014
  *
  * Description: Delete media genre from Fargo database.
  *
@@ -456,7 +456,6 @@ function DeleteMediaGenreQuery($db, $name, $id)
            "WHERE ".$name."id = $id";
     
     QueryDatabase($db, $sql);
-    //ExecuteQuery($sql);
 }
 
 /////////////////////////////////////////    Status Functions    //////////////////////////////////////////
@@ -861,7 +860,7 @@ function GetSongsImportStatus($db, $id, $xbmcid, $thumbs)
  * Function:	GetStatusItems
  *
  * Created on Jul 04, 2014
- * Updated on Jul 04, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: Convert TV show id's to season id for serie (season 1) refresh. 
  *
@@ -881,7 +880,7 @@ function GetStatusItems($db, $sql, $aStatus)
             
             $aStatus["title"]  = stripslashes($title);
             $aStatus["sub"]    = !empty($sub)?stripslashes($sub):"&nbsp;";
-            $aStatus["poster"] = !empty($poster)?$poster[0]."/".$poster:0;
+            $aStatus["poster"] = !empty($poster)?strtolower($poster[0]."/".$poster):0;
         }
         else
         {
@@ -1061,7 +1060,7 @@ function SetSystemProperty($option, $number, $value)
  * Function:	SetSettingProperty
  *
  * Created on May 27, 2013
- * Updated on Jan 03, 2014
+ * Updated on Jul 06, 2014
  *
  * Description: Set the setting property. 
  *
@@ -1079,10 +1078,12 @@ function SetSettingProperty($number, $value)
     {
         case 1 : // Set XBMC Connection
                  UpdateSetting($db, "XBMCconnection", $value);
+                 UpdateHeaderFile($db); 
                  break;
              
         case 2 : // Set XBMC Port
                  UpdateSetting($db, "XBMCport", $value);
+                 UpdateHeaderFile($db);
                  break;
              
         case 3 : // Set XBMC Username
@@ -1108,6 +1109,32 @@ function SetSettingProperty($number, $value)
     
     CloseDatabase($db);
     return $aJson;
+}
+
+/*
+ * Function:	UpdateHeaderFile
+ *
+ * Created on Jul 06, 2014
+ * Updated on Jul 06, 2014
+ *
+ * Description: Update the header file with the XBMC connection (ip-address) and port.
+ *
+ * In:  $db
+ * Out: Updated Access-Control-Allow-Origin header.
+ * 
+ * Note: The header.php file is updated. It gives only the XBMC ip-address (with port) cross domain access.
+ *
+ */
+function UpdateHeaderFile($db)
+{
+    $ip   = GetSetting($db, "XBMCconnection");
+    $port = GetSetting($db, "XBMCport");
+    
+    $header = '<?php header("Access-Control-Allow-Origin: http://'.$ip.':'.$port.'");';
+    
+    $fp = fopen("include/header.php","wb");
+    fwrite($fp, $header);
+    fclose($fp);
 }
 
 /*

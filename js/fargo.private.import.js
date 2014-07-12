@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jul 02, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -641,7 +641,7 @@ function GetMediaStatus(type, start, xbmcid)
  * Function:	ShowImportProgress
  *
  * Created on Jan 16, 2014
- * Updated on Jul 02, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: Show the import progress.
  * 
@@ -686,9 +686,9 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, delta)
         $img.attr('src', img.src);
                                 
         // If images not found then show no poster.
-        /*$img.error(function(){
+        $img.error(function(){
             $(this).attr('src', 'images/no_poster.jpg');
-        });*/
+        });
          
         $img.show();
         $tit.html(gMEDIA.TITLE);

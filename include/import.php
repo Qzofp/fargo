@@ -7,7 +7,7 @@
  * File:    import.php
  *
  * Created on Jul 15, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 06, 2014
  *
  * Description: Fargo's import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -16,8 +16,10 @@
 /////////////////////////////////////////////    Main Code    /////////////////////////////////////////////
 
 // Give the damn thing cross domain access. Something XBMC won't let you do, the bastards!!!
-header("Access-Control-Allow-Origin: *");  // Add "*" to settings.
+// header("Access-Control-Allow-Origin: *");  // Add "*" to settings.
 
+// The header.php file is created/filled by the Fargo settings. It gives the XBMC ip-address (with port) cross domain access.
+require_once 'header.php'; 
 require_once '../settings.php';
 require_once '../tools/toolbox.php';
 require_once 'common.php';
@@ -213,7 +215,7 @@ function ImportMovie($db, $aError, $poster, $fanart, $aResult)
         $aGenres = $aResult["moviedetails"]["genre"]; 
         $aMovie  = ConvertMovie($aResult["moviedetails"]);
         
-        ResizeAndSaveImage($aMovie[28], $poster, "../".cMOVIESART, 125, 175);
+        ResizeAndSaveImage($aMovie[28], $poster, "../".cMOVIESART, 125, 175);      
         list($dkey, $id) = InsertMovie($db, $aMovie);
         if ($dkey == 1) // No dublicate key found.
         {             

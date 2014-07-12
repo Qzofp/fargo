@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -137,7 +137,7 @@ function GetMediaInfo($media, $id, $login)
  * Function:	GetMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Jul 02, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: Get the movie info from Fargo and return it as Json data. 
  *
@@ -178,7 +178,7 @@ function GetMovieInfo($id, $login)
             $aMedia["writer"]   = str_replace("|", " / ", $writer);
             $aMedia["studio"]   = $studio;
             $aMedia["genre"]    = str_replace("|", " / ", $genre);
-            $aMedia["fanart"]   = !empty($fanart)?$fanart[0]."/".$fanart:0;
+            $aMedia["fanart"]   = !empty($fanart)?strtolower($fanart[0]."/".$fanart):0;
             $aMedia["year"]     = $year;
             $aMedia["runtime"]  = round($runtime/60)." Minutes";
             $aMedia["rating"]   = strcmp($rating, "0.0")?$rating.$votes:0;          
@@ -223,7 +223,7 @@ function GetMovieInfo($id, $login)
  * Function:	GetTVShowInfo
  *
  * Created on Jul 09, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: Get the TV show info from Fargo and return it as Json data. 
  *
@@ -259,7 +259,7 @@ function GetTVShowInfo($id, $login)
             $aMedia["title"]           = stripslashes($title);
             $aMedia["studio"]          = $studio;
             $aMedia["genre"]           = str_replace("|", " / ", $genre);
-            $aMedia["fanart"]          = !empty($fanart)?$fanart[0]."/".$fanart:0;      
+            $aMedia["fanart"]          = !empty($fanart)?strtolower($fanart[0]."/".$fanart):0;      
             $aMedia["year"]            = $year;
             $aMedia["premiered"]       = date( 'd/m/Y', strtotime($premiered));
             $aMedia["rating"]          = strcmp($rating, "0.0")?$rating.$votes:0;            
@@ -298,7 +298,7 @@ function GetTVShowInfo($id, $login)
  * Function:	GetTVShowEpisodeInfo
  *
  * Created on Nov 17, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: Get the TV show episode info from Fargo and return it as Json data. 
  *
@@ -341,7 +341,7 @@ function GetTVShowEpisodeInfo($id, $login)
             $aMedia["audio"]      = ConvertToAudioFlag($audio);
             $aMedia["video"]      = ConvertToVideoFlag($video);
             $aMedia["aspect"]     = ConvertToAspectFlag($video, $file);  
-            $aMedia["fanart"]     = !empty($fanart)?$fanart[0]."/".$fanart:0; 
+            $aMedia["fanart"]     = !empty($fanart)?strtolower($fanart[0]."/".$fanart):0; 
             $aMedia["plot"]       = stripslashes($plot);
             
             if ($login) {
@@ -374,7 +374,7 @@ function GetTVShowEpisodeInfo($id, $login)
  * Function:	GetAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: Get the album info from Fargo and return it as Json data. 
  *
@@ -419,7 +419,7 @@ function GetAlbumInfo($id)
             $aMedia["theme"]         = str_replace("|", " / ", $theme);
             $aMedia["mood"]          = str_replace("|", " / ", $mood);
             $aMedia["style"]         = str_replace("|", " / ", $style);    
-            $aMedia["fanart"]        = !empty($fanart)?$fanart[0]."/".$fanart:0; 
+            $aMedia["fanart"]        = !empty($fanart)?strtolower($fanart[0]."/".$fanart):0; 
             $aMedia["year"]          = $year;
             $aMedia["artist"]        = $artist;
             $aMedia["displayartist"] = $displayartist;
@@ -454,7 +454,7 @@ function GetAlbumInfo($id)
  * Function:	GetSongInfo
  *
  * Created on Jun 29, 2014
- * Updated on Jun 03, 2014
+ * Updated on Jun 07, 2014
  *
  * Description: Get the song info from Fargo and return it as Json data. 
  *
@@ -497,7 +497,7 @@ function GetSongInfo($id, $login)
             $aMedia["artist"]   = stripslashes($artist);
             $aMedia["album"]    = stripslashes($album);
             $aMedia["genre"]    = str_replace("|", " / ", $genre);   
-            $aMedia["fanart"]   = !empty($fanart)?$fanart[0]."/".$fanart:0;             
+            $aMedia["fanart"]   = !empty($fanart)?strtolower($fanart[0]."/".$fanart):0;             
             $aMedia["year"]     = $year;
             $aMedia["disc"]     = $disc;
             $aMedia["track"]    = $track;
@@ -889,7 +889,7 @@ function GetPopupInfo($media, $id)
  * Function:	GetPopupMediaInfo
  *
  * Created on Nov 22, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: Get the media info popups from Fargo and return it as Json data. 
  *
@@ -915,7 +915,7 @@ function GetPopupMediaInfo($sql, $thumb)
             $aMedia["xbmcid"]   = $xbmcid;
             $aMedia["refresh"]  = $refresh;
             $aMedia["title"]    = stripslashes($title);
-            $aMedia["poster"]   = !empty($poster)?$poster[0]."/".$poster:0;
+            $aMedia["poster"]   = !empty($poster)?strtolower($poster[0]."/".$poster):0;
             $aMedia["sub"]      = stripslashes($sub);
         }
         else
@@ -1604,7 +1604,7 @@ function CreateQuerySortQrder($a, $title)
  * Function:	QueryMedia
  *
  * Created on Apr 03, 2013
- * Updated on Jul 02, 2014
+ * Updated on Jul 07, 2014
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -1643,7 +1643,7 @@ function QueryMedia($db, $sql, $page, $end)
                     $aMedia[$i]['hide']      = $hide;  
                     $aMedia[$i]['refresh']   = $refresh; 
                     $aMedia[$i]['title']     = stripslashes($title);
-                    $aMedia[$i]['poster']    = !empty($poster)?$poster[0]."/".$poster:0;
+                    $aMedia[$i]['poster']    = !empty($poster)?strtolower($poster[0]."/".$poster):0;
                     $aMedia[$i]['sub']       = !empty($sub)?stripslashes($sub):"&nbsp;"; 
                     $aMedia[$i]['aux']       = !empty($aux)?ConvertToListFlag($aux):0;
                     $i++;

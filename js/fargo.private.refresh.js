@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -146,7 +146,7 @@ function StartRefreshHandler(type, $popup)
  * Function:	StartRefresh
  *
  * Created on Sep 14, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Control and Refresh the media transfered from XBMC.
  *
@@ -157,7 +157,7 @@ function StartRefreshHandler(type, $popup)
 function StartRefresh(type, fargoid, xbmcid)
 {
     var deferred = $.Deferred(); 
-    var url, ready;
+    var url, ready, search;
     var enter   = 1;
     var i       = 0;
     var retry   = 1;
@@ -234,8 +234,18 @@ function StartRefresh(type, fargoid, xbmcid)
             if (enter == 1) 
             {
                 enter = 2;
+                
+                if (type == "episodes" || type == "songs") {
+                    search = gMEDIA.SUB.replace(/^\d+.\s/g, ""); // Remove episode or song number (e.g. "2. "). 
+                }
+                else {
+                    search = gMEDIA.TITLE;
+                }
+                
                 url = GetTransferUrl() + "transfer.html?action=search&media=" + type + "&xbmcid=" + xbmcid 
-                                       + "&title=" + gMEDIA.TITLE + "&key=" + gCONNECT.KEY;
+                                       + "&title=" + search + "&key=" + gCONNECT.KEY;
+                               
+                //console.log("Search: " + search); //debug.               
             }
             else if (enter == 2)
             {
@@ -265,7 +275,7 @@ function StartRefresh(type, fargoid, xbmcid)
  * Function:	ShowRefreshProgress
  *
  * Created on Feb 01, 2014
- * Updated on Jul 03, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Show the import progress.
  * 
@@ -317,9 +327,9 @@ function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i)
             $img.attr('src', img.src);
                                 
             // If images not found then show no poster.
-            /*$img.error(function(){
+            $img.error(function(){
                 $(this).attr('src', 'images/no_poster.jpg');
-            });*/
+            });
                     
             $tit.html(gMEDIA.TITLE);
             $sub.html(gMEDIA.SUB);

@@ -7,7 +7,7 @@
  * File:    settings.php
  *
  * Created on Mar 09, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 06, 2014
  *
  * Description: Fargo's settings page.
  *

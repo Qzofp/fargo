@@ -6,7 +6,7 @@
  * File:    fargo.transfer.details.js
  *
  * Created on Jul 13, 2013
- * Updated on Jun 28, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Fargo Transfer Details jQuery and Javascript functions page.
  *
@@ -132,7 +132,7 @@ function RequestCounter(library, id, key)
  * Function:	SearchAndTransferTitle
  *
  * Created on Jan 28, 2014
- * Updated on Feb 07, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Search andtransfer title from XBMC to Fargo.
  * 
@@ -144,23 +144,33 @@ function SearchAndTransferTitle(key, media, xbmcid, title)
 {
     switch (media)
     {
-        case "movies"   : TransferTitle(key, "title", "VideoLibrary.GetMovies", xbmcid, title, 1);
+        case "movies"   : // libMovies -> library id = 1.
+                          TransferTitle(key, "title", "VideoLibrary.GetMovies", xbmcid, title, 1);
                           break;
 
-        case "sets"     : TransferTitleId(key, "VideoLibrary.GetMovieSetDetails", "setid", xbmcid, 2);
+        case "sets"     : // libMovieSets -> library id = 2.  
+                          TransferTitleId(key, "VideoLibrary.GetMovieSetDetails", "setid", xbmcid, 2);
                           break; 
             
-        case "tvshows"  : TransferTitle(key, "title", "VideoLibrary.GetTVShows", xbmcid, title, 3);
+        case "tvshows"  : // libTVShows -> library id = 3. 
+                          TransferTitle(key, "title", "VideoLibrary.GetTVShows", xbmcid, title, 3);
                           break;
                                                        
-        case "seasons"  : TransferTitleId(key, "VideoLibrary.GetSeasonDetails", "seasonid", xbmcid, 4);
+        case "seasons"  : // libTVShowSeasons -> library id = 4. 
+                          TransferTitleId(key, "VideoLibrary.GetSeasonDetails", "seasonid", xbmcid, 4);
                           break;
                        
-        case "episodes" : TransferTitle(key, "title", "VideoLibrary.GetEpisodes", xbmcid, title, 5);
+        case "episodes" : // libTVShowEpisodes -> library id = 5.  
+                          TransferTitle(key, "title", "VideoLibrary.GetEpisodes", xbmcid, title, 5);
                           break;                         
         
-        case "music"    : TransferTitle(key, "album", "AudioLibrary.GetAlbums", xbmcid, title, 6);
+        case "albums"   : // libAlbums -> library id = 6.
+                          TransferTitle(key, "album", "AudioLibrary.GetAlbums", xbmcid, title, 6);
                           break;
+                          
+        case "songs"    : // libSongs -> library id = 7.
+                          TransferTitle(key, "title", "AudioLibrary.GetSongs", xbmcid, title, 7);
+                          break;                          
     }
 }
 

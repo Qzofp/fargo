@@ -2,12 +2,12 @@
 /*
  * Title:   Fargo
  * Author:  Qzofp Productions
- * Version: 0.5
+ * Version: 0.6
  *
  * File:    search.php
  *
  * Created on Jan 28, 2014
- * Updated on Jun 26, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Fargo's search page. This page is called from XBMC which push the data to Fargo.
  *
@@ -16,8 +16,10 @@
 /////////////////////////////////////////////    Main Code    /////////////////////////////////////////////
 
 // Give the damn thing cross domain access. Something XBMC won't let you do, the bastards!!!
-header("Access-Control-Allow-Origin: *");  // Add "*" to settings.
+// header("Access-Control-Allow-Origin: *");  // Add "*" to settings.
 
+// The header.php file is created/filled by the Fargo settings. It gives the XBMC ip-address (with port) cross domain access.
+require_once 'header.php'; 
 require_once '../settings.php';
 require_once '../tools/toolbox.php';
 require_once 'common.php';
@@ -85,7 +87,7 @@ function ReceiveSearchResults()
  * Function:	ProcessSearchResults
  *
  * Created on Jan 29, 2014
- * Updated on Jun 26, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Process search results from XBMC. 
  *
@@ -120,8 +122,12 @@ function ProcessSearchResults($db, $aResults)
                     break;
             
             // libAlbums -> library id = 6.
-            case 6: UpdateSearchResults($db, $aResults, "music", "music");
-                    break;            
+            case 6: UpdateSearchResults($db, $aResults, "albums", "albumid");
+                    break;    
+                
+            // libSongs -> library id = 7.
+            case 7: UpdateSearchResults($db, $aResults, "songs", "songid");
+                    break;                 
         }
     }
     else {

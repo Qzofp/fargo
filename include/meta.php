@@ -7,7 +7,7 @@
  * File:    meta.php
  *
  * Created on Jan 10, 2014
- * Updated on Jul 04, 2014
+ * Updated on Jul 06, 2014
  *
  * Description: Fargo's meta data import page. This page is called from XBMC which push the data to Fargo.
  *
@@ -16,8 +16,10 @@
 /////////////////////////////////////////////    Main Code    /////////////////////////////////////////////
 
 // Give the damn thing cross domain access. Something XBMC won't let you do, the bastards!!!
-header("Access-Control-Allow-Origin: *");  // Add "*" to settings.
+// header("Access-Control-Allow-Origin: *");  // Add "*" to settings.
 
+// The header.php file is created/filled by the Fargo settings. It gives the XBMC ip-address (with port) cross domain access.
+require_once 'header.php'; 
 require_once '../settings.php';
 require_once '../tools/toolbox.php';
 require_once 'common.php';
