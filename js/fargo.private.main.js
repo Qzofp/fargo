@@ -275,7 +275,7 @@ function SetActionHandler(event)
  * Function:	SetRemoveHandler
  *
  * Created on Oct 05, 2013
- * Updated on Jul 05, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Remove media from Frago handler.
  * 
@@ -305,7 +305,33 @@ function SetRemoveHandler($popup)
     DisplayCleaningMessage("Removing " + media + "...", media + " removed!", $remove, ".no", finish);
     
     setTimeout(function(){
+             
+        switch (type) 
+        {
+            case "series"   : title = $("#action_sub").html() + ' from "' + $("#action_title").html().replace("<br>", "") + '"';
+                              media = "";
+                              break;
+                            
+            case "seasons"  : title = $("#action_sub").html() + ' from "' + $("#action_title").html().replace("<br>", "") + '"';
+                              media = "";
+                              break;    
+                        
+            case "episodes" : title = $("#action_sub").html() + ' from "' + $("#action_title").html().replace("<br>", "") + '"';
+                              break;                        
+            
+            case "tracks"   : title = $("#action_sub").html() + ' from "' + $("#action_title").html().replace("<br>", "") + '"';
+                              media = "Track";
+                              break;
+                            
+            case "songs"    : title = $("#action_sub").html() + ' from "' + $("#action_title").html().replace("<br>", "") + '"';
+                              media = "Track";
+                              break;                            
+                            
+            default :         title = ' "' + $("#action_title").html().replace("<br>", "") + '"';  
+                              break;
+        }
         
+        /*
         if (type == "tracks" || type == "songs") 
         {
            title = $("#action_sub").html(); 
@@ -313,9 +339,10 @@ function SetRemoveHandler($popup)
         }
         else {
            title = $("#action_title").html().replace("<br>", " ");  
-        }        
+        } 
+        */
         
-        LogEvent('Information', media + ' "' + title + '" removed!');
+        LogEvent('Information', media + ' ' + title + ' removed!');
     }, 800);    
     
     $(".yes").hide();

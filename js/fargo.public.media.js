@@ -1458,7 +1458,7 @@ function ConvertMedia(media)
  * Function:	ConvertMediaToSingular
  *
  * Created on Sep 07, 2013
- * Updated on Jun 30, 2014
+ * Updated on Jul 30, 2014
  *
  * Description: Convert the media string to a singular string.
  * 
@@ -1489,7 +1489,7 @@ function ConvertMediaToSingular(media)
         case 'tvtitles' : media = "TV Show";
                           break;
                       
-        case 'series'   : media = "Season"; //"TV Show";
+        case 'series'   : media = "Season";
                           break;                             
                         
         case 'seasons'  : media = "Season";

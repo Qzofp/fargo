@@ -301,7 +301,6 @@ function SetCloseHandler()
                                                  break;  
                                              
                                 case "Remove"  : box = $popup.find(".title").text().split(" ")[1];
-                                                 // console.log("Box Type: " + box); // debug
                                                  if (box != "library" && box != "event") {
                                                     ShowMediaTable(gSTATE.PAGE, gSTATE.SORT);
                                                  }

@@ -6,7 +6,7 @@
  * File:    fargo.private.refresh.js
  *
  * Created on Jul 14, 2013
- * Updated on Jul 12, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC update and refresh (import).
  *
@@ -98,7 +98,7 @@ function StartRefreshOnlineHandler(media, type, $popup)
  * Function:	StartRefreshHandler
  *
  * Created on Sep 14, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Set the refresh handler and start the refresh.
  * 
@@ -116,7 +116,14 @@ function StartRefreshHandler(type, $popup)
     
     var fargoid = $popup.find(".id").text();
     var xbmcid  = $popup.find(".xbmcid").text();
-    var title   = $popup.find("#action_title").text();
+    var title; //   = $popup.find("#action_title").text();
+    
+    if (type == "movies" || type == "sets" || type == "tvshows" || type == "albums") {
+        title = $tit.text();
+    }
+    else {
+        title = $tit.text() + " - " + $sub.text();
+    }
     
     LogEvent('Information', 'Refresh "' + title + '" started.');
     $msg.html(cSTATUS.WAIT);
@@ -342,7 +349,7 @@ function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i)
  * Function:	ShowRefreshFinished
  *
  * Created on Sep 14, 2013
- * Updated on Feb 09, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Show refresh finished message and add to log event.
  * 
@@ -354,16 +361,23 @@ function ShowRefreshProgress($msg, $prg, $img, $tit, $sub, type, i)
  */
 function ShowRefreshFinished(type)
 {   
-    var msg;
+    var msg, title;
+    
+    if (type == "movies" || type == "sets" || type == "tvshows" || type == "albums") {
+        title = gMEDIA.TITLE;
+    }
+    else {
+        title = gMEDIA.TITLE + " - " + gMEDIA.SUB;
+    }    
     
     if (Number(gTRIGGER.STATUS) != -200) {
         msg = cSTATUS.READY.replace("[dummy]", cIMPORT.REFRESH);
-        LogEvent('Information', 'Refresh "' + gMEDIA.TITLE + '" finished.');  
+        LogEvent('Information', 'Refresh "' + title + '" finished.');  
     }
     else 
     {
         msg = cSTATUS.NOMATCH.replace("[dummy]", ConvertMediaToSingular(type));
-        LogEvent('Warning', 'Refresh "' + gMEDIA.TITLE + '" failed!');
+        LogEvent('Warning', 'Refresh "' + title + '" failed!');
     }
     
     $("#action_box .message").html(msg);             

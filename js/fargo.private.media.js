@@ -6,7 +6,7 @@
  * File:    fargo.private.media.js
  *
  * Created on Aug 31, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Fargo's jQuery and Javascript private media functions page.
  *
@@ -84,7 +84,7 @@ function ChangeMediaTableHoverColor(color_text, color_border)
  * Function:	SetInfoZoomHandlerWithActions
  *
  * Created on Aug 31, 2013
- * Updated on Feb 07, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Set and show the media info.
  * 
@@ -98,9 +98,6 @@ function SetInfoZoomHandlerWithActions()
     var media = GetState("media");
     var type  = GetState("type");
     var id    = $(this).attr("class");
-    
-    //var id = $(this).attr("class").match(/^[^\d]*(\d+)/g);
-    //var id = $(this).attr("class").match(/\d+(_\d+)?/g);
         
     switch(mode)
     {
@@ -108,8 +105,7 @@ function SetInfoZoomHandlerWithActions()
                            ShowModePopup(mode, type, id);
                            break;
                          
-        case "Hide/Show" : //id = id.replace(/i/g, '').match(/^[^\d]*(\d+)/g);
-                           id = id.match(/\d+(_\d+)?/g);
+        case "Hide/Show" : id = id.match(/\d+(_\d+)?/g);
                            HideOrShowMedia(type, id);
                            break;               
 
@@ -127,7 +123,7 @@ function SetInfoZoomHandlerWithActions()
  * Function:	ShowModePopup
  *
  * Created on Sep 07, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Show the action popup with the yes/no buttons.
  * 
@@ -144,7 +140,7 @@ function ShowModePopup(mode, media, id)
         dataType: 'json',
         success: function(json)
         {   
-            $("#action_box .id").text(id);
+            $("#action_box .id").text(json.media.fargoid);
             $("#action_box .xbmcid").text(json.media.xbmcid);
             $("#action_box .message").text("Do you want to " +  mode.toLowerCase() + " this " + ConvertMediaToSingular(media) + "?");
             

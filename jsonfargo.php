@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jul 07, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -815,7 +815,7 @@ function ConverToMovieUrl($id, $guide="")
  * Function:	GetPopupInfo
  *
  * Created on Nov 25, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Get the popup info for the refresh or delete popups from Fargo and return it as Json data. 
  *
@@ -829,54 +829,57 @@ function GetPopupInfo($media, $id)
     
     switch($media)
     {                      
-        case "titles"   : $sql = "SELECT xbmcid, refresh, title, HEX(poster), NULL AS sub ".
+        case "titles"   : $sql = "SELECT id, xbmcid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM movies WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMOVIESART);
                           break;
                       
-        case "sets"     : $sql = "SELECT setid, refresh, title, HEX(poster), NULL AS sub ".
+        case "sets"     : $sql = "SELECT id, setid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM sets WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMOVIESART);
                           break;   
                       
-        case "movieset" : $sql = "SELECT xbmcid, refresh, title, HEX(poster), NULL AS sub ".
+        case "movieset" : $sql = "SELECT id, xbmcid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM movies WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMOVIESART);
                           break;                      
                       
-        case "tvtitles" : $sql = "SELECT xbmcid, refresh, title, HEX(poster), NULL AS sub ".
+        case "tvtitles" : $sql = "SELECT id, xbmcid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM tvshows WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cTVSHOWSART);
                           break;
                       
-        case "series"   : $sql = "SELECT seasonid AS id, t.refresh, t.title, HEX(s.poster), s.title AS sub ".
-                                 "FROM tvshows t, seasons s WHERE t.id = s.tvshowid AND s.id = $id ".
+        case "series"   : $sql = "SELECT s.id, seasonid, t.refresh, t.title, HEX(s.poster), s.title AS sub ".
+                                 "FROM tvshows t, seasons s WHERE t.id = s.tvshowid AND t.id = $id ".
+                                 "ORDER BY s.season ".
                                  "LIMIT 0, 1";
                           $aJson = GetPopupMediaInfo($sql, cTVSHOWSART);
                           break;
                       
-        case "seasons"  : $sql = "SELECT seasonid AS id, refresh, showtitle, HEX(poster), title AS sub ".
+        case "seasons"  : $sql = "SELECT id, seasonid, refresh, showtitle, HEX(poster), title AS sub ".
                                  "FROM seasons WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cTVSHOWSART);
                           break;
                       
-        case "episodes" : $sql = "SELECT episodeid, refresh, showtitle AS title, HEX(poster),".
+        case "episodes" : $sql = "SELECT id, episodeid, refresh, showtitle AS title, HEX(poster),".
                                  " CONCAT(episode, '. ', title) AS sub ".                                 
                                  "FROM episodes WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cTVSHOWSART);
                           break;
                       
-        case "albums"   : $sql = "SELECT xbmcid, refresh, title, HEX(poster), NULL AS sub ".
+        case "albums"   : $sql = "SELECT id, xbmcid, refresh, title, HEX(poster), NULL AS sub ".
                                  "FROM albums WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMUSICART);
                           break;    
                       
-        case "songs"    : $sql = "SELECT songid, refresh, album, HEX(poster), CONCAT(track, '. ', title) AS sub ".
-                                 "FROM songs WHERE id = $id";
+        case "songs"    : $sql = "SELECT s.id, s.songid, s.refresh, s.album, HEX(s.poster), CONCAT(s.track, '. ', s.title) AS sub ".
+                                 "FROM albums a, songs s WHERE a.id = s.albumid AND a.id = $id ".
+                                 "ORDER BY s.track, s.disc ".
+                                 "LIMIT 0, 1";
                           $aJson = GetPopupMediaInfo($sql, cMUSICART);
                           break;
                       
-        case "tracks"   : $sql = "SELECT songid, refresh, album AS title, HEX(poster), CONCAT(track, '. ', title) AS sub ".
+        case "tracks"   : $sql = "SELECT id, songid, refresh, album AS title, HEX(poster), CONCAT(track, '. ', title) AS sub ".
                                  "FROM songs WHERE id = $id";
                           $aJson = GetPopupMediaInfo($sql, cMUSICART);
                           break;             
@@ -889,7 +892,7 @@ function GetPopupInfo($media, $id)
  * Function:	GetPopupMediaInfo
  *
  * Created on Nov 22, 2013
- * Updated on Jul 07, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Get the media info popups from Fargo and return it as Json data. 
  *
@@ -909,9 +912,10 @@ function GetPopupMediaInfo($sql, $thumb)
     {
         if($stmt->execute())
         {
-            $stmt->bind_result($xbmcid, $refresh, $title, $poster, $sub);
+            $stmt->bind_result($id, $xbmcid, $refresh, $title, $poster, $sub);
             $stmt->fetch();
             
+            $aMedia["fargoid"]  = $id;
             $aMedia["xbmcid"]   = $xbmcid;
             $aMedia["refresh"]  = $refresh;
             $aMedia["title"]    = stripslashes($title);
@@ -946,7 +950,7 @@ function GetPopupMediaInfo($sql, $thumb)
  * Function:	GetMedia
  *
  * Created on Nov 06, 2013
- * Updated on Jun 29, 2014
+ * Updated on Jul 13, 2014
  *
  * Description: Get a page of media from Fargo and return it as Json data. 
  *
@@ -1017,8 +1021,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
         case "seasons"  : $aParams['thumbs'] = cTVSHOWSART;
                           $aParams['column'] = cMediaColumn;
                           $aItems = explode("_", $level);
-                          $header = GetItemFromDatabase($db, "showtitle", "SELECT showtitle FROM seasons WHERE tvshowid = ".
-                                                             "(SELECT tvshowid FROM seasons WHERE id = $aItems[0]) LIMIT 0, 1");
+                          $header = GetItemFromDatabase($db, "title", "SELECT title FROM tvshows WHERE id = $aItems[0]");
                           $sql    = CreateSeasonsQuery($aItems[0], $login);
                           $rows   = CountRowsWithQuery($db, $sql);
                           $max    = cMediaRow * cMediaColumn; 
@@ -1033,7 +1036,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                                                                "FROM seasons WHERE id = $aItems[0]");
                           }
                           else {
-                            $header = GetItemFromDatabase($db, "showtitle", "SELECT showtitle FROM seasons WHERE id = $aItems[0]");  
+                            $header = GetItemFromDatabase($db, "showtitle", "SELECT showtitle FROM seasons WHERE tvshowid = $aItems[0]");  
                           }
                           $sql    = CreateEpisodesQuery($aItems[0], $aItems[1], $login);
                           $rows   = CountRowsWithQuery($db, $sql);
@@ -1061,7 +1064,7 @@ function GetMedia($type, $page, $title, $level, $genre, $year, $sort, $login)
                       
         case "tracks"   : $aParams['thumbs'] = cMUSICART;
                           $aParams['column'] = cMediaColumn;
-                          $header = GetItemFromDatabase($db, "album", "SELECT album FROM songs WHERE id = $level");
+                          $header = GetItemFromDatabase($db, "album", "SELECT title FROM albums WHERE id = $level");
                           $sql    = CreateTracksQuery($level, $login);
                           $rows   = CountRowsWithQuery($db, $sql);
                           $max    = cMediaRow * cMediaColumn; 
@@ -1282,7 +1285,7 @@ function CreateTVShowsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateSeriesQuery
  *
  * Created on Apr 08, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 13, 2014
  *
  * Description: Create the sql query for the media TV shows table. 
  *
@@ -1294,27 +1297,31 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
 {   
     if (!$login)
     {
-        $sql = "SELECT DISTINCT CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid, NULL, t.hide, s.refresh,".
-               " t.title, s.poster, s.total, NULL ".
-               "FROM (SELECT id, seasonid, hide, refresh, HEX(poster) AS poster, tvshowid, COUNT(season) AS seasons,".
-                           " SUM(IF (season > 0,1,0)) AS total, season FROM seasons ".
-               "GROUP BY tvshowid) s ".
+        $sql = "SELECT DISTINCT CONCAT(s.tvshowid, '_', s.seasons) AS id, s.seasonid AS xbmcid, NULL, t.hide, s.refresh,".
+               " t.title, IF(s.poster IS NULL, HEX(t.poster), s.poster), s.total, NULL ".
+               "FROM (SELECT a.id, a.seasonid, a.hide, a.refresh, HEX(a.poster) AS poster, a.tvshowid, b.seasons,".
+                     " b.total, a.season ".
+                     "FROM seasons a INNER JOIN ".
+                     "(SELECT  tvshowid, MIN(season) AS min_val, COUNT(season) AS seasons, SUM(IF (season > 0,1,0)) AS total ".
+                     "FROM seasons GROUP BY tvshowid) b ON a.tvshowid = b.tvshowid AND a.season = b.min_val) s ".
                "JOIN tvshows t ON s.tvshowid = t.id ";
     }
     else 
     {
-        $sql = "SELECT DISTINCT CONCAT(s.id, '_', s.seasons) AS id, s.seasonid AS xbmcid,".
-               " IF (tm.playcount IS NULL, -1, tm.playcount), t.hide, s.refresh, t.title, s.poster, s.total, NULL ".
-               "FROM (SELECT id, seasonid, hide, refresh, HEX(poster) AS poster, tvshowid,".
-                           " COUNT(season) AS seasons, SUM(IF (season > 0,1,0)) AS total, season FROM seasons ".
-               "GROUP BY tvshowid) s ".
+        $sql = "SELECT DISTINCT CONCAT(s.tvshowid, '_', s.seasons) AS id, s.seasonid AS xbmcid,".
+               " IF (tm.playcount IS NULL, -1, tm.playcount), t.hide, s.refresh, t.title, IF(s.poster IS NULL, HEX(t.poster), s.poster), s.total, NULL ".
+               "FROM (SELECT a.id, a.seasonid, a.hide, a.refresh, HEX(a.poster) AS poster, a.tvshowid, b.seasons,".
+                     " b.total, a.season ".
+                     "FROM seasons a INNER JOIN ".
+                     "(SELECT  tvshowid, MIN(season) AS min_val, COUNT(season) AS seasons, SUM(IF (season > 0,1,0)) AS total ".
+                     "FROM seasons GROUP BY tvshowid) b ON a.tvshowid = b.tvshowid AND a.season = b.min_val) s ".
                "JOIN tvshows t ON s.tvshowid = t.id ".
                "LEFT JOIN tvshowsmeta tm ON t.xbmcid = tm.tvshowid ";        
     }
     
     $sql .= CreateQuerySelection("t.", "WHERE ", $sort, $year, $genre, $login);
     $sql .= CreateQuerySortQrder("t.", $title);
-        
+    
     return $sql;
 }
 
@@ -1322,7 +1329,7 @@ function CreateSeriesQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateSeasonsQuery
  *
  * Created on Nov 12, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 13, 2014
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -1335,7 +1342,7 @@ function CreateSeasonsQuery($id, $login)
     if (!$login)
     {    
         $sql = "SELECT CONCAT(id, '_', season) AS id, seasonid AS xbmcid, NULL, hide, refresh, title, HEX(poster), episode, NULL ".
-               "FROM seasons WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
+               "FROM seasons WHERE tvshowid = $id ".
                "AND hide = 0 ".
                "ORDER BY season";    
     }
@@ -1345,7 +1352,7 @@ function CreateSeasonsQuery($id, $login)
                "       s.hide, s.refresh, s.title, HEX(s.poster), s.episode, NULL ".
                "FROM seasons s ".
                "LEFT JOIN seasonsmeta sm ON (s.seasonid = sm.seasonid) ".
-               "WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ". 
+               "WHERE tvshowid = $id ". 
                "ORDER BY s.season";
     }
     
@@ -1356,7 +1363,7 @@ function CreateSeasonsQuery($id, $login)
  * Function:	 CreateEpisodesQuery
  *
  * Created on Nov 12, 2013
- * Updated on Jul 03, 2014
+ * Updated on Jul 13, 2014
  *
  * Description: Create the sql query for the media seasons table. 
  *
@@ -1377,7 +1384,7 @@ function CreateEpisodesQuery($id, $season, $login)
         else { // One season.
             $sql = "SELECT id, episodeid, NULL, hide, refresh, CONCAT(episode, '. ', title), HEX(poster),".
                    " IF(rating = 0, 0, ROUND(rating,1)), IF(video = '', -1, video) ".
-                   "FROM episodes WHERE tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) ".
+                   "FROM episodes WHERE tvshowid = $id ".
                    "AND hide = 0 ";       
         }
         
@@ -1399,7 +1406,7 @@ function CreateEpisodesQuery($id, $season, $login)
                          " IF(e.video = '', -1, e.video) ".
                    "FROM episodes e ".
                    "LEFT JOIN episodesmeta em ON (e.episodeid = em.episodeid) ".
-                   "WHERE e.tvshowid = (SELECT tvshowid FROM seasons WHERE id = $id) "; 
+                   "WHERE e.tvshowid = $id "; 
         }
         
         $sql .= "ORDER BY e.episode";
@@ -1448,7 +1455,7 @@ function CreateAlbumsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateSongsQuery
  *
  * Created on Jun 29, 2014
- * Updated on Jul 03, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Create the sql query for the songs table. 
  *
@@ -1460,7 +1467,7 @@ function CreateSongsQuery($title, $genre, $year, $sort, $login)
 {     
     if (!$login)
     {
-        $sql = "SELECT s.id, s.songid, NULL, a.hide, s.refresh, a.title, s.poster, s.tracks, NULL ".
+        $sql = "SELECT a.id, s.songid, NULL, a.hide, s.refresh, a.title, s.poster, s.tracks, NULL ".
                "FROM (SELECT id, songid, refresh, albumid, HEX(poster) AS poster, COUNT(track) AS tracks FROM songs ".
                "GROUP BY albumid) s ".
                "JOIN albums a ON s.albumid = a.id ";
@@ -1469,7 +1476,7 @@ function CreateSongsQuery($title, $genre, $year, $sort, $login)
     }
     else
     {
-        $sql = "SELECT s.id, s.songid, IF(am.playcount IS NULL, -1, am.playcount) AS playcount, a.hide, s.refresh,".
+        $sql = "SELECT a.id, s.songid, IF(am.playcount IS NULL, -1, am.playcount) AS playcount, a.hide, s.refresh,".
                " a.title, s.poster, s.tracks, NULL ".
                "FROM (SELECT id, songid, refresh, albumid, HEX(poster) AS poster, COUNT(track) AS tracks FROM songs ".
                "GROUP BY albumid) s ".
@@ -1488,7 +1495,7 @@ function CreateSongsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateTracksQuery
  *
  * Created on Jun 29, 2014
- * Updated on Jul 03, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Create the sql query for the album tracks table. 
  *
@@ -1503,7 +1510,7 @@ function CreateTracksQuery($level, $login)
         $sql = "SELECT id, songid, NULL, hide, refresh, CONCAT(track, '. ', title), HEX(poster),".
                " TRIM(LEADING '00:' FROM SEC_TO_TIME(duration)), NULL ".
                "FROM songs ".
-               "WHERE albumid = (SELECT albumid FROM songs WHERE id = $level) AND hide = 0 ";
+               "WHERE albumid = $level AND hide = 0 ";
     }
     else
     {
@@ -1511,7 +1518,7 @@ function CreateTracksQuery($level, $login)
                " CONCAT(s.track, '. ', s.title), HEX(s.poster), TRIM(LEADING '00:' FROM SEC_TO_TIME(s.duration)), NULL ".
                "FROM songs s ".
                "LEFT JOIN songsmeta sm ON s.songid = sm.songid ".
-               "WHERE s.albumid = (SELECT albumid FROM songs WHERE id = $level) ";    
+               "WHERE s.albumid = $level ";    
     }    
     
     $sql .= "ORDER BY disc, track";

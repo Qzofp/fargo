@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jul 07, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -176,7 +176,7 @@ if (!empty($aJson)) {
  * Function:	HideOrShowMediaInFargo
  *
  * Created on Nov 20, 2013
- * Updated on Jun 01, 2014
+ * Updated on Jul 14, 2014
  *
  * Description: Hide or show media.
  *
@@ -204,9 +204,9 @@ function HideOrShowMediaInFargo($media, $id, $value)
                           break;
                       
         case "series"   : $aItems = explode("_", $id);
-                          $sql = "SELECT tvshowid FROM seasons WHERE id = $aItems[0]";
-                          $id = GetItemFromDatabase($db, "tvshowid", $sql);
-                          $aJson = HideOrShowMedia($db, "tvshows", $id, $value);
+                          //$sql = "SELECT tvshowid FROM seasons WHERE id = $aItems[0]";
+                          //$id = GetItemFromDatabase($db, "tvshowid", $sql);
+                          $aJson = HideOrShowMedia($db, "tvshows", $aItems[0], $value);
                           break;                      
 
         case "seasons"  : $aItems = explode("_", $id);
@@ -219,8 +219,8 @@ function HideOrShowMediaInFargo($media, $id, $value)
         case "albums"   : $aJson = HideOrShowMedia($db, "albums", $id, $value);
                           break; 
                       
-        case "songs"    : $sql = "SELECT albumid FROM songs WHERE id = $id";
-                          $id  = GetItemFromDatabase($db, "id", $sql);
+        case "songs"    : //$sql = "SELECT albumid FROM songs WHERE id = $id";
+                          //$id  = GetItemFromDatabase($db, "id", $sql);
                           $aJson = HideOrShowMedia($db, "albums", $id, $value);
                           break;  
                       
@@ -695,7 +695,7 @@ function GetMediaStatus($media, $id, $xbmcid)
  * Function:	GetImportStatus
  *
  * Created on May 18, 2013
- * Updated on Jul 04, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Reports the status of the import process.
  *
@@ -706,19 +706,7 @@ function GetMediaStatus($media, $id, $xbmcid)
 function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
 {
     $aJson = null;
-    
-    /*
-    $sql = "SELECT title FROM $table ".
-           "WHERE $nameid = $xbmcid";
-    $aJson['title'] = GetItemFromDatabase($db, "title", $sql);
-    $aJson['sub']   = "&nbsp;";
-    
-    $sql = "SELECT HEX(poster) FROM $table ".
-           "WHERE $nameid = $xbmcid";
-    $poster = GetItemFromDatabase($db, "poster", $sql); 
-    $aJson['poster'] = !empty($poster)?$poster[0]."/".$poster:0;
-    */
-    
+       
     // Get mediaid from temporary import table.
     $sql = "SELECT mediaid FROM tmp_import ".
            "WHERE id = $id"; 
@@ -745,7 +733,7 @@ function GetImportStatus($db, $table, $typeid, $nameid, $id, $xbmcid, $thumbs)
  * Function:	GetSeriesImportStatus
  *
  * Created on Jan 20, 2014
- * Updated on Jul 04, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Reports the status of the series (seasons, episodes) import process.
  *
@@ -761,25 +749,6 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
     $sql = "SELECT mediaid FROM tmp_import ".
            "WHERE id = $id"; 
     $aJson['xbmcid'] = GetItemFromDatabase($db, $typeid, $sql);
-    
-    /*
-    $sql = "SELECT showtitle FROM $table ".
-           "WHERE $typeid = $xbmcid";       
-    $aJson['title'] = GetItemFromDatabase($db, "showtitle", $sql);
-    
-    $title = "title";
-    if ($table == "episodes") {
-        $title = "CONCAT(episode, '. ', title) AS title";
-    }    
-    $sql = "SELECT $title FROM $table ".
-           "WHERE $typeid = $xbmcid";    
-    $aJson['sub'] = GetItemFromDatabase($db, "title", $sql);
-    
-    $sql = "SELECT HEX(poster) FROM $table ".
-           "WHERE $typeid = $xbmcid";
-    $poster = GetItemFromDatabase($db, "poster", $sql); 
-    $aJson['poster'] = !empty($poster)?$poster[0]."/".$poster:0;
-    */
     
     // Get title, sub and poster from media table.
     $sub = "title";
@@ -807,7 +776,7 @@ function GetSeriesImportStatus($db, $table, $typeid, $id, $xbmcid, $thumbs)
  * Function:	GetSongsImportStatus
  *
  * Created on Jun 28, 2014
- * Updated on Jul 04, 2014
+ * Updated on Jul 12, 2014
  *
  * Description: Reports the status of the songs import process.
  *
@@ -823,21 +792,6 @@ function GetSongsImportStatus($db, $id, $xbmcid, $thumbs)
     $sql = "SELECT mediaid FROM tmp_import ".
            "WHERE id = $id";  
     $aJson['xbmcid'] = GetItemFromDatabase($db, "songid", $sql);
-
-    /*
-    $sql = "SELECT album FROM songs ".
-           "WHERE songid = $xbmcid";  
-    $aJson['title'] = GetItemFromDatabase($db, "album", $sql);
-    
-    $sql = "SELECT CONCAT(track, '. ', title) FROM songs ".
-           "WHERE songid = $xbmcid";     
-    $aJson['sub'] = GetItemFromDatabase($db, "title", $sql);
-    
-    $sql = "SELECT HEX(poster) FROM songs ".
-           "WHERE songid = $xbmcid";
-    $poster = GetItemFromDatabase($db, "poster", $sql); 
-    $aJson['poster'] = !empty($poster)?$poster[0]."/".$poster:0;
-    */
     
     // Get title, sub and poster from media table.
     $sql = "SELECT album, CONCAT(track, '. ', title) AS sub, HEX(poster) AS poster FROM songs ".
