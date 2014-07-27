@@ -7,7 +7,7 @@
  * File:    jsonfargo.php
  *
  * Created on Apr 03, 2013
- * Updated on Jul 14, 2014
+ * Updated on Jul 26, 2014
  *
  * Description: The main Json Display page.
  * 
@@ -137,7 +137,7 @@ function GetMediaInfo($media, $id, $login)
  * Function:	GetMovieInfo
  *
  * Created on Jul 05, 2013
- * Updated on Jul 07, 2014
+ * Updated on Jul 26, 2014
  *
  * Description: Get the movie info from Fargo and return it as Json data. 
  *
@@ -180,7 +180,7 @@ function GetMovieInfo($id, $login)
             $aMedia["genre"]    = str_replace("|", " / ", $genre);
             $aMedia["fanart"]   = !empty($fanart)?strtolower($fanart[0]."/".$fanart):0;
             $aMedia["year"]     = $year;
-            $aMedia["runtime"]  = round($runtime/60)." Minutes";
+            $aMedia["runtime"]  = !empty($runtime)?round($runtime/60)." Minutes":0;
             $aMedia["rating"]   = strcmp($rating, "0.0")?$rating.$votes:0;          
             $aMedia["tagline"]  = stripslashes($tagline);
             $aMedia["plot"]     = stripslashes($plot);
@@ -374,7 +374,7 @@ function GetTVShowEpisodeInfo($id, $login)
  * Function:	GetAlbumInfo
  *
  * Created on Jul 10, 2013
- * Updated on Jul 07, 2014
+ * Updated on Jul 19, 2014
  *
  * Description: Get the album info from Fargo and return it as Json data. 
  *
@@ -440,7 +440,6 @@ function GetAlbumInfo($id)
     CloseDatabase($db);     
 
     // Fill parameters.
-    //$aParams['thumbs'] = cALBUMSTHUMBS;
     $aParams['covers'] = cMUSICART;
     
     // Fill Json.
@@ -454,7 +453,7 @@ function GetAlbumInfo($id)
  * Function:	GetSongInfo
  *
  * Created on Jun 29, 2014
- * Updated on Jun 07, 2014
+ * Updated on Jul 19, 2014
  *
  * Description: Get the song info from Fargo and return it as Json data. 
  *
@@ -469,7 +468,8 @@ function GetSongInfo($id, $login)
     $aParams = null;  
     
     $sql = "SELECT songid, title, artist, album, genre, HEX(poster) AS fanart, `year`, disc, track, ".
-           " TRIM(LEADING '00:' FROM SEC_TO_TIME(duration)) AS duration, rating, `comment`, `file` ".
+           " IF(duration > 59, TRIM(LEADING '00:' FROM SEC_TO_TIME(duration)), ".
+            " SUBSTRING_INDEX(SEC_TO_TIME(duration),'00:',-2)) AS duration, rating, `comment`, `file` ".
            "FROM songs ".
            "WHERE id = $id";
     
@@ -522,7 +522,6 @@ function GetSongInfo($id, $login)
     CloseDatabase($db);     
 
     // Fill parameters.
-    //$aParams['thumbs'] = cSONGSTHUMBS;
     $aParams['covers'] = cMUSICART;
     
     // Fill Json.
@@ -1495,7 +1494,7 @@ function CreateSongsQuery($title, $genre, $year, $sort, $login)
  * Function:	CreateTracksQuery
  *
  * Created on Jun 29, 2014
- * Updated on Jul 14, 2014
+ * Updated on Jul 19, 2014
  *
  * Description: Create the sql query for the album tracks table. 
  *
@@ -1508,14 +1507,16 @@ function CreateTracksQuery($level, $login)
     if (!$login)
     {
         $sql = "SELECT id, songid, NULL, hide, refresh, CONCAT(track, '. ', title), HEX(poster),".
-               " TRIM(LEADING '00:' FROM SEC_TO_TIME(duration)), NULL ".
+               " IF(duration > 59, TRIM(LEADING '00:' FROM SEC_TO_TIME(duration)),".
+                " SUBSTRING_INDEX(SEC_TO_TIME(duration),'00:',-2)), NULL ".
                "FROM songs ".
                "WHERE albumid = $level AND hide = 0 ";
     }
     else
     {
         $sql = "SELECT s.id, s.songid, IF(sm.playcount IS NULL, -1, sm.playcount) AS playcount, s.hide, s.refresh,".
-               " CONCAT(s.track, '. ', s.title), HEX(s.poster), TRIM(LEADING '00:' FROM SEC_TO_TIME(s.duration)), NULL ".
+               " CONCAT(s.track, '. ', s.title), HEX(s.poster), IF(duration > 59, TRIM(LEADING '00:' FROM SEC_TO_TIME(duration)),".
+                " SUBSTRING_INDEX(SEC_TO_TIME(duration),'00:',-2)), NULL ".
                "FROM songs s ".
                "LEFT JOIN songsmeta sm ON s.songid = sm.songid ".
                "WHERE s.albumid = $level ";    
