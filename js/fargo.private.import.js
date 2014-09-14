@@ -6,7 +6,7 @@
  * File:    fargo.private.import.js
  *
  * Created on Jul 14, 2013
- * Updated on Jul 07, 2014
+ * Updated on Aug 04, 2014
  *
  * Description: Fargo's jQuery and Javascript functions page for the XBMC media import.
  *
@@ -226,7 +226,7 @@ function StartOnlineHandler(media, type, next, online, retry)
  * Function:	StartOnlineCheck
  *
  * Created on Jul 14, 2013
- * Updated on Jun 17, 2014
+ * Updated on Aug 04, 2014
  *
  * Description:  Check if XBMC is online.
  * 
@@ -239,7 +239,6 @@ function StartOnlineHandler(media, type, next, online, retry)
 function StartOnlineCheck(type)
 {
     var deferred = $.Deferred();
-    //InitImportBox();
     
     // Reset media status, get xbmc connection (url), port and fargo media counter.
     $.ajax({
@@ -250,15 +249,18 @@ function StartOnlineCheck(type)
         {
             gCONNECT.CONNECTION = json.connection;
             gCONNECT.PORT = json.port;
+            gCONNECT.USERNAME = json.username;
+            gCONNECT.PASSWORD = json.password;   
+            gCONNECT.HASH = "";
             gCONNECT.TIMEOUT = json.timeout;
             gCONNECT.KEY = json.key;
             gCONNECT.STATUS = json.status;
             
-            var url = GetTransferUrl() + "transfer.html?action=counter&media=" + type + "&key=" + gCONNECT.KEY;        
+            var start = "http://" + GetUsernamePassword();            
+            var url   = GetTransferUrl(start) + "transfer.html?action=counter&media=" + type + "&key=" + gCONNECT.KEY;        
             var ready = ImportData(url, 0);
             ready.done(function() {
-                //console.log("Iframe is ready"); // debug 
-                
+
                 // Returns gTRIGGER.START and gTRIGGER.END.
                 GetXbmcMediaLimits(type);
                 
@@ -276,7 +278,7 @@ function StartOnlineCheck(type)
  * Function:	StartMetaImportHandler
  *
  * Created on Jan 12, 2014
- * Updated on Feb 24, 2014
+ * Updated on Jul 28, 2014
  *
  * Description:  Start the meta import handler.
  * 
@@ -296,7 +298,6 @@ function StartMetaImportHandler(media, type, next)
     var $sub = $("#action_sub");
     
     $prg.progressbar({value : 0 });
-    //$img.removeAttr("src").attr("src", "");
     $img.hide();
     $tit.html("&nbsp;");
     $sub.html("&nbsp;");    
@@ -313,9 +314,7 @@ function StartMetaImportHandler(media, type, next)
         meta.done (function() {
             if (!gTRIGGER.CANCEL) 
             {        
-                // Returns gTRIGGER.START and gTRIGGER.END.
-                GetXbmcMediaLimits(type);                
-                
+                GetXbmcMediaLimits(type); // Returns gTRIGGER.START and gTRIGGER.END.  
                 SetStartImportHandler(media, next, false); // Continue with the next step.
             }
         }).fail (function(msg) {
@@ -328,7 +327,7 @@ function StartMetaImportHandler(media, type, next)
  * Function:	StartMetaImport
  *
  * Created on Jan 12, 2014
- * Updated on Jun 17, 2014
+ * Updated on Aug 04, 2014
  *
  * Description: Control and Import the media meta data transfered from XBMC.
  *
@@ -346,25 +345,25 @@ function StartMetaImport(type, end)
         dataType: 'json',
         success: function(json)
         {      
-            var url = GetTransferUrl() + "meta.html?action=" + type + "&counter=" + 0 + "&key=" + gCONNECT.KEY;
+            var start = "http://";
+            var url = GetTransferUrl(start) + "meta.html?action=" + type + "&counter=" + 0 + "&key=" + gCONNECT.KEY;
             var currentStep = ImportData(url, 0);  
     
             deferred.notify(0);
     
             for(var i = 1; i < end; i++)
-            {       
-                //console.log("Meta Counter: " + i);
+            {  
                 currentStep = currentStep.pipe(function(j){
                     if (!gTRIGGER.CANCEL) 
                     {
                         deferred.notify(++j);
-                        url = GetTransferUrl() + "meta.html?action=" + type + "&counter=" + j + "&key=" + gCONNECT.KEY;
+                        url = GetTransferUrl(start) + "meta.html?action=" + type + "&counter=" + j + "&key=" + gCONNECT.KEY;
                         return ImportData(url, j);
                     }
                 });
             }
             $.when(currentStep).done(function(){
-                //console.log("All steps done.");     
+    
                 $.ajax({ // Begin Ajax 2.
                     url: 'jsonmanage.php?action=chkmeta&type=' + type,
                     async: false,
@@ -380,7 +379,6 @@ function StartMetaImport(type, end)
                     } // End succes.    
                 }); // End Ajax 2.              
                 
-                //deferred.resolve();
             }).fail(function(){
                 deferred.reject(cSTATUS.OFFLINE);
             });
@@ -496,7 +494,7 @@ function StartImportHandler(media, type, next, factor)
  * Function:	StartImport
  *
  * Created on Jan 14, 2014
- * Updated on Jun 27, 2014
+ * Updated on Aug 04, 2014
  *
  * Description: Control and Import the media data transfered from XBMC.
  *
@@ -588,7 +586,7 @@ function StartImport(type, factor)
             xbmcid = gMEDIA.XBMCID;
             busy = true;
                
-            url = GetTransferUrl() + "transfer.html?action=" + type + "&xbmcid=" + gMEDIA.XBMCID + "&fargoid=-1" + "&key=" + gCONNECT.KEY;
+            url = GetTransferUrl("http://") + "transfer.html?action=" + type + "&xbmcid=" + gMEDIA.XBMCID + "&fargoid=-1" + "&key=" + gCONNECT.KEY;
             ready = ImportData(url, 0);
             ready.done(function() {
                 retry = 0;
@@ -702,7 +700,7 @@ function ShowImportProgress($msg, $prg, $img, $tit, $sub, type, i, delta)
  * Function:	StartSeasonsMetaImportHandler
  *
  * Created on Jan 20, 2014
- * Updated on Feb 24, 2014
+ * Updated on Aug 04, 2014
  *
  * Description:  Start the seasons meta import handler.
  * 
@@ -732,7 +730,6 @@ function StartSeasonsMetaImportHandler(media, type, next)
         var meta = StartSeasonsMetaImport(type);            
         meta.progress(function(i) {
             ShowMetaProgress($prg, type, i, gTRIGGER.END);
-            //console.log("Meta Counter: " + i);
         }); 
             
         meta.done (function() {
@@ -740,8 +737,6 @@ function StartSeasonsMetaImportHandler(media, type, next)
                 
                 // Returns gTRIGGER.START and gTRIGGER.END.
                 GetXbmcMediaLimits(type);
-                //console.log(type);
-                
                 SetStartImportHandler(media, next, false); // Continue with the next step.
             }
         }).fail (function() {
@@ -754,7 +749,7 @@ function StartSeasonsMetaImportHandler(media, type, next)
  * Function:	StartSeasonsMetaImport
  *
  * Created on Jan 20, 2014
- * Updated on Jun 17, 2014
+ * Updated on Aug 04, 2014
  *
  * Description: Control and Import the seasons media meta data transfered from XBMC.
  *
@@ -776,7 +771,8 @@ function StartSeasonsMetaImport(type)
         {                 
             if (json.tvshowids) 
             {
-                var url = GetTransferUrl() + "meta.html?action=" + type + "&tvshowid=" + json.tvshowids[0] + "&key=" + gCONNECT.KEY;
+                var start = "http://";
+                var url   = GetTransferUrl(start) + "meta.html?action=" + type + "&tvshowid=" + json.tvshowids[0] + "&key=" + gCONNECT.KEY;
                 var currentStep = ImportData(url, 0);
     
                 deferred.notify(0);
@@ -786,7 +782,7 @@ function StartSeasonsMetaImport(type)
                     currentStep = currentStep.pipe(function(j){
                         if (!gTRIGGER.CANCEL) {
                             deferred.notify(++j);
-                            url = GetTransferUrl() + "meta.html?action=" + type + "&tvshowid=" + json.tvshowids[j] + "&key=" + gCONNECT.KEY;
+                            url = GetTransferUrl(start) + "meta.html?action=" + type + "&tvshowid=" + json.tvshowids[j] + "&key=" + gCONNECT.KEY;
                             return ImportData(url, j);
                         }
                     });
@@ -807,7 +803,6 @@ function StartSeasonsMetaImport(type)
                             }     
                         } // End succes.    
                     }); // End Ajax 2.                     
-                    //deferred.resolve();
                 }).fail(function(){               
                     deferred.reject();
                 });  
@@ -880,7 +875,7 @@ function UnlockImport(callback)
  * Function:	SetImportHandler
  *
  * Created on Sep 09, 2013
- * Updated on Jul 04, 2014
+ * Updated on Aug 04, 2014
  *
  * Description: Set the import handler, show the import popup box with yes/no buttons.
  * 
@@ -927,8 +922,6 @@ function SetImportPopupHandler(media)
                 title = cIMPORT.WARNING;
                 $("#action_wrapper").hide();
                 $("#action_box .progress").hide();
-
-                //$("#action_title").text("");
                 $("#action_sub").text("");
                 
                 $(".yes").hide();
@@ -995,22 +988,57 @@ function ImportData(url, counter)
 }
 
 /*
- * Function:	GetTransferUrl
+ * Function:	GetUsernamePassword
  *
- * Created on Jan 13, 2014
- * Updated on Jun 17, 2014
+ * Created on Aug 04, 2014
+ * Updated on Aug 04, 2014
  *
- * Description: Get first of the part transfer url.
+ * Description: Get the XBMC username abnd password part for the transfer url.
  * 
  * In:	global gCONNECT
  * Out:	url
  *
  */
-function GetTransferUrl()
+function GetUsernamePassword()
 {
-    var url = "http://" + gCONNECT.CONNECTION;
+    var url = "";
+    
+    if (gCONNECT.USERNAME && gCONNECT.PASSWORD) 
+    {
+        
+        if (!gCONNECT.HASH) 
+        {   
+            GetFargoSetting("Hash"); //Returns gSTATE.SETTING
+            gCONNECT.HASH = gSTATE.SETTING;
+        
+            password = CryptoJS.AES.decrypt(atob(gCONNECT.PASSWORD), gCONNECT.HASH);
+            gCONNECT.PASSWORD = password.toString(CryptoJS.enc.Utf8);
+            
+            url += gCONNECT.USERNAME + ":" + gCONNECT.PASSWORD + "@";
+        }
+    }
+    
+    return url;
+}
+
+/*
+ * Function:	GetTransferUrl
+ *
+ * Created on Jan 13, 2014
+ * Updated on Aug 04, 2014
+ *
+ * Description: Get first of the part transfer url.
+ * 
+ * In:	start, global gCONNECT
+ * Out:	url
+ *
+ */
+function GetTransferUrl(start)
+{
+    var url = start + gCONNECT.CONNECTION;
+
     if (gCONNECT.PORT) {
-        url = "http://" + gCONNECT.CONNECTION + ":" + gCONNECT.PORT;
+        url += ":" + gCONNECT.PORT;
     }
     
     url += "/" + gCONNECT.PATH;

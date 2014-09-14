@@ -6,7 +6,7 @@
  * File:    fargo.system.js
  *
  * Created on May 04, 2013
- * Updated on Jul 05, 2014
+ * Updated on Jul 28, 2014
  *
  * Description: Fargo's jQuery and Javascript common system functions page.
  *
@@ -257,7 +257,7 @@ function SelectOption(action)
  * Function:	ToggleProperty
  *
  * Created on Jun 01, 2013
- * Updated on Jun 08, 2013
+ * Updated on Jul 28, 2014
  *
  * Description: Toggle property on or off.
  *
@@ -314,8 +314,8 @@ function ToggleProperty(arrow)
             // Property has change, update value.
             if (current != value && value != "") 
             {
-                value  = CheckForPassword(input);
                 number = row.closest("tr").index();
+                value  = CheckForPassword(input, number);
                 if (CheckInput(number, value)) {
                     ChangeProperty(number, value);
                 }
@@ -342,7 +342,7 @@ function ToggleProperty(arrow)
  * Function:	SelectProperty
  *
  * Created on May 29, 2013
- * Updated on Jun 10, 2013
+ * Updated on Jul 28, 2014
  *
  * Description: Select system property.
  *
@@ -388,16 +388,19 @@ function SelectProperty(arrow)
     active.prev().children().removeClass("on");
     active.children().removeClass("on");   
     
+    // Get property row number.
+    number = active.closest("tr").index();
+    
     // Get value if there is an input field.
     input = active.find('input');
-    if(input.length) {
-        value = CheckForPassword(input);
+    if (input.length) {
+        value = CheckForPassword(input, number);
     }
     
     // Property has change, update value.
     if (current != value && value != "")
     {
-        number = active.closest("tr").index();
+        //number = active.closest("tr").index();
         if (CheckInput(number, value)) {
             ChangeProperty(number, value);
         }
@@ -431,7 +434,7 @@ function SelectProperty(arrow)
  * Function:	SetPropertyMouseHandler
  *
  * Created on May 26, 2013
- * Updated on Jun 22, 2013
+ * Updated on Jul 28, 2014
  *
  * Description: Show property on hover and update value when changed.
  *
@@ -488,7 +491,7 @@ function SetPropertyMouseHandler(event)
         rownr  = GetState("row");
         
         if (input.length && number == rownr) {
-            value = CheckForPassword(input);     
+            value = CheckForPassword(input, number);
         }
         
         // Property has change, update value.

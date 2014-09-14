@@ -7,7 +7,7 @@
  * File:    jsonmanage.php
  *
  * Created on Nov 20, 2013
- * Updated on Jul 19, 2014
+ * Updated on Jul 28, 2014
  *
  * Description: The main Json Manage page.
  * 
@@ -423,7 +423,7 @@ function DeleteMediaGenreQuery($db, $name, $id)
  * Function:	ResetStatus
  *
  * Created on Jul 22, 2013
- * Updated on Jun 27, 2014
+ * Updated on Jul 28, 2014
  *
  * Description: Reset the status. 
  *
@@ -448,6 +448,8 @@ function ResetStatus($media)
     // Fill json.
     $aJson["connection"] = GetSetting($db, "XBMCconnection");
     $aJson["port"]       = GetSetting($db, "XBMCport");
+    $aJson["username"]   = GetSetting($db, "XBMCusername");
+    $aJson["password"]   = GetSetting($db, "XBMCpassword"); 
     $aJson["timeout"]    = GetSetting($db, "Timeout");
     $aJson["key"]        = GenerateKey($db);    
     $aJson["status"]     = "reset";  

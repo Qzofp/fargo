@@ -7,7 +7,7 @@
  * File:    index.php
  *
  * Created on Mar 02, 2013
- * Updated on Jul 19, 2014
+ * Updated on Aug 04, 2014
  *
  * Description: Fargo's main page (openingspage). 
  *
@@ -20,14 +20,15 @@ if(!isset($_SESSION['LOGIN']))
     $login = false;
     $mode = "&nbsp;";
     $user = "&nbsp;";
-    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js", 
+    $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js",
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js",
-                         "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js",
-                         "js/jquery.slimscroll.min.js", 
+                         "js/addons/sha256.js",
+                         "js/addons/aes.js",
+                         "js/addons/jquery.slimscroll.min.js",
                          "js/fargo.public.constants.js",
-                         "js/fargo.common.js", 
-                         "js/fargo.public.media.js",         
-                         "js/fargo.system.js", 
+                         "js/fargo.common.js",
+                         "js/fargo.public.media.js", 
+                         "js/fargo.system.js",
                          "js/fargo.public.main.js");
     
     $li_modes = "";
@@ -41,15 +42,16 @@ else
     $user = "Welcome: <span>".$_SESSION['USER']."</span>";
     $aJavascript = array("//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js",
                          "//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js",
-                         "//crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/sha256.js",
-                         "js/jquery.slimscroll.min.js",
+                         "js/addons/sha256.js",
+                         "js/addons/aes.js",
+                         "js/addons/jquery.slimscroll.min.js",
                          "js/fargo.public.constants.js",
                          "js/fargo.private.constants.js",
-                         "js/fargo.common.js",       
-                         "js/fargo.public.media.js",         
-                         "js/fargo.system.js", 
-                         "js/fargo.private.main.js", 
-                         "js/fargo.private.media.js",         
+                         "js/fargo.common.js",
+                         "js/fargo.public.media.js", 
+                         "js/fargo.system.js",
+                         "js/fargo.private.main.js",
+                         "js/fargo.private.media.js",
                          "js/fargo.private.import.js",
                          "js/fargo.private.refresh.js");
      

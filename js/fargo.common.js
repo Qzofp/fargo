@@ -6,7 +6,7 @@
  * File:    fargo.common.js
  *
  * Created on Jun 08, 2013
- * Updated on Jul 12, 2014
+ * Updated on Jul 28, 2014
  *
  * Description: Fargo's jQuery and Javascript common functions page.
  *
@@ -58,15 +58,15 @@ function GetState(name)
  * Function:	CheckForPassword
  *
  * Created on Jun 08, 2013
- * Updated on Jun 09, 2013
+ * Updated on Jul 28, 2014
  *
  * Description: Check if there is a password and if so then hash password.
  * 
- * In:	input
+ * In:	input, number
  * Out:	value
  *
  */
-function CheckForPassword(input)
+function CheckForPassword(input, number)
 { 
     var value = input.val();
     
@@ -78,9 +78,14 @@ function CheckForPassword(input)
             // Show message.
         }*/
 
-        // Hash password.
-        value = HashPassword(value);
-            
+        // Check for XBMC password (4) or Fargo password (7).
+        if (number == 4) { // Encrypt XBMC password.
+            value = EncryptPassword(value);
+        }
+        else { // Hash Fargo password.
+            value = HashPassword(value);
+        }
+        
         input.val("******");
     }
     
@@ -215,6 +220,31 @@ function HashPassword(string)
     {    
         GetFargoSetting("Hash"); //Returns gSTATE.SETTING
         password = CryptoJS.SHA256(CryptoJS.SHA256(string) + gSTATE.SETTING);
+    }
+    
+    return password;
+}
+
+/*
+ * Function:	EncryptPassword
+ *
+ * Created on Jul 28, 2014
+ * Updated on Jul 28, 2014
+ *
+ * Description: Encrypt password.
+ * 
+ * In:	string
+ * Out:	password
+ *
+ */
+function EncryptPassword(string)
+{
+    var password = string;
+    
+    if ($.trim(string).length)
+    {    
+        GetFargoSetting("Hash"); //Returns gSTATE.SETTING
+        password = btoa(CryptoJS.AES.encrypt(string, gSTATE.SETTING));
     }
     
     return password;
