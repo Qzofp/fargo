@@ -1,6 +1,5 @@
 Fargo
 =====
 
-Work in progress...
+Discontinued...
 
-Sneak Preview: http://qzofp.nl/fargo or http://fargo.qzofp.nl
